@@ -1,8 +1,10 @@
-﻿
-namespace TS.Pisa.Plugin.Puffin
+﻿namespace TS.Pisa.Plugin.Puffin
 {
     public class PuffinProviderPlugin : IProviderPlugin
     {
+        private static readonly log4net.ILog log =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public bool UseTunnel { get; set; } = false;
         public string Host { get; set; } = "localhost";
         public int Port { get; set; } = 9901;
@@ -12,17 +14,16 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Subscribe(string subject)
         {
-            throw new System.NotImplementedException();
+            log.Info("subscribing to " + subject);
         }
 
         public void Unsubscribe(string subject)
         {
-            throw new System.NotImplementedException();
+            log.Info("unsubscribing from " + subject);
         }
 
         public void EventListener(IEventListener listener)
         {
-            throw new System.NotImplementedException();
         }
 
         public bool IsSubjectCompatible(string subject)
@@ -32,12 +33,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Start()
         {
-            throw new System.NotImplementedException();
         }
 
         public void Stop()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

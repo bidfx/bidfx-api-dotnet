@@ -29,22 +29,15 @@ namespace TS.Pisa
 
         public void UnsubscribeAll()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<string> GetSubscribedSubjects()
-        {
-            throw new System.NotImplementedException();
         }
 
         public void Close()
         {
-            throw new System.NotImplementedException();
         }
 
         public IDispatcher GetDispatcher()
         {
-            throw new System.NotImplementedException();
+            return null;// TODO
         }
     }
 }

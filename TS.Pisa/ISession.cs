@@ -5,7 +5,7 @@ namespace TS.Pisa
     public interface ISession
     {
         ISubscriber CreateSubscriber();
-        void SetProviders(IProviderPlugin[] providersPlugin);
+        void AddProviderPlugin(IProviderPlugin providerPlugin);
         void Start();
         void Stop();
     }

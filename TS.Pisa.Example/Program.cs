@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
+﻿using TS.Pisa.Plugin.Puffin;
 
 namespace TS.Pisa.Example
 {
@@ -29,8 +27,8 @@ namespace TS.Pisa.Example
         private static ISession PrepareSession()
         {
             var session = DefaultSession.GetDefault();
-
-            session.SetProviders(new IProviderPlugin[0]);
+            var puffinProviderPlugin = new PuffinProviderPlugin();
+            session.AddProviderPlugin(puffinProviderPlugin);
             return session;
         }
     }
