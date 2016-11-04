@@ -15,5 +15,3 @@ namespace TS.Pisa.Test
         }
     }
 }
-
-
