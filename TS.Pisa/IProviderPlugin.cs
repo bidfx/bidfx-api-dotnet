@@ -2,7 +2,7 @@
 {
     public interface IProviderPlugin
     {
-        string Name { get; };
+        string Name { get; }
         IProviderStatus ProviderStatus { get; }
         string ProviderStatusText { get; }
         void Subscribe(string subject);
