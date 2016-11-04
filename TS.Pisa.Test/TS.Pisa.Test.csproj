@@ -45,11 +45,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tests.cs" />
+    <Compile Include="DefaultSessionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
+      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
+      <Name>TS.Pisa</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
