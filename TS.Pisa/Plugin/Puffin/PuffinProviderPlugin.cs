@@ -109,7 +109,7 @@ namespace TS.Pisa.Plugin.Puffin
                 _stream.AuthenticateAsClient(Host);
                 TunnelToPuffin();
                 SendPuffinProtocolSignature();
-                ReadPuffinWeclomeMessage();
+                ReadPuffinWelcomeMessage();
                 SendPuffinLogin();
             }
             catch (Exception e)
@@ -128,7 +128,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
         }
 
-        private void ReadPuffinWeclomeMessage()
+        private void ReadPuffinWelcomeMessage()
         {
         }
 
