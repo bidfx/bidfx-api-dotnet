@@ -25,16 +25,17 @@ namespace TS.Pisa.Plugin.Puffin
         public ProviderStatus ProviderStatus { get; }
         public string ProviderStatusText { get; }
 
-        public string Host { get; set; } = "ny-tunnel.uatdev.tradingscreen.com";
-        public int Port { get; set; } = 443;
-        public string Service { get; set; } = "static://puffin";
-        public string Username { get; set; } = "username_unknown";
-        public string Password { get; set; } = "password_unset";
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string Service { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
         public GUID Guid { get; } = new GUID();
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
+        private SslStream _stream;
 
 
         public PuffinProviderPlugin()
@@ -42,6 +43,11 @@ namespace TS.Pisa.Plugin.Puffin
             Name = NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             ProviderStatus = ProviderStatus.TemporarilyDown;
             ProviderStatusText = "waiting for remote connection";
+            Host = "ny-tunnel.uatdev.tradingscreen.com";
+            Port = 443;
+            Service = "static://puffin";
+            Username = "username_unknown";
+            Password = "password_unset";
             _outputThread = new Thread(RunningLoop) {Name = Name + "-read"};
         }
 
@@ -97,10 +103,12 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 log.Info("opening socket to " + Host + ':' + Port);
                 var client = new TcpClient(Host, Port);
-                var stream = new SslStream(client.GetStream(), false);
-                stream.AuthenticateAsClient(Host);
-                stream.Write(Encoding.ASCII.GetBytes(TunnelHeader()));
-                ReadTunnelResponse(stream);
+                _stream = new SslStream(client.GetStream(), false);
+                _stream.AuthenticateAsClient(Host);
+                TunnelToPuffin();
+                SendPuffinProtocolSignature();
+                ReadPuffinWeclomeMessage();
+                SendPuffinLogin();
             }
             catch (Exception e)
             {
@@ -108,17 +116,25 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void ReadTunnelResponse(Stream stream)
+        private void TunnelToPuffin()
         {
-            var response = _buffer.ReadLineFrom(stream);
-            log.Info("received response from tunnel '" + response + "'");
-            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFrom(stream).Length != 0)
-            {
-                throw new TunnelException("failed to tunnel to Puffin with response: " + response);
-            }
+            SendTunnelHeader();
+            ReadTunnelResponse();
         }
 
-        private string TunnelHeader()
+        private void SendPuffinProtocolSignature()
+        {
+        }
+
+        private void ReadPuffinWeclomeMessage()
+        {
+        }
+
+        private void SendPuffinLogin()
+        {
+        }
+
+        private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             var header = "CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
@@ -127,7 +143,17 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 log.Debug("sending tunnel header: " + header);
             }
-            return header;
+            _stream.Write(Encoding.ASCII.GetBytes(header));
+        }
+
+        private void ReadTunnelResponse()
+        {
+            var response = _buffer.ReadLineFrom(_stream);
+            log.Info("received response from tunnel '" + response + "'");
+            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFrom(_stream).Length != 0)
+            {
+                throw new TunnelException("failed to tunnel to Puffin with response: " + response);
+            }
         }
     }
 }

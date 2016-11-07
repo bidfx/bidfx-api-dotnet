@@ -20,9 +20,14 @@ namespace TS.Pisa.Tools
             _guid = Guid.NewGuid().ToByteArray();
         }
 
+        public override string ToString()
+        {
+            return ByteArrayToString(_guid);
+        }
+
         private static string ByteArrayToString(byte[] ba)
         {
-            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            var hex = new StringBuilder(ba.Length * 2);
             foreach (var b in ba)
             {
                 hex.AppendFormat("{0:x2}", b);
@@ -30,9 +35,5 @@ namespace TS.Pisa.Tools
             return hex.ToString();
         }
 
-        public override string ToString()
-        {
-            return ByteArrayToString(_guid);
-        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TS.Pisa
+﻿namespace TS.Pisa
 {
     internal class Subscriber : ISubscriber
     {
@@ -18,7 +16,6 @@ namespace TS.Pisa
         {
             log.Info("subscribe to " + subject);
             _subscriberSession.Subscribe(this, subject);
-
         }
 
         public void Unsubscribe(string subject)
@@ -37,7 +34,7 @@ namespace TS.Pisa
 
         public IDispatcher GetDispatcher()
         {
-            return null;// TODO
+            return null; // TODO
         }
     }
 }
