@@ -58,9 +58,8 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 log.Info(Name + " running");
                 EstablishPuffinConnection();
-
-
                 _stream.Close();
+                _buffer.Clear();
                 Thread.Sleep(10000);
             }
             log.Info("thread stopped");

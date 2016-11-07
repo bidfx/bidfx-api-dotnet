@@ -49,5 +49,11 @@ namespace TS.Pisa.Tools
             }
             return Encoding.ASCII.GetString(_buffer, start, eol - start);
         }
+
+        public void Clear()
+        {
+            ReaderIndex = 0;
+            WriterIndex = 0;
+        }
     }
 }
