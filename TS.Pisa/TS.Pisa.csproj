@@ -46,7 +46,7 @@
     <Compile Include="IEventListener.cs" />
     <Compile Include="IllegalSubjectException.cs" />
     <Compile Include="IProviderPlugin.cs" />
-    <Compile Include="IProviderStatus.cs" />
+    <Compile Include="ProviderStatus.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISubscriber.cs" />
     <Compile Include="IPrice.cs" />
@@ -58,9 +58,17 @@
     <Compile Include="IDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Subscriber.cs" />
+    <Compile Include="Tools\AtomicBoolean.cs" />
+    <Compile Include="Tools\ByteBuffer.cs" />
+    <Compile Include="Tools\GUID.cs" />
+    <Compile Include="Tools\NameCache.cs" />
+    <Compile Include="Tools\TunnelException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plugin\Puffin" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

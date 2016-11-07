@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace TS.Pisa.Test
+namespace TS.Pisa
 {
     [TestFixture]
     public class DefaultSessionTest
@@ -9,7 +9,7 @@ namespace TS.Pisa.Test
         [Test]
         public void TestGetDefaultSession()
         {
-            ISession defaultSession = DefaultSession.GetDefault();
+            var defaultSession = DefaultSession.GetDefault();
             Assert.NotNull(defaultSession);
             Assert.AreSame(defaultSession, DefaultSession.GetDefault());
         }

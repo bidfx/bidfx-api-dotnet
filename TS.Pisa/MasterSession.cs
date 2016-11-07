@@ -19,10 +19,20 @@ namespace TS.Pisa
 
         public void Start()
         {
+            log.Info("MasterSession started");
+            foreach (var providerPlugin in _providerPlugins)
+            {
+                providerPlugin.Start();
+            }
         }
 
         public void Stop()
         {
+            log.Info("MasterSession stopped");
+            foreach (var providerPlugin in _providerPlugins)
+            {
+                providerPlugin.Stop();
+            }
         }
 
         public void AddProviderPlugin(IProviderPlugin providerPlugin)

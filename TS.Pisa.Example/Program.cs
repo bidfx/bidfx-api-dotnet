@@ -27,11 +27,13 @@ namespace TS.Pisa.Example
         private static ISession PrepareSession()
         {
             var session = DefaultSession.GetDefault();
-            var puffinProviderPlugin = new PuffinProviderPlugin();
-            session.AddProviderPlugin(puffinProviderPlugin);
+            session.AddProviderPlugin(new PuffinProviderPlugin
+            {
+                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Username = "axaapitest",
+                Password = "B3CarefulWithThatAXAEug3n3!"
+            });
             return session;
         }
     }
 }
-
-
