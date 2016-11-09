@@ -31,6 +31,17 @@ namespace TS.Pisa.Tools
             return line;
         }
 
+        public string ReadUntil(Stream stream, char endChar)
+        {
+            var line = ReadUntil(endChar);
+            while (line == null)
+            {
+                WriteBytes(stream);
+                line = ReadUntil(endChar);
+            }
+            return line;
+        }
+
         public void WriteBytes(Stream stream)
         {
             var received = stream.Read(_buffer, WriterIndex, Capacity - WriterIndex);
@@ -48,6 +59,15 @@ namespace TS.Pisa.Tools
                 eol--;
             }
             return Encoding.ASCII.GetString(_buffer, start, eol - start);
+        }
+
+        public string ReadUntil(char endChar)
+        {
+            var start = ReaderIndex;
+            var eol = Array.IndexOf(_buffer, (byte) endChar, start, WriterIndex - start);
+            if (eol == -1) return null;
+            ReaderIndex = eol + 1;
+            return Encoding.ASCII.GetString(_buffer, start, ReaderIndex - start);
         }
 
         public void Clear()

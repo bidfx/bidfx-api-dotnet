@@ -46,6 +46,8 @@
     <Compile Include="IEventListener.cs" />
     <Compile Include="IllegalSubjectException.cs" />
     <Compile Include="IProviderPlugin.cs" />
+    <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
+    <Compile Include="Plugin\Puffin\xml\XMLNameTagBase.cs" />
     <Compile Include="ProviderStatus.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISubscriber.cs" />
@@ -69,7 +71,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Plugin\Puffin" />
+    <Folder Include="Plugin\Puffin\xml" />
+    <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

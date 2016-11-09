@@ -5,6 +5,7 @@ using TS.Pisa.Tools;
 using System;
 using System.IO;
 using System.Net.Security;
+using System.Security.Cryptography;
 
 
 namespace TS.Pisa.Plugin.Puffin
@@ -18,7 +19,7 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class PuffinProviderPlugin : IProviderPlugin
     {
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public string Name { get; }
@@ -53,27 +54,27 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void RunningLoop()
         {
-            log.Info("starting thread for GUID " + Guid);
+            Log.Info("starting thread for GUID " + Guid);
             while (_running.Value)
             {
-                log.Info(Name + " running");
+                Log.Info(Name + " running");
                 EstablishPuffinConnection();
                 _stream.Close();
                 _buffer.Clear();
                 Thread.Sleep(10000);
             }
-            log.Info("thread stopped");
+            Log.Info("thread stopped");
         }
 
 
         public void Subscribe(string subject)
         {
-            log.Info(Name + " subscribing to " + subject);
+            Log.Info(Name + " subscribing to " + subject);
         }
 
         public void Unsubscribe(string subject)
         {
-            log.Info(Name + " unsubscribing from " + subject);
+            Log.Info(Name + " unsubscribing from " + subject);
         }
 
         public void EventListener(IEventListener listener)
@@ -103,18 +104,19 @@ namespace TS.Pisa.Plugin.Puffin
         {
             try
             {
-                log.Info("opening socket to " + Host + ':' + Port);
+                Log.Info("opening socket to " + Host + ':' + Port);
                 var client = new TcpClient(Host, Port);
                 _stream = new SslStream(client.GetStream(), false);
                 _stream.AuthenticateAsClient(Host);
                 TunnelToPuffin();
-                SendPuffinProtocolSignature();
-                ReadPuffinWelcomeMessage();
-                SendPuffinLogin();
+                var welcomeMessage = ReadMessage();
+                //Todo parse welcome message and get public key
+//                var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
+//                SendMessage("<Login Version=\"8\" Name=\""+Username+"\" Password=\""+encryptedPassword+"\"/>");
             }
             catch (Exception e)
             {
-                log.Warn("failed to read from socket", e);
+                Log.Warn("failed to read from socket", e);
             }
         }
 
@@ -139,23 +141,39 @@ namespace TS.Pisa.Plugin.Puffin
         private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
-            var header = "CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                         "GUID: " + Guid + "\r\n\r\n";
-            if (log.IsDebugEnabled)
-            {
-                log.Debug("sending tunnel header: " + header);
-            }
-            _stream.Write(Encoding.ASCII.GetBytes(header));
+            SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
+                         "GUID: " + Guid + "\r\n\r\n");
+            SendMessage("puffin://"+Username+"@puffin:9901\n");
         }
 
         private void ReadTunnelResponse()
         {
             var response = _buffer.ReadLineFrom(_stream);
-            log.Info("received response from tunnel '" + response + "'");
+            Log.Info("received response from tunnel '" + response + "'");
             if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFrom(_stream).Length != 0)
             {
                 throw new TunnelException("failed to tunnel to Puffin with response: " + response);
             }
+        }
+
+        private void SendMessage(string message)
+        {
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("sending: " + message);
+            }
+            _stream.Write(Encoding.ASCII.GetBytes(message));
+            _stream.Flush();
+        }
+
+        private string ReadMessage()
+        {
+            var message = _buffer.ReadUntil(_stream, '>');
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("received: " + message);
+            }
+            return message;
         }
     }
 }
