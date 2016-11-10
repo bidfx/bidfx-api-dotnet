@@ -162,7 +162,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://" + Username + "@puffin:9901\n");
+            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false\n");
         }
 
         private void SendTunnelHeader()
