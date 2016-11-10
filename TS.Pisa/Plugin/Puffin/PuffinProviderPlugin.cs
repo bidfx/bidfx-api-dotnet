@@ -113,18 +113,21 @@ namespace TS.Pisa.Plugin.Puffin
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    UpgradeToSSL();
+                    UpgradeToSsl();
                     TunnelToPuffin();
                 }
                 else
                 {
-                    SendPuffinURL();
+                    SendPuffinUrl();
                 }
                 var welcomeMessage = ReadMessage();
+
+                //Temporary until XML parser is created
                 XmlDocument welcomeXML = new XmlDocument();
                 welcomeXML.LoadXml(welcomeMessage);
                 XmlNode selectSingleNode = welcomeXML.SelectSingleNode("Welcome");
                 var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
+
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\""+Username+"\" Name=\""+Username+"\" Password=\""+encryptedPassword+"\" Description=\"PuffinNET\" Version=\"8\"/>");
                 ReadMessage();
@@ -135,7 +138,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void UpgradeToSSL()
+        private void UpgradeToSsl()
         {
             Log.Info("upgrading to SSL");
             var sslStream = new SslStream(_stream, false);
@@ -146,21 +149,13 @@ namespace TS.Pisa.Plugin.Puffin
         private void TunnelToPuffin()
         {
             SendTunnelHeader();
-            SendPuffinURL();
+            SendPuffinUrl();
             ReadTunnelResponse();
         }
 
-        private void SendPuffinURL()
+        private void SendPuffinUrl()
         {
             SendMessage("puffin://"+Username+"@puffin:9901\n");
-        }
-
-        private void ReadPuffinWelcomeMessage()
-        {
-        }
-
-        private void SendPuffinLogin()
-        {
         }
 
         private void SendTunnelHeader()
