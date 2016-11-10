@@ -53,7 +53,6 @@ namespace TS.Pisa.Plugin.Puffin
             Password = "password_unset";
             Tunnel = true;
             _outputThread = new Thread(RunningLoop) {Name = Name + "-read"};
-
         }
 
         private void RunningLoop()
@@ -129,7 +128,8 @@ namespace TS.Pisa.Plugin.Puffin
                 var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
 
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
-                SendMessage("<Login Alias=\""+Username+"\" Name=\""+Username+"\" Password=\""+encryptedPassword+"\" Description=\"PuffinNET\" Version=\"8\"/>");
+                SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
+                            encryptedPassword + "\" Description=\"PuffinNET\" Version=\"8\"/>");
                 ReadMessage();
             }
             catch (Exception e)
@@ -140,10 +140,18 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void UpgradeToSsl()
         {
-            Log.Info("upgrading to SSL");
             var sslStream = new SslStream(_stream, false);
             sslStream.AuthenticateAsClient(Host);
-            _stream = sslStream;
+            if (sslStream.IsAuthenticated)
+            {
+                _stream = sslStream;
+                Log.Info("upgraded stream to SSL");
+            }
+            else
+            {
+                Log.Error("failed to upgrade stream to SSL, cannot tunnel to puffin");
+                throw new SystemException("failed to upgrade stream to SSL, cannot tunnel to puffin");
+            }
         }
 
         private void TunnelToPuffin()
@@ -155,14 +163,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://"+Username+"@puffin:9901\n");
+            SendMessage("puffin://" + Username + "@puffin:9901\n");
         }
 
         private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                         "GUID: " + Guid + "\r\n\r\n");
+                        "GUID: " + Guid + "\r\n\r\n");
         }
 
         private void ReadTunnelResponse()
@@ -181,7 +189,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Debug("sending: " + message);
             }
-            _stream.Write(Encoding.ASCII.GetBytes(message),0,message.Length);
+            _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             _stream.Flush();
         }
 
