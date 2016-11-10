@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography;
+using System.Xml;
 
 
 namespace TS.Pisa.Plugin.Puffin
@@ -31,12 +32,13 @@ namespace TS.Pisa.Plugin.Puffin
         public string Service { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public bool Tunnel { get; set; }
         public GUID Guid { get; } = new GUID();
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
-        private SslStream _stream;
+        private Stream _stream;
 
 
         public PuffinProviderPlugin()
@@ -49,7 +51,9 @@ namespace TS.Pisa.Plugin.Puffin
             Service = "static://puffin";
             Username = "username_unknown";
             Password = "password_unset";
+            Tunnel = true;
             _outputThread = new Thread(RunningLoop) {Name = Name + "-read"};
+
         }
 
         private void RunningLoop()
@@ -106,13 +110,24 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Info("opening socket to " + Host + ':' + Port);
                 var client = new TcpClient(Host, Port);
-                _stream = new SslStream(client.GetStream(), false);
-                _stream.AuthenticateAsClient(Host);
-                TunnelToPuffin();
+                _stream = client.GetStream();
+                if (Tunnel)
+                {
+                    UpgradeToSSL();
+                    TunnelToPuffin();
+                }
+                else
+                {
+                    SendPuffinURL();
+                }
                 var welcomeMessage = ReadMessage();
-                //Todo parse welcome message and get public key
-//                var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
-//                SendMessage("<Login Version=\"8\" Name=\""+Username+"\" Password=\""+encryptedPassword+"\"/>");
+                XmlDocument welcomeXML = new XmlDocument();
+                welcomeXML.LoadXml(welcomeMessage);
+                XmlNode selectSingleNode = welcomeXML.SelectSingleNode("Welcome");
+                var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
+                var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
+                SendMessage("<Login Alias=\""+Username+"\" Name=\""+Username+"\" Password=\""+encryptedPassword+"\" Description=\"PuffinNET\" Version=\"8\"/>");
+                ReadMessage();
             }
             catch (Exception e)
             {
@@ -120,14 +135,24 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
+        private void UpgradeToSSL()
+        {
+            Log.Info("upgrading to SSL");
+            var sslStream = new SslStream(_stream, false);
+            sslStream.AuthenticateAsClient(Host);
+            _stream = sslStream;
+        }
+
         private void TunnelToPuffin()
         {
             SendTunnelHeader();
+            SendPuffinURL();
             ReadTunnelResponse();
         }
 
-        private void SendPuffinProtocolSignature()
+        private void SendPuffinURL()
         {
+            SendMessage("puffin://"+Username+"@puffin:9901\n");
         }
 
         private void ReadPuffinWelcomeMessage()
@@ -143,7 +168,6 @@ namespace TS.Pisa.Plugin.Puffin
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
                          "GUID: " + Guid + "\r\n\r\n");
-            SendMessage("puffin://"+Username+"@puffin:9901\n");
         }
 
         private void ReadTunnelResponse()
@@ -162,7 +186,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Debug("sending: " + message);
             }
-            _stream.Write(Encoding.ASCII.GetBytes(message));
+            _stream.Write(Encoding.ASCII.GetBytes(message),0,message.Length);
             _stream.Flush();
         }
 

@@ -33,6 +33,14 @@ namespace TS.Pisa.Example
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });
+//            session.AddProviderPlugin(new PuffinProviderPlugin
+//            {
+//                Host = "localhost",
+//                Username = "axaapitest",
+//                Password = "B3CarefulWithThatAXAEug3n3!",
+//                Port = 9901,
+//                Tunnel = false
+//            });
             return session;
         }
     }

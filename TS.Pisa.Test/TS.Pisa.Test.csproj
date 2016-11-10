@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Plugin" />
+    <Folder Include="Puffin" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
