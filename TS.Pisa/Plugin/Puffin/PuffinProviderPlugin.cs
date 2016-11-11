@@ -175,7 +175,10 @@ namespace TS.Pisa.Plugin.Puffin
         private void ReadTunnelResponse()
         {
             var response = _buffer.ReadLineFromStream(_stream);
-            Log.Info("received response from tunnel '" + response + "'");
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("received: " + response);
+            }
             if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFromStream(_stream).Length != 0)
             {
                 throw new TunnelException("failed to tunnel to Puffin with response: " + response);
