@@ -149,7 +149,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
             else
             {
-                throw new SystemException("failed to upgrade stream to SSL, cannot tunnel to puffin");
+                throw new TunnelException("failed to upgrade stream to SSL, cannot tunnel to puffin");
             }
         }
 
