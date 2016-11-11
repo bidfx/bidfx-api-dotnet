@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Net.Security;
-using System.Net.Sockets;
 using System.Text;
 
 namespace TS.Pisa.Tools
@@ -10,6 +8,7 @@ namespace TS.Pisa.Tools
     {
         private const byte CarriageReturn = (byte) '\r';
         private const byte NewLine = (byte) '\n';
+        private const byte XmlCloseTag = (byte) '>';
         public int Capacity { get; }
         public int ReaderIndex { get; set; }
         public int WriterIndex { get; set; }
@@ -21,54 +20,44 @@ namespace TS.Pisa.Tools
             _buffer = new byte[8192];
         }
 
-        public string ReadLineFrom(Stream stream)
+        public string ReadLineFromStream(Stream stream)
         {
-            WriteBytes(stream);
-            var line = ReadLine();
+            return ReadFromStreamUntil(stream, NewLine);
+        }
+
+        public string ReadXmlFromStream(Stream stream)
+        {
+            return ReadFromStreamUntil(stream, XmlCloseTag);
+        }
+
+        public string ReadFromStreamUntil(Stream stream, byte endByte)
+        {
+            var line = ReadFromBufferUntil(endByte);
             while (line == null)
             {
-                WriteBytes(stream);
-                line = ReadLine();
+                WriteBytesToBuffer(stream);
+                line = ReadFromBufferUntil(endByte);
             }
             return line;
         }
 
-        public string ReadUntil(Stream stream, char endChar)
-        {
-            var line = ReadUntil(endChar);
-            while (line == null)
-            {
-                WriteBytes(stream);
-                line = ReadUntil(endChar);
-            }
-            return line;
-        }
-
-        public void WriteBytes(Stream stream)
+        private void WriteBytesToBuffer(Stream stream)
         {
             var received = stream.Read(_buffer, WriterIndex, Capacity - WriterIndex);
             WriterIndex += received;
         }
 
-        public string ReadLine()
+        private string ReadFromBufferUntil(byte endChar)
         {
             var start = ReaderIndex;
-            var eol = Array.IndexOf(_buffer, NewLine, start, WriterIndex - start);
+            var eol = Array.IndexOf(_buffer, endChar, start, WriterIndex - start);
             if (eol == -1) return null;
             ReaderIndex = eol + 1;
-            if (eol > 0 && _buffer[eol - 1] == CarriageReturn)
+            if (endChar.Equals(NewLine) && eol > 0 && _buffer[eol - 1] == CarriageReturn)
             {
                 eol--;
+                return Encoding.ASCII.GetString(_buffer, start, eol - start);
             }
-            return Encoding.ASCII.GetString(_buffer, start, eol - start);
-        }
-
-        public string ReadUntil(char endChar)
-        {
-            var start = ReaderIndex;
-            var eol = Array.IndexOf(_buffer, (byte) endChar, start, WriterIndex - start);
-            if (eol == -1) return null;
-            ReaderIndex = eol + 1;
             return Encoding.ASCII.GetString(_buffer, start, ReaderIndex - start);
         }
 

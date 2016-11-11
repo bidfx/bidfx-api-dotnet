@@ -122,9 +122,9 @@ namespace TS.Pisa.Plugin.Puffin
                 var welcomeMessage = ReadMessage();
 
                 //Temporary until XML parser is created
-                XmlDocument welcomeXML = new XmlDocument();
-                welcomeXML.LoadXml(welcomeMessage);
-                XmlNode selectSingleNode = welcomeXML.SelectSingleNode("Welcome");
+                var welcomeXml = new XmlDocument();
+                welcomeXml.LoadXml(welcomeMessage);
+                var selectSingleNode = welcomeXml.SelectSingleNode("Welcome");
                 var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
 
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
@@ -174,9 +174,9 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void ReadTunnelResponse()
         {
-            var response = _buffer.ReadLineFrom(_stream);
+            var response = _buffer.ReadLineFromStream(_stream);
             Log.Info("received response from tunnel '" + response + "'");
-            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFrom(_stream).Length != 0)
+            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFromStream(_stream).Length != 0)
             {
                 throw new TunnelException("failed to tunnel to Puffin with response: " + response);
             }
@@ -194,7 +194,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private string ReadMessage()
         {
-            var message = _buffer.ReadUntil(_stream, '>');
+            var message = _buffer.ReadXmlFromStream(_stream);
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("received: " + message);
