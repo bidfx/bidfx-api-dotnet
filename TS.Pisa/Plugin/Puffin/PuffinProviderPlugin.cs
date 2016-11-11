@@ -5,7 +5,6 @@ using TS.Pisa.Tools;
 using System;
 using System.IO;
 using System.Net.Security;
-using System.Security.Cryptography;
 using System.Xml;
 
 
@@ -18,6 +17,7 @@ namespace TS.Pisa.Plugin.Puffin
     /// client or on a remote machine perhaps connected via a WAN.
     /// </remarks>
     /// <author>Paul Sweeny</author>
+    /// <author>Paul MacDonald</author>
     public class PuffinProviderPlugin : IProviderPlugin
     {
         private static readonly log4net.ILog Log =
