@@ -54,7 +54,6 @@
     <Compile Include="IPriceListener.cs" />
     <Compile Include="ISubscriberSession.cs" />
     <Compile Include="MasterSession.cs" />
-    <Compile Include="Plugin\Puffin\ConnectionOptions.cs" />
     <Compile Include="Plugin\Puffin\PuffinProviderPlugin.cs" />
     <Compile Include="PriceStatus.cs" />
     <Compile Include="IDispatcher.cs" />
