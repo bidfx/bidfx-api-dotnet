@@ -69,7 +69,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Get the optimal code for a given token code.</summary>
         /// <param name="tokenCode">the Xml token code to find.</param>
         /// <returns>the corresponding optimalCode for the tokenCode.</returns>
-        public int GetCode(XmlTokenCode tokenCode)
+        private int GetCode(XmlTokenCode tokenCode)
         {
             ++tokenCode._count;
             if (tokenCode._code < MaxOneByteCode) return tokenCode._code;

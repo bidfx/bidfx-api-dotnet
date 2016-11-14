@@ -5,23 +5,20 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlTokenCode
     {
-        public XmlToken _token;
-        public int _code;
-        public int _count;
+        internal XmlToken _token;
+        internal int _code;
+        internal int _count;
 
-        /// <summary>Create a new token.</summary>
         public XmlTokenCode(XmlToken token)
         {
             _token = token;
         }
 
-        /// <summary>Get the token.</summary>
         public XmlToken GetToken()
         {
             return _token;
         }
 
-        /// <summary>Get the code.</summary>
         public int GetCode()
         {
             return _code;
@@ -32,10 +29,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return _count;
         }
 
-        /// <summary>Create a string representation of this TokenCode (for debugging).</summary>
         public override string ToString()
         {
-            return _token.ToString() + " = " + _code + " (" + _count + ')';
+            return _token + " = " + _code + " (" + _count + ')';
         }
     }
 }
