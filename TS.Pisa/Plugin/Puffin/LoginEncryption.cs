@@ -8,11 +8,17 @@ namespace TS.Pisa.Plugin.Puffin
 {
     public class LoginEncryption
     {
-        public static string EncryptWithPublicKey(string publicKey, string data)
+        /// <summary>
+        /// Encrypts a message with the supplied public key.
+        /// </summary>
+        /// <param name="publicKey">A base 64 encoded X509 public key.</param>
+        /// <param name="message">The message to encrypt.</param>
+        /// <returns>The encrypted message encoded with base 64.</returns>
+        public static string EncryptWithPublicKey(string publicKey, string message)
         {
             var keyBytes = Convert.FromBase64String(publicKey);
             var rsa = DecodeX509PublicKey(keyBytes);
-            var plainBytes = Encoding.UTF8.GetBytes(data);
+            var plainBytes = Encoding.UTF8.GetBytes(message);
             var encryptedBytes = rsa.Encrypt(plainBytes, false);
             return Convert.ToBase64String(encryptedBytes);
         }
