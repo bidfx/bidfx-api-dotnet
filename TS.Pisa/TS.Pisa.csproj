@@ -93,7 +93,7 @@
   <ItemGroup>
     <Folder Include="Plugin" />
     <Folder Include="Plugin\Puffin" />
-    <Folder Include="Plugin\Puffin\XML" />
+    <Folder Include="Plugin\Puffin\Xml" />
     <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
