@@ -40,7 +40,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 throw new ArgumentException("cannot add null content");
             }
-            _elements.Add(GetKeyOf(content), content);
+            var key = GetKeyOf(content);
+            _elements[key] = content;
         }
 
         /// <summary>Update this container with the contents of another container.</summary>

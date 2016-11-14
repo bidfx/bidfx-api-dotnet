@@ -494,9 +494,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 ICollection<XmlElement> content = _contents.GetContent();
                 lock (content)
                 {
-                    foreach (IXmlFormatable formatable in content)
+                    foreach (var subElement in content)
                     {
-                        formatable.FormatUsing(formatter);
+                        formatter.Format(subElement);
                     }
                 }
             }
@@ -529,8 +529,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 catch (Exception)
                 {
                 }
-                var bytes = stream.ToArray();
-                return Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                return Encoding.ASCII.GetString(stream.ToArray(), 0, stream.ToArray().Length);
             }
         }
 
