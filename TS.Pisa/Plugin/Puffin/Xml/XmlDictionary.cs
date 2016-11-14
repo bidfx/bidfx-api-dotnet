@@ -306,16 +306,16 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Dump the contents to a string for debug purposes.</summary>
         public string Dump()
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append("XmlDictionary");
-            buf.Append("\n  _maxCode ");
+            buf.Append("\n  maxCode ");
             buf.Append(MaxCode);
-            buf.Append("\n  _nextCode ");
+            buf.Append("\n  nextCode ");
             buf.Append(_nextCode);
-            buf.Append("\n  _winningPost ");
+            buf.Append("\n  winningPost ");
             buf.Append(_winningPost);
-            buf.Append("\n  _tokenCodes:");
-            for (int i = 0; i < _nextCode; ++i)
+            buf.Append("\n  tokenCodes:");
+            for (var i = 0; i < _nextCode; ++i)
             {
                 buf.Append("\n\t");
                 buf.Append(_tokenCodes[i]);

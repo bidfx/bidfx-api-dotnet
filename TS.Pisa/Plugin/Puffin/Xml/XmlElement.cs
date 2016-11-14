@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,7 +15,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         private readonly XmlToken _tag;
 
         private readonly IDictionary<XmlToken, XmlToken> _attributes = new Dictionary<XmlToken, XmlToken>(8);
-        private XmlBasicContentContainer _contents;
+        private XmlNestedContent _contents;
 
         /// <summary>Create a new XmlElement.</summary>
         /// <param name="tag">the tag of the element.</param>
@@ -336,7 +335,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         /// <summary>Get the nested contect of this Xml element.</summary>
         /// <returns>the content list or null if there is none.</returns>
-        public virtual IXmlContentContainer GetContents()
+        public virtual XmlNestedContent GetContents()
         {
             lock (this)
             {
@@ -345,9 +344,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         /// <summary>Create the nested content container.</summary>
-        public virtual XmlBasicContentContainer CreateContentContainer()
+        public virtual XmlNestedContent CreateContentContainer()
         {
-            return new XmlElementContainer();
+            return new XmlNestedContent();
         }
 
         /// <summary>Update this element with another one.</summary>
@@ -448,7 +447,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                         }
                     }
                 }
-                XmlBasicContentContainer dc = update._contents;
+                XmlNestedContent dc = update._contents;
                 if (HasContent())
                 {
                     dc = _contents.Delta(dc);
@@ -470,7 +469,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
         /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
         /// <exception cref="XmlSyntaxException"/>
-        public virtual void FormatAttributes(IXmlFormatter formatter)
+        public virtual void FormatAttributes(XmlFormatter formatter)
         {
             lock (_attributes)
             {
@@ -487,31 +486,16 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
         /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
         /// <exception cref="XmlSyntaxException"/>
-        public virtual void FormatContents(IXmlFormatter formatter)
+        public virtual void FormatContents(XmlFormatter formatter)
         {
-            if (HasContent())
+            if (!HasContent()) return;
+            var content = _contents.GetContent();
+            lock (content)
             {
-                ICollection<XmlElement> content = _contents.GetContent();
-                lock (content)
+                foreach (var subElement in content)
                 {
-                    foreach (var subElement in content)
-                    {
-                        formatter.Format(subElement);
-                    }
+                    formatter.Format(subElement);
                 }
-            }
-        }
-
-        /// <summary>Format this object using the given formatter.</summary>
-        /// <param name="formatter">the formatter to use to format this object.</param>
-        /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
-        /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
-        /// <exception cref="XmlSyntaxException"/>
-        public virtual void FormatUsing(IXmlFormatter formatter)
-        {
-            lock (this)
-            {
-                formatter.Format(this);
             }
         }
 
@@ -520,7 +504,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             lock (this)
             {
                 var stream = new MemoryStream();
-                var formatter = new XmlOutputFormatter(stream);
+                var formatter = new XmlFormatter(stream);
                 try
                 {
                     formatter.Format(this);

@@ -1,88 +1,264 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
     /// <summary>
-    /// This class provides a compressed Xml language inflate tokenizer for
-    /// well-formed Xml expressions.
+    /// This class provides a compressed Xml language inflate tokenizer for well-formed Xml expressions.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class XmlInflateTokenizer : AbstractXmlTokenizer
+    public class XmlInflateTokenizer
     {
-        private const int FirstByte = 0;
-        private const int SecondByte = 1;
+        private readonly byte[] _buffer = new byte[8192];
+        private int _end;
+        private int _point = -1;
+        private int _mark;
 
-        private const int ScanUnseenToken = 2;
-        private readonly Stream _in;
-
+        private readonly Stream _inStream;
         private readonly XmlDictionary _dictionary = new XmlDictionary();
-        private XmlToken[] _tagStack = new XmlToken[4];
-
-        private int _tagCount;
+        private readonly Stack<XmlToken> _tagStack = new Stack<XmlToken>();
         private readonly XmlTemporaryToken _startTmp;
         private readonly XmlTemporaryToken _nameTmp;
+
+        private enum State
+        {
+            FirstByte,
+            SecondByte,
+            ScanUnseenToken
+        }
 
         /// <summary>Construct a new parser for the given input stream.</summary>
         /// <param name="inStream">the input stream to read Xml data from.</param>
         public XmlInflateTokenizer(Stream inStream)
-            : base(new byte[2028])
         {
-            _in = inStream;
+            _inStream = inStream;
             _startTmp = new XmlTemporaryToken(XmlToken.StartType, _buffer);
             _nameTmp = new XmlTemporaryToken(XmlToken.NameType, _buffer);
         }
 
-        /// <summary>Parse and then return the next token from the Xml input stream.</summary>
-        /// <returns>the next read XmlToken.</returns>
+        /// <exception cref="XmlSyntaxException"/>
+        public XmlElement NextElement()
+        {
+            var token = NextToken();
+            return NextElement(token);
+        }
+
+        /// <summary>Analyse the Xml document and then return the next Xml element.</summary>
+        /// <param name="token">the most recently read token, normally a start tag.</param>
+        /// <returns>the next read XmlElement, or null when there are no more.</returns>
         /// <exception cref="XmlSyntaxException">if there was an error while parsing the Xml.</exception>
         /// <exception cref="XmlSyntaxException"/>
-        public override XmlToken NextToken()
+        private XmlElement NextElement(XmlToken token)
         {
-            //System.out.println("---- nextToken()");
-            int state = FirstByte;
-            for (_mark = ++_point; _point < _end || FillBuffer(_in); ++_point)
+            XmlElement element = null;
+            if (token == null)
             {
-                byte b = _buffer[_point];
+                return element;
+            }
+            try
+            {
+                if (!token.IsStartTag())
+                {
+                    throw new XmlSyntaxException("start tag expected");
+                }
+                element = new XmlElement(token);
+                XmlElement[] stack = null;
+                var nest = 0;
+                while ((token = NextToken()) != null)
+                {
+                    switch (token.TokenType())
+                    {
+                        case XmlToken.EndType:
+                        case XmlToken.EmptyType:
+                        {
+                            if (nest == 0)
+                            {
+                                return element;
+                            }
+                            element = stack[--nest];
+                            break;
+                        }
+                        case XmlToken.StartType:
+                        {
+                            if (stack == null)
+                            {
+                                stack = new XmlElement[4];
+                            }
+                            else
+                            {
+                                if (nest == stack.Length)
+                                {
+                                    var old = stack;
+                                    stack = new XmlElement[2 * nest];
+                                    Array.Copy(old, 0, stack, 0, nest);
+                                }
+                            }
+                            stack[nest] = element;
+                            element = new XmlElement(token);
+                            stack[nest++].Add(element);
+                            break;
+                        }
+                        case XmlToken.NameType:
+                        {
+                            var name = token;
+                            token = NextToken();
+                            if (token == null)
+                            {
+                                break;
+                            }
+                            element.Add(name, token);
+                            break;
+                        }
+                        case XmlToken.IntegerValueType:
+                        case XmlToken.DoubleValueType:
+                        case XmlToken.FractionValueType:
+                        case XmlToken.StringValueType:
+                        {
+                            throw new XmlSyntaxException("attribute value with no name " + token);
+                        }
+                        default:
+                        {
+                            throw new XmlSyntaxException("unknown token type " + token);
+                        }
+                    }
+                }
+                throw new XmlSyntaxException("unexpected document termination");
+            }
+            catch (XmlSyntaxException e)
+            {
+                throw new XmlSyntaxException(e.Message + (token == null
+                                                 ? string.Empty
+                                                 : "; reading " + token.DebugString()));
+            }
+        }
+
+        /// <summary>Create an error message showing where the error occurred in the input.</summary>
+        /// <param name="reason">the reason for the error.</param>
+        private string Where(string reason)
+        {
+            var buf = new StringBuilder();
+            buf.Append(reason);
+            buf.Append('\n');
+            var from = _point - 40 - 400;
+            var to = _point + 38;
+            if (from < 0)
+            {
+                from = 0;
+            }
+            if (to > _end)
+            {
+                to = _end;
+            }
+            for (var i = from; i < to; ++i)
+            {
+                if (i == _point)
+                {
+                    buf.Append("<==here");
+                    buf.Append('\n');
+                }
+                AppendCharacter(buf, _buffer[i] & 255);
+            }
+            buf.Append('\n');
+            return buf.ToString();
+        }
+
+        private static void AppendCharacter(StringBuilder buf, int c)
+        {
+            var value = c.ToString("X");
+            if (value.Length == 1)
+            {
+                buf.Append('0');
+            }
+            buf.Append(value);
+            buf.Append(' ');
+        }
+
+        private bool FillBuffer()
+        {
+            try
+            {
+                if (_mark > 0)
+                {
+                    _end -= _mark;
+                    _point -= _mark;
+                    if (_end < 0)
+                    {
+                        _end = 0;
+                    }
+                    if (_end > 0)
+                    {
+                        Array.Copy(_buffer, _mark, _buffer, 0, _end);
+                    }
+                    _mark = 0;
+                    var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
+                    if (got == -1)
+                    {
+                        return false;
+                    }
+                    _end += got;
+                }
+                while (_point >= _end)
+                {
+                    if (_point >= _buffer.Length)
+                    {
+                        throw new XmlSyntaxException("input buffer too small " + _buffer.Length);
+                    }
+                    var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
+                    if (got == -1)
+                    {
+                        return false;
+                    }
+                    _end += got;
+                }
+                return true;
+            }
+            catch (IOException e)
+            {
+                throw new XmlSyntaxException(e.Message);
+            }
+        }
+
+        private XmlToken NextToken()
+        {
+            var state = State.FirstByte;
+            for (_mark = ++_point; _point < _end || FillBuffer(); ++_point)
+            {
+                var b = _buffer[_point];
                 switch (state)
                 {
-                    case FirstByte:
+                    case State.FirstByte:
                     {
-                        //System.out.println("b = '"+(char)b+"' ("+b+")");
-                        //System.out.println("FIRST_BYTE");
                         if (XmlDictionary.IsFirstByteOfToken(b))
                         {
-                            state = SecondByte;
+                            state = State.SecondByte;
                         }
                         else
                         {
                             if (XmlDictionary.IsTokenType(b))
                             {
-                                switch (b)
+                                if (b == XmlToken.EndType)
                                 {
-                                    case XmlToken.EndType:
-                                    {
-                                        return XmlTag.GetEndTag(_tagStack[--_tagCount]);
-                                    }
-                                    case XmlToken.EmptyType:
-                                    {
-                                        --_tagCount;
-                                        return XmlToken.EmptyToken;
-                                    }
+                                    return XmlTag.GetEndTag(_tagStack.Pop());
                                 }
-                                state = ScanUnseenToken;
+                                if (b == XmlToken.EmptyType)
+                                {
+                                    _tagStack.Pop();
+                                    return XmlToken.EmptyToken;
+                                }
+                                state = State.ScanUnseenToken;
                             }
                             else
                             {
-                                throw Error("token tag expected instead of "+b+" ('"+(char)b+"') at position "+_point);
+                                throw new XmlSyntaxException("token tag expected instead of " + b
+                                                             + " ('" + (char) b + "') at position " + _point);
                             }
                         }
                         break;
                     }
-                    case SecondByte:
+                    case State.SecondByte:
                     {
-                        //System.out.println("SECOND_BYTE");
                         XmlToken token;
                         if (XmlDictionary.IsSecondByteOfToken(b))
                         {
@@ -93,34 +269,22 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             token = _dictionary.GetToken(_buffer[_mark]);
                             --_point;
                         }
-                        // put back b
-                        if (token.IsStartTag())
-                        {
-                            _tagStack[_tagCount] = token;
-                            if (++_tagCount == _tagStack.Length)
-                            {
-                                GrowStack();
-                            }
-                        }
+                        if (!token.IsStartTag()) return token;
+                        _tagStack.Push(token);
                         return token;
                     }
-                    case ScanUnseenToken:
+                    case State.ScanUnseenToken:
                     {
-                        //System.out.println("SCAN_UNSEEN_TOKEN");
                         if (!XmlDictionary.IsPlainText(b))
                         {
                             int type = _buffer[_mark];
                             if (_mark < --_point)
                             {
-                                XmlToken token = null;
+                                XmlToken token;
                                 if (type == XmlToken.StartType)
                                 {
                                     token = XmlToken.GetInstance(_startTmp.Reset(_mark + 1, _point - _mark));
-                                    _tagStack[_tagCount] = token;
-                                    if (++_tagCount == _tagStack.Length)
-                                    {
-                                        GrowStack();
-                                    }
+                                    _tagStack.Push(token);
                                 }
                                 else
                                 {
@@ -144,7 +308,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             {
                                 return XmlToken.NullContentToken;
                             }
-                            throw Error("text of previously unseen token expected");
+                            throw new XmlSyntaxException("text of previously unseen token expected");
                         }
                         break;
                     }
@@ -154,27 +318,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     }
                 }
             }
-            if (state != FirstByte)
+            if (state != State.FirstByte)
             {
-                throw Error("token completion expected");
+                throw new XmlSyntaxException("token completion expected");
             }
             return null;
-        }
-
-        /// <summary>Grow the stack used to hold nested element start-tags.</summary>
-        private void GrowStack()
-        {
-            int oldLength = _tagStack.Length;
-            XmlToken[] temp = _tagStack;
-            _tagStack = new XmlToken[2 * oldLength];
-            Array.Copy(temp, 0, _tagStack, 0, oldLength);
-        }
-
-        /// <summary>Apend a character to a StringBuffer, transform it if non-readable.</summary>
-        public override void AppendCharacter(StringBuilder buf, int c)
-        {
-            AppendHexCharacter(buf, c);
-            buf.Append(' ');
         }
     }
 }

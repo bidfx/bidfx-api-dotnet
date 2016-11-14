@@ -17,7 +17,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// provides access to this information.
     /// </remarks>
     /// <author>Paul Sweeny</author>
-    public class XmlToken : IXmlFormatable
+    public class XmlToken //: IXmlFormatable
     {
         /// <summary>The Xml end-tag token type.</summary>
         public const int EndType = 0;
@@ -504,15 +504,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 gCommonTokenPool.Add(temp, found);
             }
             return found;
-        }
-
-        /// <summary>Format this object using the given formatter.</summary>
-        /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
-        /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
-        /// <exception cref="XmlSyntaxException"/>
-        public void FormatUsing(IXmlFormatter formatter)
-        {
-            formatter.Format(this);
         }
 
         private XmlTemporaryToken ToTempToken()

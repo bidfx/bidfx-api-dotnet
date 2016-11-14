@@ -1,40 +1,55 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
     /// <summary>
-    /// A XmlElementContainer is a class that represents nested content within an XmlElement that contains nothing but
-    /// additional XmlElement objects.
+    /// This class represents nested content within an XmlElement that contains additional XmlElement objects.
     /// </summary>
-    /// <remarks>
-    /// A XmlElementContainer is a class that represents nested content within an XmlElement that contains nothing but
-    /// additional XmlElement objects. These are indexed within the container using a key taken either from a fixed attribute
-    /// of each sub-element or from the tag name of each sub-element.
-    /// </remarks>
     /// <author>Paul Sweeny</author>
-    public class XmlElementContainer : XmlBasicContentContainer
+    public class XmlNestedContent
     {
         private readonly XmlName _key;
         private readonly IDictionary<string, XmlElement> _elements = new Dictionary<string, XmlElement>();
 
         /// <summary>Construct a new XmlElementContainer where sub-element tags are used as index keys.</summary>
-        public XmlElementContainer()
+        public XmlNestedContent()
         {
             _key = null;
         }
 
         /// <summary>Construct a new XmlElementContainer.</summary>
         /// <param name="key">the attribute used as the element key.</param>
-        public XmlElementContainer(XmlName key)
+        public XmlNestedContent(XmlName key)
         {
             _key = key;
         }
 
+        /// <summary>Get the first nested Xml element.</summary>
+        /// <exception cref="XmlSyntaxException">is there is no initial nested sub-element.</exception>
+        /// <exception cref="XmlSyntaxException"/>
+        public XmlElement GetFirstElement()
+        {
+            var content = GetContent();
+            if (content == null) throw new XmlSyntaxException("no content available");
+            foreach (var element in content)
+            {
+                return element;
+            }
+            throw new XmlSyntaxException("no content available");
+        }
+
+        /// <summary>Get the nested element with the given key.</summary>
+        /// <param name="key">the key (normally tag name) of the element to get.</param>
+        public XmlElement GetElement(object key)
+        {
+            return GetElement(key.ToString());
+        }
+
         /// <summary>Add a nested element.</summary>
         /// <param name="content">the content to add.</param>
-        public override void Add(XmlElement content)
+        public void Add(XmlElement content)
         {
             if (content == null)
             {
@@ -52,20 +67,20 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// to be removed from this container (if it exists); when
         /// <code>false</code> a deletion attribute will be treated like any other.
         /// </param>
-        public override void Update(IXmlContentContainer container, bool applyDeletes)
+        public void Update(XmlNestedContent container, bool applyDeletes)
         {
             if (container == this)
             {
                 return;
             }
-            ICollection<XmlElement> content = container.GetContent();
+            var content = container.GetContent();
             lock (content)
             {
-                foreach (XmlElement element in content)
+                foreach (var element in content)
                 {
                     try
                     {
-                        string key = GetKeyOf(element);
+                        var key = GetKeyOf(element);
                         if (applyDeletes && IsDeletedSubElement(element))
                         {
                             _elements.Remove(key);
@@ -95,7 +110,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return element.Get(XmlKeyedElement.Delete, false);
         }
 
-        public override void ClearDeletes()
+        public void ClearDeletes()
         {
             foreach (var entry in _elements)
             {
@@ -112,21 +127,21 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         /// <summary>Get the nested element with the given key.</summary>
         /// <param name="key">the key (normally tag name) of the element to get.</param>
-        public override XmlElement GetElement(string key)
+        public XmlElement GetElement(string key)
         {
             return _elements.ContainsKey(key) ? _elements[key] : null;
         }
 
         /// <summary>Get the set of keys used to index the sub-elements of this container.</summary>
         /// <returns>an unmodifiable Set of Strings.</returns>
-        public override ICollection<string> GetKeys()
+        public ICollection<string> GetKeys()
         {
             return _elements.Keys;
         }
 
         /// <summary>Get a collection of the content.</summary>
         /// <returns>an unmodifiable Collection of XmlElement objects.</returns>
-        public override ICollection<XmlElement> GetContent()
+        public ICollection<XmlElement> GetContent()
         {
             return _elements.Values;
         }
@@ -137,60 +152,45 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 return true;
             }
-            var container = o as XmlElementContainer;
-            if (container != null)
-            {
-                return AreEqual(_elements, container._elements);
-            }
-            return false;
+            var container = o as XmlNestedContent;
+            return container != null && AreEqual(_elements, container._elements);
         }
 
         private static bool AreEqual(IDictionary<string, XmlElement> d1, IDictionary<string, XmlElement> d2)
         {
-            if (d1.Count != d2.Count) return false;
-            foreach (var entry in d1)
-            {
-                if (!d2.ContainsKey(entry.Key) || !entry.Value.Equals(d2[entry.Key]))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return d1.Count == d2.Count &&
+                   d1.All(entry => d2.ContainsKey(entry.Key) && entry.Value.Equals(d2[entry.Key]));
         }
 
 
         /// <summary>Find the minimum delta elements that would be required to update these contents with another.</summary>
         /// <param name="update">the contents to derive the delta from.</param>
         /// <returns>the delta contents or null if no delta is required.</returns>
-        public override XmlBasicContentContainer Delta(XmlBasicContentContainer update)
+        public XmlNestedContent Delta(XmlNestedContent update)
         {
-            XmlElementContainer delta = null;
-            if (update != null)
+            if (update == null) return null;
+            XmlNestedContent delta = null;
+            var keySet = update.GetKeys();
+            lock (keySet)
             {
-                ICollection<string> keySet = update.GetKeys();
-                lock (keySet)
+                foreach (var key in keySet)
                 {
-                    foreach (var key in keySet)
+                    var value = update.GetElement(key);
+                    var current = GetElement(key);
+                    if (current != null)
                     {
-                        XmlElement value = update.GetElement(key);
-                        XmlElement current = GetElement(key);
-                        if (current != null)
+                        value = current.Delta(value);
+                        if (value != null && _key != null)
                         {
-                            value = current.Delta(value);
-                            if (value != null && _key != null)
-                            {
-                                value.Add(_key, current.Get(_key, null));
-                            }
-                        }
-                        if (value != null)
-                        {
-                            if (delta == null)
-                            {
-                                delta = new XmlElementContainer(_key);
-                            }
-                            delta.Add(value);
+                            value.Add(_key, current.Get(_key, null));
                         }
                     }
+                    if (value == null) continue;
+                    if (delta == null)
+                    {
+                        delta = new XmlNestedContent(_key);
+                    }
+                    delta.Add(value);
                 }
             }
             return delta;
@@ -199,11 +199,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Get from an element the key used to index the element in this container.</summary>
         private string GetKeyOf(XmlElement element)
         {
-            if (_key == null)
-            {
-                return element.GetTag().ToString();
-            }
-            return element.Get(_key, null);
+            return _key == null ? element.GetTag().ToString() : element.Get(_key, null);
         }
     }
 }

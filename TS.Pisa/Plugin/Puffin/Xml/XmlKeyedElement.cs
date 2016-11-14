@@ -52,9 +52,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         /// <summary>Create the nested content container.</summary>
-        public override XmlBasicContentContainer CreateContentContainer()
+        public override XmlNestedContent CreateContentContainer()
         {
-            return new XmlElementContainer(_key);
+            return new XmlNestedContent(_key);
         }
     }
 }
