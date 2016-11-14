@@ -7,65 +7,65 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 {
     /// <author>Paul Sweeny</author>
     [TestFixture]
-    public class XmlInflateTokenizerTest
+    public class XmlBinaryInflaterTest
     {
         [Test]
         public virtual void level_one_price()
         {
-            String data =
+            var data =
                 "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name" +
                 "\bVodafone plc\u0004AskSize\u00053000\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlInflateTokenizer(stream);
+            var tokenizer = new XmlBinaryInflater(stream);
             Assert.AreEqual(
                 new XmlElement("Update")
-                    .Add(new XmlName("Subject"),
+                    .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .Add(new XmlElement("Price")
-                        .Add(new XmlName("Bid"), 100.5)
-                        .Add(new XmlName("Ask"), 102.5)
-                        .Add(new XmlName("BidSize"), 1000)
-                        .Add(new XmlName("AskSize"), 3000)
-                        .Add(new XmlName("Name"), "Vodafone plc")),
+                    .AddElement(new XmlElement("Price")
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Name", "Vodafone plc")),
                 tokenizer.NextElement());
         }
 
         [Test]
         public virtual void repeat_level_one_price()
         {
-            String data =
+            var data =
                 "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name\bVodafone plc" +
                 "\u0004AskSize\u00053000\u0001\u0000" +
                 "\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008A\u008B\u008C\u008D\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlInflateTokenizer(stream);
+            var tokenizer = new XmlBinaryInflater(stream);
 
             var element1 = tokenizer.NextElement();
             var element2 = tokenizer.NextElement();
             Assert.AreEqual(
                 new XmlElement("Update")
-                    .Add(new XmlName("Subject"),
+                    .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .Add(new XmlElement("Price")
-                        .Add(new XmlName("Bid"), 100.5)
-                        .Add(new XmlName("Ask"), 102.5)
-                        .Add(new XmlName("BidSize"), 1000)
-                        .Add(new XmlName("AskSize"), 3000)
-                        .Add(new XmlName("Name"), "Vodafone plc")),
+                    .AddElement(new XmlElement("Price")
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Name", "Vodafone plc")),
                 element1);
 
             Assert.AreEqual(
                 new XmlElement("Update")
-                    .Add(new XmlName("Subject"),
+                    .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .Add(new XmlElement("Price")
-                        .Add(new XmlName("Bid"), 100.5)
-                        .Add(new XmlName("Ask"), 102.5)
-                        .Add(new XmlName("BidSize"), 1000)
-                        .Add(new XmlName("AskSize"), 3000)
-                        .Add(new XmlName("Name"), "Vodafone plc")),
+                    .AddElement(new XmlElement("Price")
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Name", "Vodafone plc")),
                 element2);
         }
 
@@ -77,7 +77,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public virtual void depth_price()
         {
-            String data =
+            var data =
                 "\u0002Set\u0004Subject\bAssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD" +
                 "\u0002Price\u0004Name\bVodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006201\u0004BidSize1\u00051001" +
                 "\u0004Bid2\u0006198\u0004Ask2\u0006202\u0004BidSize2\u00051002\u0004Bid3\u0006197\u0004Ask3\u0006203" +
@@ -86,27 +86,27 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\u00051006\u0004Bid7\u0006193\u0004Ask7\u0006207\u0004BidSize7\u00051007\u0004Bid8\u0006192\u0004Ask8" +
                 "\u0006208\u0004BidSize8\u00051008\u0004Bid9\u0006191\u0004Ask9\u0006209\u0004BidSize9\u00051009\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlInflateTokenizer(stream);
+            var tokenizer = new XmlBinaryInflater(stream);
 
-            var price = new XmlElement("Price").Add(new XmlName("Name"), "Vodafone plc");
+            var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 10; ++i)
             {
-                price.Add(new XmlName("Bid" + i), 200.0 - i)
-                    .Add(new XmlName("Ask" + i), 200.0 + i)
-                    .Add(new XmlName("BidSize" + i), 1000 - i)
-                    .Add(new XmlName("BidSize" + i), 1000 + i);
+                price.AddAttribute("Bid" + i, 200.0 - i)
+                    .AddAttribute("Ask" + i, 200.0 + i)
+                    .AddAttribute("BidSize" + i, 1000 - i)
+                    .AddAttribute("BidSize" + i, 1000 + i);
             }
             var element = new XmlElement("Set")
-                .Add(new XmlName("Subject"),
+                .AddAttribute("Subject",
                     "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD")
-                .Add(price);
+                .AddElement(price);
             Assert.AreEqual(element, tokenizer.NextElement());
         }
 
         [Test]
         public virtual void repeat_depth_price()
         {
-            String data =
+            var data =
                 "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStoc" +
                 "k,Symbol=E:VOD\u0002Price\u0004Name\u0008Vodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006" +
                 "201\u0004BidSize1\u00051001\u0004Bid2\u0006198\u0004Ask2\u0006202\u0004BidSize2\u0005" +
@@ -159,23 +159,23 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\n\u00a7\n\u00a8\n\u00a9\n\u00aa\n\u00ab\n\u00ac\n\u00ad\n\u00ae\n\u00af\n\u00b0\n\u00b1" +
                 "\n\u00b2\n\u00b3\n\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlInflateTokenizer(stream);
+            var tokenizer = new XmlBinaryInflater(stream);
 
-            var price = new XmlElement("Price").Add(new XmlName("Name"), "Vodafone plc");
+            var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 30; ++i)
             {
-                price.Add(new XmlName("Bid" + i), 200.0 - i)
-                    .Add(new XmlName("Ask" + i), 200.0 + i)
-                    .Add(new XmlName("BidSize" + i), 1000 - i)
-                    .Add(new XmlName("BidSize" + i), 1000 + i);
+                price.AddAttribute("Bid" + i, 200.0 - i)
+                    .AddAttribute("Ask" + i, 200.0 + i)
+                    .AddAttribute("BidSize" + i, 1000 - i)
+                    .AddAttribute("BidSize" + i, 1000 + i);
             }
             var subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD";
             Assert.AreEqual(new XmlElement("Set")
-                .Add(new XmlName("Subject"), subject).Add(price), tokenizer.NextElement());
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
             Assert.AreEqual(new XmlElement("Update")
-                .Add(new XmlName("Subject"), subject).Add(price), tokenizer.NextElement());
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
             Assert.AreEqual(new XmlElement("Update")
-                .Add(new XmlName("Subject"), subject).Add(price), tokenizer.NextElement());
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
         }
     }
 }

@@ -108,15 +108,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_not_plain_text()
         {
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.EndType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.EmptyType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.StartType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.ContentType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.NameType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.IntegerValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.DoubleValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.FractionValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlToken.StringValueType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.EndType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.EmptyType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.StartType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.ContentType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.NameType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.IntegerValueType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.DoubleValueType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.FractionValueType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.StringValueType));
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void bytes_with_bit_7_unset_are_plain_text()
         {
-            for (var i = XmlToken.MaxType; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(XmlTokenType)).Length; i < 128; ++i)
             {
                 Assert.True(XmlDictionary.IsPlainText((byte) i));
             }
@@ -184,15 +184,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_token_types()
         {
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.EndType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.EmptyType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.StartType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.ContentType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.NameType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.IntegerValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.DoubleValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.FractionValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlToken.StringValueType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.EndType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.EmptyType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.StartType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.ContentType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.NameType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.IntegerValueType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.DoubleValueType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.FractionValueType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.StringValueType));
         }
 
         [Test]
@@ -207,7 +207,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void bytes_with_bit_7_unset_are_token()
         {
-            for (var i = XmlToken.MaxType; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(XmlTokenType)).Length; i < 128; ++i)
             {
                 Assert.True(XmlDictionary.IsSecondByteOfToken((byte) i));
             }
@@ -220,21 +220,21 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_not_token()
         {
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.EndType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.EmptyType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.StartType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.ContentType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.NameType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.IntegerValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.DoubleValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.FractionValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlToken.StringValueType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.EndType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.EmptyType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.StartType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.ContentType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.NameType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.IntegerValueType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.DoubleValueType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.FractionValueType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.StringValueType));
         }
 
         [Test]
         public void other_ascii_bytes_with_bit_7_unset_are_not_token()
         {
-            for (var i = XmlToken.MaxType; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(XmlTokenType)).Length; i < 128; ++i)
             {
                 Assert.False(XmlDictionary.IsTokenType((byte) i));
             }
@@ -289,8 +289,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     [TestFixture]
     public class test_dictionary_token_inserts_and_lookups
     {
-        private const int IntType = XmlToken.IntegerValueType;
-
         [Test]
         public void each_insert_increases_the_code()
         {
@@ -298,11 +296,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             const int maxTokens = 15232;
             for (var i = 0; i < maxTokens; ++i)
             {
-                var text = i.ToString();
-                var tokenCode = dictionary.Insert(new XmlToken(IntType, text));
+                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(i));
                 Assert.AreEqual(i, tokenCode.GetCode());
-                Assert.AreEqual(IntType, tokenCode.GetToken().TokenType());
-                Assert.AreEqual(text, tokenCode.GetToken().GetText());
+                Assert.AreEqual(XmlTokenType.IntegerValueType, tokenCode.GetToken().TokenType());
+                Assert.AreEqual(i.ToString(), tokenCode.GetToken().GetText());
             }
         }
 
@@ -312,8 +309,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             var dictionary = new XmlDictionary();
             for (var i = 0; i < 5; ++i)
             {
-                var text = i.ToString();
-                var tokenCode = dictionary.Insert(new XmlToken(IntType, text));
+                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(i));
                 Assert.AreEqual(tokenCode.GetToken(), dictionary.GetToken(tokenCode.GetCode()));
             }
         }
@@ -322,7 +318,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         public void each_time_a_token_is_used_its_useage_count_increases()
         {
             var dictionary = new XmlDictionary();
-            var tokenCode = dictionary.Insert(new XmlToken(IntType, "sweeno"));
+            var tokenCode = dictionary.Insert(XmlToken.StringValue("sweeno"));
             Assert.AreEqual(0, tokenCode.GetCount());
             for (var i = 1; i < 10; ++i)
             {
@@ -338,7 +334,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             var dictionary = new XmlDictionary();
             for (var i = 0; i < 5; ++i)
             {
-                dictionary.Insert(new XmlToken(IntType, i.ToString()));
+                dictionary.Insert(XmlToken.IntegerValue(i));
             }
             try
             {
@@ -357,8 +353,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             // overfill the directory in reverse
             for (var value = 20000; value-- > 0;)
             {
-                var tokenCode = dictionary.Insert(new XmlToken(IntType, value.ToString()));
-
+                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(value));
                 // access the lower value tokens the most to make them bubble up to the top.
                 var usage = value < 128 ? 128 - value : 0;
                 for (var i = 0; i < usage; ++i)

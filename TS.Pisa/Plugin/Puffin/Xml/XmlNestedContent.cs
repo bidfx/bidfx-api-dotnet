@@ -10,7 +10,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlNestedContent
     {
-        private readonly XmlName _key;
+        private readonly string _key;
         private readonly IDictionary<string, XmlElement> _elements = new Dictionary<string, XmlElement>();
 
         /// <summary>Construct a new XmlElementContainer where sub-element tags are used as index keys.</summary>
@@ -21,7 +21,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         /// <summary>Construct a new XmlElementContainer.</summary>
         /// <param name="key">the attribute used as the element key.</param>
-        public XmlNestedContent(XmlName key)
+        public XmlNestedContent(string key)
         {
             _key = key;
         }
@@ -107,7 +107,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         // quietly ignore non-XmlElement content
         private static bool IsDeletedSubElement(XmlElement element)
         {
-            return element.Get(XmlKeyedElement.Delete, false);
+            var token = element.GetAttributeValue(XmlKeyedElement.Delete);
+            return token != null && "true".Equals(token.GetText());
         }
 
         public void ClearDeletes()
@@ -179,10 +180,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     var current = GetElement(key);
                     if (current != null)
                     {
-                        value = current.Delta(value);
+                        value = current.ComputeDelta(value);
                         if (value != null && _key != null)
                         {
-                            value.Add(_key, current.Get(_key, null));
+                            value.AddAttribute(_key, current.GetAttributeValueAsText(_key));
                         }
                     }
                     if (value == null) continue;
@@ -199,7 +200,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Get from an element the key used to index the element in this container.</summary>
         private string GetKeyOf(XmlElement element)
         {
-            return _key == null ? element.GetTag().ToString() : element.Get(_key, null);
+            return _key == null ? element.GetTag() : element.GetAttributeValueAsText(_key);
         }
     }
 }

@@ -1,5 +1,8 @@
+using System;
 using System.IO;
 using System.Text;
+using System.Xml.Schema;
+using System.Xml.Xsl.Runtime;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
@@ -10,48 +13,26 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlFormatter
     {
-        private static readonly byte[][] AllEncodings = new byte[256][];
-        private static readonly byte[][] NonQuoteEncodings = new byte[AllEncodings.Length][];
+        private static readonly string[] AllEncodings = new string[256];
+        private static readonly string[] NonQuoteEncodings = new string[AllEncodings.Length];
 
         static XmlFormatter()
         {
-            for (var i = 0; i < 10; ++i)
+            for (var i = 0; i < 23; ++i)
             {
-                var b = new byte[4];
-                b[0] = unchecked((byte) '&');
-                b[1] = unchecked((byte) '#');
-                b[2] = unchecked((byte) ((byte) ('0') + i));
-                b[3] = unchecked((byte) ';');
-                AllEncodings[i] = b;
-            }
-            for (var i = 10; i < 32; ++i)
-            {
-                var b = new byte[5];
-                b[0] = unchecked((byte) '&');
-                b[1] = unchecked((byte) '#');
-                b[2] = unchecked((byte) ((byte) '0' + i / 10));
-                b[3] = unchecked((byte) ((byte) '0' + i % 10));
-                b[4] = unchecked((byte) ';');
-                AllEncodings[i] = b;
+                AllEncodings[i] = "&#" + i + ";";
             }
             for (var i = 128; i < 256; ++i)
             {
-                var b = new byte[6];
-                b[0] = unchecked((byte) '&');
-                b[1] = unchecked((byte) '#');
-                b[2] = unchecked(i < 200 ? (byte) '1' : (byte) '2');
-                b[3] = unchecked((byte) ((byte) '0' + i % 100 / 10));
-                b[4] = unchecked((byte) ((byte) '0' + i % 10));
-                b[5] = unchecked((byte) ';');
-                AllEncodings[i] = b;
+                AllEncodings[i] = "&#" + i + ";";
             }
             AllEncodings['\n'] = null;
             AllEncodings['\r'] = null;
             AllEncodings['\t'] = null;
-            AllEncodings['<'] = Encoding.ASCII.GetBytes("&lt;");
-            AllEncodings['&'] = Encoding.ASCII.GetBytes("&amp;");
-            AllEncodings['"'] = Encoding.ASCII.GetBytes("&quot;");
-            AllEncodings['\''] = Encoding.ASCII.GetBytes("&apos;");
+            AllEncodings['<'] = "&lt;";
+            AllEncodings['&'] = "&amp;";
+            AllEncodings['"'] = "&quot;";
+            AllEncodings['\''] = "&apos;";
             for (var i = 0; i < NonQuoteEncodings.Length; ++i)
             {
                 NonQuoteEncodings[i] = AllEncodings[i];
@@ -60,29 +41,26 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             NonQuoteEncodings['\''] = null;
         }
 
-        private readonly Stream _outStream;
+        private readonly StringBuilder _builder;
         private bool _hangingElement;
 
-        /// <summary>Create a new XmlOutputFormatter.</summary>
-        /// <param name="outStream">the OutputStrean to send formatted Xml to.</param>
-        public XmlFormatter(Stream outStream)
+        public XmlFormatter(StringBuilder builder)
         {
-            _outStream = outStream;
+            _builder = builder;
         }
 
-        /// <summary>Format an XmlElement.</summary>
-        /// <param name="element">the element to be formatted.</param>
-        /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
-        /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
-        /// <exception cref="XmlSyntaxException"/>
-        public void Format(XmlElement element)
+        public void FormatElement(XmlElement element)
         {
             WriteStartTag(element.GetTag());
             element.FormatAttributes(this);
             if (element.HasContent())
             {
                 WriteTagCloseBrace();
-                element.FormatContents(this);
+                var content = element.GetNestedContent().GetContent();
+                foreach (var subElement in content)
+                {
+                    FormatElement(subElement);
+                }
                 WriteEndTag(element.GetTag());
             }
             else
@@ -91,120 +69,65 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             }
         }
 
-        /// <summary>Format an XmlToken.</summary>
-        /// <param name="token">the token to be formatted.</param>
-        /// <exception cref="System.IO.IOException">if formatting fails.</exception>
-        public void Format(XmlToken token)
+        public void FormatAttribute(string name, XmlToken value)
         {
-            switch (token.TokenType())
+            WriteAttributeName(name);
+            switch (value.TokenType())
             {
-                case XmlToken.EndType:
-                {
-                    WriteEndTag(token);
+                case XmlTokenType.EmptyType:
+                case XmlTokenType.IntegerValueType:
+                case XmlTokenType.DoubleValueType:
+                case XmlTokenType.FractionValueType:
+                    WriteAttributeValueNumber(value);
                     break;
-                }
-                case XmlToken.EmptyType:
-                {
-                    WriteEndEmptyTag();
+                case XmlTokenType.StringValueType:
+                    WriteAttributeValueString(value);
                     break;
-                }
-                case XmlToken.StartType:
-                {
-                    WriteStartTag(token);
-                    break;
-                }
-                case XmlToken.ContentType:
-                {
-                    WriteContent(token);
-                    break;
-                }
-                case XmlToken.NameType:
-                {
-                    WriteAttributeName(token);
-                    break;
-                }
-                case XmlToken.IntegerValueType:
-                case XmlToken.DoubleValueType:
-                case XmlToken.FractionValueType:
-                {
-                    WriteAttributeValueNumber(token);
-                    break;
-                }
-                case XmlToken.StringValueType:
-                {
-                    WriteAttributeValueString(token);
-                    break;
-                }
                 default:
-                {
-                    throw new XmlSyntaxException("programming error");
-                }
+                    throw new XmlSyntaxException("unexpect attribute value type "+value);
             }
         }
 
-        /// <summary>Flush the data formatter so far.</summary>
-        /// <exception cref="System.IO.IOException"/>
-        public void Flush()
-        {
-            _outStream.Flush();
-        }
-
-        /// <summary>
-        /// Escape a token so it becomes valid Xml content and then add it to the
-        /// message.
-        /// </summary>
-        /// <param name="token">the token to escape.</param>
-        /// <param name="quote">the current quote character for the text being escaped.</param>
-        /// <exception cref="System.IO.IOException">if formatting fails.</exception>
-        private void Escape(XmlToken token, char quote)
+        private void EscapeToken(XmlToken token)
         {
             var text = token.GetTextAsBytes();
-            var start = 0;
-            for (var i = start; i < text.Length; ++i)
+            foreach (var c in text)
             {
-                var encode = Encode(text[i] & 0xff, quote);
-                if (encode == null) continue;
-                _outStream.Write(text, start, i - start);
-                start = i + 1;
-                _outStream.Write(encode, 0, encode.Length);
+                var encoded = Encode(c, '"');
+                if (encoded == null)
+                {
+                    _builder.Append(c);
+                }
+                else
+                {
+                    _builder.Append(encoded);
+                }
             }
-            _outStream.Write(text, start, text.Length - start);
         }
 
-        private static byte[] Encode(int c, char quote)
+        private static string Encode(int c, char quote)
         {
             return c == quote ? AllEncodings[c] : NonQuoteEncodings[c];
         }
 
-        private void WriteStartTag(XmlToken token)
+        private void WriteStartTag(string token)
         {
             WriteTagOpenBrace();
-            var text = token.GetTextAsBytes();
-            _outStream.Write(text, 0, text.Length);
+            _builder.Append(token);
         }
 
-        private void WriteEndTag(XmlToken token)
+        private void WriteEndTag(string token)
         {
             WriteTagOpenBrace();
-            _outStream.WriteByte((byte) '/');
-            var text = token.GetTextAsBytes();
-            _outStream.Write(text, 0, text.Length);
+            _builder.Append('/');
+            _builder.Append(token);
             WriteTagCloseBrace();
         }
 
         private void WriteEndEmptyTag()
         {
-            _outStream.WriteByte((byte) '/');
+            _builder.Append('/');
             WriteTagCloseBrace();
-        }
-
-        private void WriteContent(XmlToken token)
-        {
-            if (_hangingElement)
-            {
-                WriteTagCloseBrace();
-            }
-            Escape(token, '<');
         }
 
         private void WriteTagOpenBrace()
@@ -213,38 +136,35 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 WriteTagCloseBrace();
             }
-            _outStream.WriteByte((byte) '<');
+            _builder.Append('<');
             _hangingElement = true;
         }
 
         private void WriteTagCloseBrace()
         {
-            _outStream.WriteByte((byte) '>');
+            _builder.Append('>');
             _hangingElement = false;
         }
 
-        private void WriteAttributeName(XmlToken token)
+        private void WriteAttributeName(string name)
         {
-            _outStream.WriteByte((byte) ' ');
-            var text = token.GetTextAsBytes();
-            _outStream.Write(text, 0, text.Length);
-            _outStream.WriteByte((byte) '=');
+            _builder.Append(' ');
+            _builder.Append(name);
+            _builder.Append('=');
         }
 
         private void WriteAttributeValueNumber(XmlToken token)
         {
-            _outStream.WriteByte((byte) '"');
-            var text = token.GetTextAsBytes();
-            _outStream.Write(text, 0, text.Length);
-            _outStream.WriteByte((byte) '"');
+            _builder.Append('"');
+            _builder.Append(token.GetText());
+            _builder.Append('"');
         }
 
         private void WriteAttributeValueString(XmlToken token)
         {
-            _outStream.WriteByte((byte) '"');
-            Escape(token, '"');
-            _outStream.WriteByte((byte) '"');
+            _builder.Append('"');
+            EscapeToken(token);
+            _builder.Append('"');
         }
-
     }
 }

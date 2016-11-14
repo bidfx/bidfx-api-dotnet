@@ -9,7 +9,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// This class provides a compressed Xml language inflate tokenizer for well-formed Xml expressions.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class XmlInflateTokenizer
+    public class XmlBinaryInflater
     {
         private readonly byte[] _buffer = new byte[8192];
         private int _end;
@@ -19,8 +19,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         private readonly Stream _inStream;
         private readonly XmlDictionary _dictionary = new XmlDictionary();
         private readonly Stack<XmlToken> _tagStack = new Stack<XmlToken>();
-        private readonly XmlTemporaryToken _startTmp;
-        private readonly XmlTemporaryToken _nameTmp;
 
         private enum State
         {
@@ -31,11 +29,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         /// <summary>Construct a new parser for the given input stream.</summary>
         /// <param name="inStream">the input stream to read Xml data from.</param>
-        public XmlInflateTokenizer(Stream inStream)
+        public XmlBinaryInflater(Stream inStream)
         {
             _inStream = inStream;
-            _startTmp = new XmlTemporaryToken(XmlToken.StartType, _buffer);
-            _nameTmp = new XmlTemporaryToken(XmlToken.NameType, _buffer);
         }
 
         /// <exception cref="XmlSyntaxException"/>
@@ -63,15 +59,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 {
                     throw new XmlSyntaxException("start tag expected");
                 }
-                element = new XmlElement(token);
+                element = new XmlElement(token.GetText());
                 XmlElement[] stack = null;
                 var nest = 0;
                 while ((token = NextToken()) != null)
                 {
                     switch (token.TokenType())
                     {
-                        case XmlToken.EndType:
-                        case XmlToken.EmptyType:
+                        case XmlTokenType.EndType:
+                        case XmlTokenType.EmptyType:
                         {
                             if (nest == 0)
                             {
@@ -80,7 +76,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             element = stack[--nest];
                             break;
                         }
-                        case XmlToken.StartType:
+                        case XmlTokenType.StartType:
                         {
                             if (stack == null)
                             {
@@ -96,11 +92,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                                 }
                             }
                             stack[nest] = element;
-                            element = new XmlElement(token);
-                            stack[nest++].Add(element);
+                            element = new XmlElement(token.GetText());
+                            stack[nest++].AddElement(element);
                             break;
                         }
-                        case XmlToken.NameType:
+                        case XmlTokenType.NameType:
                         {
                             var name = token;
                             token = NextToken();
@@ -108,13 +104,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             {
                                 break;
                             }
-                            element.Add(name, token);
+                            element.AddAttribute(name.GetText(), token);
                             break;
                         }
-                        case XmlToken.IntegerValueType:
-                        case XmlToken.DoubleValueType:
-                        case XmlToken.FractionValueType:
-                        case XmlToken.StringValueType:
+                        case XmlTokenType.IntegerValueType:
+                        case XmlTokenType.DoubleValueType:
+                        case XmlTokenType.FractionValueType:
+                        case XmlTokenType.StringValueType:
                         {
                             throw new XmlSyntaxException("attribute value with no name " + token);
                         }
@@ -238,11 +234,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                         {
                             if (XmlDictionary.IsTokenType(b))
                             {
-                                if (b == XmlToken.EndType)
+                                if (b == (byte)XmlTokenType.EndType)
                                 {
-                                    return XmlTag.GetEndTag(_tagStack.Pop());
+                                    return _tagStack.Pop().ToEndTag();
                                 }
-                                if (b == XmlToken.EmptyType)
+                                if (b == (byte)XmlTokenType.EmptyType)
                                 {
                                     _tagStack.Pop();
                                     return XmlToken.EmptyToken;
@@ -277,34 +273,52 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     {
                         if (!XmlDictionary.IsPlainText(b))
                         {
-                            int type = _buffer[_mark];
+                            var type = (XmlTokenType)_buffer[_mark];
                             if (_mark < --_point)
                             {
                                 XmlToken token;
-                                if (type == XmlToken.StartType)
+                                var text = MarkedText();
+                                switch (type)
                                 {
-                                    token = XmlToken.GetInstance(_startTmp.Reset(_mark + 1, _point - _mark));
-                                    _tagStack.Push(token);
-                                }
-                                else
-                                {
-                                    if (type == XmlToken.NameType)
-                                    {
-                                        token = XmlToken.GetInstance(_nameTmp.Reset(_mark + 1, _point - _mark));
-                                    }
-                                    else
-                                    {
-                                        token = new XmlToken(type, _buffer, _mark + 1, _point - _mark);
-                                    }
+                                    case XmlTokenType.StartType:
+                                        token = new XmlToken(type, text, text);
+                                        _tagStack.Push(token);
+                                        break;
+                                    case XmlTokenType.NameType:
+                                        token = new XmlToken(type, text, text);
+                                        break;
+                                    case XmlTokenType.EndType:
+                                        token = new XmlToken(type, text, text);
+                                        break;
+                                    case XmlTokenType.EmptyType:
+                                        token = XmlToken.EmptyToken;
+                                        break;
+                                    case XmlTokenType.ContentType:
+                                        token = XmlToken.NullContentToken;
+                                        break;
+                                    case XmlTokenType.IntegerValueType:
+                                        token = new XmlToken(type, text, Convert.ToInt32(text));
+                                        break;
+                                    case XmlTokenType.DoubleValueType:
+                                        token = new XmlToken(type, text, Convert.ToDouble(text));
+                                        break;
+                                    case XmlTokenType.FractionValueType:
+                                        token = new XmlToken(type, text, XmlToken.FractionToDouble(text));
+                                        break;
+                                    case XmlTokenType.StringValueType:
+                                        token = new XmlToken(type, text, text);
+                                        break;
+                                    default:
+                                        throw new XmlSyntaxException("unrecognised token "+type);
                                 }
                                 _dictionary.Insert(token);
                                 return token;
                             }
-                            if (type == XmlToken.StringValueType)
+                            if (type == XmlTokenType.StringValueType)
                             {
                                 return XmlToken.NullValueToken;
                             }
-                            if (type == XmlToken.ContentType)
+                            if (type == XmlTokenType.ContentType)
                             {
                                 return XmlToken.NullContentToken;
                             }
@@ -323,6 +337,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 throw new XmlSyntaxException("token completion expected");
             }
             return null;
+        }
+
+        private string MarkedText()
+        {
+            var text = Encoding.ASCII.GetString(_buffer, _mark + 1, _point - _mark);
+            return text;
         }
     }
 }

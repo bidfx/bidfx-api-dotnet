@@ -14,16 +14,16 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     public class XmlKeyedElement : XmlElement
     {
         /// <summary>The field with Xml sub-element to use as the primary key.</summary>
-        public static readonly XmlName Key = new XmlName("KEY");
+        public static readonly string Key = "KEY";
 
         /// <summary>The field with Xml sub-element to use as the notification to delete the element.</summary>
-        public static readonly XmlName Delete = new XmlName("DELETE");
+        public static readonly string Delete = "DELETE";
 
-        private readonly XmlName _key;
+        private readonly string _key;
 
         /// <summary>Construct a new XmlKeyedElement.</summary>
         /// <param name="tag">the tag of the element.</param>
-        public XmlKeyedElement(XmlTag tag)
+        public XmlKeyedElement(string tag)
             : this(tag, null)
         {
         }
@@ -31,13 +31,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Construct a new XmlKeyedElement.</summary>
         /// <param name="tag">the tag of the element.</param>
         /// <param name="key">the key attribute name of the sub-elemenets.</param>
-        public XmlKeyedElement(XmlTag tag, XmlName key)
+        public XmlKeyedElement(string tag, string key)
             : base(tag)
         {
             _key = key;
             if (key != null)
             {
-                Add(Key, key);
+                AddAttribute(Key, key);
             }
         }
 
@@ -46,13 +46,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         public XmlKeyedElement(XmlElement toCopy)
             : base(toCopy.GetTag())
         {
-            string key = toCopy.Get(Key, null);
-            _key = key == null ? null : new XmlName(key);
+            var token = toCopy.GetAttributeValue(Key);
+            _key = token?.GetText();
             Update(toCopy, false);
         }
 
-        /// <summary>Create the nested content container.</summary>
-        public override XmlNestedContent CreateContentContainer()
+        protected override XmlNestedContent CreateNestedContent()
         {
             return new XmlNestedContent(_key);
         }

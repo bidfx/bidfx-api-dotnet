@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
@@ -12,7 +11,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlDictionary
     {
-        private const int TokenCodes = XmlToken.MaxType;
+        private const int TokenCodes = 9;
         private const int CodeBits = 7;
 
         private const int IsToken = 1 << CodeBits;
@@ -69,7 +68,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Get the optimal code for a given token code.</summary>
         /// <param name="tokenCode">the Xml token code to find.</param>
         /// <returns>the corresponding optimalCode for the tokenCode.</returns>
-        private int GetCode(XmlTokenCode tokenCode)
+        public int GetCode(XmlTokenCode tokenCode)
         {
             ++tokenCode._count;
             if (tokenCode._code < MaxOneByteCode) return tokenCode._code;
@@ -90,17 +89,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return tokenCode._code;
         }
 
-        /// <summary>Insert a new token into the dictionary.</summary>
-        /// <remarks>
-        /// Insert a new token into the dictionary.  This method should be used to
-        /// insert previously unseen tokens as they are received from an
-        /// Stream.  However it may also be used to pre-load token codes into
-        /// a dictionary before any compressed Xml communication takes place.  If
-        /// you do this then take care to pre-load the same tokens, in the same
-        /// order, on both sides of the communication.
-        /// </remarks>
-        /// <param name="token">the Xml token to insert.</param>
-        /// <returns>the inserted token code or null if the table was full.</returns>
         public XmlTokenCode Insert(XmlToken token)
         {
             XmlTokenCode tokenCode = null;
@@ -179,7 +167,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// Estimate the lower quartile range of tokens, in terms of occurrence
         /// rate, by means of a small sample.
         /// </summary>
-        public int EstimateLowerQuartile()
+        private int EstimateLowerQuartile()
         {
             var samples = new int[7];
             var step = MaxCode / (samples.Length + 1);
@@ -218,24 +206,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             if (tokenCode == null) throw new XmlSyntaxException("invalid Xml token code (" + code + ")");
             GetCode(tokenCode);
             return tokenCode._token;
-        }
-
-        /// <summary>Write a token code to a stream.</summary>
-        /// <param name="tokenCode">the Xml token code to output.</param>
-        /// <param name="stream">the stream to write to.</param>
-        /// <exception cref="System.IO.IOException"/>
-        public void Write(XmlTokenCode tokenCode, Stream stream)
-        {
-            var code = GetCode(tokenCode);
-            if (code < MaxOneByteCode)
-            {
-                stream.WriteByte((byte) (IsToken | code));
-            }
-            else
-            {
-                stream.WriteByte((byte) (IsToken | (code & CodeMask)));
-                stream.WriteByte((byte) ((code >> CodeBits) + TokenCodes));
-            }
         }
 
         /// <summary>Convert an input token byte to a token code.</summary>
@@ -304,7 +274,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         /// <summary>Dump the contents to a string for debug purposes.</summary>
-        public string Dump()
+        internal string Dump()
         {
             var buf = new StringBuilder();
             buf.Append("XmlDictionary");
@@ -321,6 +291,38 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 buf.Append(_tokenCodes[i]);
             }
             return buf.ToString();
+        }
+    }
+
+    public class XmlTokenCode
+    {
+        internal XmlToken _token;
+        internal int _code;
+        internal int _count;
+
+        internal XmlTokenCode(XmlToken token)
+        {
+            _token = token;
+        }
+
+        public XmlToken GetToken()
+        {
+            return _token;
+        }
+
+        public int GetCode()
+        {
+            return _code;
+        }
+
+        public int GetCount()
+        {
+            return _count;
+        }
+
+        public override string ToString()
+        {
+            return _token + " = " + _code + " (" + _count + ')';
         }
     }
 }

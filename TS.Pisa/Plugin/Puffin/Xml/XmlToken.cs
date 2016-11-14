@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
@@ -17,161 +18,57 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// provides access to this information.
     /// </remarks>
     /// <author>Paul Sweeny</author>
-    public class XmlToken //: IXmlFormatable
+    public class XmlToken
     {
-        /// <summary>The Xml end-tag token type.</summary>
-        public const int EndType = 0;
+        public static readonly XmlToken EmptyToken = new XmlToken(XmlTokenType.EmptyType, "", null);
+        public static readonly XmlToken NullValueToken = new XmlToken(XmlTokenType.StringValueType, "", null);
+        public static readonly XmlToken NullContentToken = new XmlToken(XmlTokenType.ContentType, "", null);
+        public static readonly XmlToken ZeroToken = IntegerValue(0);
 
-        /// <summary>The Xml empty-tag close token type.</summary>
-        public const int EmptyType = 1;
+        private readonly XmlTokenType _tokenType;
+        private readonly string _text;
+        private readonly object _value;
 
-        /// <summary>The Xml start-tag token type.</summary>
-        public const int StartType = 2;
-
-        public const int ContentType = 3;
-
-        /// <summary>The Xml element attribute name token type.</summary>
-        public const int NameType = 4;
-
-        /// <summary>The Xml element integer attribute value token type.</summary>
-        public const int IntegerValueType = 5;
-
-        /// <summary>The Xml element double attribute value token type.</summary>
-        public const int DoubleValueType = 6;
-
-        /// <summary>The Xml element fraction value token type.</summary>
-        public const int FractionValueType = 7;
-
-        /// <summary>The Xml element string attribute value token type.</summary>
-        public const int StringValueType = 8;
-
-        /// <summary>One greater than the largest token type.</summary>
-        public const int MaxType = 9;
-
-        private static readonly string[] gTokenType = new string[]
+        public XmlToken(XmlTokenType tokenType, string text, object value)
         {
-            "END-TAG", "EMPTY-ELEMENT", "START-TAG", "CONTENT", "NAME", "INTEGER-VALUE", "DOUBLE-VALUE",
-            "FRACTION-VALUE", "STRING-VALUE"
-        };
-
-        private static readonly byte[] Blank = new byte[0];
-
-        private static readonly IDictionary<XmlTemporaryToken, XmlToken> gCommonTokenPool =
-            new Dictionary<XmlTemporaryToken, XmlToken>();
-
-        public static readonly XmlToken EmptyToken = new XmlToken(EmptyType, Blank, 0, 0, EmptyType);
-        public static readonly XmlToken NullValueToken = new XmlToken(StringValueType, Blank, 0, 0, StringValueType);
-
-        public static readonly XmlToken NullContentToken = new XmlToken(ContentType, Blank, 0, 0, ContentType);
-        public static readonly XmlToken ZeroToken = new XmlToken(0);
-
-        private readonly int _type;
-        private readonly byte[] _text;
-
-        private int _hash;
-
-        /// <summary>
-        /// Create a new token of a given type by copying its associated text from
-        /// a region within a character array.
-        /// </summary>
-        /// <param name="type">the type of the token.</param>
-        /// <param name="text">a buffer containing the text associated with the token.</param>
-        /// <param name="start">the start index of the text within the buffer.</param>
-        /// <param name="length">the length of the text associated with the token.</param>
-        public XmlToken(int type, char[] text, int start, int length)
-        {
-            //private final byte[] _text;
-            if (type < 0 || type >= MaxType)
-            {
-                throw new XmlSyntaxException("bad token type: " + type);
-            }
-            _type = type;
-            _text = new byte[length];
-            for (int i = 0; i < length; ++i)
-            {
-                _text[i] = unchecked((byte) text[start++]);
-            }
+            _tokenType = tokenType;
+            _text = text;
+            _value = value;
         }
 
-        /// <summary>
-        /// Create a new token of a given type by copying its associated text from
-        /// a region within a byte array.
-        /// </summary>
-        /// <param name="type">the type of the token.</param>
-        /// <param name="buf">a buffer containing the text associated with the token.</param>
-        /// <param name="start">the start index of the text within the buffer.</param>
-        /// <param name="length">the length of the text associated with the token.</param>
-        public XmlToken(int type, byte[] buf, int start, int length)
-            : this(type, buf, start, length, 0)
+        public static XmlToken StartTag(string value)
         {
+            return new XmlToken(XmlTokenType.StartType, value, value);
         }
 
-        /// <summary>
-        /// Create a new token of a given type by copying its associated text from
-        /// a region within a byte array.
-        /// </summary>
-        /// <param name="type">the type of the token.</param>
-        /// <param name="buf">a buffer containing the text associated with the token.</param>
-        /// <param name="start">the start index of the text within the buffer.</param>
-        /// <param name="length">the length of the text associated with the token.</param>
-        /// <param name="hash">the hash code for the token.</param>
-        public XmlToken(int type, byte[] buf, int start, int length, int hash)
+        public static XmlToken AttributeName(string value)
         {
-            _type = type;
-            _text = new byte[length];
-            System.Array.Copy(buf, start, _text, 0, length);
-            _hash = hash;
+            return new XmlToken(XmlTokenType.NameType, value, value);
         }
 
-        /// <summary>Create a new token of a given type and associated text.</summary>
-        /// <param name="type">the type of the token.</param>
-        /// <param name="text">the text associated with the token.</param>
-        public XmlToken(int type, string text)
+        public static XmlToken StringValue(string value)
         {
-            //mText = new byte[text.length()];
-            //text.getBytes(0, _text.length, _text, 0);
-            _type = type;
-            _text = Encoding.ASCII.GetBytes(text);
+            return new XmlToken(XmlTokenType.StringValueType, value, value);
         }
 
-        /// <summary>Create a new token representing an attribute-value.</summary>
-        /// <param name="value">the value of the attribute.</param>
-        public XmlToken(string value)
-            : this(StringValueType, value)
+        public static XmlToken IntegerValue(int value)
         {
+            return new XmlToken(XmlTokenType.IntegerValueType, value.ToString(), value);
         }
 
-        /// <summary>Create a new token representing an attribute-value.</summary>
-        /// <param name="value">the value of the attribute.</param>
-        public XmlToken(int value)
-            : this(IntegerValueType, value.ToString())
+        public static XmlToken LongValue(long value)
         {
+            return new XmlToken(XmlTokenType.IntegerValueType, value.ToString(), value);
         }
 
-        /// <summary>Create a new token representing an attribute-value.</summary>
-        /// <param name="value">the value of the attribute.</param>
-        public XmlToken(long value)
-            : this(IntegerValueType, value.ToString())
+        public static XmlToken DoubleValue(double value)
         {
+            return new XmlToken(XmlTokenType.DoubleValueType, value.ToString(CultureInfo.InvariantCulture), value);
         }
 
-        /// <summary>Create a new token representing an attribute-value.</summary>
-        /// <param name="value">the value of the attribute.</param>
-        public XmlToken(double value)
-            : this(DoubleValueType, ToString(value))
+        public static XmlToken BooleanValue(bool value)
         {
-        }
-
-        private static string ToString(double value)
-        {
-            return value.ToString();
-        }
-
-        /// <summary>Create a new token representing an attribute-value.</summary>
-        /// <param name="value">the value of the attribute.</param>
-        public XmlToken(bool value)
-            : this(StringValueType, value?"true":"false")
-        {
+            return new XmlToken(XmlTokenType.StringValueType, value ? "true" : "false", value);
         }
 
         /// <summary>
@@ -180,49 +77,43 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public XmlToken ToEndTag()
         {
-            return new XmlToken(this);
-        }
-
-        private XmlToken(XmlToken startTag)
-        {
-            _type = EndType;
-            _text = startTag._text;
+            return new XmlToken(XmlTokenType.EndType, _text, _value);
         }
 
         /// <summary>Get the type of this token.</summary>
-        public int TokenType()
+        public XmlTokenType TokenType()
         {
-            return _type;
+            return _tokenType;
         }
 
         /// <summary>Check if this token is an Xml end-tag token.</summary>
         public bool IsEndTag()
         {
-            return _type == EndType;
+            return _tokenType == XmlTokenType.EndType;
         }
 
         /// <summary>Check if this token is an Xml empty-tag close token.</summary>
         public bool IsEmptyTag()
         {
-            return _type == EmptyType;
+            return _tokenType == XmlTokenType.EmptyType;
         }
 
         /// <summary>Check if this token is an Xml start-tag token.</summary>
         public bool IsStartTag()
         {
-            return _type == StartType;
+            return _tokenType == XmlTokenType.StartType;
         }
 
         /// <summary>Check if this token is an Xml content token.</summary>
         public bool IsTagContent()
         {
-            return _type == ContentType;
+            return _tokenType == XmlTokenType.ContentType;
         }
 
         /// <summary>Check if this token is an Xml element attribute name token.</summary>
         public bool IsAttributeName()
         {
-            return _type == NameType;
+            return _tokenType == XmlTokenType.NameType;
         }
 
         /// <summary>
@@ -231,7 +122,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public bool IsValueType()
         {
-            return _type >= IntegerValueType;
+            return _tokenType >= XmlTokenType.IntegerValueType;
         }
 
         /// <summary>
@@ -240,7 +131,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public bool IsNumberType()
         {
-            return _type == IntegerValueType || _type == DoubleValueType || _type == FractionValueType;
+            return _tokenType == XmlTokenType.IntegerValueType || _tokenType == XmlTokenType.DoubleValueType ||
+                   _tokenType == XmlTokenType.FractionValueType;
         }
 
         /// <summary>Check if this token is null (not present).</summary>
@@ -249,41 +141,46 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return false;
         }
 
-        /// <summary>Check if this token is an integer attribute-value type.</summary>
+        /// <summary>Check if this token is an integer attribute-value XmlTokenType.</summary>
         public bool IsInteger()
         {
-            return _type == IntegerValueType;
+            return _tokenType == XmlTokenType.IntegerValueType;
         }
 
-        /// <summary>Check if this token is a double attribute-value type.</summary>
+        /// <summary>Check if this token is a double attribute-value XmlTokenType.</summary>
         public bool IsDouble()
         {
-            return _type == DoubleValueType;
+            return _tokenType == XmlTokenType.DoubleValueType;
         }
 
-        /// <summary>Check if this token is a fraction attribute-value type.</summary>
+        /// <summary>Check if this token is a fraction attribute-value XmlTokenType.</summary>
         public bool IsFraction()
         {
-            return _type == FractionValueType;
+            return _tokenType == XmlTokenType.FractionValueType;
         }
 
-        /// <summary>Check if this token is a string attribute-value type.</summary>
+        /// <summary>Check if this token is a string attribute-value XmlTokenType.</summary>
         public bool IsString()
         {
-            return _type == StringValueType;
+            return _tokenType == XmlTokenType.StringValueType;
         }
 
         /// <summary>Check if this token is negative.</summary>
         public bool IsNegative()
         {
-            return _text[0] == '-';
+            return _text.StartsWith("-");
         }
 
         /// <summary>Get the text associated with this token.</summary>
         /// <returns>the associated text or "" if the token has no text.</returns>
         public string GetText()
         {
-            return ToString();
+            return _text;
+        }
+
+        public object GetValue()
+        {
+            return _value;
         }
 
         /// <summary>
@@ -298,7 +195,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Convert the value of this token to a String (same as getText).</summary>
         public override string ToString()
         {
-            return _text.Length == 0 ? string.Empty : Encoding.ASCII.GetString(_text, 0, _text.Length);
+            return _text;
         }
 
         /// <summary>Convert the value of this token to an int.</summary>
@@ -385,39 +282,21 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return Convert.ToBoolean(ToString());
         }
 
-        public override bool Equals(object @object)
+        public override bool Equals(object o)
         {
-            if (@object == this)
+            if (o == this)
             {
                 return true;
             }
-            if (@object != null && @object is XmlToken)
-            {
-                XmlToken token = (XmlToken) @object;
-                if (token._type != _type)
-                {
-                    return false;
-                }
-                if (token._text.Length != _text.Length)
-                {
-                    return false;
-                }
-                for (int i = _text.Length; i-- > 0;)
-                {
-                    if (token._text[i] != _text[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
+            if (!(o is XmlToken)) return false;
+            var token = (XmlToken) o;
+            return _tokenType == token._tokenType && _text.Equals(token._text);
         }
 
         /// <summary>Create a debug string representation of this Token.</summary>
         public string DebugString()
         {
-            return "token " + gTokenType[_type] + " [" + ToString() + ']';
+            return "token " + _tokenType + " [" + ToString() + ']';
         }
 
         /// <summary>Get the text associated with this token as a byte array.</summary>
@@ -427,88 +306,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </remarks>
         public byte[] GetTextAsBytes()
         {
-            return _text;
+            return Encoding.ASCII.GetBytes(_text);
         }
 
         /// <summary>Return the hash code of the token.</summary>
         public override int GetHashCode()
         {
-            if (_hash != 0)
-            {
-                return _hash;
-            }
-            return _hash = ComputeHash(_type, _text, 0, _text.Length);
-        }
-
-        /// <summary>Compute the hash code.</summary>
-        /// <remarks>
-        /// Compute the hash code.  This method is separated out from hashCode() so
-        /// that it may be shared by XmlTemporaryToken.
-        /// </remarks>
-        /// <param name="type">the type of the token.</param>
-        /// <param name="buf">a buffer containing the text associated with the token.</param>
-        /// <param name="pos">the start position of the text within the buffer.</param>
-        /// <param name="length">the length of the text associated with the token.</param>
-        public static int ComputeHash(int type, byte[] buf, int pos, int length)
-        {
-            int i = 0;
-            for (; i < length && i < 7; ++i)
-            {
-                type = (type << 4) + buf[pos++];
-            }
-            for (; i < length; ++i)
-            {
-                type = ((type ^ ((int) (((uint) type) >> 28))) << 4) + buf[pos++];
-            }
-            return type;
-        }
-
-        /// <summary>Get the token instance that matches the given temporary token.</summary>
-        /// <remarks>
-        /// Get the token instance that matches the given temporary token.  The
-        /// returned instance is taken from a central pool of commonly used tokens.
-        /// If is it not already in this pool then it will be created and added to
-        /// it first.
-        /// </remarks>
-        /// <param name="temp">the temporary token to compare against pooled tokens.</param>
-        public static XmlToken GetInstance(XmlTemporaryToken temp)
-        {
-            XmlToken token;
-            gCommonTokenPool.TryGetValue(temp, out token);
-            if (token == null)
-            {
-                token = temp.ToToken();
-                gCommonTokenPool.Add(token.ToTempToken(), token);
-            }
-            return token;
-        }
-
-        /// <summary>Get the token instance that matches the given type and text.</summary>
-        /// <remarks>
-        /// Get the token instance that matches the given type and text.  The
-        /// returned instance is taken from a central pool of commonly used tokens.
-        /// If is it not already in this pool then it will be created and added to
-        /// it first.
-        /// </remarks>
-        /// <param name="type">the type of the token to obtain.</param>
-        /// <param name="text">the text of the token to obtain.</param>
-        public static XmlToken GetInstance(int type, string text)
-        {
-            XmlToken token = new XmlToken(type, text);
-            XmlTemporaryToken temp = token.ToTempToken();
-            XmlToken found;
-            gCommonTokenPool.TryGetValue(temp, out found);
-            if (found == null)
-            {
-                found = token;
-                gCommonTokenPool.Add(temp, found);
-            }
-            return found;
-        }
-
-        private XmlTemporaryToken ToTempToken()
-        {
-            return new XmlTemporaryToken(_type, _text, _hash);
+            return _tokenType.GetHashCode() + (_text.GetHashCode() << 4);
         }
     }
 }

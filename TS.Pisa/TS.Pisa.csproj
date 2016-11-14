@@ -47,6 +47,7 @@
     <Compile Include="IllegalSubjectException.cs" />
     <Compile Include="IProviderPlugin.cs" />
     <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
+    <Compile Include="Plugin\Puffin\Xml\XmlTokenType.cs" />
     <Compile Include="ProviderStatus.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISubscriber.cs" />
@@ -66,17 +67,11 @@
     <Compile Include="Plugin\Puffin\Xml\XmlDictionary.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlElement.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlNestedContent.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlInflateTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\Xml\XmlBinaryInflater.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlKeyedElement.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlName.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlNameTagBase.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlFormatter.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlParseException.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlSyntaxException.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlTag.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlTemporaryToken.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlToken.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlTokenCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

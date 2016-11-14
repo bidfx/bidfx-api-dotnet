@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
@@ -12,222 +14,106 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlElement
     {
-        private readonly XmlToken _tag;
+        private readonly string _tag;
 
-        private readonly IDictionary<XmlToken, XmlToken> _attributes = new Dictionary<XmlToken, XmlToken>(8);
+        private readonly IDictionary<string, XmlToken> _attributes = new Dictionary<string, XmlToken>();
         private XmlNestedContent _contents;
 
         /// <summary>Create a new XmlElement.</summary>
         /// <param name="tag">the tag of the element.</param>
-        public XmlElement(XmlTag tag)
+        public XmlElement(string tag)
         {
-            if (tag == null)
-            {
-                throw new ArgumentException("null Xml tag");
-            }
-            _tag = tag._token;
-        }
-
-        /// <summary>Create a new XmlElement.</summary>
-        /// <param name="tag">the tag of the element.</param>
-        /// <exception cref="System.ArgumentException">
-        /// is the given token is not of type
-        /// <see cref="XmlToken.StartType"/>
-        /// .
-        /// </exception>
-        public XmlElement(XmlToken tag)
-        {
-            if (!tag.IsStartTag())
-            {
-                throw new ArgumentException("invalid tag type " + tag);
-            }
             _tag = tag;
         }
 
-        /// <summary>Create a new XmlElement.</summary>
-        /// <param name="tag">the tag of the element.</param>
-        public XmlElement(string tag)
-            : this(new XmlTag(tag))
+        public XmlElement AddElement(XmlElement element)
         {
+            if (_contents == null)
+            {
+                _contents = CreateNestedContent();
+            }
+            _contents.Add(element);
+            return this;
         }
 
-        /// <summary>Add an Xml element to the end of the nested content of this element.</summary>
-        /// <param name="element">the element to add.</param>
-        /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlElement element)
+        protected virtual XmlNestedContent CreateNestedContent()
         {
-            lock (this)
-            {
-                if (_contents == null)
-                {
-                    _contents = CreateContentContainer();
-                }
-                _contents.Add(element);
-                return this;
-            }
+            return new XmlNestedContent();
         }
 
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        /// <exception cref="XmlSyntaxException">
-        /// is the given name token is not of type
-        /// <see cref="XmlToken.NameType"/>
-        /// or if the value is not a value type.
-        /// </exception>
-        /// <exception cref="XmlSyntaxException"/>
-        public virtual XmlElement Add(XmlToken name, XmlToken value)
+        public XmlElement AddAttribute(string name, XmlToken value)
         {
-            lock (this)
+            if (!value.IsValueType())
             {
-                if (!name.IsAttributeName())
-                {
-                    throw new XmlSyntaxException("invalid attribute name " + name);
-                }
-                if (!value.IsValueType())
-                {
-                    throw new XmlSyntaxException("invalid attribute value " + value);
-                }
-                _attributes[name] = value;
-                return this;
+                throw new XmlSyntaxException("invalid attribute value " + value);
             }
+            _attributes[name] = value;
+            return this;
         }
 
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        /// <exception cref="XmlSyntaxException">is the given value token is not a value type.</exception>
-        /// <exception cref="XmlSyntaxException"/>
-        public virtual XmlElement Add(XmlName name, XmlToken value)
+        public XmlElement AddAttribute(string name, int value)
         {
-            lock (this)
+            _attributes[name] = value == 0 ? XmlToken.ZeroToken : XmlToken.IntegerValue(value);
+            return this;
+        }
+
+        public XmlElement AddAttribute(string name, long value)
+        {
+            _attributes[name] = value == 0 ? XmlToken.ZeroToken : XmlToken.LongValue(value);
+            return this;
+        }
+
+        public XmlElement AddAttribute(string name, double value)
+        {
+            _attributes[name] = value == 0.0 ? XmlToken.ZeroToken : XmlToken.DoubleValue(value);
+            return this;
+        }
+
+        public XmlElement AddAttribute(string name, string value)
+        {
+            if (value == null)
             {
-                if (!value.IsValueType())
-                {
-                    throw new XmlSyntaxException("invalid attribute value " + value);
-                }
-                _attributes[name._token] = value;
-                return this;
+                throw new ArgumentException("null Xml attribute value");
             }
+            _attributes[name] = XmlToken.StringValue(value);
+            return this;
         }
 
         /// <summary>Add an Xml attribute to this element.</summary>
         /// <param name="name">the name of the attribute.</param>
         /// <param name="value">the value of the attribute.</param>
         /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, int value)
+        public XmlElement AddAttribute(string name, char value)
         {
-            lock (this)
-            {
-                _attributes[name._token] = value == 0 ? XmlToken.ZeroToken : new XmlToken(value);
-                return this;
-            }
+            return AddAttribute(name, value.ToString());
         }
 
         /// <summary>Add an Xml attribute to this element.</summary>
         /// <param name="name">the name of the attribute.</param>
         /// <param name="value">the value of the attribute.</param>
         /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, long value)
+        public XmlElement AddAttribute(string name, bool value)
         {
-            lock (this)
-            {
-                _attributes[name._token] = value == 0 ? XmlToken.ZeroToken : new XmlToken(value);
-                return this;
-            }
-        }
-
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, double value)
-        {
-            lock (this)
-            {
-                _attributes[name._token] = value == 0.0 ? XmlToken.ZeroToken : new XmlToken(value);
-                return this;
-            }
-        }
-
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, object value)
-        {
-            lock (this)
-            {
-                if (value == null)
-                {
-                    throw new ArgumentException("null Xml attribute value");
-                }
-                _attributes[name._token] = new XmlToken(value.ToString());
-                return this;
-            }
-        }
-
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, char value)
-        {
-            lock (this)
-            {
-                return Add(name, value.ToString());
-            }
-        }
-
-        /// <summary>Add an Xml attribute to this element.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="value">the value of the attribute.</param>
-        /// <returns>this element.</returns>
-        public virtual XmlElement Add(XmlName name, bool value)
-        {
-            lock (this)
-            {
-                _attributes[name._token] = new XmlToken(value);
-                return this;
-            }
+            _attributes[name] = XmlToken.BooleanValue(value);
+            return this;
         }
 
         /// <summary>Get the tag name.</summary>
-        public virtual XmlToken GetTag()
+        public string GetTag()
         {
-            lock (this)
-            {
-                return _tag;
-            }
-        }
-
-        /// <summary>Test if this element is of the given type.</summary>
-        public virtual bool IsA(XmlTag type)
-        {
-            lock (this)
-            {
-                return _tag.Equals(type._token);
-            }
+            return _tag;
         }
 
         /// <summary>Test if this element has nested content.</summary>
-        public virtual bool HasContent()
+        public bool HasContent()
         {
-            lock (this)
-            {
-                return _contents != null;
-            }
+            return _contents != null;
         }
 
         /// <summary>Test if this element has any attributes.</summary>
-        public virtual bool HasAttributes()
+        public bool HasAttributes()
         {
-            lock (this)
-            {
-                return _attributes.Count != 0;
-            }
+            return _attributes.Count != 0;
         }
 
         /// <summary>Get a collection of the attribute names if this element.</summary>
@@ -236,117 +122,39 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <see cref="XmlName"/>
         /// s.
         /// </returns>
-        public virtual IList<XmlName> GetAttributeNames()
+        public IList<string> GetAttributeNames()
         {
-            lock (this)
+            IList<string> names = new List<string>(_attributes.Count);
+            lock (_attributes)
             {
-                IList<XmlName> names = new List<XmlName>(_attributes.Count);
-                lock (_attributes)
+                foreach (var key in _attributes.Keys)
                 {
-                    foreach (var key in _attributes.Keys)
-                    {
-                        names.Add(new XmlName(key));
-                    }
+                    names.Add(key);
                 }
-                return names;
             }
+            return names;
         }
 
         /// <summary>Get the value of an Xml attribute.</summary>
         /// <param name="name">the name of the attribute.</param>
         /// <returns>the attribute value or null.</returns>
-        public virtual XmlToken Get(XmlName name)
+        public XmlToken GetAttributeValue(string name)
         {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token] : null;
-            }
-        }
-
-        /// <summary>Get the value of an Xml attribute.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="defaultValue">the default value if the name is not present.</param>
-        /// <returns>the attribute value or the default.</returns>
-        public virtual int Get(XmlName name, int defaultValue)
-        {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token].ToInteger() : defaultValue;
-            }
-        }
-
-        /// <summary>Get the value of an Xml attribute.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="defaultValue">the default value if the name is not present.</param>
-        /// <returns>the attribute value or the default.</returns>
-        public virtual long Get(XmlName name, long defaultValue)
-        {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token].ToLong() : defaultValue;
-            }
-        }
-
-        /// <summary>Get the value of an Xml attribute.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="defaultValue">the default value if the name is not present.</param>
-        /// <returns>the attribute value or the default.</returns>
-        public virtual double Get(XmlName name, double defaultValue)
-        {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token].ToDouble() : defaultValue;
-            }
-        }
-
-        /// <summary>Get the value of an Xml attribute.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="defaultValue">the default value if the name is not present.</param>
-        /// <returns>the attribute value or the default.</returns>
-        public virtual string Get(XmlName name, string defaultValue)
-        {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token].ToString() : defaultValue;
-            }
-        }
-
-        /// <summary>Get the value of an Xml attribute.</summary>
-        /// <param name="name">the name of the attribute.</param>
-        /// <param name="defaultValue">the default value if the name is not present.</param>
-        /// <returns>the attribute value or the default.</returns>
-        public virtual bool Get(XmlName name, bool defaultValue)
-        {
-            lock (this)
-            {
-                return _attributes.ContainsKey(name._token) ? _attributes[name._token].ToBoolean() : defaultValue;
-            }
+            return _attributes.ContainsKey(name) ? _attributes[name] : null;
         }
 
         /// <summary>Remove an Xml attribute.</summary>
         /// <param name="name">the name of the attribute.</param>
-        public virtual void Remove(XmlName name)
+        public void RemoveAttribute(string name)
         {
-            lock (this)
-            {
-                _attributes.Remove(name._token);
-            }
+            _attributes.Remove(name);
         }
 
         /// <summary>Get the nested contect of this Xml element.</summary>
         /// <returns>the content list or null if there is none.</returns>
-        public virtual XmlNestedContent GetContents()
+        public XmlNestedContent GetNestedContent()
         {
-            lock (this)
-            {
-                return _contents;
-            }
-        }
-
-        /// <summary>Create the nested content container.</summary>
-        public virtual XmlNestedContent CreateContentContainer()
-        {
-            return new XmlNestedContent();
+            return _contents;
         }
 
         /// <summary>Update this element with another one.</summary>
@@ -358,12 +166,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// replaces the content of this element.
         /// </remarks>
         /// <param name="update">the element to update this one with.</param>
-        public virtual void Update(XmlElement update)
+        public void Update(XmlElement update)
         {
-            lock (this)
-            {
-                Update(update, false);
-            }
+            Update(update, false);
         }
 
         /// <summary>Update this element with another one.</summary>
@@ -381,39 +186,33 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// to be removed from this element (if it exists); when <code>false</code>
         /// a deletion attribute will be treated like any other.
         /// </param>
-        public virtual void Update(XmlElement update, bool applyDeletes)
+        public void Update(XmlElement update, bool applyDeletes)
         {
-            lock (this)
+            if (update == null)
             {
-                if (update == null)
+                throw new ArgumentException("cannot update with null");
+            }
+            lock (update)
+            {
+                foreach (var entry in update._attributes)
                 {
-                    throw new ArgumentException("cannot update with null");
+                    _attributes[entry.Key] = entry.Value;
                 }
-                lock (update)
+                if (update.HasContent())
                 {
-                    foreach (var entry in update._attributes)
+                    if (_contents == null)
                     {
-                        _attributes[entry.Key] = entry.Value;
+                        _contents = CreateNestedContent();
                     }
-                    if (update.HasContent())
-                    {
-                        if (_contents == null)
-                        {
-                            _contents = CreateContentContainer();
-                        }
-                        _contents.Update(update._contents, applyDeletes);
-                    }
+                    _contents.Update(update._contents, applyDeletes);
                 }
             }
         }
 
         /// <summary>Removes nested sub-elements marked with the deletion attribute.</summary>
-        public virtual void ClearDeletes()
+        public void ClearDeletes()
         {
-            lock (this)
-            {
-                _contents?.ClearDeletes();
-            }
+            _contents?.ClearDeletes();
         }
 
         /// <summary>
@@ -428,40 +227,37 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </remarks>
         /// <param name="update">the element to derive the delta from.</param>
         /// <returns>the delta element or null if no delta is required.</returns>
-        public virtual XmlElement Delta(XmlElement update)
+        public XmlElement ComputeDelta(XmlElement update)
         {
-            lock (this)
+            XmlElement delta = null;
+            lock (_attributes)
             {
-                XmlElement delta = null;
-                lock (_attributes)
+                foreach (var entry in update._attributes)
                 {
-                    foreach (var entry in update._attributes)
+                    if (!_attributes.ContainsKey(entry.Key) || !entry.Value.Equals(_attributes[entry.Key]))
                     {
-                        if (!_attributes.ContainsKey(entry.Key) || !entry.Value.Equals(_attributes[entry.Key]))
+                        if (delta == null)
                         {
-                            if (delta == null)
-                            {
-                                delta = new XmlElement(_tag);
-                            }
-                            delta._attributes[entry.Key] = entry.Value;
+                            delta = new XmlElement(_tag);
                         }
+                        delta._attributes[entry.Key] = entry.Value;
                     }
                 }
-                XmlNestedContent dc = update._contents;
-                if (HasContent())
-                {
-                    dc = _contents.Delta(dc);
-                }
-                if (dc != null)
-                {
-                    if (delta == null)
-                    {
-                        delta = new XmlElement(_tag);
-                    }
-                    delta._contents = dc;
-                }
-                return delta;
             }
+            XmlNestedContent dc = update._contents;
+            if (HasContent())
+            {
+                dc = _contents.Delta(dc);
+            }
+            if (dc != null)
+            {
+                if (delta == null)
+                {
+                    delta = new XmlElement(_tag);
+                }
+                delta._contents = dc;
+            }
+            return delta;
         }
 
         /// <summary>Format the list of Xml attributes.</summary>
@@ -469,15 +265,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
         /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
         /// <exception cref="XmlSyntaxException"/>
-        public virtual void FormatAttributes(XmlFormatter formatter)
+        public void FormatAttributes(XmlFormatter formatter)
         {
-            lock (_attributes)
+            foreach (var entry in _attributes)
             {
-                foreach (var entry in _attributes)
-                {
-                    formatter.Format(entry.Key);
-                    formatter.Format(entry.Value);
-                }
+                formatter.FormatAttribute(entry.Key, entry.Value);
             }
         }
 
@@ -486,7 +278,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <exception cref="System.IO.IOException">if formatting fails due to an I/O error.</exception>
         /// <exception cref="XmlSyntaxException">if formatting fails due to invalid Xml.</exception>
         /// <exception cref="XmlSyntaxException"/>
-        public virtual void FormatContents(XmlFormatter formatter)
+        public void FormatContents(XmlFormatter formatter)
         {
             if (!HasContent()) return;
             var content = _contents.GetContent();
@@ -494,77 +286,61 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 foreach (var subElement in content)
                 {
-                    formatter.Format(subElement);
+                    formatter.FormatElement(subElement);
                 }
             }
         }
 
         public override string ToString()
         {
-            lock (this)
-            {
-                var stream = new MemoryStream();
-                var formatter = new XmlFormatter(stream);
-                try
-                {
-                    formatter.Format(this);
-                    formatter.Flush();
-                }
-                catch (Exception)
-                {
-                }
-                return Encoding.ASCII.GetString(stream.ToArray(), 0, stream.ToArray().Length);
-            }
+            var sb = new StringBuilder();
+            var formatter = new XmlFormatter(sb);
+            formatter.FormatElement(this);
+            return sb.ToString();
         }
 
         public override bool Equals(object o)
         {
-            lock (this)
+            if (o == this)
             {
-                if (o == this)
-                {
-                    return true;
-                }
-                var xmlElement = o as XmlElement;
-                if (xmlElement == null) return false;
-                var element = xmlElement;
-                if (_contents == null != (element._contents == null))
-                {
-                    return false;
-                }
-                if (!_tag.Equals(element._tag))
-                {
-                    return false;
-                }
-                if (!AreEqual(_attributes, element._attributes))
-                {
-                    return false;
-                }
-                return _contents == null || _contents.Equals(element._contents);
+                return true;
             }
+            var xmlElement = o as XmlElement;
+            if (xmlElement == null) return false;
+            var element = xmlElement;
+            if (_contents == null != (element._contents == null))
+            {
+                return false;
+            }
+            if (!_tag.Equals(element._tag))
+            {
+                return false;
+            }
+            if (!AreEqual(_attributes, element._attributes))
+            {
+                return false;
+            }
+            return _contents == null || _contents.Equals(element._contents);
         }
 
-        private static bool AreEqual(IDictionary<XmlToken, XmlToken> d1, IDictionary<XmlToken, XmlToken> d2)
+        private static bool AreEqual(IDictionary<string, XmlToken> d1, IDictionary<string, XmlToken> d2)
         {
-            if (d1.Count != d2.Count) return false;
-            foreach (var entry in d1)
-            {
-                if (!d2.ContainsKey(entry.Key) || !entry.Value.Equals(d2[entry.Key]))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return d1.Count == d2.Count &&
+                   d1.All(entry => d2.ContainsKey(entry.Key) && entry.Value.Equals(d2[entry.Key]));
         }
 
 
         public override int GetHashCode()
         {
-            int result;
-            result = _tag.GetHashCode();
+            var result = _tag.GetHashCode();
             result = 31 * result + _attributes.GetHashCode();
-            result = 31 * result + (_contents != null ? _contents.GetHashCode() : 0);
+            result = 31 * result + (_contents?.GetHashCode() ?? 0);
             return result;
+        }
+
+        public string GetAttributeValueAsText(string key)
+        {
+            return GetAttributeValue(key)?.GetText();
         }
     }
 }
