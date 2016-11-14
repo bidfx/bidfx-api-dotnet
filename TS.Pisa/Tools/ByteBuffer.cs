@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text;
-
 namespace TS.Pisa.Tools
 {
     public class ByteBuffer
@@ -13,23 +12,19 @@ namespace TS.Pisa.Tools
         public int ReaderIndex { get; set; }
         public int WriterIndex { get; set; }
         private readonly byte[] _buffer;
-
         public ByteBuffer(int capacity = 8192)
         {
             Capacity = capacity;
             _buffer = new byte[8192];
         }
-
         public string ReadLineFromStream(Stream stream)
         {
             return ReadFromStreamUntil(stream, NewLine);
         }
-
         public string ReadXmlFromStream(Stream stream)
         {
             return ReadFromStreamUntil(stream, XmlCloseTag);
         }
-
         public string ReadFromStreamUntil(Stream stream, byte endByte)
         {
             var line = ReadFromBufferUntil(endByte);
@@ -40,13 +35,11 @@ namespace TS.Pisa.Tools
             }
             return line;
         }
-
         private void WriteBytesToBuffer(Stream stream)
         {
             var received = stream.Read(_buffer, WriterIndex, Capacity - WriterIndex);
             WriterIndex += received;
         }
-
         private string ReadFromBufferUntil(byte endChar)
         {
             var start = ReaderIndex;
@@ -60,7 +53,6 @@ namespace TS.Pisa.Tools
             }
             return Encoding.ASCII.GetString(_buffer, start, ReaderIndex - start);
         }
-
         public void Clear()
         {
             ReaderIndex = 0;

@@ -2,7 +2,7 @@
 {
     internal interface ISubscriberSession
     {
-        void Subscribe(ISubscriber subscriber, string subject);
-        void Unsubscribe(ISubscriber subscriber, string subject);
+        void Subscribe(string subject);
+        void Unsubscribe(string subject);
     }
 }

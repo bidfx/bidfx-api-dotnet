@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-
 namespace TS.Pisa.Tools
 {
     /// <summary>This class provides a globally unique identifier (GUID).</summary>
@@ -13,18 +12,15 @@ namespace TS.Pisa.Tools
     public sealed class GUID
     {
         private readonly byte[] _guid;
-
         /// <summary>Creates a new GUID.</summary>
         public GUID()
         {
             _guid = Guid.NewGuid().ToByteArray();
         }
-
         public override string ToString()
         {
             return ByteArrayToString(_guid);
         }
-
         private static string ByteArrayToString(byte[] ba)
         {
             var hex = new StringBuilder(ba.Length * 2);
@@ -34,6 +30,5 @@ namespace TS.Pisa.Tools
             }
             return hex.ToString();
         }
-
     }
 }

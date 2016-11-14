@@ -7,7 +7,6 @@
     public class DefaultSession
     {
         private static readonly MasterSession MasterSession = new MasterSession();
-
         /// <summary>
         /// Gets the default PisaSession instance. Although the PisaSession is not a singleton class, most applications
         /// will only ever require a singleton instance. To ensure that all parts of an application make use of the

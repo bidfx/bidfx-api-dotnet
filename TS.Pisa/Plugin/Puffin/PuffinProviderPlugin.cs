@@ -7,7 +7,6 @@ using System.IO;
 using System.Net.Security;
 using System.Xml;
 
-
 namespace TS.Pisa.Plugin.Puffin
 {
     /// <summary>PuffinProviderPlugin provides a Pisa provider plug-in that connects to a Puffin server to obtain prices.</summary>
@@ -26,7 +25,6 @@ namespace TS.Pisa.Plugin.Puffin
         public string Name { get; }
         public ProviderStatus ProviderStatus { get; }
         public string ProviderStatusText { get; }
-
         public string Host { get; set; }
         public int Port { get; set; }
         public string Service { get; set; }
@@ -34,12 +32,10 @@ namespace TS.Pisa.Plugin.Puffin
         public string Password { get; set; }
         public bool Tunnel { get; set; }
         public GUID Guid { get; } = new GUID();
-
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
-
 
         public PuffinProviderPlugin()
         {
@@ -68,7 +64,6 @@ namespace TS.Pisa.Plugin.Puffin
             }
             Log.Info("thread stopped");
         }
-
 
         public void Subscribe(string subject)
         {
@@ -120,13 +115,11 @@ namespace TS.Pisa.Plugin.Puffin
                     SendPuffinUrl();
                 }
                 var welcomeMessage = ReadMessage();
-
                 //Temporary until XML parser is created
                 var welcomeXml = new XmlDocument();
                 welcomeXml.LoadXml(welcomeMessage);
                 var selectSingleNode = welcomeXml.SelectSingleNode("Welcome");
                 var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
-
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
                             encryptedPassword + "\" Description=\"PuffinNET\" Version=\"8\"/>");

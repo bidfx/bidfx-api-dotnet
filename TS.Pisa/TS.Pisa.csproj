@@ -58,18 +58,42 @@
     <Compile Include="PriceStatus.cs" />
     <Compile Include="IDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Subscriber.cs" />
     <Compile Include="Tools\AtomicBoolean.cs" />
     <Compile Include="Tools\ByteBuffer.cs" />
     <Compile Include="Tools\GUID.cs" />
     <Compile Include="Tools\NameCache.cs" />
     <Compile Include="Tools\TunnelException.cs" />
+    <Compile Include="Plugin\Puffin\XML\AbstractXMLTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\XML\IXMLContentContainer.cs" />
+    <Compile Include="Plugin\Puffin\XML\IXMLFormatter.cs" />
+    <Compile Include="Plugin\Puffin\XML\IXMLTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLBasicContentContainer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLContent.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLDictionary.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLElement.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLElementContainer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLFormatable.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLInflateTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLInputTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLKeyedElement.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLName.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLNameTagBase.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLOutputFormatter.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLParseException.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLStringTokenizer.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLSyntaxException.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLTag.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLTemporaryToken.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLToken.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLTokenCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Plugin" />
     <Folder Include="Plugin\Puffin" />
+    <Folder Include="Plugin\Puffin\XML" />
     <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

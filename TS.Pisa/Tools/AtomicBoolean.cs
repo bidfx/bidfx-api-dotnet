@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-
 namespace TS.Pisa.Plugin.Puffin
 {
     /// <summary>
@@ -9,24 +8,20 @@ namespace TS.Pisa.Plugin.Puffin
     {
         private const int VALUE_TRUE = 1;
         private const int VALUE_FALSE = 0;
-
         private int _currentValue;
 
         public AtomicBoolean(bool initialValue)
         {
             _currentValue = BoolToInt(initialValue);
         }
-
         private static int BoolToInt(bool value)
         {
             return value ? VALUE_TRUE : VALUE_FALSE;
         }
-
         private static bool IntToBool(int value)
         {
             return value == VALUE_TRUE;
         }
-
         public bool Value => IntToBool(Interlocked.Add(ref _currentValue, 0));
 
         /// <summary>
@@ -40,7 +35,6 @@ namespace TS.Pisa.Plugin.Puffin
                 Interlocked.Exchange(ref _currentValue,
                     BoolToInt(newValue)));
         }
-
         /// <summary>
         /// Compares with expected value and if same, assigns the new value.
         /// </summary>

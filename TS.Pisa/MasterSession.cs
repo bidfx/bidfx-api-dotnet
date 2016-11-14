@@ -12,11 +12,6 @@ namespace TS.Pisa
         private readonly Dictionary<string, ISet<ISubscriber>> _subscriptions =
             new Dictionary<string, ISet<ISubscriber>>();
 
-        public ISubscriber CreateSubscriber()
-        {
-            return new Subscriber(this);
-        }
-
         public void Start()
         {
             log.Info("MasterSession started");
@@ -40,20 +35,15 @@ namespace TS.Pisa
             _providerPlugins.Add(providerPlugin);
         }
 
-        public void Subscribe(ISubscriber subscriber, string subject)
+        public void Subscribe(string subject)
         {
+            log.Info("subscribe to " + subject);
             ISet<ISubscriber> subscription;
             if (!_subscriptions.TryGetValue(subject, out subscription))
             {
                 subscription = new HashSet<ISubscriber>();
                 _subscriptions[subject] = subscription;
             }
-            subscription.Add(subscriber);
-            SubscribeOnSuitableProviders(subscriber, subject);
-        }
-
-        private void SubscribeOnSuitableProviders(ISubscriber subscriber, string subject)
-        {
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
@@ -63,7 +53,20 @@ namespace TS.Pisa
             }
         }
 
-        public void Unsubscribe(ISubscriber subscriber, string subject)
+        public void Unsubscribe(string subject)
+        {
+            log.Info("unsubscribe from " + subject);
+        }
+
+        public void UnsubscribeAll()
+        {
+        }
+
+        public void ResubscribeAll()
+        {
+        }
+
+        public void Close()
         {
         }
     }

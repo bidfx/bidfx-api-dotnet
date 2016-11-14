@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-
 namespace TS.Pisa.Tools
 {
     [TestFixture]
@@ -18,7 +17,6 @@ namespace TS.Pisa.Tools
             Assert.AreEqual("File.2", nameCache.CreateUniqueName("File."));
             Assert.AreEqual("File.3", nameCache.CreateUniqueName("File."));
         }
-
         [Test]
         public virtual void TestCreateUniqueNameForType()
         {
@@ -29,7 +27,6 @@ namespace TS.Pisa.Tools
             Assert.AreEqual("List1", nameCache.CreateUniqueName(typeof(List)));
             Assert.AreEqual("List2", nameCache.CreateUniqueName(typeof(List)));
         }
-
         [Test]
         public virtual void TestNextID()
         {
@@ -39,7 +36,6 @@ namespace TS.Pisa.Tools
             Assert.AreEqual(3, nameCache.NextID("Test"));
             Assert.AreEqual(1, nameCache.NextID("Test2"));
         }
-
         [Test]
         public virtual void TestLastID()
         {
@@ -53,7 +49,6 @@ namespace TS.Pisa.Tools
             Assert.AreEqual(0, nameCache.LastID("Test2"));
             Assert.AreEqual(0, nameCache.LastID("Test2"));
         }
-
         [Test]
         public virtual void TestGetDefault()
         {
@@ -61,7 +56,6 @@ namespace TS.Pisa.Tools
             Assert.IsNotNull(cache);
             Assert.AreSame(cache, NameCache.Default());
         }
-
         [Test]
         public virtual void TestNames()
         {

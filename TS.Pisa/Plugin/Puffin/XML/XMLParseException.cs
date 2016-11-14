@@ -2,9 +2,9 @@
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
-    internal class XMLParseException : Exception
+    public class XmlParseException : Exception
     {
-        public XMLParseException(string msg) :
+        public XmlParseException(string msg) :
             base(msg)
         {
         }

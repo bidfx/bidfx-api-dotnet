@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace TS.Pisa
 {
     public class IllegalSubjectException : Exception
@@ -7,7 +6,6 @@ namespace TS.Pisa
         public IllegalSubjectException(string message) : base(message)
         {
         }
-
         public IllegalSubjectException()
         {
         }

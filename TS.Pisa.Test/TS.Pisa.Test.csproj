@@ -48,6 +48,8 @@
     <Compile Include="DefaultSessionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\NameCacheTest.cs" />
+    <Compile Include="Plugin\Puffin\XML\XMLElementTest.cs" />
+    <Compile Include="Plugin\Puffin\Xml\XmlInflateTokenizerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
@@ -56,8 +58,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Tools" />
     <Folder Include="Plugin" />
-    <Folder Include="Puffin" />
+    <Folder Include="Plugin\Puffin" />
+    <Folder Include="Plugin\Puffin\Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -6,7 +6,7 @@ namespace TS.Pisa
         void Subscribe(string subject);
         void Unsubscribe(string subject);
         void UnsubscribeAll();
+        void ResubscribeAll();
         void Close();
-        IDispatcher GetDispatcher();
     }
 }
