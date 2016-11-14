@@ -27,6 +27,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return _code;
         }
 
+        public int GetCount()
+        {
+            return _count;
+        }
+
         /// <summary>Create a string representation of this TokenCode (for debugging).</summary>
         public override string ToString()
         {

@@ -69,30 +69,24 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Get the optimal code for a given token code.</summary>
         /// <param name="tokenCode">the Xml token code to find.</param>
         /// <returns>the corresponding optimalCode for the tokenCode.</returns>
-        public virtual int GetCode(XmlTokenCode tokenCode)
+        public int GetCode(XmlTokenCode tokenCode)
         {
             ++tokenCode._count;
-            if (tokenCode._code >= MaxOneByteCode)
+            if (tokenCode._code < MaxOneByteCode) return tokenCode._code;
+            if (tokenCode._count <= _winningPost) return tokenCode._code;
+            var count = tokenCode._count;
+            for (var i = 0; i < MaxOneByteCode; ++i)
             {
-                if (tokenCode._count > _winningPost)
-                {
-                    int count = tokenCode._count;
-                    for (int i = 0; i < MaxOneByteCode; ++i)
-                    {
-                        XmlTokenCode swap = _tokenCodes[i];
-                        if (count > swap._count)
-                        {
-                            _tokenCodes[tokenCode._code] = swap;
-                            swap._code = tokenCode._code;
-                            _tokenCodes[i] = tokenCode;
-                            tokenCode._code = i;
-                            return swap._code;
-                        }
-                    }
-                    // must use the old code!
-                    _winningPost = count;
-                }
+                var swap = _tokenCodes[i];
+                if (count <= swap._count) continue;
+                _tokenCodes[tokenCode._code] = swap;
+                swap._code = tokenCode._code;
+                _tokenCodes[i] = tokenCode;
+                tokenCode._code = i;
+                return swap._code;
             }
+            // must use the old code!
+            _winningPost = count;
             return tokenCode._code;
         }
 
@@ -107,7 +101,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </remarks>
         /// <param name="token">the Xml token to insert.</param>
         /// <returns>the inserted token code or null if the table was full.</returns>
-        public virtual XmlTokenCode Insert(XmlToken token)
+        public XmlTokenCode Insert(XmlToken token)
         {
             XmlTokenCode tokenCode = null;
             if (TokenSpaceAvailable())
@@ -134,8 +128,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Add a token to the dictionary and return its token-code.</summary>
         private XmlTokenCode AddToken(XmlToken token)
         {
-            XmlTokenCode tokenCode = new XmlTokenCode(token);
-            int code = tokenCode._code = _nextCode++;
+            var tokenCode = new XmlTokenCode(token);
+            var code = tokenCode._code = _nextCode++;
             if (_nextCode > _tokenCodes.Length)
             {
                 Extend();
@@ -147,8 +141,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Extend the capacity of the internal token dictionary.</summary>
         private void Extend()
         {
-            int oldLength = _tokenCodes.Length;
-            XmlTokenCode[] temp = _tokenCodes;
+            var oldLength = _tokenCodes.Length;
+            var temp = _tokenCodes;
             _tokenCodes = new XmlTokenCode[2 * oldLength];
             System.Array.Copy(temp, 0, _tokenCodes, 0, oldLength);
         }
@@ -159,9 +153,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         private void Purge()
         {
-            int lowerQuartile = EstimateLowerQuartile();
-            int to = 0;
-            for (int from = 0; from < MaxCode; ++from)
+            var lowerQuartile = EstimateLowerQuartile();
+            var to = 0;
+            for (var from = 0; from < MaxCode; ++from)
             {
                 if (_tokenCodes[from]._count > lowerQuartile)
                 {
@@ -185,16 +179,16 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// Estimate the lower quartile range of tokens, in terms of occurrence
         /// rate, by means of a small sample.
         /// </summary>
-        public virtual int EstimateLowerQuartile()
+        public int EstimateLowerQuartile()
         {
-            int[] samples = new int[7];
-            int step = MaxCode / (samples.Length + 1);
+            var samples = new int[7];
+            var step = MaxCode / (samples.Length + 1);
             if (step == 0)
             {
                 return _tokenCodes[MaxCode / 2]._count;
             }
-            int j = step - 1;
-            for (int i = 0; i < samples.Length; ++i)
+            var j = step - 1;
+            for (var i = 0; i < samples.Length; ++i)
             {
                 samples[i] = _tokenCodes[j]._count;
                 j += step;
@@ -217,27 +211,22 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// a token.
         /// </exception>
         /// <exception cref="XmlSyntaxException"/>
-        public virtual XmlToken GetToken(int code)
+        public XmlToken GetToken(int code)
         {
-            if (code >= 0 && code < _nextCode)
-            {
-                XmlTokenCode tokenCode = _tokenCodes[code];
-                if (tokenCode != null)
-                {
-                    GetCode(tokenCode);
-                    return tokenCode._token;
-                }
-            }
-            throw new XmlSyntaxException("invalid Xml token code (" + code + ")");
+            if (code < 0 || code >= _nextCode) throw new XmlSyntaxException("invalid Xml token code (" + code + ")");
+            var tokenCode = _tokenCodes[code];
+            if (tokenCode == null) throw new XmlSyntaxException("invalid Xml token code (" + code + ")");
+            GetCode(tokenCode);
+            return tokenCode._token;
         }
 
         /// <summary>Write a token code to a stream.</summary>
         /// <param name="tokenCode">the Xml token code to output.</param>
         /// <param name="stream">the stream to write to.</param>
         /// <exception cref="System.IO.IOException"/>
-        public virtual void Write(XmlTokenCode tokenCode, Stream stream)
+        public void Write(XmlTokenCode tokenCode, Stream stream)
         {
-            int code = GetCode(tokenCode);
+            var code = GetCode(tokenCode);
             if (code < MaxOneByteCode)
             {
                 stream.WriteByte((byte) (IsToken | code));
@@ -245,20 +234,18 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             else
             {
                 stream.WriteByte((byte) (IsToken | (code & CodeMask)));
-                // low byte
-                stream.WriteByte((byte) (((int) (((int) code) >> CodeBits)) + TokenCodes));
+                stream.WriteByte((byte) ((code >> CodeBits) + TokenCodes));
             }
         }
 
-        // high byte
         /// <summary>Convert an input token byte to a token code.</summary>
-        public virtual int ToCode(byte b)
+        public static int ToCode(byte b)
         {
             return b & CodeMask;
         }
 
         /// <summary>Convert a pair of input token bytes to a token code.</summary>
-        public virtual int ToCode(byte low, byte high)
+        public static int ToCode(byte low, byte high)
         {
             var a = low & CodeMask;
             var b = (high - TokenCodes) << CodeBits;
@@ -266,42 +253,42 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         /// <summary>Test if the given byte is a token byte.</summary>
-        public virtual bool IsFirstByteOfToken(byte b)
+        public static bool IsFirstByteOfToken(byte b)
         {
             return b >= IsToken;
         }
 
         /// <summary>Test if the given byte is the second byte of a two-byte token.</summary>
-        public virtual bool IsSecondByteOfToken(byte b)
+        public static bool IsSecondByteOfToken(byte b)
         {
             return b >= TokenCodes && b < IsToken;
         }
 
         /// <summary>Test if the given byte is a token-type marker.</summary>
-        public virtual bool IsTokenType(byte b)
+        public static bool IsTokenType(byte b)
         {
             return (b & CodeMask) < TokenCodes;
         }
 
         /// <summary>Test if the given byte is plain ASCII text.</summary>
-        public virtual bool IsPlainText(byte b)
+        public static bool IsPlainText(byte b)
         {
-            return b >= TokenCodes;
+            return b >= TokenCodes && b < IsToken;
         }
 
         /// <summary>Test the integrity of this object</summary>
         /// <exception cref="System.InvalidOperationException">if the test fails.</exception>
-        public virtual void TestIntegrity()
+        public void TestIntegrity()
         {
             if (_tokenCodes.Length < _nextCode)
             {
-                throw new XmlSyntaxException("mTokenCodes.length < _nextCode");
+                throw new XmlSyntaxException("_tokenCodes.Length < _nextCode");
             }
             if (MaxCode < _nextCode)
             {
-                throw new XmlSyntaxException("mMaxCode < _nextCode");
+                throw new XmlSyntaxException("MaxCode < _nextCode");
             }
-            for (int i = 0; i < _nextCode; ++i)
+            for (var i = 0; i < _nextCode; ++i)
             {
                 if (_tokenCodes[i] == null)
                 {
@@ -317,7 +304,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         /// <summary>Dump the contents to a string for debug purposes.</summary>
-        public virtual string Dump()
+        public string Dump()
         {
             StringBuilder buf = new StringBuilder();
             buf.Append("XmlDictionary");

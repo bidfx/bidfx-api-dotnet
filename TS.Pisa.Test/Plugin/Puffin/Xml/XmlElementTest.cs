@@ -100,7 +100,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         {
             XmlElement nested = new XmlElement(FxPrice).Add(Bid, 22);
             XmlElement element = new XmlElement(Update).Add(nested);
-            Assert.AreEqual(element.ToString(), "<Update><FxPrice Bid=\"22\"/></Update>");
+            Assert.AreEqual("<Update><FxPrice Bid=\"22\"/></Update>", element.ToString());
             XmlElement first = element.GetContents().GetFirstElement();
             Assert.AreEqual("<FxPrice Bid=\"22\"/>", first.ToString());
         }

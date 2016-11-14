@@ -8,7 +8,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// This class provides a compressed Xml language inflate tokenizer for
     /// well-formed Xml expressions.
     /// </summary>
-    /// <seealso cref="XmlDeflateFormatter"/>
     /// <author>Paul Sweeny</author>
     public class XmlInflateTokenizer : AbstractXmlTokenizer
     {
@@ -52,13 +51,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     {
                         //System.out.println("b = '"+(char)b+"' ("+b+")");
                         //System.out.println("FIRST_BYTE");
-                        if (_dictionary.IsFirstByteOfToken(b))
+                        if (XmlDictionary.IsFirstByteOfToken(b))
                         {
                             state = SecondByte;
                         }
                         else
                         {
-                            if (_dictionary.IsTokenType(b))
+                            if (XmlDictionary.IsTokenType(b))
                             {
                                 switch (b)
                                 {
@@ -85,7 +84,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     {
                         //System.out.println("SECOND_BYTE");
                         XmlToken token;
-                        if (_dictionary.IsSecondByteOfToken(b))
+                        if (XmlDictionary.IsSecondByteOfToken(b))
                         {
                             token = _dictionary.GetToken(_buffer[_mark], b);
                         }
@@ -108,7 +107,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     case ScanUnseenToken:
                     {
                         //System.out.println("SCAN_UNSEEN_TOKEN");
-                        if (!_dictionary.IsPlainText(b))
+                        if (!XmlDictionary.IsPlainText(b))
                         {
                             int type = _buffer[_mark];
                             if (_mark < --_point)
@@ -168,7 +167,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             int oldLength = _tagStack.Length;
             XmlToken[] temp = _tagStack;
             _tagStack = new XmlToken[2 * oldLength];
-            System.Array.Copy(temp, 0, _tagStack, 0, oldLength);
+            Array.Copy(temp, 0, _tagStack, 0, oldLength);
         }
 
         /// <summary>Apend a character to a StringBuffer, transform it if non-readable.</summary>
