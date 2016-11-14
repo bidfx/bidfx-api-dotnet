@@ -124,6 +124,7 @@ namespace TS.Pisa.Plugin.Puffin
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
                             encryptedPassword + "\" Description=\"PuffinNET\" Version=\"8\"/>");
                 ReadMessage();
+                ReadMessage();
             }
             catch (Exception e)
             {
