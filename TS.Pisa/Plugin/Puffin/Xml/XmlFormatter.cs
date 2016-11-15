@@ -1,8 +1,4 @@
-using System;
-using System.IO;
 using System.Text;
-using System.Xml.Schema;
-using System.Xml.Xsl.Runtime;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
@@ -84,7 +80,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     WriteAttributeValueString(value);
                     break;
                 default:
-                    throw new XmlSyntaxException("unexpect attribute value type "+value);
+                    throw new XmlSyntaxException("unexpect attribute value type " + value);
             }
         }
 

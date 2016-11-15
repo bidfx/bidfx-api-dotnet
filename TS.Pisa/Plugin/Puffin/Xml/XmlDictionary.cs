@@ -156,7 +156,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 }
                 else
                 {
-                    _table?.Remove(_tokenCodes[from]._token);
+                    if (_table != null)
+                    {
+                        _table.Remove(_tokenCodes[from]._token);
+                    }
                     _tokenCodes[from] = null;
                 }
             }
