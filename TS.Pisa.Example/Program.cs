@@ -1,4 +1,5 @@
-﻿using TS.Pisa.Plugin.Puffin;
+﻿using System;
+using TS.Pisa.Plugin.Puffin;
 namespace TS.Pisa.Example
 {
     internal class Program

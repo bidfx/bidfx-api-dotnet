@@ -22,7 +22,14 @@ namespace TS.Pisa.Plugin.Puffin
         {
             return value == VALUE_TRUE;
         }
-        public bool Value => IntToBool(Interlocked.Add(ref _currentValue, 0));
+
+        public bool Value
+        {
+            get
+            {
+                return IntToBool(Interlocked.Add(ref _currentValue, 0));
+            }
+        }
 
         /// <summary>
         /// Sets the boolean value.

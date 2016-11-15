@@ -4,8 +4,10 @@ using System.Threading;
 using TS.Pisa.Tools;
 using System;
 using System.IO;
+using System.IO.Pipes;
 using System.Net.Security;
 using System.Xml;
+using TS.Pisa.Plugin.Puffin.Xml;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -22,16 +24,16 @@ namespace TS.Pisa.Plugin.Puffin
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public string Name { get; }
-        public ProviderStatus ProviderStatus { get; }
-        public string ProviderStatusText { get; }
+        public string Name { get; set; }
+        public ProviderStatus ProviderStatus { get; set; }
+        public string ProviderStatusText { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public string Service { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public bool Tunnel { get; set; }
-        public GUID Guid { get; } = new GUID();
+        public GUID Guid { get; set; }
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
@@ -44,6 +46,7 @@ namespace TS.Pisa.Plugin.Puffin
             ProviderStatusText = "waiting for remote connection";
             Host = "ny-tunnel.uatdev.tradingscreen.com";
             Port = 443;
+            Guid = new GUID();
             Service = "static://puffin";
             Username = "username_unknown";
             Password = "password_unset";
@@ -114,22 +117,33 @@ namespace TS.Pisa.Plugin.Puffin
                 {
                     SendPuffinUrl();
                 }
-                var welcomeMessage = ReadMessage();
-                //Temporary until XML parser is created
-                var welcomeXml = new XmlDocument();
-                welcomeXml.LoadXml(welcomeMessage);
-                var selectSingleNode = welcomeXml.SelectSingleNode("Welcome");
-                var publicKey = selectSingleNode.Attributes["PublicKey"].InnerText;
+                var publicKey = GetPublicKey(ReadMessage());
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
-                            encryptedPassword + "\" Description=\"PuffinNET\" Version=\"8\"/>");
-                ReadMessage();
-                ReadMessage();
+                            encryptedPassword + "\" Description=\"Puffin.NET\" Version=\"8\"/>");
+                var grantMessage = ReadMessage();
+                var serviceDescriptionMessage = ReadMessage();
+                SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
+                            Guid + "\"/>");
             }
             catch (Exception e)
             {
                 Log.Warn("failed to read from socket", e);
             }
+        }
+
+        private string GetPublicKey(string welcomeMessage)
+        {
+            var welcomeXml = new XmlDocument();
+            welcomeXml.LoadXml(welcomeMessage);
+            var welcomeNode = welcomeXml.SelectSingleNode("Welcome");
+            if (welcomeNode == null)
+                throw new XmlSyntaxException("The welcome node could not be found in the message: " + welcomeMessage);
+            if (welcomeNode.Attributes != null && welcomeNode.Attributes["PublicKey"] != null)
+            {
+                return welcomeNode.Attributes["PublicKey"].InnerText;
+            }
+            throw new XmlSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
         }
 
         private void UpgradeToSsl()

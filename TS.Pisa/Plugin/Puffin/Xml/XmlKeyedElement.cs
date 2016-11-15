@@ -47,7 +47,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             : base(toCopy.GetTag())
         {
             var token = toCopy.GetAttributeValue(Key);
-            _key = token?.GetText();
+            _key = token == null ? null : token.GetText();
             Update(toCopy, false);
         }
 

@@ -5,7 +5,7 @@ namespace TS.Pisa
     public interface IPrice
     {
         string GetSubject();
-        IReadOnlyDictionary<string, object> GetAllFields();
-        IReadOnlyCollection<string> GetChangedFieldNames();
+        IDictionary<string, object> GetAllFields();
+        ICollection<string> GetChangedFieldNames();
     }        
 }

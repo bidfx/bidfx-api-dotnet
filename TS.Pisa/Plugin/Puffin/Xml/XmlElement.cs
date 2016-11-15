@@ -212,7 +212,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Removes nested sub-elements marked with the deletion attribute.</summary>
         public void ClearDeletes()
         {
-            _contents?.ClearDeletes();
+            if (_contents != null)
+            {
+                _contents.ClearDeletes();
+            }
         }
 
         /// <summary>
@@ -334,13 +337,22 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         {
             var result = _tag.GetHashCode();
             result = 31 * result + _attributes.GetHashCode();
-            result = 31 * result + (_contents?.GetHashCode() ?? 0);
+            var contentsHashCode = 0;
+            if (_contents != null)
+            {
+                contentsHashCode = _contents.GetHashCode();
+            }
+            result = 31 * result + contentsHashCode;
             return result;
         }
 
         public string GetAttributeValueAsText(string key)
         {
-            return GetAttributeValue(key)?.GetText();
+            if (GetAttributeValue(key) != null)
+            {
+                return GetAttributeValue(key).GetText();
+            }
+            return null;
         }
     }
 }

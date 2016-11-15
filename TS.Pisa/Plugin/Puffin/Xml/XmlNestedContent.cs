@@ -157,6 +157,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return container != null && AreEqual(_elements, container._elements);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         private static bool AreEqual(IDictionary<string, XmlElement> d1, IDictionary<string, XmlElement> d2)
         {
             return d1.Count == d2.Count &&
