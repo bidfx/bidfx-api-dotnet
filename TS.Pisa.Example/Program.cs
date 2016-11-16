@@ -1,5 +1,6 @@
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Threading;
 using TS.Pisa.Plugin.Puffin;
 namespace TS.Pisa.Example
 {
@@ -22,7 +23,10 @@ namespace TS.Pisa.Example
             var session = PrepareSession();
             log.Info("starting the Pisa session");
             session.Start();
+            Thread.Sleep(5000);
             session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
+            Thread.Sleep(5000);
+            session.Unsubscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
         }
         private static ISession PrepareSession()
         {

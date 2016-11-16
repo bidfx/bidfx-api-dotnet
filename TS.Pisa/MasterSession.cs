@@ -56,6 +56,13 @@ namespace TS.Pisa
         public void Unsubscribe(string subject)
         {
             log.Info("unsubscribe from " + subject);
+            foreach (var providerPlugin in _providerPlugins)
+            {
+                if (providerPlugin.IsSubjectCompatible(subject))
+                {
+                    providerPlugin.Unsubscribe(subject);
+                }
+            }
         }
 
         public void UnsubscribeAll()

@@ -6,8 +6,10 @@ using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Net.Security;
+using System.Security.Authentication;
 using System.Xml;
 using TS.Pisa.Plugin.Puffin.Xml;
+using XmlElement = TS.Pisa.Plugin.Puffin.Xml.XmlElement;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -38,13 +40,14 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
+        private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
 
         public PuffinProviderPlugin()
         {
             Name = NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             ProviderStatus = ProviderStatus.TemporarilyDown;
             ProviderStatusText = "waiting for remote connection";
-            Host = "ny-tunnel.uatdev.tradingscreen.com";
+            Host = "host_unknown";
             Port = 443;
             Guid = new GUID();
             Service = "static://puffin";
@@ -71,11 +74,13 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             Log.Info(Name + " subscribing to " + subject);
+            _puffinRequestor.Subscribe(subject);
         }
 
         public void Unsubscribe(string subject)
         {
             Log.Info(Name + " unsubscribing from " + subject);
+            _puffinRequestor.Unsubscribe(subject);
         }
 
         public void EventListener(IEventListener listener)
@@ -120,11 +125,16 @@ namespace TS.Pisa.Plugin.Puffin
                 var publicKey = GetPublicKey(ReadMessage());
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
-                            encryptedPassword + "\" Description=\"Puffin.NET\" Version=\"8\"/>");
-                var grantMessage = ReadMessage();
+                            encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>", "login message");
+                if (AccessGranted(ReadMessage()) == false)
+                    throw new AuthenticationException("Access was not granted.");
                 var serviceDescriptionMessage = ReadMessage();
                 SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
-                            Guid + "\"/>");
+                            Guid + "\"/>", "service description");
+                ProviderStatus = ProviderStatus.Ready;
+                PuffinClient puffinClient = new PuffinClient(_stream);
+                _puffinRequestor = puffinClient;
+                puffinClient.Start();
             }
             catch (Exception e)
             {
@@ -144,6 +154,20 @@ namespace TS.Pisa.Plugin.Puffin
                 return welcomeNode.Attributes["PublicKey"].InnerText;
             }
             throw new XmlSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
+        }
+
+        private bool AccessGranted(string grantMessage)
+        {
+            var grantXml = new XmlDocument();
+            grantXml.LoadXml(grantMessage);
+            var grantNode = grantXml.SelectSingleNode("Grant");
+            if (grantNode == null)
+                throw new XmlSyntaxException("The grant node could not be found in the message: " + grantMessage);
+            if (grantNode.Attributes != null && grantNode.Attributes["Access"] != null)
+            {
+                return Convert.ToBoolean(grantNode.Attributes["Access"].InnerText);
+            }
+            throw new XmlSyntaxException("No Access tag provided in grant message: " + grantMessage);
         }
 
         private void UpgradeToSsl()
@@ -170,14 +194,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false&zipPrices=true&zipRequests=false\n");
+            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false&zipPrices=true&zipRequests=false\n","puffin url");
         }
 
         private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + Guid + "\r\n\r\n");
+                        "GUID: " + Guid + "\r\n\r\n", "connect header");
         }
 
         private void ReadTunnelResponse()
@@ -193,11 +217,11 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void SendMessage(string message)
+        private void SendMessage(string message, string messageType = "")
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("sending: " + message);
+                Log.Debug(Name + " sending "+messageType+": " + message);
             }
             _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             _stream.Flush();
@@ -208,7 +232,7 @@ namespace TS.Pisa.Plugin.Puffin
             var message = _buffer.ReadXmlFromStream(_stream);
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("received: " + message);
+                Log.Debug(Name + " received: " + message);
             }
             return message;
         }

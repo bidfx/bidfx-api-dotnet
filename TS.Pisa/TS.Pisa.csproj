@@ -48,7 +48,9 @@
     <Compile Include="IllegalSubjectException.cs" />
     <Compile Include="IProviderPlugin.cs" />
     <Compile Include="PisaVersion.cs" />
+    <Compile Include="Plugin\Puffin\IPuffinRequestor.cs" />
     <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
+    <Compile Include="Plugin\Puffin\PuffinClient.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlTokenType.cs" />
     <Compile Include="ProviderStatus.cs" />
     <Compile Include="ISession.cs" />
@@ -80,7 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Plugin" />
-    <Folder Include="Plugin\Puffin" />
     <Folder Include="Plugin\Puffin\Xml" />
     <Folder Include="Tools" />
   </ItemGroup>
