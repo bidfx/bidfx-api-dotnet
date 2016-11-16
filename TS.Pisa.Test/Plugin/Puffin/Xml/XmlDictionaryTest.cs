@@ -127,8 +127,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void bytes_with_bit_7_set_are_not_plain_text()
         {
-            Assert.False(XmlDictionary.IsPlainText((byte) 128));
-            Assert.False(XmlDictionary.IsPlainText((byte) 129));
+            Assert.False(XmlDictionary.IsPlainText(128));
+            Assert.False(XmlDictionary.IsPlainText(129));
             for (var i = 128; i < 256; ++i)
             {
                 Assert.False(XmlDictionary.IsPlainText((byte) i));
@@ -253,13 +253,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         public void one_byte_token_codes()
         {
             // all are between 0x80 and 0xff
-            Assert.AreEqual(0, XmlDictionary.ToCode((byte) 0x80));
-            Assert.AreEqual(1, XmlDictionary.ToCode((byte) 0x81));
-            Assert.AreEqual(2, XmlDictionary.ToCode((byte) 0x82));
-            Assert.AreEqual(22, XmlDictionary.ToCode((byte) 0x96));
-            Assert.AreEqual(72, XmlDictionary.ToCode((byte) 0xc8));
-            Assert.AreEqual(126, XmlDictionary.ToCode((byte) 0xfe));
-            Assert.AreEqual(127, XmlDictionary.ToCode((byte) 0xff));
+            Assert.AreEqual(0, XmlDictionary.OneByteCode(0x80));
+            Assert.AreEqual(1, XmlDictionary.OneByteCode(0x81));
+            Assert.AreEqual(2, XmlDictionary.OneByteCode(0x82));
+            Assert.AreEqual(22, XmlDictionary.OneByteCode(0x96));
+            Assert.AreEqual(72, XmlDictionary.OneByteCode(0xc8));
+            Assert.AreEqual(126, XmlDictionary.OneByteCode(0xfe));
+            Assert.AreEqual(127, XmlDictionary.OneByteCode(0xff));
         }
 
         [Test]
@@ -267,12 +267,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         {
             // first bytes between 0x80 and 0xff
             // seconds bytes between 0x09 and 0x7f
-            Assert.AreEqual(0, XmlDictionary.ToCode((byte) 0x80, (byte) 0x09));
-            Assert.AreEqual(1, XmlDictionary.ToCode((byte) 0x81, (byte) 0x09));
-            Assert.AreEqual(2, XmlDictionary.ToCode((byte) 0x82, (byte) 0x09));
-            Assert.AreEqual(128, XmlDictionary.ToCode((byte) 0x80, (byte) 0x0a));
-            Assert.AreEqual(129, XmlDictionary.ToCode((byte) 0x81, (byte) 0x0a));
-            Assert.AreEqual(130, XmlDictionary.ToCode((byte) 0x82, (byte) 0x0a));
+            Assert.AreEqual(0, XmlDictionary.TwoByteCode(0x80, 0x09));
+            Assert.AreEqual(1, XmlDictionary.TwoByteCode(0x81, 0x09));
+            Assert.AreEqual(2, XmlDictionary.TwoByteCode(0x82, 0x09));
+            Assert.AreEqual(128, XmlDictionary.TwoByteCode(0x80, 0x0a));
+            Assert.AreEqual(129, XmlDictionary.TwoByteCode(0x81, 0x0a));
+            Assert.AreEqual(130, XmlDictionary.TwoByteCode(0x82, 0x0a));
         }
 
         [Test]
@@ -285,7 +285,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 for (var first = 0x80; first <= 0xff; ++first)
                 {
-                    Assert.AreEqual(expected++, XmlDictionary.ToCode((byte) first, (byte) second));
+                    Assert.AreEqual(expected++, XmlDictionary.TwoByteCode((byte) first, (byte) second));
                 }
             }
         }

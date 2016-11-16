@@ -12,10 +12,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     {
         private const int TokenCodes = 9;
         private const int CodeBits = 7;
-
         private const int IsToken = 1 << CodeBits;
         private const int MaxOneByteCode = 1 << CodeBits;
-
         private const int CodeMask = MaxOneByteCode - 1;
         private const int MaxCode = (MaxOneByteCode - TokenCodes) << CodeBits;
 
@@ -26,12 +24,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         public XmlToken OneByteToken(byte b)
         {
-            return LookupToken(ToCode(b));
+            return LookupToken(OneByteCode(b));
         }
 
         public XmlToken TwoByteToken(byte one, byte two)
         {
-            return LookupToken(ToCode(one, two));
+            return LookupToken(TwoByteCode(one, two));
         }
 
         public XmlToken LookupToken(int code)
@@ -120,16 +118,14 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return samples[samples.Length / 4];
         }
 
-        public static int ToCode(byte b)
+        public static int OneByteCode(byte b)
         {
             return b & CodeMask;
         }
 
-        public static int ToCode(byte low, byte high)
+        public static int TwoByteCode(byte low, byte high)
         {
-            var a = low & CodeMask;
-            var b = (high - TokenCodes) << CodeBits;
-            return a | b;
+            return low & CodeMask | (high - TokenCodes) << CodeBits;
         }
 
         public static bool IsFirstByteOfToken(byte b)
