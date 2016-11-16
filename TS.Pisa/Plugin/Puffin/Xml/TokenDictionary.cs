@@ -8,7 +8,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// An XmlDictionary is a dictionary used to encode and/or decode compressed Xml messages.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class XmlDictionary
+    public class TokenDictionary
     {
         private const int TokenCodes = 9;
         private const int CodeBits = 7;

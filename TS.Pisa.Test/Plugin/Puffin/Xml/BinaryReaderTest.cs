@@ -7,7 +7,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 {
     /// <author>Paul Sweeny</author>
     [TestFixture]
-    public class XmlBinaryInflaterTest
+    public class BinaryReaderTest
     {
         [Test]
         public virtual void level_one_price()
@@ -17,7 +17,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name" +
                 "\bVodafone plc\u0004AskSize\u00053000\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlBinaryInflater(stream);
+            var tokenizer = new BinaryReader(stream);
             Assert.AreEqual(
                 new XmlElement("Update")
                     .AddAttribute("Subject",
@@ -40,7 +40,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\u0004AskSize\u00053000\u0001\u0000" +
                 "\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008A\u008B\u008C\u008D\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlBinaryInflater(stream);
+            var tokenizer = new BinaryReader(stream);
 
             var element1 = tokenizer.NextElement();
             var element2 = tokenizer.NextElement();
@@ -90,7 +90,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "208\u0004BidSize8\u0005992\u0004AskSize8\u00051008\u0004Bid9\u0006191\u0004Ask9\u0006" +
                 "209\u0004BidSize9\u0005991\u0004AskSize9\u00051009\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlBinaryInflater(stream);
+            var tokenizer = new BinaryReader(stream);
 
             var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 10; ++i)
@@ -181,7 +181,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\n\u00e3\n\u00e4\n\u00e5\n\u00e6\n\u00e7\n\u00e8\n\u00e9\n\u00ea\n\u00eb\n\u00ec\n\u00ed" +
                 "\n\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new XmlBinaryInflater(stream);
+            var tokenizer = new BinaryReader(stream);
 
             var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 30; ++i)

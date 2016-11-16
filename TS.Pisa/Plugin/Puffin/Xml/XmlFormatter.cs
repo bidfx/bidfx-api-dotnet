@@ -67,19 +67,19 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             _builder.Append(' ' + name + "=\"");
             switch (value.TokenType())
             {
-                case XmlTokenType.AttributeValueInteger:
-                case XmlTokenType.AttributeValueDouble:
-                case XmlTokenType.AttributeValueFraction:
+                case TokenType.AttributeValueInteger:
+                case TokenType.AttributeValueDouble:
+                case TokenType.AttributeValueFraction:
                     _builder.Append(value.GetText());
                     break;
-                case XmlTokenType.AttributeValueString:
+                case TokenType.AttributeValueString:
                     EscapeToken(value);
                     break;
-                case XmlTokenType.TagEnd:
-                case XmlTokenType.TagEndEmptyContent:
-                case XmlTokenType.TagStart:
-                case XmlTokenType.NestedContent:
-                case XmlTokenType.AttributeName:
+                case TokenType.TagEnd:
+                case TokenType.TagEndEmptyContent:
+                case TokenType.TagStart:
+                case TokenType.NestedContent:
+                case TokenType.AttributeName:
                     break;
                 default:
                     throw new PuffinSyntaxException("unexpect attribute value type " + value);
@@ -89,13 +89,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         private void EscapeToken(XmlToken token)
         {
-            var text = token.GetTextAsBytes();
-            foreach (var c in text)
+            foreach (var c in token.GetText())
             {
                 var encoded = Encodings[c];
                 if (encoded == null)
                 {
-                    _builder.Append((char) c);
+                    _builder.Append(c);
                 }
                 else
                 {

@@ -1,6 +1,6 @@
 ﻿namespace TS.Pisa.Plugin.Puffin.Xml
 {
-    public enum XmlTokenType
+    public enum TokenType
     {
         TagEnd = 0,
         TagEndEmptyContent = 1,

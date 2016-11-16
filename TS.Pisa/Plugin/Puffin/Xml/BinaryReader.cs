@@ -9,7 +9,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// This class provides a compressed Xml language inflate tokenizer for well-formed Xml expressions.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class XmlBinaryInflater
+    public class BinaryReader
     {
         private readonly byte[] _buffer = new byte[8192];
         private int _end;
@@ -17,7 +17,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         private int _mark;
 
         private readonly Stream _inStream;
-        private readonly XmlDictionary _dictionary = new XmlDictionary();
+        private readonly TokenDictionary _dictionary = new TokenDictionary();
         private readonly Stack<XmlToken> _tagStack = new Stack<XmlToken>();
         private readonly Stack<XmlElement> _elementStack = new Stack<XmlElement>();
 
@@ -28,7 +28,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             ScanUnseenToken
         }
 
-        public XmlBinaryInflater(Stream inStream)
+        public BinaryReader(Stream inStream)
         {
             _inStream = inStream;
         }
@@ -56,8 +56,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 {
                     switch (token.TokenType())
                     {
-                        case XmlTokenType.TagEnd:
-                        case XmlTokenType.TagEndEmptyContent:
+                        case TokenType.TagEnd:
+                        case TokenType.TagEndEmptyContent:
                         {
                             if (_elementStack.Count == 0)
                             {
@@ -66,14 +66,14 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             element = _elementStack.Pop();
                             break;
                         }
-                        case XmlTokenType.TagStart:
+                        case TokenType.TagStart:
                         {
                             _elementStack.Push(element);
                             element = new XmlElement(token.GetText());
                             _elementStack.Peek().AddElement(element);
                             break;
                         }
-                        case XmlTokenType.AttributeName:
+                        case TokenType.AttributeName:
                         {
                             var name = token;
                             token = NextToken();
@@ -84,11 +84,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             element.AddAttribute(name.GetText(), token);
                             break;
                         }
-                        case XmlTokenType.AttributeValueInteger:
-                        case XmlTokenType.AttributeValueDouble:
-                        case XmlTokenType.AttributeValueFraction:
-                        case XmlTokenType.AttributeValueString:
-                        case XmlTokenType.NestedContent:
+                        case TokenType.AttributeValueInteger:
+                        case TokenType.AttributeValueDouble:
+                        case TokenType.AttributeValueFraction:
+                        case TokenType.AttributeValueString:
+                        case TokenType.NestedContent:
                         {
                             throw new PuffinSyntaxException("attribute value with no name " + token);
                         }
@@ -162,19 +162,19 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 {
                     case State.FirstByte:
                     {
-                        if (XmlDictionary.IsFirstByteOfToken(b))
+                        if (TokenDictionary.IsFirstByteOfToken(b))
                         {
                             state = State.SecondByte;
                         }
                         else
                         {
-                            if (XmlDictionary.IsTokenType(b))
+                            if (TokenDictionary.IsTokenType(b))
                             {
-                                if (b == (byte) XmlTokenType.TagEnd)
+                                if (b == (byte) TokenType.TagEnd)
                                 {
                                     return _tagStack.Pop().ToEndTag();
                                 }
-                                if (b == (byte) XmlTokenType.TagEndEmptyContent)
+                                if (b == (byte) TokenType.TagEndEmptyContent)
                                 {
                                     _tagStack.Pop();
                                     return XmlToken.EmptyToken;
@@ -192,7 +192,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     case State.SecondByte:
                     {
                         XmlToken token;
-                        if (XmlDictionary.IsSecondByteOfToken(b))
+                        if (TokenDictionary.IsSecondByteOfToken(b))
                         {
                             token = _dictionary.TwoByteToken(_buffer[_mark], b);
                         }
@@ -207,41 +207,41 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     }
                     case State.ScanUnseenToken:
                     {
-                        if (!XmlDictionary.IsPlainText(b))
+                        if (!TokenDictionary.IsPlainText(b))
                         {
-                            var type = (XmlTokenType) _buffer[_mark];
+                            var type = (TokenType) _buffer[_mark];
                             if (_mark < --_point)
                             {
                                 XmlToken token;
                                 var text = MarkedText();
                                 switch (type)
                                 {
-                                    case XmlTokenType.TagStart:
+                                    case TokenType.TagStart:
                                         token = new XmlToken(type, text, text);
                                         _tagStack.Push(token);
                                         break;
-                                    case XmlTokenType.AttributeName:
+                                    case TokenType.AttributeName:
                                         token = new XmlToken(type, text, text);
                                         break;
-                                    case XmlTokenType.TagEnd:
+                                    case TokenType.TagEnd:
                                         token = new XmlToken(type, text, text);
                                         break;
-                                    case XmlTokenType.TagEndEmptyContent:
+                                    case TokenType.TagEndEmptyContent:
                                         token = XmlToken.EmptyToken;
                                         break;
-                                    case XmlTokenType.NestedContent:
+                                    case TokenType.NestedContent:
                                         token = XmlToken.NullContentToken;
                                         break;
-                                    case XmlTokenType.AttributeValueInteger:
+                                    case TokenType.AttributeValueInteger:
                                         token = new XmlToken(type, text, Convert.ToInt32(text));
                                         break;
-                                    case XmlTokenType.AttributeValueDouble:
+                                    case TokenType.AttributeValueDouble:
                                         token = new XmlToken(type, text, Convert.ToDouble(text));
                                         break;
-                                    case XmlTokenType.AttributeValueFraction:
+                                    case TokenType.AttributeValueFraction:
                                         token = new XmlToken(type, text, XmlToken.FractionToDouble(text));
                                         break;
-                                    case XmlTokenType.AttributeValueString:
+                                    case TokenType.AttributeValueString:
                                         token = new XmlToken(type, text, text);
                                         break;
                                     default:
@@ -250,11 +250,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                                 _dictionary.InsertToken(token);
                                 return token;
                             }
-                            if (type == XmlTokenType.AttributeValueString)
+                            if (type == TokenType.AttributeValueString)
                             {
                                 return XmlToken.NullValueToken;
                             }
-                            if (type == XmlTokenType.NestedContent)
+                            if (type == TokenType.NestedContent)
                             {
                                 return XmlToken.NullContentToken;
                             }
