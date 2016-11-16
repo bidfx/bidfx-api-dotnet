@@ -138,12 +138,12 @@ namespace TS.Pisa.Plugin.Puffin
             welcomeXml.LoadXml(welcomeMessage);
             var welcomeNode = welcomeXml.SelectSingleNode("Welcome");
             if (welcomeNode == null)
-                throw new XmlSyntaxException("The welcome node could not be found in the message: " + welcomeMessage);
+                throw new PuffinSyntaxException("The welcome node could not be found in the message: " + welcomeMessage);
             if (welcomeNode.Attributes != null && welcomeNode.Attributes["PublicKey"] != null)
             {
                 return welcomeNode.Attributes["PublicKey"].InnerText;
             }
-            throw new XmlSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
+            throw new PuffinSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
         }
 
         private void UpgradeToSsl()

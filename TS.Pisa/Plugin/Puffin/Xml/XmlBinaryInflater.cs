@@ -49,7 +49,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 if (!token.IsStartTag())
                 {
-                    throw new XmlSyntaxException("start tag expected");
+                    throw new PuffinSyntaxException("start tag expected");
                 }
                 var element = new XmlElement(token.GetText());
                 while ((token = NextToken()) != null)
@@ -90,19 +90,19 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                         case XmlTokenType.AttributeValueString:
                         case XmlTokenType.NestedContent:
                         {
-                            throw new XmlSyntaxException("attribute value with no name " + token);
+                            throw new PuffinSyntaxException("attribute value with no name " + token);
                         }
                         default:
                         {
-                            throw new XmlSyntaxException("unknown token type " + token);
+                            throw new PuffinSyntaxException("unknown token type " + token);
                         }
                     }
                 }
-                throw new XmlSyntaxException("unexpected document termination");
+                throw new PuffinSyntaxException("unexpected document termination");
             }
-            catch (XmlSyntaxException e)
+            catch (PuffinSyntaxException e)
             {
-                throw new XmlSyntaxException(
+                throw new PuffinSyntaxException(
                     e.Message + (token == null ? string.Empty : "; reading " + token.DebugString()));
             }
         }
@@ -135,7 +135,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 {
                     if (_point >= _buffer.Length)
                     {
-                        throw new XmlSyntaxException("input buffer too small " + _buffer.Length);
+                        throw new PuffinSyntaxException("input buffer too small " + _buffer.Length);
                     }
                     var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
                     if (got == -1)
@@ -148,7 +148,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             }
             catch (IOException e)
             {
-                throw new XmlSyntaxException(e.Message);
+                throw new PuffinSyntaxException(e.Message);
             }
         }
 
@@ -183,7 +183,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             }
                             else
                             {
-                                throw new XmlSyntaxException("token tag expected instead of " + b
+                                throw new PuffinSyntaxException("token tag expected instead of " + b
                                                              + " ('" + (char) b + "') at position " + _point);
                             }
                         }
@@ -194,11 +194,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                         XmlToken token;
                         if (XmlDictionary.IsSecondByteOfToken(b))
                         {
-                            token = _dictionary.GetToken(_buffer[_mark], b);
+                            token = _dictionary.TwoByteToken(_buffer[_mark], b);
                         }
                         else
                         {
-                            token = _dictionary.GetToken(_buffer[_mark]);
+                            token = _dictionary.OneByteToken(_buffer[_mark]);
                             --_point;
                         }
                         if (!token.IsStartTag()) return token;
@@ -245,9 +245,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                                         token = new XmlToken(type, text, text);
                                         break;
                                     default:
-                                        throw new XmlSyntaxException("unrecognised token " + type);
+                                        throw new PuffinSyntaxException("unrecognised token " + type);
                                 }
-                                _dictionary.Insert(token);
+                                _dictionary.InsertToken(token);
                                 return token;
                             }
                             if (type == XmlTokenType.AttributeValueString)
@@ -258,19 +258,19 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             {
                                 return XmlToken.NullContentToken;
                             }
-                            throw new XmlSyntaxException("text of previously unseen token expected");
+                            throw new PuffinSyntaxException("text of previously unseen token expected");
                         }
                         break;
                     }
                     default:
                     {
-                        throw new XmlSyntaxException("parser programming error");
+                        throw new PuffinSyntaxException("parser programming error");
                     }
                 }
             }
             if (state != State.FirstByte)
             {
-                throw new XmlSyntaxException("token completion expected");
+                throw new PuffinSyntaxException("token completion expected");
             }
             return null;
         }

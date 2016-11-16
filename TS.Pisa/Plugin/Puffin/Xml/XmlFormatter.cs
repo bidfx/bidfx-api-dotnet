@@ -82,7 +82,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 case XmlTokenType.AttributeName:
                     break;
                 default:
-                    throw new XmlSyntaxException("unexpect attribute value type " + value);
+                    throw new PuffinSyntaxException("unexpect attribute value type " + value);
             }
             _builder.Append('"');
         }

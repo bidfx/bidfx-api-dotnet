@@ -35,7 +35,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         {
             if (value == null || !value.IsValueType())
             {
-                throw new XmlSyntaxException("invalid attribute value " + value);
+                throw new PuffinSyntaxException("invalid attribute value " + value);
             }
             _attributes.Add(new KeyValuePair<string, XmlToken>(name, value));
             return this;

@@ -4,13 +4,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 {
     /// <summary>Signals that a Xml Syntax Exception has occured.</summary>
     /// <author>Paul Sweeny</author>
-    public class XmlSyntaxException : Exception
+    public class PuffinSyntaxException : Exception
     {
-        public XmlSyntaxException()
+        public PuffinSyntaxException()
         {
         }
 
-        public XmlSyntaxException(string message)
+        public PuffinSyntaxException(string message)
             : base(message)
         {
         }

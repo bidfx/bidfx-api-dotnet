@@ -4,6 +4,11 @@ using NUnit.Framework;
 
 namespace TS.Pisa.Plugin.Puffin.Xml
 {
+    public class XmlDictionaryTest
+    {
+
+    }
+
     [TestFixture]
     public class test_byte_for_being_1st_byte_of_a_token
     {
@@ -296,10 +301,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             const int maxTokens = 15232;
             for (var i = 0; i < maxTokens; ++i)
             {
-                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(i));
-                Assert.AreEqual(i, tokenCode.GetCode());
-                Assert.AreEqual(XmlTokenType.AttributeValueInteger, tokenCode.GetToken().TokenType());
-                Assert.AreEqual(i.ToString(), tokenCode.GetToken().GetText());
+                var tokenCode = dictionary.InsertToken(XmlToken.IntegerValue(i));
+                Assert.AreEqual(i, tokenCode.Code);
+                Assert.AreEqual(XmlTokenType.AttributeValueInteger, tokenCode.Token.TokenType());
+                Assert.AreEqual(i.ToString(), tokenCode.Token.GetText());
             }
         }
 
@@ -309,8 +314,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             var dictionary = new XmlDictionary();
             for (var i = 0; i < 5; ++i)
             {
-                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(i));
-                Assert.AreEqual(tokenCode.GetToken(), dictionary.GetToken(tokenCode.GetCode()));
+                var tokenCode = dictionary.InsertToken(XmlToken.IntegerValue(i));
+                Assert.AreEqual(tokenCode.Token, dictionary.LookupToken(tokenCode.Code));
             }
         }
 
@@ -318,12 +323,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         public void each_time_a_token_is_used_its_useage_count_increases()
         {
             var dictionary = new XmlDictionary();
-            var tokenCode = dictionary.Insert(XmlToken.StringValue("sweeno"));
-            Assert.AreEqual(0, tokenCode.GetCount());
+            var tokenCode = dictionary.InsertToken(XmlToken.StringValue("sweeno"));
+            Assert.AreEqual(0, tokenCode.Count);
             for (var i = 1; i < 10; ++i)
             {
-                var token = dictionary.GetToken(tokenCode.GetCode());
-                Assert.AreEqual(i, tokenCode.GetCount());
+                var token = dictionary.LookupToken(tokenCode.Code);
+                Assert.AreEqual(i, tokenCode.Count);
                 Assert.AreEqual("sweeno", token.GetText());
             }
         }
@@ -334,14 +339,14 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             var dictionary = new XmlDictionary();
             for (var i = 0; i < 5; ++i)
             {
-                dictionary.Insert(XmlToken.IntegerValue(i));
+                dictionary.InsertToken(XmlToken.IntegerValue(i));
             }
             try
             {
-                dictionary.GetToken(6);
+                dictionary.LookupToken(6);
                 Assert.Fail("should throw exception");
             }
-            catch (XmlSyntaxException)
+            catch (PuffinSyntaxException)
             {
             }
         }
@@ -353,20 +358,19 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             // overfill the directory in reverse
             for (var value = 20000; value-- > 0;)
             {
-                var tokenCode = dictionary.Insert(XmlToken.IntegerValue(value));
+                var tokenCode = dictionary.InsertToken(XmlToken.IntegerValue(value));
                 // access the lower value tokens the most to make them bubble up to the top.
                 var usage = value < 128 ? 128 - value : 0;
                 for (var i = 0; i < usage; ++i)
                 {
-                    dictionary.GetToken(tokenCode.GetCode());
+                    dictionary.LookupToken(tokenCode.Code);
                 }
             }
 
             var oneByteTokens = new HashSet<string>();
             for (var code = 0; code < 128; ++code)
             {
-                //Console.WriteLine(_dictionary.GetToken(code).GetText());
-                oneByteTokens.Add(dictionary.GetToken(code).GetText());
+                oneByteTokens.Add(dictionary.LookupToken(code).GetText());
             }
             for (var code = 0; code < 128; ++code)
             {

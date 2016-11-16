@@ -50,9 +50,9 @@
     <Compile Include="Plugin\Puffin\Xml\XmlDictionaryTest.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlFormatterTest.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlElementTest.cs" />
+    <Compile Include="Plugin\Puffin\Xml\XmlBinaryInflaterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\NameCacheTest.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlBinaryInflaterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">

@@ -265,10 +265,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 double abs = whole + numerator / denominator;
                 return fraction[0] == '-' ? -abs : abs;
             }
-            catch (XmlSyntaxException)
+            catch (Exception e)
             {
+                throw new FormatException("invalid fraction " + fraction, e);
             }
-            throw new FormatException("invalid fraction " + fraction);
         }
 
         private double TextAsDouble()
