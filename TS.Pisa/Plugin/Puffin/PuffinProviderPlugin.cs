@@ -125,12 +125,12 @@ namespace TS.Pisa.Plugin.Puffin
                 var publicKey = GetPublicKey(ReadMessage());
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
-                            encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>", "login message");
+                            encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>");
                 if (AccessGranted(ReadMessage()) == false)
                     throw new AuthenticationException("Access was not granted.");
                 var serviceDescriptionMessage = ReadMessage();
                 SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
-                            Guid + "\"/>", "service description");
+                            Guid + "\"/>");
                 ProviderStatus = ProviderStatus.Ready;
                 PuffinClient puffinClient = new PuffinClient(_stream);
                 _puffinRequestor = puffinClient;
@@ -194,14 +194,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false&zipPrices=true&zipRequests=false\n","puffin url");
+            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false&zipPrices=true&zipRequests=false\n");
         }
 
         private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + Guid + "\r\n\r\n", "connect header");
+                        "GUID: " + Guid + "\r\n\r\n");
         }
 
         private void ReadTunnelResponse()
@@ -217,11 +217,11 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void SendMessage(string message, string messageType = "")
+        private void SendMessage(string message)
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug(Name + " sending "+messageType+": " + message);
+                Log.Debug(Name + " sending: " + message);
             }
             _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             _stream.Flush();

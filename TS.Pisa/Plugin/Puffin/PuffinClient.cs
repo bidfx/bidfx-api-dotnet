@@ -11,9 +11,9 @@ namespace TS.Pisa.Plugin.Puffin
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
-        private Thread _consumerThread;
-        private Stream _stream;
-        private BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
+        private readonly Thread _consumerThread;
+        private readonly Stream _stream;
+        private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
 
         public PuffinClient(Stream stream)
         {
@@ -56,6 +56,7 @@ namespace TS.Pisa.Plugin.Puffin
                 var message = _messageQueue.Take();
                 if(Log.IsDebugEnabled) Log.Debug("sending message: "+message);
                 _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
+                _stream.Flush();
             }
         }
 
