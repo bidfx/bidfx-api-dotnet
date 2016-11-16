@@ -8,7 +8,7 @@ namespace TS.Pisa.Tools
         private const byte CarriageReturn = (byte) '\r';
         private const byte NewLine = (byte) '\n';
         private const byte XmlCloseTag = (byte) '>';
-        public int Capacity { get; }
+        public int Capacity { get; set; }
         public int ReaderIndex { get; set; }
         public int WriterIndex { get; set; }
         private readonly byte[] _buffer;
