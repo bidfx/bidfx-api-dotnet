@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Threading;
 using TS.Pisa.Plugin.Puffin;
 namespace TS.Pisa.Example
 {
@@ -14,11 +14,9 @@ namespace TS.Pisa.Example
         private void Test()
         {
             var session = PrepareSession();
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1083955911");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1130066175");
             log.Info("starting the Pisa session");
             session.Start();
+            session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
         }
         private static ISession PrepareSession()
         {
@@ -29,14 +27,6 @@ namespace TS.Pisa.Example
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });
-//            session.AddProviderPlugin(new PuffinProviderPlugin
-//            {
-//                Host = "localhost",
-//                Username = "axaapitest",
-//                Password = "B3CarefulWithThatAXAEug3n3!",
-//                Port = 9901,
-//                Tunnel = false
-//            });
             return session;
         }
     }
