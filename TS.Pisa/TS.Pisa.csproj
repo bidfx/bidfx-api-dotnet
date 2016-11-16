@@ -68,9 +68,7 @@
     <Compile Include="Tools\TunnelException.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlDictionary.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlElement.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlNestedContent.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlBinaryInflater.cs" />
-    <Compile Include="Plugin\Puffin\Xml\XmlKeyedElement.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlFormatter.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlSyntaxException.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlToken.cs" />

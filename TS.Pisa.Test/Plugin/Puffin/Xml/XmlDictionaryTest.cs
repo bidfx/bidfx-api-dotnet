@@ -108,15 +108,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_not_plain_text()
         {
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.EndType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.EmptyType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.StartType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.ContentType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.NameType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.IntegerValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.DoubleValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.FractionValueType));
-            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.StringValueType));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.TagEnd));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.TagEndEmptyContent));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.TagStart));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.NestedContent));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.AttributeName));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.AttributeValueInteger));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.AttributeValueDouble));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.AttributeValueFraction));
+            Assert.False(XmlDictionary.IsPlainText((byte) XmlTokenType.AttributeValueString));
         }
 
         [Test]
@@ -184,15 +184,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_token_types()
         {
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.EndType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.EmptyType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.StartType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.ContentType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.NameType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.IntegerValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.DoubleValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.FractionValueType));
-            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.StringValueType));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.TagEnd));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.TagEndEmptyContent));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.TagStart));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.NestedContent));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.AttributeName));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.AttributeValueInteger));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.AttributeValueDouble));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.AttributeValueFraction));
+            Assert.False(XmlDictionary.IsSecondByteOfToken((byte) XmlTokenType.AttributeValueString));
         }
 
         [Test]
@@ -220,15 +220,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         [Test]
         public void token_codes_are_not_token()
         {
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.EndType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.EmptyType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.StartType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.ContentType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.NameType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.IntegerValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.DoubleValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.FractionValueType));
-            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.StringValueType));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.TagEnd));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.TagEndEmptyContent));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.TagStart));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.NestedContent));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.AttributeName));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.AttributeValueInteger));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.AttributeValueDouble));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.AttributeValueFraction));
+            Assert.True(XmlDictionary.IsTokenType((byte) XmlTokenType.AttributeValueString));
         }
 
         [Test]
@@ -298,7 +298,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             {
                 var tokenCode = dictionary.Insert(XmlToken.IntegerValue(i));
                 Assert.AreEqual(i, tokenCode.GetCode());
-                Assert.AreEqual(XmlTokenType.IntegerValueType, tokenCode.GetToken().TokenType());
+                Assert.AreEqual(XmlTokenType.AttributeValueInteger, tokenCode.GetToken().TokenType());
                 Assert.AreEqual(i.ToString(), tokenCode.GetToken().GetText());
             }
         }

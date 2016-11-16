@@ -2,14 +2,14 @@
 {
     public enum XmlTokenType
     {
-        EndType = 0,
-        EmptyType = 1,
-        StartType = 2,
-        ContentType = 3,
-        NameType = 4,
-        IntegerValueType = 5,
-        DoubleValueType = 6,
-        FractionValueType = 7,
-        StringValueType = 8
+        TagEnd = 0,
+        TagEndEmptyContent = 1,
+        TagStart = 2,
+        NestedContent = 3,
+        AttributeName = 4,
+        AttributeValueInteger = 5,
+        AttributeValueDouble = 6,
+        AttributeValueFraction = 7,
+        AttributeValueString = 8
     }
 }

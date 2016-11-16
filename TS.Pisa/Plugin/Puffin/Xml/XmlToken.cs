@@ -20,9 +20,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
     /// <author>Paul Sweeny</author>
     public class XmlToken
     {
-        public static readonly XmlToken EmptyToken = new XmlToken(XmlTokenType.EmptyType, "", null);
-        public static readonly XmlToken NullValueToken = new XmlToken(XmlTokenType.StringValueType, "", null);
-        public static readonly XmlToken NullContentToken = new XmlToken(XmlTokenType.ContentType, "", null);
+        public static readonly XmlToken EmptyToken = new XmlToken(XmlTokenType.TagEndEmptyContent, "", null);
+        public static readonly XmlToken NullValueToken = new XmlToken(XmlTokenType.AttributeValueString, "", null);
+        public static readonly XmlToken NullContentToken = new XmlToken(XmlTokenType.NestedContent, "", null);
         public static readonly XmlToken ZeroToken = IntegerValue(0);
 
         private readonly XmlTokenType _tokenType;
@@ -38,37 +38,37 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         public static XmlToken StartTag(string value)
         {
-            return new XmlToken(XmlTokenType.StartType, value, value);
+            return new XmlToken(XmlTokenType.TagStart, value, value);
         }
 
         public static XmlToken AttributeName(string value)
         {
-            return new XmlToken(XmlTokenType.NameType, value, value);
+            return new XmlToken(XmlTokenType.AttributeName, value, value);
         }
 
         public static XmlToken StringValue(string value)
         {
-            return new XmlToken(XmlTokenType.StringValueType, value, value);
+            return new XmlToken(XmlTokenType.AttributeValueString, value, value);
         }
 
         public static XmlToken IntegerValue(int value)
         {
-            return new XmlToken(XmlTokenType.IntegerValueType, value.ToString(), value);
+            return new XmlToken(XmlTokenType.AttributeValueInteger, value.ToString(), value);
         }
 
         public static XmlToken LongValue(long value)
         {
-            return new XmlToken(XmlTokenType.IntegerValueType, value.ToString(), value);
+            return new XmlToken(XmlTokenType.AttributeValueInteger, value.ToString(), value);
         }
 
         public static XmlToken DoubleValue(double value)
         {
-            return new XmlToken(XmlTokenType.DoubleValueType, value.ToString(CultureInfo.InvariantCulture), value);
+            return new XmlToken(XmlTokenType.AttributeValueDouble, value.ToString(CultureInfo.InvariantCulture), value);
         }
 
         public static XmlToken BooleanValue(bool value)
         {
-            return new XmlToken(XmlTokenType.StringValueType, value ? "true" : "false", value);
+            return new XmlToken(XmlTokenType.AttributeValueString, value ? "true" : "false", value);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public XmlToken ToEndTag()
         {
-            return new XmlToken(XmlTokenType.EndType, _text, _value);
+            return new XmlToken(XmlTokenType.TagEnd, _text, _value);
         }
 
         /// <summary>Get the type of this token.</summary>
@@ -89,31 +89,31 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Check if this token is an Xml end-tag token.</summary>
         public bool IsEndTag()
         {
-            return _tokenType == XmlTokenType.EndType;
+            return _tokenType == XmlTokenType.TagEnd;
         }
 
         /// <summary>Check if this token is an Xml empty-tag close token.</summary>
         public bool IsEmptyTag()
         {
-            return _tokenType == XmlTokenType.EmptyType;
+            return _tokenType == XmlTokenType.TagEndEmptyContent;
         }
 
         /// <summary>Check if this token is an Xml start-tag token.</summary>
         public bool IsStartTag()
         {
-            return _tokenType == XmlTokenType.StartType;
+            return _tokenType == XmlTokenType.TagStart;
         }
 
         /// <summary>Check if this token is an Xml content token.</summary>
         public bool IsTagContent()
         {
-            return _tokenType == XmlTokenType.ContentType;
+            return _tokenType == XmlTokenType.NestedContent;
         }
 
         /// <summary>Check if this token is an Xml element attribute name token.</summary>
         public bool IsAttributeName()
         {
-            return _tokenType == XmlTokenType.NameType;
+            return _tokenType == XmlTokenType.AttributeName;
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public bool IsValueType()
         {
-            return _tokenType >= XmlTokenType.IntegerValueType;
+            return _tokenType >= XmlTokenType.AttributeValueInteger;
         }
 
         /// <summary>
@@ -131,8 +131,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// </summary>
         public bool IsNumberType()
         {
-            return _tokenType == XmlTokenType.IntegerValueType || _tokenType == XmlTokenType.DoubleValueType ||
-                   _tokenType == XmlTokenType.FractionValueType;
+            return _tokenType == XmlTokenType.AttributeValueInteger ||
+                   _tokenType == XmlTokenType.AttributeValueDouble ||
+                   _tokenType == XmlTokenType.AttributeValueFraction;
         }
 
         /// <summary>Check if this token is null (not present).</summary>
@@ -144,25 +145,25 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         /// <summary>Check if this token is an integer attribute-value XmlTokenType.</summary>
         public bool IsInteger()
         {
-            return _tokenType == XmlTokenType.IntegerValueType;
+            return _tokenType == XmlTokenType.AttributeValueInteger;
         }
 
         /// <summary>Check if this token is a double attribute-value XmlTokenType.</summary>
         public bool IsDouble()
         {
-            return _tokenType == XmlTokenType.DoubleValueType;
+            return _tokenType == XmlTokenType.AttributeValueDouble;
         }
 
         /// <summary>Check if this token is a fraction attribute-value XmlTokenType.</summary>
         public bool IsFraction()
         {
-            return _tokenType == XmlTokenType.FractionValueType;
+            return _tokenType == XmlTokenType.AttributeValueFraction;
         }
 
         /// <summary>Check if this token is a string attribute-value XmlTokenType.</summary>
         public bool IsString()
         {
-            return _tokenType == XmlTokenType.StringValueType;
+            return _tokenType == XmlTokenType.AttributeValueString;
         }
 
         /// <summary>Check if this token is negative.</summary>
