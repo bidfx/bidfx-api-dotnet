@@ -1,7 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading;
+using TS.Pisa.Plugin.Puffin.Xml;
+using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -14,11 +17,17 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly Thread _consumerThread;
         private readonly Stream _stream;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
+        private readonly XmlBinaryInflater _binaryInflator;
+        private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
+
+        public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
 
         public PuffinClient(Stream stream)
         {
             _stream = stream;
             _consumerThread = new Thread(RunningLoop) {Name = _consumerThread + "-read"};
+            _binaryInflator = new XmlBinaryInflater(stream);
+            _messageReceiver.SetHeartbeatListener(HandleHeartbeat);
         }
 
         public void Start()
@@ -43,7 +52,8 @@ namespace TS.Pisa.Plugin.Puffin
         /// </summary>
         private void Consume()
         {
-            //Todo add implementation
+            var message = _binaryInflator.NextElement();
+            _messageReceiver.OnMessage(message);
         }
 
         /// <summary>
@@ -54,16 +64,57 @@ namespace TS.Pisa.Plugin.Puffin
             while (_running.Value)
             {
                 var message = _messageQueue.Take();
-                if(Log.IsDebugEnabled) Log.Debug("sending message: "+message);
+                if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
                 _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
                 _stream.Flush();
             }
         }
 
+        /// <summary>
+        /// Place a message on the socket's outgoing message queue.
+        /// This method will block if the message queue is full.
+        /// </summary>
+        /// <param name="message">The message to be sent.</param>
         public void QueueMessage(string message)
         {
-            if(Log.IsDebugEnabled) Log.Debug("queuing message: "+message);
-            _messageQueue.Add(message);
+            if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
+            if (_running.Value)
+            {
+                _messageQueue.Add(message);
+            }
+        }
+
+        private void Close(string reason)
+        {
+            if (Log.IsDebugEnabled) Log.Debug("socket close (" + reason + ")");
+            if (RequiresDisposal())
+            {
+                Log.Info("disconnected (" + reason + ")");
+                Dispose();
+            }
+        }
+
+        private Boolean RequiresDisposal()
+        {
+            return _running.CompareAndSet(true, false);
+        }
+
+        private void Dispose()
+        {
+            _stream.Close();
+            _messageQueue.Dispose();
+        }
+
+        private void HandleHeartbeat(long interval, long transmitTime, long receiveTime, bool syncClock)
+        {
+            if (syncClock)
+            {
+                SendSyncClock(transmitTime, receiveTime);
+            }
+            else
+            {
+                SendHeartbeat();
+            }
         }
 
         public void Subscribe(string subject)
@@ -78,12 +129,18 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendHeartbeat()
         {
-            QueueMessage("<Heartbeat/>");
+            var now = JavaTime.CurrentTimeMillis();
+            QueueMessage("<Heartbeat TransmitTime=\""+now+"\"/>");
+        }
+
+        private void SendSyncClock(long originateTime, long receiveTime)
+        {
+            QueueMessage("<SyncClock OriginateTime=\""+originateTime+"\" ReceiveTime=\""+receiveTime+"\" TransmitTime=\""+JavaTime.CurrentTimeMillis()+"\"/>");
         }
 
         public void CloseSession()
         {
-            throw new System.NotImplementedException();
+            Close("session close requested");
         }
 
         public void CheckSessionIsActive()

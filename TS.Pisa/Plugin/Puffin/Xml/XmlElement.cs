@@ -354,5 +354,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             }
             return null;
         }
+
+        public bool IsA(string tagType)
+        {
+            return _tag.Equals(tagType);
+        }
     }
 }

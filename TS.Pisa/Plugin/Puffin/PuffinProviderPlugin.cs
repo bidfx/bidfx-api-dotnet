@@ -64,7 +64,6 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Info(Name + " running");
                 EstablishPuffinConnection();
-                _stream.Close();
                 _buffer.Clear();
                 Thread.Sleep(10000);
             }

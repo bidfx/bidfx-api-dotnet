@@ -6,7 +6,7 @@ namespace TS.Pisa.Example
 {
     internal class Program
     {
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public static void Main(string[] args)
         {
@@ -16,17 +16,17 @@ namespace TS.Pisa.Example
         private void Test()
         {
             var reference = PisaVersion.Reference;
-            log.Info("pisa version:    " + PisaVersion.Version);
-            log.Info("program version: " + Assembly.GetExecutingAssembly().GetName().Version);
-            log.Info("user:            " + System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-            log.Info("host:            " + IPGlobalProperties.GetIPGlobalProperties().HostName);
+            Log.Info("pisa version:    " + PisaVersion.Version);
+            Log.Info("program version: " + Assembly.GetExecutingAssembly().GetName().Version);
+            Log.Info("user:            " + System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+            Log.Info("host:            " + IPGlobalProperties.GetIPGlobalProperties().HostName);
             var session = PrepareSession();
-            log.Info("starting the Pisa session");
+            Log.Info("starting the Pisa session");
             session.Start();
-            Thread.Sleep(5000);
-            session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
-            Thread.Sleep(5000);
-            session.Unsubscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
+//            Thread.Sleep(5000);
+//            session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
+//            Thread.Sleep(5000);
+//            session.Unsubscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
         }
         private static ISession PrepareSession()
         {

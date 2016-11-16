@@ -297,7 +297,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                                         token = XmlToken.NullContentToken;
                                         break;
                                     case XmlTokenType.IntegerValueType:
-                                        token = new XmlToken(type, text, Convert.ToInt32(text));
+                                        token = new XmlToken(type, text, Convert.ToInt64(text));
                                         break;
                                     case XmlTokenType.DoubleValueType:
                                         token = new XmlToken(type, text, Convert.ToDouble(text));

@@ -49,8 +49,12 @@
     <Compile Include="IProviderPlugin.cs" />
     <Compile Include="PisaVersion.cs" />
     <Compile Include="Plugin\Puffin\IPuffinRequestor.cs" />
+    <Compile Include="Plugin\Puffin\IPuffinSessionListener.cs" />
     <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="Plugin\Puffin\PuffinClient.cs" />
+    <Compile Include="Plugin\Puffin\PuffinFieldName.cs" />
+    <Compile Include="Plugin\Puffin\PuffinMessageReceiver.cs" />
+    <Compile Include="Plugin\Puffin\PuffinTagName.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlTokenType.cs" />
     <Compile Include="ProviderStatus.cs" />
     <Compile Include="ISession.cs" />
@@ -66,6 +70,7 @@
     <Compile Include="Tools\AtomicBoolean.cs" />
     <Compile Include="Tools\ByteBuffer.cs" />
     <Compile Include="Tools\GUID.cs" />
+    <Compile Include="Tools\JavaTime.cs" />
     <Compile Include="Tools\NameCache.cs" />
     <Compile Include="Tools\TunnelException.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlDictionary.cs" />
@@ -83,7 +88,6 @@
   <ItemGroup>
     <Folder Include="Plugin" />
     <Folder Include="Plugin\Puffin\Xml" />
-    <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
