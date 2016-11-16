@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading;
-using TS.Pisa.Plugin.Puffin.Xml;
 using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -17,7 +16,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly Thread _consumerThread;
         private readonly Stream _stream;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
-        private readonly XmlBinaryInflater _binaryInflator;
+        private readonly PuffinMessageReader _puffinMessageReader;
         private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
 
         public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
@@ -26,7 +25,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _stream = stream;
             _consumerThread = new Thread(RunningLoop) {Name = _consumerThread + "-read"};
-            _binaryInflator = new XmlBinaryInflater(stream);
+            _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver.SetHeartbeatListener(HandleHeartbeat);
         }
 
@@ -52,7 +51,7 @@ namespace TS.Pisa.Plugin.Puffin
         /// </summary>
         private void Consume()
         {
-            var message = _binaryInflator.NextElement();
+            var message = _puffinMessageReader.ReadMessage();
             _messageReceiver.OnMessage(message);
         }
 

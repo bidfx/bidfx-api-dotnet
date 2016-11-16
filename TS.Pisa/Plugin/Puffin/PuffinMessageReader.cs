@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
     /// <summary>
-    /// This class provides a compressed Xml language inflate tokenizer for well-formed Xml expressions.
+    /// This class provides a reader for Puffin's binary, compressed, well-formed XML element messages.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class BinaryReader
+    public class PuffinMessageReader
     {
         private readonly byte[] _buffer = new byte[8192];
         private int _end;
@@ -18,8 +18,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         private readonly Stream _inStream;
         private readonly TokenDictionary _dictionary = new TokenDictionary();
-        private readonly Stack<XmlToken> _tagStack = new Stack<XmlToken>();
-        private readonly Stack<XmlElement> _elementStack = new Stack<XmlElement>();
+        private readonly Stack<PuffinToken> _tagStack = new Stack<PuffinToken>();
+        private readonly Stack<PuffinElement> _elementStack = new Stack<PuffinElement>();
 
         private enum State
         {
@@ -28,18 +28,18 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             ScanUnseenToken
         }
 
-        public BinaryReader(Stream inStream)
+        public PuffinMessageReader(Stream inStream)
         {
             _inStream = inStream;
         }
 
-        public XmlElement NextElement()
+        public PuffinElement ReadMessage()
         {
             var token = NextToken();
             return NextElement(token);
         }
 
-        private XmlElement NextElement(XmlToken token)
+        private PuffinElement NextElement(PuffinToken token)
         {
             if (token == null)
             {
@@ -51,13 +51,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 {
                     throw new PuffinSyntaxException("start tag expected");
                 }
-                var element = new XmlElement(token.GetText());
+                var element = new PuffinElement(token.GetText());
                 while ((token = NextToken()) != null)
                 {
                     switch (token.TokenType())
                     {
-                        case TokenType.TagEnd:
-                        case TokenType.TagEndEmptyContent:
+                        case LexicalType.TagEnd:
+                        case LexicalType.TagEndEmptyContent:
                         {
                             if (_elementStack.Count == 0)
                             {
@@ -66,14 +66,14 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             element = _elementStack.Pop();
                             break;
                         }
-                        case TokenType.TagStart:
+                        case LexicalType.TagStart:
                         {
                             _elementStack.Push(element);
-                            element = new XmlElement(token.GetText());
+                            element = new PuffinElement(token.GetText());
                             _elementStack.Peek().AddElement(element);
                             break;
                         }
-                        case TokenType.AttributeName:
+                        case LexicalType.AttributeName:
                         {
                             var name = token;
                             token = NextToken();
@@ -84,11 +84,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                             element.AddAttribute(name.GetText(), token);
                             break;
                         }
-                        case TokenType.AttributeValueInteger:
-                        case TokenType.AttributeValueDouble:
-                        case TokenType.AttributeValueFraction:
-                        case TokenType.AttributeValueString:
-                        case TokenType.NestedContent:
+                        case LexicalType.AttributeValueInteger:
+                        case LexicalType.AttributeValueDouble:
+                        case LexicalType.AttributeValueFraction:
+                        case LexicalType.AttributeValueString:
+                        case LexicalType.NestedContent:
                         {
                             throw new PuffinSyntaxException("attribute value with no name " + token);
                         }
@@ -152,7 +152,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             }
         }
 
-        private XmlToken NextToken()
+        private PuffinToken NextToken()
         {
             var state = State.FirstByte;
             for (_mark = ++_point; _point < _end || FillBuffer(); ++_point)
@@ -170,28 +170,28 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                         {
                             if (TokenDictionary.IsTokenType(b))
                             {
-                                if (b == (byte) TokenType.TagEnd)
+                                if (b == (byte) LexicalType.TagEnd)
                                 {
                                     return _tagStack.Pop().ToEndTag();
                                 }
-                                if (b == (byte) TokenType.TagEndEmptyContent)
+                                if (b == (byte) LexicalType.TagEndEmptyContent)
                                 {
                                     _tagStack.Pop();
-                                    return XmlToken.EmptyToken;
+                                    return PuffinToken.EmptyToken;
                                 }
                                 state = State.ScanUnseenToken;
                             }
                             else
                             {
                                 throw new PuffinSyntaxException("token tag expected instead of " + b
-                                                             + " ('" + (char) b + "') at position " + _point);
+                                                                + " ('" + (char) b + "') at position " + _point);
                             }
                         }
                         break;
                     }
                     case State.SecondByte:
                     {
-                        XmlToken token;
+                        PuffinToken token;
                         if (TokenDictionary.IsSecondByteOfToken(b))
                         {
                             token = _dictionary.TwoByteToken(_buffer[_mark], b);
@@ -209,40 +209,40 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     {
                         if (!TokenDictionary.IsPlainText(b))
                         {
-                            var type = (TokenType) _buffer[_mark];
+                            var type = (LexicalType) _buffer[_mark];
                             if (_mark < --_point)
                             {
-                                XmlToken token;
+                                PuffinToken token;
                                 var text = MarkedText();
                                 switch (type)
                                 {
-                                    case TokenType.TagStart:
-                                        token = new XmlToken(type, text, text);
+                                    case LexicalType.TagStart:
+                                        token = new PuffinToken(type, text, text);
                                         _tagStack.Push(token);
                                         break;
-                                    case TokenType.AttributeName:
-                                        token = new XmlToken(type, text, text);
+                                    case LexicalType.AttributeName:
+                                        token = new PuffinToken(type, text, text);
                                         break;
-                                    case TokenType.TagEnd:
-                                        token = new XmlToken(type, text, text);
+                                    case LexicalType.TagEnd:
+                                        token = new PuffinToken(type, text, text);
                                         break;
-                                    case TokenType.TagEndEmptyContent:
-                                        token = XmlToken.EmptyToken;
+                                    case LexicalType.TagEndEmptyContent:
+                                        token = PuffinToken.EmptyToken;
                                         break;
-                                    case TokenType.NestedContent:
-                                        token = XmlToken.NullContentToken;
+                                    case LexicalType.NestedContent:
+                                        token = PuffinToken.NullContentToken;
                                         break;
-                                    case TokenType.AttributeValueInteger:
-                                        token = new XmlToken(type, text, Convert.ToInt32(text));
+                                    case LexicalType.AttributeValueInteger:
+                                        token = new PuffinToken(type, text, Convert.ToInt64(text));
                                         break;
-                                    case TokenType.AttributeValueDouble:
-                                        token = new XmlToken(type, text, Convert.ToDouble(text));
+                                    case LexicalType.AttributeValueDouble:
+                                        token = new PuffinToken(type, text, Convert.ToDouble(text));
                                         break;
-                                    case TokenType.AttributeValueFraction:
-                                        token = new XmlToken(type, text, XmlToken.FractionToDouble(text));
+                                    case LexicalType.AttributeValueFraction:
+                                        token = new PuffinToken(type, text, PuffinToken.FractionToDouble(text));
                                         break;
-                                    case TokenType.AttributeValueString:
-                                        token = new XmlToken(type, text, text);
+                                    case LexicalType.AttributeValueString:
+                                        token = new PuffinToken(type, text, text);
                                         break;
                                     default:
                                         throw new PuffinSyntaxException("unrecognised token " + type);
@@ -250,13 +250,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                                 _dictionary.InsertToken(token);
                                 return token;
                             }
-                            if (type == TokenType.AttributeValueString)
+                            if (type == LexicalType.AttributeValueString)
                             {
-                                return XmlToken.NullValueToken;
+                                return PuffinToken.NullValueToken;
                             }
-                            if (type == TokenType.NestedContent)
+                            if (type == LexicalType.NestedContent)
                             {
-                                return XmlToken.NullContentToken;
+                                return PuffinToken.NullContentToken;
                             }
                             throw new PuffinSyntaxException("text of previously unseen token expected");
                         }

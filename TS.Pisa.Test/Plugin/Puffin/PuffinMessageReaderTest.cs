@@ -3,11 +3,11 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
     /// <author>Paul Sweeny</author>
     [TestFixture]
-    public class BinaryReaderTest
+    public class PuffinMessageReaderTest
     {
         [Test]
         public virtual void level_one_price()
@@ -17,18 +17,18 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name" +
                 "\bVodafone plc\u0004AskSize\u00053000\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new BinaryReader(stream);
+            var tokenizer = new PuffinMessageReader(stream);
             Assert.AreEqual(
-                new XmlElement("Update")
+                new PuffinElement("Update")
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .AddElement(new XmlElement("Price")
+                    .AddElement(new PuffinElement("Price")
                             .AddAttribute("Ask", 102.5)
                             .AddAttribute("Bid", 100.5)
                             .AddAttribute("BidSize", 1000)
                             .AddAttribute("Name", "Vodafone plc")
                             .AddAttribute("AskSize", 3000)
-                    ), tokenizer.NextElement());
+                    ), tokenizer.ReadMessage());
         }
 
         [Test]
@@ -40,15 +40,15 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\u0004AskSize\u00053000\u0001\u0000" +
                 "\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008A\u008B\u008C\u008D\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new BinaryReader(stream);
+            var tokenizer = new PuffinMessageReader(stream);
 
-            var element1 = tokenizer.NextElement();
-            var element2 = tokenizer.NextElement();
+            var element1 = tokenizer.ReadMessage();
+            var element2 = tokenizer.ReadMessage();
             Assert.AreEqual(
-                new XmlElement("Update")
+                new PuffinElement("Update")
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .AddElement(new XmlElement("Price")
+                    .AddElement(new PuffinElement("Price")
                             .AddAttribute("Ask", 102.5)
                             .AddAttribute("Bid", 100.5)
                             .AddAttribute("BidSize", 1000)
@@ -57,10 +57,10 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     ), element1);
 
             Assert.AreEqual(
-                new XmlElement("Update")
+                new PuffinElement("Update")
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                    .AddElement(new XmlElement("Price")
+                    .AddElement(new PuffinElement("Price")
                             .AddAttribute("Ask", 102.5)
                             .AddAttribute("Bid", 100.5)
                             .AddAttribute("BidSize", 1000)
@@ -90,9 +90,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "208\u0004BidSize8\u0005992\u0004AskSize8\u00051008\u0004Bid9\u0006191\u0004Ask9\u0006" +
                 "209\u0004BidSize9\u0005991\u0004AskSize9\u00051009\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new BinaryReader(stream);
+            var tokenizer = new PuffinMessageReader(stream);
 
-            var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
+            var price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 10; ++i)
             {
                 price.AddAttribute("Bid" + i, 200.0 - i)
@@ -100,11 +100,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     .AddAttribute("BidSize" + i, 1000 - i)
                     .AddAttribute("AskSize" + i, 1000 + i);
             }
-            var element = new XmlElement("Set")
+            var element = new PuffinElement("Set")
                 .AddAttribute("Subject",
                     "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD")
                 .AddElement(price);
-            Assert.AreEqual(element, tokenizer.NextElement());
+            Assert.AreEqual(element, tokenizer.ReadMessage());
         }
 
         [Test]
@@ -181,9 +181,9 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "\n\u00e3\n\u00e4\n\u00e5\n\u00e6\n\u00e7\n\u00e8\n\u00e9\n\u00ea\n\u00eb\n\u00ec\n\u00ed" +
                 "\n\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new BinaryReader(stream);
+            var tokenizer = new PuffinMessageReader(stream);
 
-            var price = new XmlElement("Price").AddAttribute("Name", "Vodafone plc");
+            var price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
             for (var i = 1; i < 30; ++i)
             {
                 price.AddAttribute("Bid" + i, 200.0 - i)
@@ -192,12 +192,12 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                     .AddAttribute("AskSize" + i, 1000 + i);
             }
             var subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD";
-            Assert.AreEqual(new XmlElement("Set")
-                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
-            Assert.AreEqual(new XmlElement("Update")
-                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
-            Assert.AreEqual(new XmlElement("Update")
-                .AddAttribute("Subject", subject).AddElement(price), tokenizer.NextElement());
+            Assert.AreEqual(new PuffinElement("Set")
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.ReadMessage());
+            Assert.AreEqual(new PuffinElement("Update")
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.ReadMessage());
+            Assert.AreEqual(new PuffinElement("Update")
+                .AddAttribute("Subject", subject).AddElement(price), tokenizer.ReadMessage());
         }
     }
 }

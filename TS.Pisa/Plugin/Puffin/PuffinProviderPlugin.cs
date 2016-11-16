@@ -4,12 +4,10 @@ using System.Threading;
 using TS.Pisa.Tools;
 using System;
 using System.IO;
-using System.IO.Pipes;
 using System.Net.Security;
+using System.Security;
 using System.Security.Authentication;
 using System.Xml;
-using TS.Pisa.Plugin.Puffin.Xml;
-using XmlElement = TS.Pisa.Plugin.Puffin.Xml.XmlElement;
 
 namespace TS.Pisa.Plugin.Puffin
 {

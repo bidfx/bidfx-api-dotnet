@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
     /// <summary>
     /// An XmlDictionary is a dictionary used to encode and/or decode compressed Xml messages.
@@ -17,22 +17,22 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         private const int CodeMask = MaxOneByteCode - 1;
         private const int MaxCode = (MaxOneByteCode - TokenCodes) << CodeBits;
 
-        private readonly Dictionary<XmlToken, XmlTokenCode> _table = new Dictionary<XmlToken, XmlTokenCode>();
+        private readonly Dictionary<PuffinToken, XmlTokenCode> _table = new Dictionary<PuffinToken, XmlTokenCode>();
         private readonly XmlTokenCode[] _tokenCodes = new XmlTokenCode[MaxCode];
         private int _nextCode;
         private int _winningPost;
 
-        public XmlToken OneByteToken(byte b)
+        public PuffinToken OneByteToken(byte b)
         {
             return LookupToken(OneByteCode(b));
         }
 
-        public XmlToken TwoByteToken(byte one, byte two)
+        public PuffinToken TwoByteToken(byte one, byte two)
         {
             return LookupToken(TwoByteCode(one, two));
         }
 
-        public XmlToken LookupToken(int code)
+        public PuffinToken LookupToken(int code)
         {
             if (code < 0 || code >= _nextCode) throw new PuffinSyntaxException("invalid XML token code (" + code + ")");
             var tokenCode = _tokenCodes[code];
@@ -61,7 +61,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             _winningPost = tokenCode.Count;
         }
 
-        public XmlTokenCode InsertToken(XmlToken token)
+        public XmlTokenCode InsertToken(PuffinToken token)
         {
             if (_nextCode >= MaxCode)
             {
@@ -170,11 +170,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
     public class XmlTokenCode
     {
-        public XmlToken Token { get; internal set; }
+        public PuffinToken Token { get; internal set; }
         public int Code { get; internal set; }
         public int Count { get; internal set; }
 
-        public XmlTokenCode(XmlToken token, int code)
+        public XmlTokenCode(PuffinToken token, int code)
         {
             Token = token;
             Code = code;

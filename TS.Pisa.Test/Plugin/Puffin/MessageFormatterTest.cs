@@ -1,23 +1,23 @@
 ﻿using NUnit.Framework;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
     [TestFixture]
-    public class XmlFormatterTest
+    public class MessageFormatterTest
     {
         [Test]
         public void empty_element()
         {
             Assert.AreEqual("<Price/>",
-                XmlFormatter.FormatToString(new XmlElement("Price")));
+                MessageFormatter.FormatToString(new PuffinElement("Price")));
         }
 
         [Test]
         public void element_with_number_attributes()
         {
             Assert.AreEqual("<Price Ask=\"12.5\" AskSize=\"1230\" BidSize=\"12400\"/>",
-                XmlFormatter.FormatToString(
-                    new XmlElement("Price")
+                MessageFormatter.FormatToString(
+                    new PuffinElement("Price")
                         .AddAttribute("Ask", 12.5)
                         .AddAttribute("AskSize", 1230)
                         .AddAttribute("BidSize", 12400)
@@ -28,8 +28,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         public void element_with_string_attributes()
         {
             Assert.AreEqual("<Price Name=\"Sweeno\" FullName=\"Paul A Sweeny\"/>",
-                XmlFormatter.FormatToString(
-                    new XmlElement("Price")
+                MessageFormatter.FormatToString(
+                    new PuffinElement("Price")
                         .AddAttribute("Name", "Sweeno")
                         .AddAttribute("FullName", "Paul A Sweeny")
                 ));
@@ -40,8 +40,8 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         {
             Assert.AreEqual(
                 "<Price Name=\"AT&amp;T\" Quote=\"&quot;quote text&quot;\" Tag=\"<XML>try this</XML>\"/>",
-                XmlFormatter.FormatToString(
-                    new XmlElement("Price")
+                MessageFormatter.FormatToString(
+                    new PuffinElement("Price")
                         .AddAttribute("Name", "AT&T")
                         .AddAttribute("Quote", "\"quote text\"")
                         .AddAttribute("Tag", "<XML>try this</XML>")
@@ -56,11 +56,11 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 "<Update Subject=\"AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32\">" +
                 "<Price Ask=\"12.5\" AskSize=\"1230\" BidSize=\"12400\"/>" +
                 "</Update>",
-                XmlFormatter.FormatToString(
-                    new XmlElement("Update")
+                MessageFormatter.FormatToString(
+                    new PuffinElement("Update")
                         .AddAttribute("Subject",
                             "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
-                        .AddElement(new XmlElement("Price")
+                        .AddElement(new PuffinElement("Price")
                                 .AddAttribute("Ask", 12.5)
                                 .AddAttribute("AskSize", 1230)
                                 .AddAttribute("BidSize", 12400)

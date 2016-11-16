@@ -1,12 +1,12 @@
 using System.Text;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
-    public class XmlFormatter
+    public class MessageFormatter
     {
         private static readonly string[] Encodings = new string[256];
 
-        static XmlFormatter()
+        static MessageFormatter()
         {
             for (var i = 0; i < 23; ++i)
             {
@@ -26,20 +26,20 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         private readonly StringBuilder _builder;
 
-        public XmlFormatter(StringBuilder builder)
+        public MessageFormatter(StringBuilder builder)
         {
             _builder = builder;
         }
 
-        public static string FormatToString(XmlElement element)
+        public static string FormatToString(PuffinElement element)
         {
             var sb = new StringBuilder();
-            var formatter = new XmlFormatter(sb);
+            var formatter = new MessageFormatter(sb);
             formatter.FormatElement(element);
             return sb.ToString();
         }
 
-        public void FormatElement(XmlElement element)
+        public void FormatElement(PuffinElement element)
         {
             _builder.Append('<' + element.Tag);
 
@@ -62,24 +62,24 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             }
         }
 
-        private void FormatAttribute(string name, XmlToken value)
+        private void FormatAttribute(string name, PuffinToken value)
         {
             _builder.Append(' ' + name + "=\"");
             switch (value.TokenType())
             {
-                case TokenType.AttributeValueInteger:
-                case TokenType.AttributeValueDouble:
-                case TokenType.AttributeValueFraction:
+                case LexicalType.AttributeValueInteger:
+                case LexicalType.AttributeValueDouble:
+                case LexicalType.AttributeValueFraction:
                     _builder.Append(value.GetText());
                     break;
-                case TokenType.AttributeValueString:
+                case LexicalType.AttributeValueString:
                     EscapeToken(value);
                     break;
-                case TokenType.TagEnd:
-                case TokenType.TagEndEmptyContent:
-                case TokenType.TagStart:
-                case TokenType.NestedContent:
-                case TokenType.AttributeName:
+                case LexicalType.TagEnd:
+                case LexicalType.TagEndEmptyContent:
+                case LexicalType.TagStart:
+                case LexicalType.NestedContent:
+                case LexicalType.AttributeName:
                     break;
                 default:
                     throw new PuffinSyntaxException("unexpect attribute value type " + value);
@@ -87,7 +87,7 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             _builder.Append('"');
         }
 
-        private void EscapeToken(XmlToken token)
+        private void EscapeToken(PuffinToken token)
         {
             foreach (var c in token.GetText())
             {

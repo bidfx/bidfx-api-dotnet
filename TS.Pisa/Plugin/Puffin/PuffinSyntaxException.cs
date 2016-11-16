@@ -1,6 +1,6 @@
 using System;
 
-namespace TS.Pisa.Plugin.Puffin.Xml
+namespace TS.Pisa.Plugin.Puffin
 {
     /// <summary>Signals that a Xml Syntax Exception has occured.</summary>
     /// <author>Paul Sweeny</author>

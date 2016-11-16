@@ -1,6 +1,6 @@
-﻿namespace TS.Pisa.Plugin.Puffin.Xml
+﻿namespace TS.Pisa.Plugin.Puffin
 {
-    public enum TokenType
+    public enum LexicalType
     {
         TagEnd = 0,
         TagEndEmptyContent = 1,
