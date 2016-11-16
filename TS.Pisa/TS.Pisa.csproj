@@ -47,6 +47,7 @@
     <Compile Include="IEventListener.cs" />
     <Compile Include="IllegalSubjectException.cs" />
     <Compile Include="IProviderPlugin.cs" />
+    <Compile Include="PisaVersion.cs" />
     <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="Plugin\Puffin\Xml\XmlTokenType.cs" />
     <Compile Include="ProviderStatus.cs" />
