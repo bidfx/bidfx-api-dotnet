@@ -79,30 +79,14 @@ namespace TS.Pisa.Plugin.Puffin.Xml
             return AddAttribute(name, XmlToken.BooleanValue(value));
         }
 
-        /// <summary>Get the tag name.</summary>
-        public string GetTag()
-        {
-            return Tag;
-        }
-
         public string Tag
         {
             get { return _tag; }
         }
 
-        public IEnumerable<KeyValuePair<string, XmlToken>> GetAttributes()
-        {
-            return Attributes;
-        }
-
         public IEnumerable<KeyValuePair<string, XmlToken>> Attributes
         {
             get { return _attributes; }
-        }
-
-        public IEnumerable<XmlElement> GetContent()
-        {
-            return Content;
         }
 
         public IEnumerable<XmlElement> Content

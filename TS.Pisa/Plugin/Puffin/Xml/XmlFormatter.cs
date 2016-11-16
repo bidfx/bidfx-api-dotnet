@@ -25,7 +25,6 @@ namespace TS.Pisa.Plugin.Puffin.Xml
         }
 
         private readonly StringBuilder _builder;
-        private bool _hangingElement;
 
         public XmlFormatter(StringBuilder builder)
         {
@@ -42,43 +41,30 @@ namespace TS.Pisa.Plugin.Puffin.Xml
 
         public void FormatElement(XmlElement element)
         {
-            if (_hangingElement)
-            {
-                _builder.Append('>');
-                _hangingElement = false;
-            }
-            _builder.Append('<');
-            _hangingElement = true;
-            _builder.Append(element.GetTag());
+            _builder.Append('<' + element.Tag);
 
-            foreach (var attribute in element.GetAttributes())
+            foreach (var attribute in element.Attributes)
             {
                 FormatAttribute(attribute.Key, attribute.Value);
             }
             if (element.HasContent())
             {
                 _builder.Append('>');
-                _hangingElement = false;
-                foreach (var subElement in element.GetContent())
+                foreach (var subElement in element.Content)
                 {
-                   FormatElement(subElement);
+                    FormatElement(subElement);
                 }
-                WriteEndTag(element.GetTag());
+                _builder.Append("</" + element.Tag + ">");
             }
             else
             {
-                _builder.Append('/');
-                _builder.Append('>');
-                _hangingElement = false;
+                _builder.Append("/>");
             }
         }
 
         private void FormatAttribute(string name, XmlToken value)
         {
-            _builder.Append(' ');
-            _builder.Append(name);
-            _builder.Append('=');
-            _builder.Append('"');
+            _builder.Append(' ' + name + "=\"");
             switch (value.TokenType())
             {
                 case XmlTokenType.AttributeValueInteger:
@@ -109,28 +95,13 @@ namespace TS.Pisa.Plugin.Puffin.Xml
                 var encoded = Encodings[c];
                 if (encoded == null)
                 {
-                    _builder.Append((char)c);
+                    _builder.Append((char) c);
                 }
                 else
                 {
                     _builder.Append(encoded);
                 }
             }
-        }
-
-        private void WriteEndTag(string token)
-        {
-            if (_hangingElement)
-            {
-                _builder.Append('>');
-                _hangingElement = false;
-            }
-            _builder.Append('<');
-            _hangingElement = true;
-            _builder.Append('/');
-            _builder.Append(token);
-            _builder.Append('>');
-            _hangingElement = false;
         }
     }
 }
