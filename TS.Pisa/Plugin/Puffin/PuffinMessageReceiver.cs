@@ -14,7 +14,6 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void OnMessage(PuffinElement element)
         {
-            if (Log.IsDebugEnabled) Log.Debug("Message received: " + element);
             _timeOfLastMessage = JavaTime.CurrentTimeMillis();
             if (PuffinTagName.Update.Equals(element.Tag)) OnUpdateMessage(element);
             else if (PuffinTagName.Set.Equals(element.Tag)) OnSetMessage(element);

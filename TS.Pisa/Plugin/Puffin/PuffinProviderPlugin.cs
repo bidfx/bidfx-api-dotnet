@@ -125,11 +125,11 @@ namespace TS.Pisa.Plugin.Puffin
                             encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>");
                 if (AccessGranted(ReadMessage()) == false)
                     throw new AuthenticationException("Access was not granted.");
-                var serviceDescriptionMessage = ReadMessage();
+                var puffinClientName = GetPuffinClientName(ReadMessage());
                 SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
                             Guid + "\"/>");
                 ProviderStatus = ProviderStatus.Ready;
-                PuffinClient puffinClient = new PuffinClient(_stream);
+                PuffinClient puffinClient = new PuffinClient(_stream, puffinClientName);
                 _puffinRequestor = puffinClient;
                 puffinClient.Start();
             }
@@ -151,6 +151,30 @@ namespace TS.Pisa.Plugin.Puffin
                 return welcomeNode.Attributes["PublicKey"].InnerText;
             }
             throw new PuffinSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
+        }
+
+        private string GetPuffinClientName(string serviceDescriptionMessage)
+        {
+            var name = "";
+            var serviceDescriptionXml = new XmlDocument();
+            serviceDescriptionXml.LoadXml(serviceDescriptionMessage);
+            var welcomeNode = serviceDescriptionXml.SelectSingleNode("ServiceDescription");
+            if (welcomeNode != null && welcomeNode.Attributes != null)
+            {
+                if (welcomeNode.Attributes["name"] != null)
+                {
+                    name = name + welcomeNode.Attributes["name"].InnerText;
+                }
+                if (welcomeNode.Attributes["host"] != null)
+                {
+                    name = name + "@" + welcomeNode.Attributes["host"].InnerText;
+                }
+                if (welcomeNode.Attributes["port"] != null)
+                {
+                    name = name + ":" + welcomeNode.Attributes["port"].InnerText;
+                }
+            }
+            return name;
         }
 
         private bool AccessGranted(string grantMessage)

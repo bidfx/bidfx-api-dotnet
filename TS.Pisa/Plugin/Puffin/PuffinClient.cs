@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using TS.Pisa.Tools;
@@ -15,15 +16,17 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _consumerThread;
         private readonly Stream _stream;
+        private readonly string _name;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
         private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
 
         public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
 
-        public PuffinClient(Stream stream)
+        public PuffinClient(Stream stream, string name)
         {
             _stream = stream;
+            _name = name;
             _consumerThread = new Thread(RunningLoop) {Name = _consumerThread + "-read"};
             _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver.SetHeartbeatListener(HandleHeartbeat);
@@ -52,6 +55,7 @@ namespace TS.Pisa.Plugin.Puffin
         private void Consume()
         {
             var message = _puffinMessageReader.ReadMessage();
+            if (Log.IsDebugEnabled) Log.Debug(_name + " sent message: " + message);
             _messageReceiver.OnMessage(message);
         }
 
@@ -63,7 +67,7 @@ namespace TS.Pisa.Plugin.Puffin
             while (_running.Value)
             {
                 var message = _messageQueue.Take();
-                if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+                if (Log.IsDebugEnabled) Log.Debug(_name + " was sent: " + message);
                 _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
                 _stream.Flush();
             }
@@ -76,7 +80,7 @@ namespace TS.Pisa.Plugin.Puffin
         /// <param name="message">The message to be sent.</param>
         public void QueueMessage(string message)
         {
-            if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
+            if (Log.IsDebugEnabled) Log.Debug(_name + " queuing message: " + message);
             if (_running.Value)
             {
                 _messageQueue.Add(message);
@@ -85,10 +89,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void Close(string reason)
         {
-            if (Log.IsDebugEnabled) Log.Debug("socket close (" + reason + ")");
+            if (Log.IsDebugEnabled) Log.Debug(_name + " socket close (" + reason + ")");
             if (RequiresDisposal())
             {
-                Log.Info("disconnected (" + reason + ")");
+                Log.Info(_name + " disconnected (" + reason + ")");
                 Dispose();
             }
         }
@@ -129,12 +133,14 @@ namespace TS.Pisa.Plugin.Puffin
         private void SendHeartbeat()
         {
             var now = JavaTime.CurrentTimeMillis();
-            QueueMessage("<Heartbeat TransmitTime=\""+now+"\"/>");
+            QueueMessage("<Heartbeat TransmitTime=\"" + now + "\"/>");
+            Log.Info(this);
         }
 
         private void SendSyncClock(long originateTime, long receiveTime)
         {
-            QueueMessage("<SyncClock OriginateTime=\""+originateTime+"\" ReceiveTime=\""+receiveTime+"\" TransmitTime=\""+JavaTime.CurrentTimeMillis()+"\"/>");
+            QueueMessage("<SyncClock OriginateTime=\"" + originateTime + "\" ReceiveTime=\"" + receiveTime +
+                         "\" TransmitTime=\"" + JavaTime.CurrentTimeMillis() + "\"/>");
         }
 
         public void CloseSession()
