@@ -21,9 +21,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         public PuffinClient.OnHeartbeatListener OnHeartbeatListener { get; set; }
 
+        public PuffinMessageReceiver()
+        {
+            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
+        }
+
         public void OnMessage(PuffinElement element)
         {
-            _timeOfLastMessage = JavaTime.CurrentTimeMillis();
+            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
             switch (element.Tag)
             {
                 case PuffinTagName.Update:
@@ -36,10 +41,7 @@ namespace TS.Pisa.Plugin.Puffin
                     OnStatusMessage(element);
                     break;
                 case PuffinTagName.Heartbeat:
-                    OnHeartbeatMessage(element, _timeOfLastMessage);
-                    break;
-                case PuffinTagName.ClockSync:
-                    OnClockSyncMessage(element);
+                    OnHeartbeatMessage(element, TimeOfLastMessage);
                     break;
                 case PuffinTagName.Close:
                     OnCloseMessage(element);
@@ -100,14 +102,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
         {
-            var interval = TokenToLong(element.AttributeValue(PuffinFieldName.Interval), 600000L);
+            var interval = TokenToInt(element.AttributeValue(PuffinFieldName.Interval), 600000);
             var transmitTime = TokenToLong(element.AttributeValue(PuffinFieldName.TransmitTime), 0L);
             var syncClock = TokenToBoolean(element.AttributeValue(PuffinFieldName.SyncClock), false);
             OnHeartbeatListener(interval, transmitTime, receiveTime, syncClock);
-        }
-
-        private void OnClockSyncMessage(PuffinElement element)
-        {
         }
 
         private void OnCloseMessage(PuffinElement element)
@@ -122,6 +120,11 @@ namespace TS.Pisa.Plugin.Puffin
         private long TokenToLong(PuffinToken token, long defaultValue)
         {
             return token == null ? defaultValue : token.ToLong();
+        }
+
+        private int TokenToInt(PuffinToken token, int defaultValue)
+        {
+            return token == null ? defaultValue : token.ToInteger();
         }
     }
 }
