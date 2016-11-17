@@ -124,8 +124,9 @@ namespace TS.Pisa.Plugin.Puffin
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
                             encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>");
-                if (AccessGranted(ReadMessage()) == false)
-                    throw new AuthenticationException("Access was not granted.");
+                var grantMessage = ReadMessage();
+                if (IsAccessGranted(grantMessage) == false)
+                    throw new AuthenticationException("access was not granted: "+GetTextFromGrant(grantMessage));
                 ReadMessage();
                 SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
                             Guid + "\"/>");
@@ -154,7 +155,7 @@ namespace TS.Pisa.Plugin.Puffin
             throw new PuffinSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
         }
 
-        private bool AccessGranted(string grantMessage)
+        private bool IsAccessGranted(string grantMessage)
         {
             var grantXml = new XmlDocument();
             grantXml.LoadXml(grantMessage);
@@ -164,6 +165,20 @@ namespace TS.Pisa.Plugin.Puffin
             if (grantNode.Attributes != null && grantNode.Attributes["Access"] != null)
             {
                 return Convert.ToBoolean(grantNode.Attributes["Access"].InnerText);
+            }
+            throw new XmlSyntaxException("No Access tag provided in grant message: " + grantMessage);
+        }
+
+        private string GetTextFromGrant(String grantMessage)
+        {
+            var grantXml = new XmlDocument();
+            grantXml.LoadXml(grantMessage);
+            var grantNode = grantXml.SelectSingleNode("Grant");
+            if (grantNode == null)
+                throw new XmlSyntaxException("The grant node could not be found in the message: " + grantMessage);
+            if (grantNode.Attributes != null && grantNode.Attributes["Text"] != null)
+            {
+                return grantNode.Attributes["Text"].InnerText;
             }
             throw new XmlSyntaxException("No Access tag provided in grant message: " + grantMessage);
         }
