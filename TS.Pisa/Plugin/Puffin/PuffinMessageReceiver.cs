@@ -35,9 +35,6 @@ namespace TS.Pisa.Plugin.Puffin
                 case PuffinTagName.Heartbeat:
                     OnHeartbeatMessage(element, TimeOfLastMessage);
                     break;
-                case PuffinTagName.SyncClock:
-                    OnClockSyncMessage(element);
-                    break;
                 case PuffinTagName.Close:
                     OnCloseMessage(element);
                     break;
@@ -69,10 +66,6 @@ namespace TS.Pisa.Plugin.Puffin
             var transmitTime = TokenToLong(element.AttributeValue(PuffinFieldName.TransmitTime), 0L);
             var syncClock = TokenToBoolean(element.AttributeValue(PuffinFieldName.SyncClock), false);
             OnHeartbeatListener(interval, transmitTime, receiveTime, syncClock);
-        }
-
-        private void OnClockSyncMessage(PuffinElement element)
-        {
         }
 
         private void OnCloseMessage(PuffinElement element)
