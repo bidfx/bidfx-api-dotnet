@@ -184,7 +184,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendSyncClock(long originateTime, long receiveTime)
         {
-            QueueMessage(new PuffinElement(PuffinTagName.SyncClock)
+            QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                 .AddAttribute("OriginateTime", originateTime)
                 .AddAttribute("ReceiveTime", receiveTime)
                 .AddAttribute("TransmitTime", JavaTime.CurrentTimeMillis())
