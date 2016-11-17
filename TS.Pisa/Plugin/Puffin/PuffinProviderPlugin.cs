@@ -180,7 +180,6 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 return grantNode.Attributes["Text"].InnerText;
             }
-            throw new XmlSyntaxException("No Text tag provided in grant message: " + grantMessage);
         }
 
         private void UpgradeToSsl()
