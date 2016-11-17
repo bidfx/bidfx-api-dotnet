@@ -65,21 +65,21 @@ namespace TS.Pisa.Plugin.Puffin
         private void FormatAttribute(string name, PuffinToken value)
         {
             _builder.Append(' ' + name + "=\"");
-            switch (value.TokenType())
+            switch (value.TokenType)
             {
-                case LexicalType.AttributeValueInteger:
-                case LexicalType.AttributeValueDouble:
-                case LexicalType.AttributeValueFraction:
-                    _builder.Append(value.GetText());
+                case TokenType.AttributeValueInteger:
+                case TokenType.AttributeValueDouble:
+                case TokenType.AttributeValueFraction:
+                    _builder.Append(value.Text);
                     break;
-                case LexicalType.AttributeValueString:
+                case TokenType.AttributeValueString:
                     EscapeToken(value);
                     break;
-                case LexicalType.TagEnd:
-                case LexicalType.TagEndEmptyContent:
-                case LexicalType.TagStart:
-                case LexicalType.NestedContent:
-                case LexicalType.AttributeName:
+                case TokenType.TagEnd:
+                case TokenType.TagEndEmptyContent:
+                case TokenType.TagStart:
+                case TokenType.NestedContent:
+                case TokenType.AttributeName:
                     break;
                 default:
                     throw new PuffinSyntaxException("unexpect attribute value type " + value);
@@ -89,7 +89,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void EscapeToken(PuffinToken token)
         {
-            foreach (var c in token.GetText())
+            foreach (var c in token.Text)
             {
                 var encoded = Encodings[c];
                 if (encoded == null)

@@ -23,7 +23,7 @@ namespace TS.Pisa.Example
             var session = PrepareSession();
             Log.Info("starting the Pisa session");
             session.Start();
-            Thread.Sleep(5000);
+            Thread.Sleep(500);
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");

@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="DefaultSessionTest.cs" />
     <Compile Include="Plugin\Puffin\PuffinMessageReaderTest.cs" />
-    <Compile Include="Plugin\Puffin\TokenDictionaryText.cs" />
+    <Compile Include="Plugin\Puffin\TokenDictionaryTest.cs" />
     <Compile Include="Plugin\Puffin\XmlElementTest.cs" />
     <Compile Include="Plugin\Puffin\MessageFormatterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

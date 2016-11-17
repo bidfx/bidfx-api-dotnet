@@ -57,7 +57,7 @@
     <Compile Include="PisaVersion.cs" />
     <Compile Include="Plugin\Puffin\IPuffinRequestor.cs" />
     <Compile Include="Plugin\Puffin\IPuffinSessionListener.cs" />
-    <Compile Include="Plugin\Puffin\LexicalType.cs" />
+    <Compile Include="Plugin\Puffin\TokenType.cs" />
     <Compile Include="Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="Plugin\Puffin\MessageFormatter.cs" />
     <Compile Include="Plugin\Puffin\PuffinClient.cs" />

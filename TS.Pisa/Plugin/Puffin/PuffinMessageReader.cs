@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -11,6 +12,9 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class PuffinMessageReader
     {
+        private static readonly log4net.ILog Log =
+            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly byte[] _buffer = new byte[8192];
         private int _end;
         private int _point = -1;
@@ -51,13 +55,13 @@ namespace TS.Pisa.Plugin.Puffin
                 {
                     throw new PuffinSyntaxException("start tag expected");
                 }
-                var element = new PuffinElement(token.GetText());
+                var element = new PuffinElement(token.Text);
                 while ((token = NextToken()) != null)
                 {
-                    switch (token.TokenType())
+                    switch (token.TokenType)
                     {
-                        case LexicalType.TagEnd:
-                        case LexicalType.TagEndEmptyContent:
+                        case TokenType.TagEnd:
+                        case TokenType.TagEndEmptyContent:
                         {
                             if (_elementStack.Count == 0)
                             {
@@ -66,14 +70,14 @@ namespace TS.Pisa.Plugin.Puffin
                             element = _elementStack.Pop();
                             break;
                         }
-                        case LexicalType.TagStart:
+                        case TokenType.TagStart:
                         {
                             _elementStack.Push(element);
-                            element = new PuffinElement(token.GetText());
+                            element = new PuffinElement(token.Text);
                             _elementStack.Peek().AddElement(element);
                             break;
                         }
-                        case LexicalType.AttributeName:
+                        case TokenType.AttributeName:
                         {
                             var name = token;
                             token = NextToken();
@@ -81,14 +85,14 @@ namespace TS.Pisa.Plugin.Puffin
                             {
                                 break;
                             }
-                            element.AddAttribute(name.GetText(), token);
+                            element.AddAttribute(name.Text, token);
                             break;
                         }
-                        case LexicalType.AttributeValueInteger:
-                        case LexicalType.AttributeValueDouble:
-                        case LexicalType.AttributeValueFraction:
-                        case LexicalType.AttributeValueString:
-                        case LexicalType.NestedContent:
+                        case TokenType.AttributeValueInteger:
+                        case TokenType.AttributeValueDouble:
+                        case TokenType.AttributeValueFraction:
+                        case TokenType.AttributeValueString:
+                        case TokenType.NestedContent:
                         {
                             throw new PuffinSyntaxException("attribute value with no name " + token);
                         }
@@ -103,7 +107,7 @@ namespace TS.Pisa.Plugin.Puffin
             catch (PuffinSyntaxException e)
             {
                 throw new PuffinSyntaxException(
-                    e.Message + (token == null ? string.Empty : "; reading " + token.DebugString()));
+                    e.Message + (token == null ? string.Empty : "; reading " + token));
             }
         }
 
@@ -158,6 +162,8 @@ namespace TS.Pisa.Plugin.Puffin
             for (_mark = ++_point; _point < _end || FillBuffer(); ++_point)
             {
                 var b = _buffer[_point];
+                //if (Log.IsDebugEnabled) Log.Debug("read byte " + b+" ("+(char)b+") at state "+state);
+
                 switch (state)
                 {
                     case State.FirstByte:
@@ -170,11 +176,11 @@ namespace TS.Pisa.Plugin.Puffin
                         {
                             if (TokenDictionary.IsTokenType(b))
                             {
-                                if (b == (byte) LexicalType.TagEnd)
+                                if (b == (byte) TokenType.TagEnd)
                                 {
                                     return _tagStack.Pop().ToEndTag();
                                 }
-                                if (b == (byte) LexicalType.TagEndEmptyContent)
+                                if (b == (byte) TokenType.TagEndEmptyContent)
                                 {
                                     _tagStack.Pop();
                                     return PuffinToken.EmptyToken;
@@ -209,39 +215,39 @@ namespace TS.Pisa.Plugin.Puffin
                     {
                         if (!TokenDictionary.IsPlainText(b))
                         {
-                            var type = (LexicalType) _buffer[_mark];
+                            var type = (TokenType) _buffer[_mark];
                             if (_mark < --_point)
                             {
                                 PuffinToken token;
                                 var text = MarkedText();
                                 switch (type)
                                 {
-                                    case LexicalType.TagStart:
+                                    case TokenType.TagStart:
                                         token = new PuffinToken(type, text, text);
                                         _tagStack.Push(token);
                                         break;
-                                    case LexicalType.AttributeName:
+                                    case TokenType.AttributeName:
                                         token = new PuffinToken(type, text, text);
                                         break;
-                                    case LexicalType.TagEnd:
+                                    case TokenType.TagEnd:
                                         token = new PuffinToken(type, text, text);
                                         break;
-                                    case LexicalType.TagEndEmptyContent:
+                                    case TokenType.TagEndEmptyContent:
                                         token = PuffinToken.EmptyToken;
                                         break;
-                                    case LexicalType.NestedContent:
+                                    case TokenType.NestedContent:
                                         token = PuffinToken.NullContentToken;
                                         break;
-                                    case LexicalType.AttributeValueInteger:
+                                    case TokenType.AttributeValueInteger:
                                         token = new PuffinToken(type, text, Convert.ToInt64(text));
                                         break;
-                                    case LexicalType.AttributeValueDouble:
+                                    case TokenType.AttributeValueDouble:
                                         token = new PuffinToken(type, text, Convert.ToDouble(text));
                                         break;
-                                    case LexicalType.AttributeValueFraction:
+                                    case TokenType.AttributeValueFraction:
                                         token = new PuffinToken(type, text, PuffinToken.FractionToDouble(text));
                                         break;
-                                    case LexicalType.AttributeValueString:
+                                    case TokenType.AttributeValueString:
                                         token = new PuffinToken(type, text, text);
                                         break;
                                     default:
@@ -250,11 +256,11 @@ namespace TS.Pisa.Plugin.Puffin
                                 _dictionary.InsertToken(token);
                                 return token;
                             }
-                            if (type == LexicalType.AttributeValueString)
+                            if (type == TokenType.AttributeValueString)
                             {
                                 return PuffinToken.NullValueToken;
                             }
-                            if (type == LexicalType.NestedContent)
+                            if (type == TokenType.NestedContent)
                             {
                                 return PuffinToken.NullContentToken;
                             }

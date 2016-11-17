@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -10,6 +11,9 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class TokenDictionary
     {
+        private static readonly log4net.ILog Log =
+            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const int TokenCodes = 9;
         private const int CodeBits = 7;
         private const int IsToken = 1 << CodeBits;
@@ -56,6 +60,8 @@ namespace TS.Pisa.Plugin.Puffin
                     swap.Code = tokenCode.Code;
                     _tokenCodes[i] = tokenCode;
                     tokenCode.Code = i;
+                    //if (Log.IsDebugEnabled) Log.Debug("promoting token "+tokenCode);
+                    return;
                 }
             }
             _winningPost = tokenCode.Count;
@@ -75,6 +81,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void PurgeTable()
         {
+            //if (Log.IsDebugEnabled) Log.Debug("purging token dictionary");
             var lowerQuartile = EstimateLowerQuartile();
             var to = 0;
             for (var from = 0; from < MaxCode; ++from)

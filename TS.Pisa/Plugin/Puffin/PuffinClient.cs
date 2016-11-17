@@ -27,7 +27,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _stream = stream;
             _name = name;
-            _consumerThread = new Thread(RunningLoop) {Name = _consumerThread + "-read"};
+            _consumerThread = new Thread(RunningLoop) {Name = _name + "-read"};
             _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver.SetHeartbeatListener(HandleHeartbeat);
         }

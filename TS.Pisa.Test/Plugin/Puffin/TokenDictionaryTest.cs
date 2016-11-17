@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public class TokenDictionaryText
+    public class TokenDictionaryTest
     {
 
     }
@@ -113,15 +113,15 @@ namespace TS.Pisa.Plugin.Puffin
         [Test]
         public void token_codes_are_not_plain_text()
         {
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.TagEnd));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.TagEndEmptyContent));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.TagStart));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.NestedContent));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.AttributeName));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.AttributeValueInteger));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.AttributeValueDouble));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.AttributeValueFraction));
-            Assert.False(TokenDictionary.IsPlainText((byte) LexicalType.AttributeValueString));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.TagEnd));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.TagEndEmptyContent));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.TagStart));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.NestedContent));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeName));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueInteger));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueDouble));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueFraction));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueString));
         }
 
         [Test]
@@ -138,7 +138,7 @@ namespace TS.Pisa.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_unset_are_plain_text()
         {
-            for (var i = Enum.GetNames(typeof(LexicalType)).Length; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.True(TokenDictionary.IsPlainText((byte) i));
             }
@@ -189,15 +189,15 @@ namespace TS.Pisa.Plugin.Puffin
         [Test]
         public void token_codes_are_token_types()
         {
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.TagEnd));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.TagEndEmptyContent));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.TagStart));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.NestedContent));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.AttributeName));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.AttributeValueInteger));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.AttributeValueDouble));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.AttributeValueFraction));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) LexicalType.AttributeValueString));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.TagEnd));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.TagEndEmptyContent));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.TagStart));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.NestedContent));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeName));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueInteger));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueDouble));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueFraction));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueString));
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace TS.Pisa.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_unset_are_token()
         {
-            for (var i = Enum.GetNames(typeof(LexicalType)).Length; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.True(TokenDictionary.IsSecondByteOfToken((byte) i));
             }
@@ -225,21 +225,21 @@ namespace TS.Pisa.Plugin.Puffin
         [Test]
         public void token_codes_are_not_token()
         {
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.TagEnd));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.TagEndEmptyContent));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.TagStart));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.NestedContent));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.AttributeName));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.AttributeValueInteger));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.AttributeValueDouble));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.AttributeValueFraction));
-            Assert.True(TokenDictionary.IsTokenType((byte) LexicalType.AttributeValueString));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.TagEnd));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.TagEndEmptyContent));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.TagStart));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.NestedContent));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeName));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueInteger));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueDouble));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueFraction));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueString));
         }
 
         [Test]
         public void other_ascii_bytes_with_bit_7_unset_are_not_token()
         {
-            for (var i = Enum.GetNames(typeof(LexicalType)).Length; i < 128; ++i)
+            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.False(TokenDictionary.IsTokenType((byte) i));
             }
@@ -303,8 +303,8 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 var tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
                 Assert.AreEqual(i, tokenCode.Code);
-                Assert.AreEqual(LexicalType.AttributeValueInteger, tokenCode.Token.TokenType());
-                Assert.AreEqual(i.ToString(), tokenCode.Token.GetText());
+                Assert.AreEqual(TokenType.AttributeValueInteger, tokenCode.Token.TokenType);
+                Assert.AreEqual(i.ToString(), tokenCode.Token.Text);
             }
         }
 
@@ -329,7 +329,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 var token = dictionary.LookupToken(tokenCode.Code);
                 Assert.AreEqual(i, tokenCode.Count);
-                Assert.AreEqual("sweeno", token.GetText());
+                Assert.AreEqual("sweeno", token.Text);
             }
         }
 
@@ -370,7 +370,7 @@ namespace TS.Pisa.Plugin.Puffin
             var oneByteTokens = new HashSet<string>();
             for (var code = 0; code < 128; ++code)
             {
-                oneByteTokens.Add(dictionary.LookupToken(code).GetText());
+                oneByteTokens.Add(dictionary.LookupToken(code).Text);
             }
             for (var code = 0; code < 128; ++code)
             {

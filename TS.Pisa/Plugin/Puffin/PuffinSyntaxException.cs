@@ -6,12 +6,13 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class PuffinSyntaxException : Exception
     {
-        public PuffinSyntaxException()
+        public PuffinSyntaxException(string message)
+            : base(message)
         {
         }
 
-        public PuffinSyntaxException(string message)
-            : base(message)
+        public PuffinSyntaxException(string message, Exception e)
+            : base(message, e)
         {
         }
     }

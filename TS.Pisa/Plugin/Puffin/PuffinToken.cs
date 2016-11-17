@@ -10,102 +10,97 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class PuffinToken
     {
-        public static readonly PuffinToken EmptyToken = new PuffinToken(LexicalType.TagEndEmptyContent, "", null);
-        public static readonly PuffinToken NullValueToken = new PuffinToken(LexicalType.AttributeValueString, "", null);
-        public static readonly PuffinToken NullContentToken = new PuffinToken(LexicalType.NestedContent, "", null);
+        public static readonly PuffinToken EmptyToken = new PuffinToken(TokenType.TagEndEmptyContent, "", null);
+        public static readonly PuffinToken NullValueToken = new PuffinToken(TokenType.AttributeValueString, "", null);
+        public static readonly PuffinToken NullContentToken = new PuffinToken(TokenType.NestedContent, "", null);
         public static readonly PuffinToken ZeroToken = IntegerValue(0);
 
-        private readonly LexicalType _lexicalType;
-        private readonly string _text;
-        private readonly object _value;
+        public string Text { get; private set; }
+        public TokenType TokenType { get; private set; }
+        public object Value { get; private set; }
 
-        public PuffinToken(LexicalType lexicalType, string text, object value)
+        public PuffinToken(TokenType tokenType, string text, object value)
         {
-            _lexicalType = lexicalType;
-            _text = text;
-            _value = value;
+            TokenType = tokenType;
+            Text = text;
+            Value = value;
         }
 
         public static PuffinToken StartTag(string value)
         {
-            return new PuffinToken(LexicalType.TagStart, value, value);
+            return new PuffinToken(TokenType.TagStart, value, value);
         }
 
         public static PuffinToken AttributeName(string value)
         {
-            return new PuffinToken(LexicalType.AttributeName, value, value);
+            return new PuffinToken(TokenType.AttributeName, value, value);
         }
 
         public static PuffinToken StringValue(string value)
         {
-            return new PuffinToken(LexicalType.AttributeValueString, value, value);
+            return new PuffinToken(TokenType.AttributeValueString, value, value);
         }
 
         public static PuffinToken IntegerValue(int value)
         {
-            return new PuffinToken(LexicalType.AttributeValueInteger, value.ToString(), value);
+            return new PuffinToken(TokenType.AttributeValueInteger, value.ToString(), value);
         }
 
         public static PuffinToken LongValue(long value)
         {
-            return new PuffinToken(LexicalType.AttributeValueInteger, value.ToString(), value);
+            return new PuffinToken(TokenType.AttributeValueInteger, value.ToString(), value);
         }
 
         public static PuffinToken DoubleValue(double value)
         {
-            return new PuffinToken(LexicalType.AttributeValueDouble, value.ToString(CultureInfo.InvariantCulture), value);
+            return new PuffinToken(TokenType.AttributeValueDouble, value.ToString(CultureInfo.InvariantCulture), value);
         }
 
         public static PuffinToken BooleanValue(bool value)
         {
-            return new PuffinToken(LexicalType.AttributeValueString, value ? "true" : "false", value);
+            return new PuffinToken(TokenType.AttributeValueString, value ? "true" : "false", value);
         }
 
         public PuffinToken ToEndTag()
         {
-            return new PuffinToken(LexicalType.TagEnd, _text, _value);
-        }
-
-        public LexicalType TokenType()
-        {
-            return _lexicalType;
+            return new PuffinToken(TokenType.TagEnd, Text, Value);
         }
 
         public bool IsEndTag()
         {
-            return _lexicalType == LexicalType.TagEnd;
+            return TokenType == TokenType.TagEnd;
         }
 
         public bool IsEmptyTag()
         {
-            return _lexicalType == LexicalType.TagEndEmptyContent;
+            return TokenType == TokenType.TagEndEmptyContent;
         }
 
         public bool IsStartTag()
         {
-            return _lexicalType == LexicalType.TagStart;
+            return TokenType == TokenType.TagStart;
         }
 
         public bool IsTagContent()
         {
-            return _lexicalType == LexicalType.NestedContent;
+            return TokenType == TokenType.NestedContent;
         }
 
         public bool IsAttributeName()
         {
-            return _lexicalType == LexicalType.AttributeName;
+            return TokenType == TokenType.AttributeName;
         }
 
         public bool IsValueType()
         {
-            return _lexicalType >= LexicalType.AttributeValueInteger;
+            return TokenType >= TokenType.AttributeValueInteger;
         }
 
         public bool IsNumberType()
         {
-            return _lexicalType == LexicalType.AttributeValueInteger ||
-                   _lexicalType == LexicalType.AttributeValueDouble ||
-                   _lexicalType == LexicalType.AttributeValueFraction;
+            return TokenType == TokenType.AttributeValueInteger ||
+                   TokenType == TokenType.AttributeValueDouble ||
+                   TokenType == TokenType.AttributeValueFraction;
         }
 
         public bool IsNull()
@@ -115,74 +110,104 @@ namespace TS.Pisa.Plugin.Puffin
 
         public bool IsInteger()
         {
-            return _lexicalType == LexicalType.AttributeValueInteger;
+            return TokenType == TokenType.AttributeValueInteger;
         }
 
         public bool IsDouble()
         {
-            return _lexicalType == LexicalType.AttributeValueDouble;
+            return TokenType == TokenType.AttributeValueDouble;
         }
 
         public bool IsFraction()
         {
-            return _lexicalType == LexicalType.AttributeValueFraction;
+            return TokenType == TokenType.AttributeValueFraction;
         }
 
         public bool IsString()
         {
-            return _lexicalType == LexicalType.AttributeValueString;
+            return TokenType == TokenType.AttributeValueString;
         }
 
         public bool IsNegative()
         {
-            return _text.StartsWith("-");
-        }
-
-        public string GetText()
-        {
-            return _text;
-        }
-
-        public object GetValue()
-        {
-            return _value;
-        }
-
-        public int Length()
-        {
-            return _text.Length;
+            return Text.StartsWith("-");
         }
 
         public override string ToString()
         {
-            return _text;
+            return "token(" + TokenType + " text=\"" + Text + "\", value=" + Value + ")";
         }
 
         public int ToInteger()
         {
-            if (IsInteger())
+            if (Value is int?)
             {
-                return Convert.ToInt32(ToString());
+                return (int) Value;
             }
-            return (int) ToDouble();
+            try
+            {
+                if (IsInteger())
+                {
+                    return Convert.ToInt32(Text);
+                }
+                return (int) ToDouble();
+            }
+            catch (FormatException e)
+            {
+                throw new PuffinSyntaxException("failed to convert token to int double. " + this, e);
+            }
         }
 
         public long ToLong()
         {
-            if (IsInteger())
+            if (Value is long?)
             {
-                return Convert.ToInt64(ToString());
+                return (long) Value;
             }
-            return (long) ToDouble();
+            try
+            {
+                if (IsInteger())
+                {
+                    return Convert.ToInt64(Text);
+                }
+                return (long) ToDouble();
+            }
+            catch (FormatException e)
+            {
+                throw new PuffinSyntaxException("failed to convert token to long. " + this, e);
+            }
         }
 
         public double ToDouble()
         {
-            if (IsDouble() || IsInteger())
+            if (Value is double?)
             {
-                return TextAsDouble();
+                return (double) Value;
             }
-            return FractionToDouble(ToString());
+            try
+            {
+                if (IsDouble() || IsInteger())
+                {
+                    return double.Parse(Text);
+                }
+                return FractionToDouble(Text);
+            }
+            catch (FormatException e)
+            {
+                throw new PuffinSyntaxException("failed to convert token to double. " + this, e);
+            }
+        }
+
+        public bool ToBoolean()
+        {
+            try
+            {
+                return Convert.ToBoolean(Text);
+            }
+            catch (FormatException e)
+            {
+                throw new PuffinSyntaxException("failed to convert token to boolean. " + this, e);
+            }
         }
 
         public static double FractionToDouble(string fraction)
@@ -215,16 +240,6 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private double TextAsDouble()
-        {
-            return double.Parse(ToString());
-        }
-
-        public bool ToBoolean()
-        {
-            return Convert.ToBoolean(ToString());
-        }
-
         public override bool Equals(object o)
         {
             if (o == this)
@@ -233,17 +248,12 @@ namespace TS.Pisa.Plugin.Puffin
             }
             if (!(o is PuffinToken)) return false;
             var token = (PuffinToken) o;
-            return _lexicalType == token._lexicalType && _text.Equals(token._text);
-        }
-
-        public string DebugString()
-        {
-            return "token " + _lexicalType + " [" + ToString() + ']';
+            return TokenType == token.TokenType && Text.Equals(token.Text);
         }
 
         public override int GetHashCode()
         {
-            return _lexicalType.GetHashCode() + (_text.GetHashCode() << 4);
+            return TokenType.GetHashCode() + (Text.GetHashCode() << 4);
         }
     }
 }

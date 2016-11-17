@@ -129,7 +129,7 @@ namespace TS.Pisa.Plugin.Puffin
                 SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
                             Guid + "\"/>");
                 ProviderStatus = ProviderStatus.Ready;
-                PuffinClient puffinClient = new PuffinClient(_stream, puffinClientName);
+                PuffinClient puffinClient = new PuffinClient(_stream, Name);
                 _puffinRequestor = puffinClient;
                 puffinClient.Start();
             }
