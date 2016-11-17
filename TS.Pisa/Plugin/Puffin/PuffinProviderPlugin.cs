@@ -133,9 +133,10 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Description", Pisa.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
-                if (!IsAccessGranted(ReadMessage()))
+                var grantMessage = ReadMessage();
+                if (!IsAccessGranted(grantMessage))
                 {
-                    throw new AuthenticationException("Access was not granted.");
+                    throw new AuthenticationException("Access was not granted: "+GetTextFromGrant(grantMessage));
                 }
                 ReadMessage();
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
