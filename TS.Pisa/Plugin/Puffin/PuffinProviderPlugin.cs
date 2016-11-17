@@ -123,9 +123,9 @@ namespace TS.Pisa.Plugin.Puffin
                 {
                     SendPuffinUrl();
                 }
-                var publicKey = GetPublicKey(ReadMessage());
+                var welcomeMessage = ReadMessage();
+                var publicKey = GetAttribute(welcomeMessage,"PublicKey");
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
-
                 SendMessage(new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
                     .AddAttribute("Name", Username)
@@ -134,11 +134,11 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grantMessage = ReadMessage();
-                if (!IsAccessGranted(grantMessage))
+                if (!Convert.ToBoolean(GetAttribute(grantMessage,"Access")))
                 {
-                    throw new AuthenticationException("Access was not granted: "+GetTextFromGrant(grantMessage));
+                    throw new AuthenticationException("Access was not granted: "+GetAttribute(grantMessage,"Text"));
                 }
-                ReadMessage();
+                ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
                     .AddAttribute("GUID", Guid.ToString())
                     .AddAttribute("server", false)
@@ -156,7 +156,10 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
                 ProviderStatus = ProviderStatus.Ready;
-                PuffinClient puffinClient = new PuffinClient(_stream, Name, PriceUpdate);
+                PuffinClient puffinClient = new PuffinClient(_stream, Name, PriceUpdate)
+                {
+                    Interval = Convert.ToInt32(GetAttribute(welcomeMessage, "Interval"))
+                };
                 _puffinRequestor = puffinClient;
                 puffinClient.Start();
             }
@@ -166,46 +169,13 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private string GetPublicKey(string welcomeMessage)
+        private string GetAttribute(string message, string key)
         {
-            var welcomeXml = new XmlDocument();
-            welcomeXml.LoadXml(welcomeMessage);
-            var welcomeNode = welcomeXml.SelectSingleNode("Welcome");
-            if (welcomeNode == null)
-                throw new PuffinSyntaxException("The welcome node could not be found in the message: " + welcomeMessage);
-            if (welcomeNode.Attributes != null && welcomeNode.Attributes["PublicKey"] != null)
-            {
-                return welcomeNode.Attributes["PublicKey"].InnerText;
-            }
-            throw new PuffinSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
-        }
-
-        private bool IsAccessGranted(string grantMessage)
-        {
-            var grantXml = new XmlDocument();
-            grantXml.LoadXml(grantMessage);
-            var grantNode = grantXml.SelectSingleNode("Grant");
-            if (grantNode == null)
-                throw new XmlSyntaxException("The grant node could not be found in the message: " + grantMessage);
-            if (grantNode.Attributes != null && grantNode.Attributes["Access"] != null)
-            {
-                return Convert.ToBoolean(grantNode.Attributes["Access"].InnerText);
-            }
-            throw new XmlSyntaxException("No Access tag provided in grant message: " + grantMessage);
-        }
-
-        private string GetTextFromGrant(String grantMessage)
-        {
-            var grantXml = new XmlDocument();
-            grantXml.LoadXml(grantMessage);
-            var grantNode = grantXml.SelectSingleNode("Grant");
-            if (grantNode == null)
-                throw new XmlSyntaxException("The grant node could not be found in the message: " + grantMessage);
-            if (grantNode.Attributes != null && grantNode.Attributes["Text"] != null)
-            {
-                return grantNode.Attributes["Text"].InnerText;
-            }
-            return "";
+            var startOfKey = message.IndexOf(key);
+            var startOfValue = startOfKey + key.Length + 2;
+            var substring = message.Substring(startOfValue);
+            var endOfValue = substring.IndexOf("\"");
+            return substring.Substring(0,endOfValue);
         }
 
         private void UpgradeToSsl()
