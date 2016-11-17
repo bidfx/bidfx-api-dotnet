@@ -175,7 +175,10 @@ namespace TS.Pisa.Plugin.Puffin
             var startOfValue = startOfKey + key.Length + 2;
             var substring = message.Substring(startOfValue);
             var endOfValue = substring.IndexOf("\"");
-            return substring.Substring(0,endOfValue);
+
+            var value = substring.Substring(0,endOfValue);
+            if(Log.IsDebugEnabled) Log.Debug("Value of "+key+" is:"+value);
+            return value;
         }
 
         private void UpgradeToSsl()
