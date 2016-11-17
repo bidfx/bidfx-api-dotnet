@@ -30,12 +30,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnUpdateMessage(PuffinElement element)
         {
-            if(PriceUpdate!=null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = "Update"});
+            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+            if(PriceUpdate!=null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = subject});
         }
 
         private void OnSetMessage(PuffinElement element)
         {
-            if (PriceUpdate != null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = "Set"});
+            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+            if (PriceUpdate != null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = subject});
         }
 
         private void OnStatusMessage(PuffinElement element)
