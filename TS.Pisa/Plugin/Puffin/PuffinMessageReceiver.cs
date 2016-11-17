@@ -9,13 +9,18 @@ namespace TS.Pisa.Plugin.Puffin
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private long _timeOfLastMessage = JavaTime.CurrentTimeMillis();
+        public long TimeOfLastMessage { get; set; }
         public PuffinClient.OnHeartbeatListener OnHeartbeatListener { get; set; }
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
 
+        public PuffinMessageReceiver()
+        {
+            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
+        }
+
         public void OnMessage(PuffinElement element)
         {
-            _timeOfLastMessage = JavaTime.CurrentTimeMillis();
+            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
             switch (element.Tag)
             {
                 case PuffinTagName.Update:
@@ -28,9 +33,9 @@ namespace TS.Pisa.Plugin.Puffin
                     OnStatusMessage(element);
                     break;
                 case PuffinTagName.Heartbeat:
-                    OnHeartbeatMessage(element, _timeOfLastMessage);
+                    OnHeartbeatMessage(element, TimeOfLastMessage);
                     break;
-                case PuffinTagName.ClockSync:
+                case PuffinTagName.SyncClock:
                     OnClockSyncMessage(element);
                     break;
                 case PuffinTagName.Close:

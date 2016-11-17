@@ -3,7 +3,7 @@
     public class PuffinTagName
     {
         public const string Administer = "Administer";
-        public const string ClockSync = "ClockSync";
+        public const string SyncClock = "SyncClock";
         public const string Close = "Close";
         public const string Grant = "Grant";
         public const string Heartbeat = "Heartbeat";
