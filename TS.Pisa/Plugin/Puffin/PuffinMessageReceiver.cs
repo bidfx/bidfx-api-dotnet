@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using TS.Pisa.Tools;
 
@@ -6,12 +7,19 @@ namespace TS.Pisa.Plugin.Puffin
 {
     public class PuffinMessageReceiver
     {
+        private readonly IProviderPlugin _provider;
+
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private long _timeOfLastMessage = JavaTime.CurrentTimeMillis();
+
+        public PuffinMessageReceiver(IProviderPlugin provider)
+        {
+            _provider = provider;
+        }
+
         public PuffinClient.OnHeartbeatListener OnHeartbeatListener { get; set; }
-        public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
 
         public void OnMessage(PuffinElement element)
         {
@@ -44,18 +52,50 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnUpdateMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
-            if (PriceUpdate != null) PriceUpdate(this, new PriceUpdateEventArgs {Subject = subject});
+            var eventHandler = _provider.PriceUpdate;
+            if (eventHandler != null)
+            {
+                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+                var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+                eventHandler(this, new PriceUpdateEventArgs
+                {
+                    Subject = subject,
+                    PriceImage = priceMap,
+                    PriceUpdate = priceMap
+                });
+            }
         }
 
         private void OnSetMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
-            if (PriceUpdate != null) PriceUpdate(this, new PriceUpdateEventArgs {Subject = subject});
+            var eventHandler = _provider.PriceUpdate;
+            if (eventHandler != null)
+            {
+                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+                var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+                eventHandler(this, new PriceUpdateEventArgs
+                {
+                    Subject = subject,
+                    PriceImage = priceMap,
+                    PriceUpdate = priceMap
+                });
+            }
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
+            var eventHandler = _provider.PriceStatus;
+            if (eventHandler != null)
+            {
+                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+                var statusCode = element.AttributeValue("Id").ToInteger();
+                eventHandler(this, new PriceStatusEventArgs
+                {
+                    Subject = subject,
+                    Status = PriceAdaptor.ToStatus(statusCode),
+                    StatusText = element.AttributeValue("Text").Text
+                });
+            }
         }
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)

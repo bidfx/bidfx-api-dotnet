@@ -92,8 +92,15 @@ namespace TS.Pisa.Plugin.Puffin
 
         public PuffinToken AttributeValue(string name)
         {
-            return (from attribute in _attributes
-                where attribute.Key.Equals(name) select attribute.Value).FirstOrDefault();
+            foreach (var attribute in _attributes)
+            {
+                if (attribute.Key.Equals(name))
+                {
+                    PuffinToken token = attribute.Value;
+                    return token;
+                }
+            }
+            return PuffinToken.NullValueToken;
         }
 
         public override string ToString()

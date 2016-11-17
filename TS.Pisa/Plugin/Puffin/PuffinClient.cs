@@ -19,18 +19,18 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly string _name;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
-        private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
+        private readonly PuffinMessageReceiver _messageReceiver;
 
         public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
 
-        public PuffinClient(Stream stream, string name, EventHandler<PriceUpdateEventArgs> priceUpdate)
+        public PuffinClient(Stream stream, IProviderPlugin provider)
         {
             _stream = stream;
-            _name = name;
+            _name = provider.Name;
             _consumerThread = new Thread(RunningLoop) {Name = _name + "-read"};
             _puffinMessageReader = new PuffinMessageReader(stream);
+            _messageReceiver = new PuffinMessageReceiver(provider);
             _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
-            _messageReceiver.PriceUpdate = priceUpdate;
         }
 
         public void Start()
@@ -56,7 +56,7 @@ namespace TS.Pisa.Plugin.Puffin
         private void Consume()
         {
             var message = _puffinMessageReader.ReadMessage();
-            if (Log.IsDebugEnabled) Log.Debug("received: ");
+            if (Log.IsDebugEnabled) Log.Debug("received: "+message);
             _messageReceiver.OnMessage(message);
         }
 

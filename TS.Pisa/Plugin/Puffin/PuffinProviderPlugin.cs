@@ -42,7 +42,9 @@ namespace TS.Pisa.Plugin.Puffin
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private static readonly long StartTime = JavaTime.CurrentTimeMillis();
+
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
+        public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
 
         public PuffinProviderPlugin()
         {
@@ -155,7 +157,7 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
                 ProviderStatus = ProviderStatus.Ready;
-                PuffinClient puffinClient = new PuffinClient(_stream, Name, PriceUpdate);
+                PuffinClient puffinClient = new PuffinClient(_stream, this);
                 _puffinRequestor = puffinClient;
                 puffinClient.Start();
             }
