@@ -2,25 +2,25 @@
 {
     public class PuffinTagName
     {
-        public static string Administer = "Administer";
-        public static string ClockSync = "ClockSync";
-        public static string Close = "Close";
-        public static string Grant = "Grant";
-        public static string Heartbeat = "Heartbeat";
-        public static string Leg = "Leg";
-        public static string Link = "Link";
-        public static string Login = "Login";
-        public static string Reply = "Reply";
-        public static string Server = "Server";
-        public static string ServiceDescription = "ServiceDescription";
-        public static string Set = "Set";
-        public static string Status = "Status";
-        public static string Subject = "Subject";
-        public static string Subscribe = "Subscribe";
-        public static string Unsubscribe = "Unsubscribe";
-        public static string Update = "Update";
-        public static string Welcome = "Welcome";
-        public static string WeightedMatchers = "WeightedMatchers";
-        public static string WeightedMatcher = "WeightedMatcher";
+        public const string Administer = "Administer";
+        public const string ClockSync = "ClockSync";
+        public const string Close = "Close";
+        public const string Grant = "Grant";
+        public const string Heartbeat = "Heartbeat";
+        public const string Leg = "Leg";
+        public const string Link = "Link";
+        public const string Login = "Login";
+        public const string Reply = "Reply";
+        public const string Server = "Server";
+        public const string ServiceDescription = "ServiceDescription";
+        public const string Set = "Set";
+        public const string Status = "Status";
+        public const string Subject = "Subject";
+        public const string Subscribe = "Subscribe";
+        public const string Unsubscribe = "Unsubscribe";
+        public const string Update = "Update";
+        public const string Welcome = "Welcome";
+        public const string WeightedMatchers = "WeightedMatchers";
+        public const string WeightedMatcher = "WeightedMatcher";
     }
 }

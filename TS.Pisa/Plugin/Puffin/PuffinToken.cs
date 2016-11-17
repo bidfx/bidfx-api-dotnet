@@ -135,6 +135,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         public override string ToString()
         {
+            if (Text == Value)
+            {
+                return "token(" + TokenType + " text=\"" + Text + "\")";
+            }
             return "token(" + TokenType + " text=\"" + Text + "\", value=" + Value + ")";
         }
 
