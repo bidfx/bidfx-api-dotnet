@@ -65,7 +65,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
         {
-            var interval = TokenToLong(element.AttributeValue(PuffinFieldName.Interval), 600000L);
+            var interval = TokenToInt(element.AttributeValue(PuffinFieldName.Interval), 600000);
             var transmitTime = TokenToLong(element.AttributeValue(PuffinFieldName.TransmitTime), 0L);
             var syncClock = TokenToBoolean(element.AttributeValue(PuffinFieldName.SyncClock), false);
             OnHeartbeatListener(interval, transmitTime, receiveTime, syncClock);
@@ -87,6 +87,11 @@ namespace TS.Pisa.Plugin.Puffin
         private long TokenToLong(PuffinToken token, long defaultValue)
         {
             return token == null ? defaultValue : token.ToLong();
+        }
+
+        private int TokenToInt(PuffinToken token, int defaultValue)
+        {
+            return token == null ? defaultValue : token.ToInteger();
         }
     }
 }

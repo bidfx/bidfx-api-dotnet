@@ -26,7 +26,7 @@ namespace TS.Pisa.Plugin.Puffin
         public int Interval { get; set; }
         private bool _failed = false;
 
-        public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
+        public delegate void OnHeartbeatListener(int interval, long transmitTime, long receiveTime, bool clockSync);
 
         public PuffinClient(Stream stream, string name, EventHandler<PriceUpdateEventArgs> priceUpdate)
         {
@@ -151,9 +151,9 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void HandleHeartbeat(long interval, long transmitTime, long receiveTime, bool syncClock)
+        private void HandleHeartbeat(int interval, long transmitTime, long receiveTime, bool syncClock)
         {
-            Interval = Convert.ToInt32(interval); //interval should never be greater than an int32
+            Interval = interval;
             if (syncClock)
             {
                 SendSyncClock(transmitTime, receiveTime);
