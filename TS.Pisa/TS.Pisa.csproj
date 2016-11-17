@@ -71,6 +71,7 @@
     <Compile Include="Plugin\Puffin\PuffinToken.cs" />
     <Compile Include="Plugin\Puffin\TokenDictionary.cs" />
     <Compile Include="PriceStatus.cs" />
+    <Compile Include="PriceUpdateEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProviderStatus.cs" />
     <Compile Include="Tools\AtomicBoolean.cs" />

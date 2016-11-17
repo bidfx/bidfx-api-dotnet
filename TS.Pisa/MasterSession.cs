@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TS.Pisa
 {
@@ -34,6 +35,8 @@ namespace TS.Pisa
         {
             _providerPlugins.Add(providerPlugin);
         }
+
+        public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
 
         public void Subscribe(string subject)
         {
