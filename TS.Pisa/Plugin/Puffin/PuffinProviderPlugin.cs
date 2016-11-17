@@ -179,7 +179,7 @@ namespace TS.Pisa.Plugin.Puffin
             throw new PuffinSyntaxException("No Public Key provided in welcome message: " + welcomeMessage);
         }
 
-        private bool AccessGranted(string grantMessage)
+        private bool IsAccessGranted(string grantMessage)
         {
             var grantXml = new XmlDocument();
             grantXml.LoadXml(grantMessage);
@@ -191,6 +191,19 @@ namespace TS.Pisa.Plugin.Puffin
                 return Convert.ToBoolean(grantNode.Attributes["Access"].InnerText);
             }
             throw new XmlSyntaxException("No Access tag provided in grant message: " + grantMessage);
+        }
+
+        private string GetTextFromGrant(String grantMessage)
+        {
+            var grantXml = new XmlDocument();
+            grantXml.LoadXml(grantMessage);
+            var grantNode = grantXml.SelectSingleNode("Grant");
+            if (grantNode == null)
+                throw new XmlSyntaxException("The grant node could not be found in the message: " + grantMessage);
+            if (grantNode.Attributes != null && grantNode.Attributes["Text"] != null)
+            {
+                return grantNode.Attributes["Text"].InnerText;
+            }
         }
 
         private void UpgradeToSsl()

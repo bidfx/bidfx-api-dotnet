@@ -3,17 +3,20 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading;
 using TS.Pisa.Plugin.Puffin;
+
 namespace TS.Pisa.Example
 {
     internal class Program
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static void Main(string[] args)
         {
             var program = new Program();
             program.Test();
         }
+
         private void Test()
         {
             var session = PrepareSession();
@@ -21,7 +24,29 @@ namespace TS.Pisa.Example
             session.Start();
             Thread.Sleep(2000);
             session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
-#if LOTS
+            sendSubscriptions(session);
+        }
+
+        private static ISession PrepareSession()
+        {
+            var session = DefaultSession.GetDefault();
+            session.PriceUpdate += OnPriceUpdate;
+            session.AddProviderPlugin(new PuffinProviderPlugin
+            {
+                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Username = "axaapitest",
+                Password = "B3CarefulWithThatAXAEug3n3!"
+            });
+            return session;
+        }
+
+        private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
+        {
+            Log.Info("received price through event handler with subscription: " + args.Subject);
+        }
+
+        private void sendSubscriptions(ISession session)
+        {
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");
