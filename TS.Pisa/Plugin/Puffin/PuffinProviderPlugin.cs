@@ -24,6 +24,8 @@ namespace TS.Pisa.Plugin.Puffin
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public const int ProtocolVersion = 8;
+
         public string Name { get; set; }
         public ProviderStatus ProviderStatus { get; set; }
         public string ProviderStatusText { get; set; }
@@ -39,6 +41,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
+        private static readonly long StartTime = JavaTime.CurrentTimeMillis();
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
 
         public PuffinProviderPlugin()
@@ -50,7 +53,7 @@ namespace TS.Pisa.Plugin.Puffin
             Port = 443;
             Guid = new GUID();
             Service = "static://puffin";
-            Username = "username_unknown";
+            Username = ServiceProperties.Username();
             Password = "password_unset";
             Tunnel = true;
             _outputThread = new Thread(RunningLoop) {Name = Name};
@@ -122,13 +125,35 @@ namespace TS.Pisa.Plugin.Puffin
                 }
                 var publicKey = GetPublicKey(ReadMessage());
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
-                SendMessage("<Login Alias=\"" + Username + "\" Name=\"" + Username + "\" Password=\"" +
-                            encryptedPassword + "\" Description=\"Pisa.NET\" Version=\"8\"/>");
-                if (AccessGranted(ReadMessage()) == false)
+
+                SendMessage(new PuffinElement(PuffinTagName.Login)
+                    .AddAttribute("Alias", ServiceProperties.Username())
+                    .AddAttribute("Name", Username)
+                    .AddAttribute("Password", encryptedPassword)
+                    .AddAttribute("Description", Pisa.Name)
+                    .AddAttribute("Version", ProtocolVersion)
+                    .ToString());
+                if (!AccessGranted(ReadMessage()))
+                {
                     throw new AuthenticationException("Access was not granted.");
+                }
                 ReadMessage();
-                SendMessage("<ServiceDescription username=\"" + Username + "\" server=\"false\" version=\"8\" GUID=\"" +
-                            Guid + "\"/>");
+                SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
+                    .AddAttribute("GUID", Guid.ToString())
+                    .AddAttribute("server", false)
+                    .AddAttribute("discoverable", true)
+                    .AddAttribute("startTime", StartTime)
+                    .AddAttribute("username", Username)
+                    .AddAttribute("userAlias", ServiceProperties.Username())
+                    .AddAttribute("name", Pisa.Name)
+                    .AddAttribute("package", Pisa.Package)
+                    .AddAttribute("version", Pisa.Version)
+                    .AddAttribute("protocolVersion", ProtocolVersion)
+                    .AddAttribute("environment", ServiceProperties.Environment(Host))
+                    .AddAttribute("city", ServiceProperties.City())
+                    .AddAttribute("locale", ServiceProperties.Locale())
+                    .AddAttribute("host", ServiceProperties.Host())
+                    .ToString());
                 ProviderStatus = ProviderStatus.Ready;
                 PuffinClient puffinClient = new PuffinClient(_stream, Name, PriceUpdate);
                 _puffinRequestor = puffinClient;

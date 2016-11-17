@@ -16,16 +16,12 @@ namespace TS.Pisa.Example
         }
         private void Test()
         {
-            var reference = PisaVersion.Reference;
-            Log.Info("pisa version:    " + PisaVersion.Version);
-            Log.Info("program version: " + Assembly.GetExecutingAssembly().GetName().Version);
-            Log.Info("user:            " + System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-            Log.Info("host:            " + IPGlobalProperties.GetIPGlobalProperties().HostName);
             var session = PrepareSession();
             Log.Info("starting the Pisa session");
             session.Start();
             Thread.Sleep(2000);
             session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
+#if LOTS
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");
@@ -4788,7 +4784,7 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=TimeAndSales,Source=ComStock,Symbol=E:NESN");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=TimeAndSales,Source=ComStock,Symbol=E:NOVN");
             session.Subscribe("AssetClass=Equity,Exchange=WSE,Level=1,Source=ComStock,Symbol=E:PKO");
-
+#endif
         }
         private static ISession PrepareSession()
         {

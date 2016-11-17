@@ -54,7 +54,7 @@
     <Compile Include="ISubscriber.cs" />
     <Compile Include="ISubscriberSession.cs" />
     <Compile Include="MasterSession.cs" />
-    <Compile Include="PisaVersion.cs" />
+    <Compile Include="Pisa.cs" />
     <Compile Include="Plugin\Puffin\IPuffinRequestor.cs" />
     <Compile Include="Plugin\Puffin\IPuffinSessionListener.cs" />
     <Compile Include="Plugin\Puffin\TokenType.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="Tools\GUID.cs" />
     <Compile Include="Tools\JavaTime.cs" />
     <Compile Include="Tools\NameCache.cs" />
+    <Compile Include="Tools\ServiceProperties.cs" />
     <Compile Include="Tools\TunnelException.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +88,6 @@
   <ItemGroup>
     <Folder Include="Plugin" />
     <Folder Include="Plugin\Puffin" />
-    <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
