@@ -133,7 +133,7 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Description", Pisa.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
-                if (!AccessGranted(ReadMessage()))
+                if (!IsAccessGranted(ReadMessage()))
                 {
                     throw new AuthenticationException("Access was not granted.");
                 }
@@ -204,6 +204,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 return grantNode.Attributes["Text"].InnerText;
             }
+            return "";
         }
 
         private void UpgradeToSsl()

@@ -50,6 +50,8 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");
+
+#if LOTS
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:ASML");
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:PHIA");
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:UL");
@@ -4810,23 +4812,6 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=TimeAndSales,Source=ComStock,Symbol=E:NOVN");
             session.Subscribe("AssetClass=Equity,Exchange=WSE,Level=1,Source=ComStock,Symbol=E:PKO");
 #endif
-        }
-        private static ISession PrepareSession()
-        {
-            var session = DefaultSession.GetDefault();
-            session.PriceUpdate += OnPriceUpdate;
-            session.AddProviderPlugin(new PuffinProviderPlugin
-            {
-                Host = "ny-tunnel.uatdev.tradingscreen.com",
-                Username = "axaapitest",
-                Password = "B3CarefulWithThatAXAEug3n3!"
-            });
-            return session;
-        }
-
-        private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
-        {
-            Log.Info("received price through event handler with subscription: "+args.Subject);
         }
     }
 }
