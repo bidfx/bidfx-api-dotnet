@@ -23,13 +23,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         public delegate void OnHeartbeatListener(long interval, long transmitTime, long receiveTime, bool clockSync);
 
-        public PuffinClient(Stream stream, string name)
+        public PuffinClient(Stream stream, string name, EventHandler<PriceUpdateEventArgs> priceUpdate)
         {
             _stream = stream;
             _name = name;
             _consumerThread = new Thread(RunningLoop) {Name = _name + "-read"};
             _puffinMessageReader = new PuffinMessageReader(stream);
-            _messageReceiver.SetHeartbeatListener(HandleHeartbeat);
+            _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
+            _messageReceiver.PriceUpdate = priceUpdate;
         }
 
         public void Start()

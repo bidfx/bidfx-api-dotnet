@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -9,7 +10,8 @@ namespace TS.Pisa.Plugin.Puffin
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private long _timeOfLastMessage = JavaTime.CurrentTimeMillis();
-        private PuffinClient.OnHeartbeatListener _onHeartbeatListener;
+        public PuffinClient.OnHeartbeatListener OnHeartbeatListener { get; set; }
+        public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
 
         public void OnMessage(PuffinElement element)
         {
@@ -26,19 +28,14 @@ namespace TS.Pisa.Plugin.Puffin
             else OnUnknownMessage(element);
         }
 
-        public void SetHeartbeatListener(PuffinClient.OnHeartbeatListener l)
-        {
-            _onHeartbeatListener = l;
-        }
-
         private void OnUpdateMessage(PuffinElement element)
         {
-            Log.Debug(element);
+            if(PriceUpdate!=null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = "Update"});
         }
 
         private void OnSetMessage(PuffinElement element)
         {
-            Log.Debug(element);
+            if (PriceUpdate != null) PriceUpdate(this, new PriceUpdateEventArgs() {Subject = "Set"});
         }
 
         private void OnStatusMessage(PuffinElement element)
@@ -51,7 +48,7 @@ namespace TS.Pisa.Plugin.Puffin
             var interval = TokenToLong(element.AttributeValue(PuffinFieldName.Interval),600000L);
             var transmitTime = TokenToLong(element.AttributeValue(PuffinFieldName.TransmitTime),0L);
             var syncClock = TokenToBoolean(element.AttributeValue(PuffinFieldName.SyncClock),false);
-            _onHeartbeatListener(interval, transmitTime, receiveTime, syncClock);
+            OnHeartbeatListener(interval, transmitTime, receiveTime, syncClock);
         }
 
         private void OnClockSyncMessage(PuffinElement element)

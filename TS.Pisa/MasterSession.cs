@@ -13,6 +13,8 @@ namespace TS.Pisa
         private readonly Dictionary<string, ISet<ISubscriber>> _subscriptions =
             new Dictionary<string, ISet<ISubscriber>>();
 
+        public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
+
         public void Start()
         {
             log.Info("MasterSession started");
@@ -33,10 +35,9 @@ namespace TS.Pisa
 
         public void AddProviderPlugin(IProviderPlugin providerPlugin)
         {
+            providerPlugin.PriceUpdate = PriceUpdate;
             _providerPlugins.Add(providerPlugin);
         }
-
-        public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
 
         public void Subscribe(string subject)
         {
