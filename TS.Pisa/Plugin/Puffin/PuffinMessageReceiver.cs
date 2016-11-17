@@ -34,14 +34,17 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnUpdateMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnSetMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
@@ -54,22 +57,27 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnClockSyncMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnCloseMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnSubscribeMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnUnsubscribeMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnWeightedMatchersMessage(PuffinElement element)
         {
+            Log.Debug(element);
         }
 
         private void OnUnknownMessage(PuffinElement element)

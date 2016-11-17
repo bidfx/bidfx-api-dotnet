@@ -55,7 +55,6 @@ namespace TS.Pisa.Plugin.Puffin
         private void Consume()
         {
             var message = _puffinMessageReader.ReadMessage();
-            if (Log.IsDebugEnabled) Log.Debug(_name + " sent message: " + message);
             _messageReceiver.OnMessage(message);
         }
 

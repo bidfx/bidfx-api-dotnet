@@ -52,7 +52,7 @@ namespace TS.Pisa.Plugin.Puffin
             Username = "username_unknown";
             Password = "password_unset";
             Tunnel = true;
-            _outputThread = new Thread(RunningLoop) {Name = Name + "-read"};
+            _outputThread = new Thread(RunningLoop) {Name = Name};
         }
 
         private void RunningLoop()
