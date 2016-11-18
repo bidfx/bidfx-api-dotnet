@@ -126,7 +126,7 @@ namespace TS.Pisa.Plugin.Puffin
                     SendPuffinUrl();
                 }
                 var welcomeMessage = ReadMessage();
-                var publicKey = GetAttribute(welcomeMessage,"PublicKey");
+                var publicKey = GetAttribute(welcomeMessage, "PublicKey");
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage(new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
@@ -136,9 +136,9 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grantMessage = ReadMessage();
-                if (!Convert.ToBoolean(GetAttribute(grantMessage,"Access")))
+                if (!Convert.ToBoolean(GetAttribute(grantMessage, "Access")))
                 {
-                    throw new AuthenticationException("Access was not granted: "+GetAttribute(grantMessage,"Text"));
+                    throw new AuthenticationException("Access was not granted: " + GetAttribute(grantMessage, "Text"));
                 }
                 ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
@@ -178,8 +178,8 @@ namespace TS.Pisa.Plugin.Puffin
             var substring = message.Substring(startOfValue);
             var endOfValue = substring.IndexOf("\"");
 
-            var value = substring.Substring(0,endOfValue);
-            if(Log.IsDebugEnabled) Log.Debug("Value of "+key+" is:"+value);
+            var value = substring.Substring(0, endOfValue);
+            if (Log.IsDebugEnabled) Log.Debug("Value of " + key + " is:" + value);
             return value;
         }
 
@@ -190,11 +190,11 @@ namespace TS.Pisa.Plugin.Puffin
             if (sslStream.IsAuthenticated)
             {
                 _stream = sslStream;
-                Log.Info("upgraded stream to SSL");
+                Log.Info(Name + " upgraded stream to SSL");
             }
             else
             {
-                throw new TunnelException("failed to upgrade stream to SSL, cannot tunnel to puffin");
+                throw new TunnelException(Name + " failed to upgrade stream to SSL, cannot tunnel to puffin");
             }
         }
 
