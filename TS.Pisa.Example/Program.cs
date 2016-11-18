@@ -26,7 +26,7 @@ namespace TS.Pisa.Example
             session.Start();
             Thread.Sleep(2000);
             session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
-            sendSubscriptions(session);
+//            sendSubscriptions(session);
         }
 
         private static ISession PrepareSession()

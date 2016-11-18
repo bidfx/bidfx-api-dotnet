@@ -32,7 +32,7 @@ namespace TS.Pisa.Plugin.Puffin
             _name = provider.Name;
             Interval = 60000;
             _consumerThread = new Thread(Consume) {Name = _name + "-read"};
-            _intervalThread = new Thread(ScheduleHeartbeat) {Name = _name + "-interval"};
+            _intervalThread = new Thread(ScheduleHeartbeat) {Name = _name + "-heartbeat"};
             _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver = new PuffinMessageReceiver(provider);
             _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
@@ -61,13 +61,15 @@ namespace TS.Pisa.Plugin.Puffin
                 if (IsMessageStreamActive())
                 {
                     SendHeartbeat();
-                    if (Log.IsDebugEnabled) Log.Debug("Sleeping for " + Interval);
+                    if (Log.IsDebugEnabled) Log.Debug(_name + "sleeping for the interval: " + Interval);
                     Thread.Sleep(Interval);
                 }
                 else
                 {
-                    var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
-                    Log.Warn("No message have been received for "+timeSinceLastMessage+"; assume connection failure");
+                    var timeSinceLastMessage =
+                        GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
+                    Log.Warn(_name + " no message have been received for " + timeSinceLastMessage +
+                             "; assume connection failure");
                     Close("inactive connection");
                 }
             }
@@ -89,7 +91,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
             catch (ThreadInterruptedException)
             {
-                Log.Warn("thread interrupted while consuming");
+                Log.Warn(_name + " thread interrupted while consuming");
             }
         }
 
@@ -240,7 +242,8 @@ namespace TS.Pisa.Plugin.Puffin
             if (IsMessageStreamActive())
             {
                 var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
-                Log.Warn("No message have been received for "+timeSinceLastMessage+"; assume connection failure");
+                Log.Warn(_name + " no message have been received for " + timeSinceLastMessage +
+                         "; assume connection failure");
                 Close("inactive connection");
             }
         }
