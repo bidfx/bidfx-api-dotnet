@@ -45,24 +45,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultSessionTest.cs" />
-    <Compile Include="Plugin\Puffin\PuffinMessageReaderTest.cs" />
-    <Compile Include="Plugin\Puffin\TokenDictionaryTest.cs" />
-    <Compile Include="Plugin\Puffin\XmlElementTest.cs" />
-    <Compile Include="Plugin\Puffin\MessageFormatterTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\NameCacheTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
       <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
       <Name>TS.Pisa</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tools" />
-    <Folder Include="Plugin" />
-    <Folder Include="Plugin\Puffin" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

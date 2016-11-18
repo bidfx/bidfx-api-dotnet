@@ -3960,7 +3960,8 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=SHZ,Level=Depth,Source=ComStock,Symbol=E:002415");
             session.Subscribe("AssetClass=Equity,Exchange=SHZ,Level=Depth,Source=ComStock,Symbol=E:002594");
             session.Subscribe("AssetClass=Equity,Exchange=SHZ,Level=Depth,Source=ComStock,Symbol=E:002736");
-            session.Subscribe("AssetClass=Equity,Exchange=SSC,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:601318");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SSC,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:601318");
             session.Subscribe("AssetClass=Equity,Exchange=SSC,Level=1,Source=ComStock,Symbol=E:600000");
             session.Subscribe("AssetClass=Equity,Exchange=SSC,Level=1,Source=ComStock,Symbol=E:600009");
             session.Subscribe("AssetClass=Equity,Exchange=SSC,Level=1,Source=ComStock,Symbol=E:600011");
@@ -4096,13 +4097,20 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=STU,Level=1,Source=ComStock,Symbol=HGUA");
             session.Subscribe("AssetClass=Equity,Exchange=STU,Level=1,Source=ComStock,Symbol=OCBA");
             session.Subscribe("AssetClass=Equity,Exchange=STU,Level=1,Source=ComStock,Symbol=OYC");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.AT0000A18XM4");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0000816824");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0305951201");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0325094297");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0325814116");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.NL0011832936");
-            session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=USD.CH0014424524");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.AT0000A18XM4");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0000816824");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0305951201");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0325094297");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0325814116");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.NL0011832936");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Supplier=Throttled,Symbol=USD.CH0014424524");
             session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Symbol=CHF.AT0000A18XM4");
             session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Symbol=CHF.CH0000816824");
             session.Subscribe("AssetClass=Equity,Exchange=SWX,Level=1,Source=SWX,Symbol=CHF.CH0001307757");
@@ -4751,22 +4759,38 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=ComStock,Symbol=E:SRCG");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=ComStock,Symbol=E:UHRN");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=ComStock,Symbol=E:ZURN");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0002497458");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0008742519");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0010532478");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0010645932");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0011037469");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0011075394");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012005267");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012032048");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012138530");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012138605");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012255151");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0030170408");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0038863350");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0102484968");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0126881561");
-            session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0210483332");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0002497458");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0008742519");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0010532478");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0010645932");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0011037469");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0011075394");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012005267");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012032048");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012138530");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012138605");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0012255151");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0030170408");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0038863350");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0102484968");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0126881561");
+            session.Subscribe(
+                "AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Supplier=Throttled,Symbol=CHF.CH0210483332");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Symbol=CHF.CH0000587979");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Symbol=CHF.CH0002497458");
             session.Subscribe("AssetClass=Equity,Exchange=VTX,Level=1,Source=SWX,Symbol=CHF.CH0008742519");
