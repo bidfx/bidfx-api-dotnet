@@ -23,7 +23,6 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
         private readonly PuffinMessageReceiver _messageReceiver;
-        private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
         public int Interval { get; set; }
         private bool _failed = false;
 
@@ -33,16 +32,14 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _stream = stream;
             _name = provider.Name;
-            _consumerThread = new Thread(RunningLoop) {Name = _name + "-read"};
-            _name = name;
+            _consumerThread = new Thread(Consume) {Name = _name + "-read"};
+            _name = provider.Name;
             Interval = 60000;
             _consumerThread = new Thread(Consume) {Name = _name + "-read"};
             _intervalThread = new Thread(ScheduleHeartbeat) {Name = _name + "-interval"};
             _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver = new PuffinMessageReceiver(provider);
             _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
-            _messageReceiver.PriceUpdate = priceUpdate;
-
         }
 
         public void Start()
@@ -81,19 +78,16 @@ namespace TS.Pisa.Plugin.Puffin
         /// </summary>
         private void Consume()
         {
-            var message = _puffinMessageReader.ReadMessage();
-            if (Log.IsDebugEnabled) Log.Debug("received: "+message);
-            _messageReceiver.OnMessage(message);
             try
             {
                 while (_running.Value)
                 {
                     var message = _puffinMessageReader.ReadMessage();
-                    if (Log.IsDebugEnabled) Log.Debug(_name+" received message: "+message);
+                    if (Log.IsDebugEnabled) Log.Debug("received: "+message);
                     _messageReceiver.OnMessage(message);
                 }
             }
-            catch (ThreadInterruptedException e)
+            catch (ThreadInterruptedException)
             {
                 Log.Warn("thread interrupted while consuming");
             }

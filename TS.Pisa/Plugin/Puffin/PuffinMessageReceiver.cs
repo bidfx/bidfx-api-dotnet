@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using TS.Pisa.Tools;
@@ -12,11 +13,12 @@ namespace TS.Pisa.Plugin.Puffin
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private long _timeOfLastMessage = JavaTime.CurrentTimeMillis();
+        public long TimeOfLastMessage { get; private set;}
 
         public PuffinMessageReceiver(IProviderPlugin provider)
         {
             _provider = provider;
+            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
         }
 
         public PuffinClient.OnHeartbeatListener OnHeartbeatListener { get; set; }

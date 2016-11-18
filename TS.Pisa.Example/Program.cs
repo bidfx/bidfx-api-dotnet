@@ -1,3 +1,5 @@
+#define LOTS_OF_SUBSCRIPTIONS
+
 using System;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -56,7 +58,7 @@ namespace TS.Pisa.Example
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SEURUSD");
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SGBPUSD");
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SUSDERR");
-#if LOTS
+#if LOTS_OF_SUBSCRIPTIONS
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");
