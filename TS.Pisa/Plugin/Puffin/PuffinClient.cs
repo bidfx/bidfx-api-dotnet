@@ -66,7 +66,8 @@ namespace TS.Pisa.Plugin.Puffin
                 }
                 else
                 {
-                    Log.Warn("No message have been received for double the interval time; assume connection failure");
+                    var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
+                    Log.Warn("No message have been received for "+timeSinceLastMessage+"; assume connection failure");
                     Close("inactive connection");
                 }
             }
@@ -99,6 +100,21 @@ namespace TS.Pisa.Plugin.Puffin
         private long GetTimeOfLastMessage()
         {
             return _messageReceiver.TimeOfLastMessage;
+        }
+
+        /// <summary>
+        /// Gets a human readable time for a given number of milliseconds
+        /// </summary>
+        /// <param name="milliseconds">The time in milliseconds</param>
+        /// <returns>The time in the format of xxh:xxm:xxs:xxxms</returns>
+        private string GetReadableTimeOfMillis(long milliseconds)
+        {
+            var t = TimeSpan.FromMilliseconds(milliseconds);
+            return string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                t.Hours,
+                t.Minutes,
+                t.Seconds,
+                t.Milliseconds);
         }
 
         /// <summary>
@@ -223,7 +239,8 @@ namespace TS.Pisa.Plugin.Puffin
         {
             if (IsMessageStreamActive())
             {
-                Log.Warn("No message have been received for double the interval time; assume connection failure");
+                var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
+                Log.Warn("No message have been received for "+timeSinceLastMessage+"; assume connection failure");
                 Close("inactive connection");
             }
         }
