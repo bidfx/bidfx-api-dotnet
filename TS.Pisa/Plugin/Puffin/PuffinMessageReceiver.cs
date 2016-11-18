@@ -13,7 +13,7 @@ namespace TS.Pisa.Plugin.Puffin
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public long TimeOfLastMessage { get; private set;}
+        public long TimeOfLastMessage { get; private set; }
 
         public PuffinMessageReceiver(IProviderPlugin provider)
         {
@@ -112,6 +112,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnCloseMessage(PuffinElement element)
         {
+            Log.Warn("received close message from server: " + element);
         }
 
         private bool TokenToBoolean(PuffinToken token, bool defaultValue)
