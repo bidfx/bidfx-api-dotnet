@@ -1,3 +1,5 @@
+#define LOTS_OF_SUBSCRIPTIONS
+
 using System;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -31,6 +33,7 @@ namespace TS.Pisa.Example
         {
             var session = DefaultSession.GetDefault();
             session.PriceUpdate += OnPriceUpdate;
+            session.PriceStatus += OnPriceStatus;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
                 Host = "ny-tunnel.uatdev.tradingscreen.com",
@@ -42,16 +45,23 @@ namespace TS.Pisa.Example
 
         private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
         {
-            Log.Info("received price through event handler with subscription: " + args.Subject);
+            Log.Info("price update: " + args);
+        }
+
+        private static void OnPriceStatus(object source, PriceStatusEventArgs args)
+        {
+            Log.Info("price status: " + args);
         }
 
         private void sendSubscriptions(ISession session)
         {
+            session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SEURUSD");
+            session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SGBPUSD");
+            session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SUSDERR");
+#if LOTS_OF_SUBSCRIPTIONS
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");
-
-#if LOTS
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:ASML");
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:PHIA");
             session.Subscribe("AssetClass=Equity,Exchange=AMS,Level=1,Source=ComStock,Supplier=Throttled,Symbol=E:UL");

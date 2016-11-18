@@ -14,6 +14,7 @@ namespace TS.Pisa
             new Dictionary<string, ISet<ISubscriber>>();
 
         public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
+        public event EventHandler<PriceStatusEventArgs> PriceStatus;
 
         public void Start()
         {
@@ -36,6 +37,7 @@ namespace TS.Pisa
         public void AddProviderPlugin(IProviderPlugin providerPlugin)
         {
             providerPlugin.PriceUpdate = PriceUpdate;
+            providerPlugin.PriceStatus = PriceStatus;
             _providerPlugins.Add(providerPlugin);
         }
 

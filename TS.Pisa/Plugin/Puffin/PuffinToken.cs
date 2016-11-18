@@ -8,7 +8,7 @@ namespace TS.Pisa.Plugin.Puffin
     /// inter-process communication.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class PuffinToken
+    public class PuffinToken : IPriceField
     {
         public static readonly PuffinToken EmptyToken = new PuffinToken(TokenType.TagEndEmptyContent, "", null);
         public static readonly PuffinToken NullValueToken = new PuffinToken(TokenType.AttributeValueString, "", null);
@@ -208,9 +208,9 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 return Convert.ToBoolean(Text);
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
-                throw new PuffinSyntaxException("failed to convert token to boolean. " + this, e);
+                return false;
             }
         }
 
