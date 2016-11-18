@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Timers;
 using TS.Pisa.Tools;
-using Timer = System.Timers.Timer;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -24,7 +21,6 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly PuffinMessageReader _puffinMessageReader;
         private readonly PuffinMessageReceiver _messageReceiver = new PuffinMessageReceiver();
         public int Interval { get; set; }
-        private bool _failed = false;
 
         public delegate void OnHeartbeatListener(int interval, long transmitTime, long receiveTime, bool clockSync);
 
@@ -38,9 +34,11 @@ namespace TS.Pisa.Plugin.Puffin
             _puffinMessageReader = new PuffinMessageReader(stream);
             _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
             _messageReceiver.PriceUpdate = priceUpdate;
-
         }
 
+        /// <summary>
+        /// Starts the consumer thread, interval thread and starts publishing
+        /// </summary>
         public void Start()
         {
             if (_running.CompareAndSet(false, true))
@@ -61,7 +59,7 @@ namespace TS.Pisa.Plugin.Puffin
                 if (IsMessageStreamActive())
                 {
                     SendHeartbeat();
-                    if(Log.IsDebugEnabled) Log.Debug("Sleeping for "+Interval);
+                    if (Log.IsDebugEnabled) Log.Debug("Sleeping for " + Interval);
                     Thread.Sleep(Interval);
                 }
                 else
@@ -82,7 +80,7 @@ namespace TS.Pisa.Plugin.Puffin
                 while (_running.Value)
                 {
                     var message = _puffinMessageReader.ReadMessage();
-                    if (Log.IsDebugEnabled) Log.Debug(_name+" received message: "+message);
+                    if (Log.IsDebugEnabled) Log.Debug(_name + " received message: " + message);
                     _messageReceiver.OnMessage(message);
                 }
             }
@@ -92,11 +90,19 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
+        /// <summary>
+        /// Gets the time that we received the last message
+        /// </summary>
+        /// <returns>The time in milliseconds that we received the last message</returns>
         private long GetTimeOfLastMessage()
         {
             return _messageReceiver.TimeOfLastMessage;
         }
 
+        /// <summary>
+        /// Checks if we have received any messages from the server in the last two intervals
+        /// </summary>
+        /// <returns>True if we have received a message within the last two intervals, false otherwise.</returns>
         private bool IsMessageStreamActive()
         {
             var time = JavaTime.CurrentTimeMillis() - Interval * 2;
@@ -104,7 +110,7 @@ namespace TS.Pisa.Plugin.Puffin
         }
 
         /// <summary>
-        /// Publish queued messaged to the socket.
+        /// Publish queued messages to the socket.
         /// Does not block.
         /// </summary>
         private void Publish()
@@ -122,7 +128,7 @@ namespace TS.Pisa.Plugin.Puffin
         }
 
         /// <summary>
-        /// Place a message on the socket's outgoing message queue.
+        /// Place a message on the streams outgoing message queue.
         /// This method will block if the message queue is full.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
@@ -144,19 +150,26 @@ namespace TS.Pisa.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug(_name + " stream close (" + reason + ")");
             if (_running.CompareAndSet(true, false))
             {
-                Log.Info(_name + " disconnected (" + reason + ")");
                 _consumerThread.Interrupt();
                 _stream.Close();
                 _messageQueue.Dispose();
+                Log.Info(_name + " disconnected (" + reason + ")");
             }
         }
 
-        private void HandleHeartbeat(int interval, long transmitTime, long receiveTime, bool syncClock)
+        /// <summary>
+        /// Sets the interval and queues a clock sync message if required.
+        /// </summary>
+        /// <param name="interval">The new interval</param>
+        /// <param name="transmitTime">The transmit time of the heartbeat</param>
+        /// <param name="receiveTime">The time we received the heartbeat</param>
+        /// <param name="clockSync">True if we should reply with a clock sync message</param>
+        private void HandleHeartbeat(int interval, long transmitTime, long receiveTime, bool clockSync)
         {
             Interval = interval;
-            if (syncClock)
+            if (clockSync)
             {
-                SendSyncClock(transmitTime, receiveTime);
+                SendClockSync(transmitTime, receiveTime);
             }
         }
 
@@ -174,6 +187,9 @@ namespace TS.Pisa.Plugin.Puffin
                 .ToString());
         }
 
+        /// <summary>
+        /// Queues a heartbeat message
+        /// </summary>
         private void SendHeartbeat()
         {
             var now = JavaTime.CurrentTimeMillis();
@@ -182,7 +198,12 @@ namespace TS.Pisa.Plugin.Puffin
                 .ToString());
         }
 
-        private void SendSyncClock(long originateTime, long receiveTime)
+        /// <summary>
+        /// Queues a sync clock message
+        /// </summary>
+        /// <param name="originateTime">The time they sent the heartbeat</param>
+        /// <param name="receiveTime">The time we received the heartbeat</param>
+        private void SendClockSync(long originateTime, long receiveTime)
         {
             QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                 .AddAttribute("OriginateTime", originateTime)
