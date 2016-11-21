@@ -84,14 +84,16 @@ namespace TS.Pisa.Plugin.Puffin
             _puffinRequestor.Unsubscribe(subject);
         }
 
-        public void EventListener(IEventListener listener)
-        {
-        }
-
         public bool IsSubjectCompatible(string subject)
         {
             // TODO use a subject filter to route between plugins
-            return true;
+            // Specific restriction for AXA
+            var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome") && subject.Contains("Source=Lynx");
+            if (!isSubjectCompatible)
+            {
+                Log.Warn("Subject is not compatible: "+subject);
+            }
+            return isSubjectCompatible;
         }
 
         public void Start()
@@ -105,6 +107,7 @@ namespace TS.Pisa.Plugin.Puffin
         public void Stop()
         {
             _running.SetValue(false);
+            _puffinRequestor.CloseSession();
         }
 
         private void EstablishPuffinConnection()
