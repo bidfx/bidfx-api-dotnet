@@ -70,28 +70,15 @@ namespace TS.Pisa
         {
             foreach (var subject in _subscriptions)
             {
-                foreach (var providerPlugin in _providerPlugins)
-                {
-                    if (providerPlugin.IsSubjectCompatible(subject))
-                    {
-                        providerPlugin.Unsubscribe(subject);
-                    }
-                }
+                Unsubscribe(subject);
             }
-            _subscriptions.Clear();
         }
 
         public void ResubscribeAll()
         {
             foreach (var subject in _subscriptions)
             {
-                foreach (var providerPlugin in _providerPlugins)
-                {
-                    if (providerPlugin.IsSubjectCompatible(subject))
-                    {
-                        providerPlugin.Subscribe(subject);
-                    }
-                }
+                Subscribe(subject);
             }
         }
 
