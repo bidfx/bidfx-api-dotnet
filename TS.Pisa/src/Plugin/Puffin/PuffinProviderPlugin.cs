@@ -105,6 +105,7 @@ namespace TS.Pisa.Plugin.Puffin
         public void Stop()
         {
             _running.SetValue(false);
+            _puffinRequestor.CloseSession();
         }
 
         private void EstablishPuffinConnection()
