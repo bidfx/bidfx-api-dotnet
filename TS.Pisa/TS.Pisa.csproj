@@ -87,12 +87,13 @@
     <Compile Include="src\Tools\NameCache.cs" />
     <Compile Include="src\Tools\ServiceProperties.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
-    <Compile Include="test\DefaultSessionTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Tools\NameCacheTest.cs"  Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\DefaultSessionTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinPluginProviderTest.cs"  Condition=" '$(Configuration)' != 'Release' "/>
+    <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -102,7 +103,7 @@
     <Folder Include="test" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
