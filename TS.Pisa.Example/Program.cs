@@ -1,4 +1,4 @@
-#define LOTS_OF_SUBSCRIPTIONS
+//#define LOTS_OF_SUBSCRIPTIONS
 
 using System;
 using System.Net.NetworkInformation;
@@ -25,7 +25,6 @@ namespace TS.Pisa.Example
             Log.Info("starting the Pisa session");
             session.Start();
             Thread.Sleep(2000);
-            session.Subscribe("AssetClass=Equity,Exchange=LSE,Level=1,Source=ComStock,Symbol=E:IAG");
             sendSubscriptions(session);
         }
 
@@ -36,7 +35,9 @@ namespace TS.Pisa.Example
             session.PriceStatus += OnPriceStatus;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
-                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Host = "localhost", //"ny-tunnel.uatdev.tradingscreen.com",
+                Port = 9901,
+                Tunnel = false,
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });
@@ -55,10 +56,16 @@ namespace TS.Pisa.Example
 
         private void sendSubscriptions(ISession session)
         {
+            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
+            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
+            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");
+            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1288894691");
+            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=FR0010096941");
+
+#if LOTS_OF_SUBSCRIPTIONS
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SEURUSD");
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SGBPUSD");
             session.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=ComStock,Symbol=X:SUSDERR");
-#if LOTS_OF_SUBSCRIPTIONS
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:AAR.UN");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:ABK.A");
             session.Subscribe("AssetClass=Equity,Exchange=ALP,Level=1,Source=ComStock,Symbol=E:CM");

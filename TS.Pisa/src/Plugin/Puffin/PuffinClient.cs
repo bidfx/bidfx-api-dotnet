@@ -14,7 +14,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _consumerThread;
-        private readonly Thread _intervalThread;
+        private readonly Thread _heartbeatThread;
         private readonly Stream _stream;
         private readonly string _name;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
@@ -28,14 +28,11 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _stream = stream;
             _name = provider.Name;
-            _consumerThread = new Thread(Consume) {Name = _name + "-read"};
-            _name = provider.Name;
             Interval = 60000;
             _consumerThread = new Thread(Consume) {Name = _name + "-read"};
-            _intervalThread = new Thread(ScheduleHeartbeat) {Name = _name + "-heartbeat"};
+            _heartbeatThread = new Thread(ScheduleHeartbeat) {Name = _name + "-heartbeat"};
             _puffinMessageReader = new PuffinMessageReader(stream);
-            _messageReceiver = new PuffinMessageReceiver(provider);
-            _messageReceiver.OnHeartbeatListener = HandleHeartbeat;
+            _messageReceiver = new PuffinMessageReceiver(provider) {OnHeartbeatListener = HandleHeartbeat};
         }
 
         /// <summary>
@@ -46,7 +43,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (_running.CompareAndSet(false, true))
             {
                 _consumerThread.Start();
-                _intervalThread.Start();
+                _heartbeatThread.Start();
             }
             Publish();
         }
@@ -61,7 +58,7 @@ namespace TS.Pisa.Plugin.Puffin
                 if (IsMessageStreamActive())
                 {
                     SendHeartbeat();
-                    if (Log.IsDebugEnabled) Log.Debug(_name + "sleeping for the interval: " + Interval);
+                    if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + Interval);
                     Thread.Sleep(Interval);
                 }
                 else
