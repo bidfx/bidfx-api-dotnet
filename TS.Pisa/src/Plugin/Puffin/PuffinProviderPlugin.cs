@@ -91,7 +91,13 @@ namespace TS.Pisa.Plugin.Puffin
         public bool IsSubjectCompatible(string subject)
         {
             // TODO use a subject filter to route between plugins
-            return true;
+            // Specific restriction for AXA
+            var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome") && subject.Contains("Source=Lynx");
+            if (!isSubjectCompatible)
+            {
+                Log.Warn("Subject is not compatible: "+subject);
+            }
+            return isSubjectCompatible;
         }
 
         public void Start()
