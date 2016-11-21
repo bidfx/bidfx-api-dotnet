@@ -2,7 +2,15 @@
 {
     internal interface ISubscriberSession
     {
+        /// <summary>
+        /// Subscribe to price updates for a given subject.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
         void Subscribe(string subject);
+        /// <summary>
+        /// Unsubscribe to prices updates for a given subject.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
         void Unsubscribe(string subject);
     }
 }
