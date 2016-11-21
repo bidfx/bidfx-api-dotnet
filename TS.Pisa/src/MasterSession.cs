@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TS.Pisa
@@ -9,9 +10,7 @@ namespace TS.Pisa
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
-
-        private readonly Dictionary<string, ISet<ISubscriber>> _subscriptions =
-            new Dictionary<string, ISet<ISubscriber>>();
+        private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
         public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
         public event EventHandler<PriceStatusEventArgs> PriceStatus;
@@ -44,12 +43,7 @@ namespace TS.Pisa
         public void Subscribe(string subject)
         {
             log.Info("subscribe to " + subject);
-            ISet<ISubscriber> subscription;
-            if (!_subscriptions.TryGetValue(subject, out subscription))
-            {
-                subscription = new HashSet<ISubscriber>();
-                _subscriptions[subject] = subscription;
-            }
+            _subscriptions.Add(subject);
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
@@ -62,6 +56,7 @@ namespace TS.Pisa
         public void Unsubscribe(string subject)
         {
             log.Info("unsubscribe from " + subject);
+            _subscriptions.Remove(subject);
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
@@ -73,14 +68,39 @@ namespace TS.Pisa
 
         public void UnsubscribeAll()
         {
+            foreach (var subject in _subscriptions)
+            {
+                foreach (var providerPlugin in _providerPlugins)
+                {
+                    if (providerPlugin.IsSubjectCompatible(subject))
+                    {
+                        providerPlugin.Unsubscribe(subject);
+                    }
+                }
+            }
+            _subscriptions.Clear();
         }
 
         public void ResubscribeAll()
         {
+            foreach (var subject in _subscriptions)
+            {
+                foreach (var providerPlugin in _providerPlugins)
+                {
+                    if (providerPlugin.IsSubjectCompatible(subject))
+                    {
+                        providerPlugin.Subscribe(subject);
+                    }
+                }
+            }
         }
 
         public void Close()
         {
+            foreach (var providerPlugin in _providerPlugins)
+            {
+                providerPlugin.Stop();
+            }
         }
     }
 }
