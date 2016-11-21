@@ -11,7 +11,6 @@ namespace TS.Pisa
         EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
         void Subscribe(string subject);
         void Unsubscribe(string subject);
-        void EventListener(IEventListener listener);
         bool IsSubjectCompatible(string subject);
         void Start();
         void Stop();

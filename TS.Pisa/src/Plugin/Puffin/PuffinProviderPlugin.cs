@@ -84,10 +84,6 @@ namespace TS.Pisa.Plugin.Puffin
             _puffinRequestor.Unsubscribe(subject);
         }
 
-        public void EventListener(IEventListener listener)
-        {
-        }
-
         public bool IsSubjectCompatible(string subject)
         {
             // TODO use a subject filter to route between plugins
