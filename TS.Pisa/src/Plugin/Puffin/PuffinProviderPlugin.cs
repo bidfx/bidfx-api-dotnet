@@ -191,10 +191,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         private string GetAttribute(string message, string key)
         {
-            var startOfKey = message.IndexOf(key);
+            var startOfKey = message.IndexOf(key, StringComparison.Ordinal);
             var startOfValue = startOfKey + key.Length + 2;
             var substring = message.Substring(startOfValue);
-            var endOfValue = substring.IndexOf("\"");
+            var endOfValue = substring.IndexOf("\"", StringComparison.Ordinal);
 
             var value = substring.Substring(0, endOfValue);
             if (Log.IsDebugEnabled) Log.Debug("Value of " + key + " is:" + value);
