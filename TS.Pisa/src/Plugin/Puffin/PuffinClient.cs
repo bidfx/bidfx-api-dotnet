@@ -53,22 +53,30 @@ namespace TS.Pisa.Plugin.Puffin
         /// </summary>
         private void ScheduleHeartbeat()
         {
-            while (_running.Value)
+            try
             {
-                if (IsMessageStreamActive())
+                while (_running.Value)
                 {
-                    SendHeartbeat();
-                    if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + Interval);
-                    Thread.Sleep(Interval);
+                    if (IsMessageStreamActive())
+                    {
+                        SendHeartbeat();
+                        if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + Interval);
+                        Thread.Sleep(Interval);
+                    }
+                    else
+                    {
+                        var timeSinceLastMessage =
+                            GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
+                        Log.Warn(_name + " no message have been received for " + timeSinceLastMessage +
+                                 "; assume connection failure");
+                        Close("inactive connection");
+                    }
                 }
-                else
-                {
-                    var timeSinceLastMessage =
-                        GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
-                    Log.Warn(_name + " no message have been received for " + timeSinceLastMessage +
-                             "; assume connection failure");
-                    Close("inactive connection");
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("An unexpected error occured in the heartbeat thread.",e);
+                Close("Unexpected error in the heatbeat thread.");
             }
         }
 
@@ -82,13 +90,18 @@ namespace TS.Pisa.Plugin.Puffin
                 while (_running.Value)
                 {
                     var message = _puffinMessageReader.ReadMessage();
-                    if (Log.IsDebugEnabled) Log.Debug(_name + " received message: " + message);
+                    if (Log.IsDebugEnabled) Log.Debug("received message: " + message);
                     _messageReceiver.OnMessage(message);
                 }
             }
             catch (ThreadInterruptedException)
             {
-                Log.Warn(_name + " thread interrupted while consuming");
+                Log.Warn("thread interrupted while consuming");
+            }
+            catch (Exception e)
+            {
+                Log.Error("An unexpected error occured in the comsumer thread.",e);
+                Close("Unexpected error in the comsumer thread.");
             }
         }
 
@@ -132,15 +145,23 @@ namespace TS.Pisa.Plugin.Puffin
         /// </summary>
         private void Publish()
         {
-            while (_running.Value)
+            try
             {
-                string message;
-                if (_messageQueue.TryTake(out message))
+                while (_running.Value)
                 {
-                    if (Log.IsDebugEnabled) Log.Debug(_name + " sending message: " + message);
-                    _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
-                    _stream.Flush();
+                    string message;
+                    if (_messageQueue.TryTake(out message))
+                    {
+                        if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+                        _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
+                        _stream.Flush();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error("An unexpected error occured in the publisher thread.",e);
+                Close("Unexpected error in the publisher thread.");
             }
         }
 
@@ -161,13 +182,13 @@ namespace TS.Pisa.Plugin.Puffin
         /// <param name="reason">The reason to close the stream.</param>
         private void Close(string reason)
         {
-            if (Log.IsDebugEnabled) Log.Debug(_name + " stream close (" + reason + ")");
+            if (Log.IsDebugEnabled) Log.Debug("stream close (" + reason + ")");
             if (_running.CompareAndSet(true, false))
             {
                 _consumerThread.Interrupt();
                 _stream.Close();
                 _messageQueue.Dispose();
-                Log.Info(_name + " disconnected (" + reason + ")");
+                Log.Info("disconnected (" + reason + ")");
             }
         }
 
@@ -236,7 +257,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (IsMessageStreamActive())
             {
                 var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - GetTimeOfLastMessage());
-                Log.Warn(_name + " no message have been received for " + timeSinceLastMessage +
+                Log.Warn("no message have been received for " + timeSinceLastMessage +
                          "; assume connection failure");
                 Close("inactive connection");
             }
