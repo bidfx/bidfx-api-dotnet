@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace TS.Pisa
 {
     internal class MasterSession : ISession, ISubscriberSession
     {
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
@@ -17,7 +16,7 @@ namespace TS.Pisa
 
         public void Start()
         {
-            log.Info("MasterSession started");
+            Log.Info("MasterSession started");
             foreach (var providerPlugin in _providerPlugins)
             {
                 providerPlugin.Start();
@@ -26,7 +25,7 @@ namespace TS.Pisa
 
         public void Stop()
         {
-            log.Info("MasterSession stopped");
+            Log.Info("MasterSession stopped");
             foreach (var providerPlugin in _providerPlugins)
             {
                 providerPlugin.Stop();
@@ -42,7 +41,7 @@ namespace TS.Pisa
 
         public void Subscribe(string subject)
         {
-            log.Info("subscribe to " + subject);
+            Log.Info("subscribe to " + subject);
             _subscriptions.Add(subject);
             foreach (var providerPlugin in _providerPlugins)
             {
@@ -55,7 +54,7 @@ namespace TS.Pisa
 
         public void Unsubscribe(string subject)
         {
-            log.Info("unsubscribe from " + subject);
+            Log.Info("unsubscribe from " + subject);
             _subscriptions.Remove(subject);
             foreach (var providerPlugin in _providerPlugins)
             {

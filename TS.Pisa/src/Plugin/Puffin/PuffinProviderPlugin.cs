@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading;
 using TS.Pisa.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Authentication;
@@ -33,13 +34,14 @@ namespace TS.Pisa.Plugin.Puffin
         public string Username { get; set; }
         public string Password { get; set; }
         public bool Tunnel { get; set; }
-        public GUID Guid { get; set; }
+        private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private static readonly long StartTime = JavaTime.CurrentTimeMillis();
+        private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
         public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
@@ -51,7 +53,6 @@ namespace TS.Pisa.Plugin.Puffin
             ProviderStatusText = "waiting for remote connection";
             Host = "host_unknown";
             Port = 443;
-            Guid = new GUID();
             Service = "static://puffin";
             Username = ServiceProperties.Username();
             Password = "password_unset";
@@ -61,11 +62,13 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void RunningLoop()
         {
-            Log.Info("starting thread for GUID " + Guid);
+            Log.Info("starting thread for GUID " + _guid);
             while (_running.Value)
             {
                 Log.Info(Name + " running");
                 EstablishPuffinConnection();
+                ProviderStatus = ProviderStatus.TemporarilyDown;
+                ProviderStatusText = "lost connection - trying to reconnect in 10 seconds";
                 _buffer.Clear();
                 Thread.Sleep(10000);
             }
@@ -74,12 +77,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Subscribe(string subject)
         {
+            _subscriptions.Add(subject);
             Log.Info(Name + " subscribing to " + subject);
             _puffinRequestor.Subscribe(subject);
         }
 
         public void Unsubscribe(string subject)
         {
+            _subscriptions.Remove(subject);
             Log.Info(Name + " unsubscribing from " + subject);
             _puffinRequestor.Unsubscribe(subject);
         }
@@ -91,9 +96,9 @@ namespace TS.Pisa.Plugin.Puffin
             var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome") && subject.Contains("Source=Lynx");
             if (!isSubjectCompatible)
             {
-                Log.Warn("Subject is not compatible: "+subject);
+                Log.Warn("Subject is not compatible: " + subject);
             }
-            return isSubjectCompatible;
+            return true; //isSubjectCompatible;
         }
 
         public void Start()
@@ -108,6 +113,8 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _running.SetValue(false);
             _puffinRequestor.CloseSession();
+            ProviderStatus = ProviderStatus.Closed;
+            ProviderStatusText = "client closed connection";
         }
 
         private void EstablishPuffinConnection()
@@ -143,7 +150,7 @@ namespace TS.Pisa.Plugin.Puffin
                 }
                 ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
-                    .AddAttribute("GUID", Guid.ToString())
+                    .AddAttribute("GUID", _guid.ToString())
                     .AddAttribute("server", false)
                     .AddAttribute("discoverable", true)
                     .AddAttribute("startTime", StartTime)
@@ -158,12 +165,14 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
-                ProviderStatus = ProviderStatus.Ready;
                 PuffinClient puffinClient = new PuffinClient(_stream, this)
                 {
                     Interval = Convert.ToInt32(GetAttribute(welcomeMessage, "Interval"))
                 };
+                ProviderStatus = ProviderStatus.Ready;
+                ProviderStatusText = "connected to puffin";
                 _puffinRequestor = puffinClient;
+                Resubscribe();
                 puffinClient.Start();
             }
             catch (Exception e)
@@ -172,12 +181,20 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
+        private void Resubscribe()
+        {
+            foreach (var subject in _subscriptions)
+            {
+                Subscribe(subject);
+            }
+        }
+
         private string GetAttribute(string message, string key)
         {
-            var startOfKey = message.IndexOf(key);
+            var startOfKey = message.IndexOf(key, StringComparison.Ordinal);
             var startOfValue = startOfKey + key.Length + 2;
             var substring = message.Substring(startOfValue);
-            var endOfValue = substring.IndexOf("\"");
+            var endOfValue = substring.IndexOf("\"", StringComparison.Ordinal);
 
             var value = substring.Substring(0, endOfValue);
             if (Log.IsDebugEnabled) Log.Debug("Value of " + key + " is:" + value);
@@ -215,7 +232,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + Guid + "\r\n\r\n");
+                        "GUID: " + _guid + "\r\n\r\n");
         }
 
         private void ReadTunnelResponse()

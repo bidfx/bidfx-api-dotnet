@@ -24,7 +24,6 @@ namespace TS.Pisa.Example
             var session = PrepareSession();
             Log.Info("starting the Pisa session");
             session.Start();
-            Thread.Sleep(2000);
             sendSubscriptions(session);
         }
 
