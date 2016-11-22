@@ -68,6 +68,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Info(Name + " running");
                 EstablishPuffinConnection();
+                ProviderStatus = ProviderStatus.TemporarilyDown;
                 _buffer.Clear();
                 Thread.Sleep(10000);
             }
@@ -112,6 +113,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             _running.SetValue(false);
             _puffinRequestor.CloseSession();
+            ProviderStatus = ProviderStatus.Closed;
         }
 
         private void EstablishPuffinConnection()
