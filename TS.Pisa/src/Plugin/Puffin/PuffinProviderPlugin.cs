@@ -41,7 +41,7 @@ namespace TS.Pisa.Plugin.Puffin
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private static readonly long StartTime = JavaTime.CurrentTimeMillis();
-        private readonly HashSet<string> _unsentSubjects = new HashSet<string>();
+        private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
         public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
@@ -76,16 +76,14 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Subscribe(string subject)
         {
+            _subscriptions.Add(subject);
             Log.Info(Name + " subscribing to " + subject);
-            if (!ProviderStatus.Equals(ProviderStatus.Ready))
-            {
-                _unsentSubjects.Add(subject);
-            }
             _puffinRequestor.Subscribe(subject);
         }
 
         public void Unsubscribe(string subject)
         {
+            _subscriptions.Remove(subject);
             Log.Info(Name + " unsubscribing from " + subject);
             _puffinRequestor.Unsubscribe(subject);
         }
@@ -170,7 +168,7 @@ namespace TS.Pisa.Plugin.Puffin
                 };
                 ProviderStatus = ProviderStatus.Ready;
                 _puffinRequestor = puffinClient;
-                SendUnsentSubscriptions();
+                Resubscribe();
                 puffinClient.Start();
             }
             catch (Exception e)
@@ -179,9 +177,9 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void SendUnsentSubscriptions()
+        private void Resubscribe()
         {
-            foreach (var subject in _unsentSubjects)
+            foreach (var subject in _subscriptions)
             {
                 Subscribe(subject);
             }
