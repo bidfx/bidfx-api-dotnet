@@ -34,7 +34,7 @@ namespace TS.Pisa.Plugin.Puffin
         public string Username { get; set; }
         public string Password { get; set; }
         public bool Tunnel { get; set; }
-        public GUID Guid { get; set; }
+        private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
@@ -53,7 +53,6 @@ namespace TS.Pisa.Plugin.Puffin
             ProviderStatusText = "waiting for remote connection";
             Host = "host_unknown";
             Port = 443;
-            Guid = new GUID();
             Service = "static://puffin";
             Username = ServiceProperties.Username();
             Password = "password_unset";
@@ -63,12 +62,13 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void RunningLoop()
         {
-            Log.Info("starting thread for GUID " + Guid);
+            Log.Info("starting thread for GUID " + _guid);
             while (_running.Value)
             {
                 Log.Info(Name + " running");
                 EstablishPuffinConnection();
                 ProviderStatus = ProviderStatus.TemporarilyDown;
+                ProviderStatusText = "lost connection - trying to reconnect in 10 seconds";
                 _buffer.Clear();
                 Thread.Sleep(10000);
             }
@@ -114,6 +114,7 @@ namespace TS.Pisa.Plugin.Puffin
             _running.SetValue(false);
             _puffinRequestor.CloseSession();
             ProviderStatus = ProviderStatus.Closed;
+            ProviderStatusText = "client closed connection";
         }
 
         private void EstablishPuffinConnection()
@@ -149,7 +150,7 @@ namespace TS.Pisa.Plugin.Puffin
                 }
                 ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
-                    .AddAttribute("GUID", Guid.ToString())
+                    .AddAttribute("GUID", _guid.ToString())
                     .AddAttribute("server", false)
                     .AddAttribute("discoverable", true)
                     .AddAttribute("startTime", StartTime)
@@ -169,6 +170,7 @@ namespace TS.Pisa.Plugin.Puffin
                     Interval = Convert.ToInt32(GetAttribute(welcomeMessage, "Interval"))
                 };
                 ProviderStatus = ProviderStatus.Ready;
+                ProviderStatusText = "connected to puffin";
                 _puffinRequestor = puffinClient;
                 Resubscribe();
                 puffinClient.Start();
@@ -230,7 +232,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
             SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + Guid + "\r\n\r\n");
+                        "GUID: " + _guid + "\r\n\r\n");
         }
 
         private void ReadTunnelResponse()
