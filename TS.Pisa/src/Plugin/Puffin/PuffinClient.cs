@@ -152,10 +152,7 @@ namespace TS.Pisa.Plugin.Puffin
         public void QueueMessage(string message)
         {
             if (Log.IsDebugEnabled) Log.Debug(_name + " queuing message: " + message);
-            if (_running.Value)
-            {
-                _messageQueue.Add(message);
-            }
+            _messageQueue.Add(message);
         }
 
         /// <summary>

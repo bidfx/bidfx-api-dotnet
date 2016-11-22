@@ -1,4 +1,4 @@
-//#define LOTS_OF_SUBSCRIPTIONS
+#define LOTS_OF_SUBSCRIPTIONS
 
 using System;
 using System.Net.NetworkInformation;
@@ -24,7 +24,6 @@ namespace TS.Pisa.Example
             var session = PrepareSession();
             Log.Info("starting the Pisa session");
             session.Start();
-            Thread.Sleep(2000);
             sendSubscriptions(session);
         }
 
@@ -35,9 +34,9 @@ namespace TS.Pisa.Example
             session.PriceStatus += OnPriceStatus;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
-                Host = "localhost", //"ny-tunnel.uatdev.tradingscreen.com",
-                Port = 9901,
-                Tunnel = false,
+                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Port = 443,
+                Tunnel = true,
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });

@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading;
 using TS.Pisa.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Authentication;
@@ -40,6 +41,7 @@ namespace TS.Pisa.Plugin.Puffin
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private static readonly long StartTime = JavaTime.CurrentTimeMillis();
+        private readonly HashSet<string> _unsentSubjects = new HashSet<string>();
 
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
         public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
@@ -75,6 +77,10 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             Log.Info(Name + " subscribing to " + subject);
+            if (!ProviderStatus.Equals(ProviderStatus.Ready))
+            {
+                _unsentSubjects.Add(subject);
+            }
             _puffinRequestor.Subscribe(subject);
         }
 
@@ -91,9 +97,9 @@ namespace TS.Pisa.Plugin.Puffin
             var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome") && subject.Contains("Source=Lynx");
             if (!isSubjectCompatible)
             {
-                Log.Warn("Subject is not compatible: "+subject);
+                Log.Warn("Subject is not compatible: " + subject);
             }
-            return isSubjectCompatible;
+            return true; //isSubjectCompatible;
         }
 
         public void Start()
@@ -158,17 +164,26 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
-                ProviderStatus = ProviderStatus.Ready;
                 PuffinClient puffinClient = new PuffinClient(_stream, this)
                 {
                     Interval = Convert.ToInt32(GetAttribute(welcomeMessage, "Interval"))
                 };
+                ProviderStatus = ProviderStatus.Ready;
                 _puffinRequestor = puffinClient;
+                SendUnsentSubscriptions();
                 puffinClient.Start();
             }
             catch (Exception e)
             {
                 Log.Warn("failed to read from socket", e);
+            }
+        }
+
+        private void SendUnsentSubscriptions()
+        {
+            foreach (var subject in _unsentSubjects)
+            {
+                Subscribe(subject);
             }
         }
 
