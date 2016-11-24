@@ -24,7 +24,7 @@ namespace TS.Pisa.FI
         public event EventHandler<FIPriceUpdateEventArgs> OnPriceUpdate;
 
         /// <summary>
-        /// The even fired upon a price status update being received
+        /// The event fired upon a price status update being received
         /// </summary>
         public event EventHandler<FIPriceStatusEventArgs> OnPriceStatus;
 

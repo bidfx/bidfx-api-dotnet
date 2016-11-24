@@ -8,7 +8,7 @@
         /// <param name="subject">The subject.</param>
         void Subscribe(string subject);
         /// <summary>
-        /// Unsubscribe to prices updates for a given subject.
+        /// Unsubscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject.</param>
         void Unsubscribe(string subject);
