@@ -98,7 +98,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Warn("Subject is not compatible: " + subject);
             }
-            return true; //isSubjectCompatible;
+            return isSubjectCompatible;
         }
 
         public void Start()

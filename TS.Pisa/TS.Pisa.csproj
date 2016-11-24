@@ -66,7 +66,6 @@
     <Compile Include="src\Plugin\Puffin\PuffinElement.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinFieldName.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinMessageReader.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinMessageReceiver.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinProviderPlugin.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinSyntaxException.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinTagName.cs" />
@@ -97,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src" />
+    <Folder Include="src\Plugin\Puffin" />
     <Folder Include="test" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
