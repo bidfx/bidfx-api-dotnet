@@ -11,9 +11,6 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class TokenDictionary
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private const int TokenCodes = 9;
         private const int CodeBits = 7;
         private const int IsToken = 1 << CodeBits;

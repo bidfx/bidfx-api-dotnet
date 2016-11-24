@@ -12,9 +12,6 @@ namespace TS.Pisa.Plugin.Puffin
     /// <author>Paul Sweeny</author>
     public class PuffinMessageReader
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly byte[] _buffer = new byte[8192];
         private int _end;
         private int _point = -1;

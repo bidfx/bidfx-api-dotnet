@@ -23,7 +23,7 @@ namespace TS.Pisa.Plugin.Puffin
         public int Interval { get; set; }
         private long TimeOfLastMessage { get; set; }
 
-        public PuffinClient(Stream stream, IProviderPlugin provider)
+        protected internal PuffinClient(Stream stream, IProviderPlugin provider)
         {
             _stream = stream;
             Interval = 60000;
@@ -34,7 +34,7 @@ namespace TS.Pisa.Plugin.Puffin
             TimeOfLastMessage = JavaTime.CurrentTimeMillis();
         }
 
-        public void Start()
+        protected internal void Start()
         {
             if (_running.CompareAndSet(false, true))
             {
@@ -120,7 +120,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        public void QueueMessage(string message)
+        private void QueueMessage(string message)
         {
             if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
             _messageQueue.Add(message);
@@ -168,7 +168,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        public void OnMessage(PuffinElement element)
+        private void OnMessage(PuffinElement element)
         {
             TimeOfLastMessage = JavaTime.CurrentTimeMillis();
             switch (element.Tag)
