@@ -40,7 +40,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor;
-        private static readonly long StartTime = JavaTime.CurrentTimeMillis();
+        private long StartTime;
         private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
@@ -111,6 +111,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             if (_running.CompareAndSet(false, true))
             {
+                StartTime = JavaTime.CurrentTimeMillis();
                 _outputThread.Start();
             }
         }
@@ -124,6 +125,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
             ProviderStatus = ProviderStatus.Closed;
             ProviderStatusText = "client closed connection";
+            _subscriptions.Clear();
         }
 
         private void EstablishPuffinConnection()

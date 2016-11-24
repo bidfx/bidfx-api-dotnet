@@ -55,6 +55,15 @@ namespace TS.Pisa.FI
             _session.Start();
         }
 
+        /// <summary>
+        /// Stops the puffin provider plugin
+        /// </summary>
+        public void Stop()
+        {
+            _session.Stop();
+            _subjects.Clear();
+        }
+
         private void OnPriceUpdateHandler(object source, PriceUpdateEventArgs args)
         {
             var subject = _subjects[args.Subject] ?? GetSubject(args.Subject);
