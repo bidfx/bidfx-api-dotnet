@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5C8CA288-1771-4ED0-A3AB-8A234523379F}</ProjectGuid>
+    <ProjectGuid>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TS.Pisa.Example</RootNamespace>
-    <AssemblyName>TS.Pisa.Example</AssemblyName>
+    <RootNamespace>TS.Pisa.FI</RootNamespace>
+    <AssemblyName>TS.Pisa.FI</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>4</LangVersion>
@@ -34,30 +34,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
-      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="FIPriceStatusEventArgs.cs" />
+    <Compile Include="FIPriceUpdateEventArgs.cs" />
+    <Compile Include="FixedIncomeSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App.config" />
-    <Content Include="packages.config" />
+    <Content Include="..\..\TS.Pisa\bin\Release\log4net.dll">
+      <Link>log4net.dll</Link>
+    </Content>
+    <Content Include="..\..\TS.Pisa\bin\Release\TS.Pisa.dll">
+      <Link>TS.Pisa.dll</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI\TS.Pisa.FI.csproj">
-      <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
-      <Name>TS.Pisa.FI</Name>
+    <ProjectReference Include="..\..\TS.Pisa\TS.Pisa.csproj">
+      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
+      <Name>TS.Pisa</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
