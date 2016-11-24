@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,14 +15,14 @@ namespace TS.Pisa.Plugin.Puffin
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
-        private readonly Thread _consumerThread;
-        private readonly Thread _heartbeatThread;
+        private readonly Thread _consumerThread,_heartbeatThread,_resubscribeThread;
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
         public int Interval { get; set; }
         private long TimeOfLastMessage { get; set; }
+        private readonly HashSet<string> _subjectsToResubscribe = new HashSet<string>();
 
         protected internal PuffinClient(Stream stream, IProviderPlugin provider)
         {
@@ -30,6 +31,7 @@ namespace TS.Pisa.Plugin.Puffin
             _provider = provider;
             _consumerThread = new Thread(Consume) {Name = provider.Name + "-read"};
             _heartbeatThread = new Thread(ScheduleHeartbeat) {Name = provider.Name + "-heartbeat"};
+            _resubscribeThread = new Thread(ResubscribeToBadStatus) {Name = provider.Name + "-resubscribe"};
             _puffinMessageReader = new PuffinMessageReader(stream);
             TimeOfLastMessage = JavaTime.CurrentTimeMillis();
         }
@@ -40,6 +42,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 _consumerThread.Start();
                 _heartbeatThread.Start();
+                _resubscribeThread.Start();
             }
             Publish();
         }
@@ -73,6 +76,31 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Error("An unexpected error occured in the heartbeat thread.", e);
                 Close("Unexpected error in the heatbeat thread.");
+            }
+        }
+
+        private void ResubscribeToBadStatus()
+        {
+            try
+            {
+                while (_running.Value)
+                {
+                    Thread.Sleep(300000);
+                    foreach (var subject in _subjectsToResubscribe)
+                    {
+                        Subscribe(subject);
+                    }
+                    _subjectsToResubscribe.Clear();
+                }
+            }
+            catch (ThreadInterruptedException)
+            {
+                Log.Warn("thread interrupted");
+            }
+            catch (Exception e)
+            {
+                Log.Error("An unexpected error occured in the resubscribe thread.", e);
+                Close("Unexpected error in the resubscribe thread.");
             }
         }
 
@@ -132,6 +160,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (_running.CompareAndSet(true, false))
             {
                 _consumerThread.Interrupt();
+                _resubscribeThread.Interrupt();
                 _stream.Close();
                 _messageQueue.Dispose();
                 Log.Info("disconnected (" + reason + ")");
@@ -229,17 +258,36 @@ namespace TS.Pisa.Plugin.Puffin
         private void OnStatusMessage(PuffinElement element)
         {
             var eventHandler = _provider.PriceStatus;
+            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+            var statusCode = element.AttributeValue("Id").ToInteger();
+            var status = PriceAdaptor.ToStatus(statusCode);
+            if (IsBadStatus(status))
+            {
+                _subjectsToResubscribe.Add(subject);
+            }
             if (eventHandler != null)
             {
-                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
-                var statusCode = element.AttributeValue("Id").ToInteger();
                 eventHandler(this, new PriceStatusEventArgs
                 {
                     Subject = subject,
-                    Status = PriceAdaptor.ToStatus(statusCode),
+                    Status = status,
                     StatusText = element.AttributeValue("Text").Text
                 });
             }
+        }
+
+        private bool IsBadStatus(PriceStatus status)
+        {
+            return status.Equals(PriceStatus.REJECTED)
+                || status.Equals(PriceStatus.CANCELLED)
+                   || status.Equals(PriceStatus.STALE)
+                   || status.Equals(PriceStatus.DISCONTINUED)
+                   || status.Equals(PriceStatus.PROHIBITED)
+                   || status.Equals(PriceStatus.UNAVAILABLE)
+                   || status.Equals(PriceStatus.TIMEOUT)
+                   || status.Equals(PriceStatus.INACTIVE)
+                   || status.Equals(PriceStatus.EXHAUSTED)
+                   || status.Equals(PriceStatus.CLOSED);
         }
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
