@@ -4,6 +4,10 @@ using TS.Pisa.Plugin.Puffin;
 
 namespace TS.Pisa.FI
 {
+    /// <summary>
+    /// This class creates a Pisa Master Session and adds a single Puffin Provider plugin to it.
+    /// It can be used to subscribe and unsubscribe from price updates.
+    /// </summary>
     public class FixedIncomeSession
     {
         public string Host { get; set; }
@@ -13,9 +17,20 @@ namespace TS.Pisa.FI
         public string Password { get; set; }
         private readonly ISession _session;
         private readonly Dictionary<string, FixedIncomeSubject> _subjects;
+
+        /// <summary>
+        /// The event fired upon a price update being received
+        /// </summary>
         public event EventHandler<FIPriceUpdateEventArgs> OnPriceUpdate;
+
+        /// <summary>
+        /// The even fired upon a price status update being received
+        /// </summary>
         public event EventHandler<FIPriceStatusEventArgs> OnPriceStatus;
 
+        /// <summary>
+        /// Create the fixed income session
+        /// </summary>
         public FixedIncomeSession()
         {
             _subjects = new Dictionary<string, FixedIncomeSubject>();
@@ -24,6 +39,9 @@ namespace TS.Pisa.FI
             _session.PriceStatus += OnPriceStatusHandler;
         }
 
+        /// <summary>
+        /// Adds a puffin provider plugin to the session and starts the connection
+        /// </summary>
         public void Start()
         {
             _session.AddProviderPlugin(new PuffinProviderPlugin
@@ -71,6 +89,11 @@ namespace TS.Pisa.FI
             }
         }
 
+        /// <summary>
+        /// Subscribes to price updates.
+        /// </summary>
+        /// <param name="bank">The 3 letter code for the bank to subscribe to</param>
+        /// <param name="isin">The 12 alphanumeric isin number to subscribe to</param>
         public void Subscribe(string bank, string isin)
         {
             var subject = new FixedIncomeSubject
@@ -82,6 +105,11 @@ namespace TS.Pisa.FI
             _session.Subscribe(subject.ToString());
         }
 
+        /// <summary>
+        /// Unsubscribes from prices updates.
+        /// </summary>
+        /// <param name="bank">The 3 letter code for the bank to unsubscribe from</param>
+        /// <param name="isin">The 12 alphanumeric isin number to unsubscribe from</param>
         public void Unsubscribe(string bank, string isin)
         {
             var subject = new FixedIncomeSubject
