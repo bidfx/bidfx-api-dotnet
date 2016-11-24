@@ -39,7 +39,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
-        private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
+        private IPuffinRequestor _puffinRequestor;
         private static readonly long StartTime = JavaTime.CurrentTimeMillis();
         private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
@@ -78,15 +78,21 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             _subscriptions.Add(subject);
-            Log.Info(Name + " subscribing to " + subject);
-            _puffinRequestor.Subscribe(subject);
+            if (_puffinRequestor != null)
+            {
+                Log.Info(Name + " subscribing to " + subject);
+                _puffinRequestor.Subscribe(subject);
+            }
         }
 
         public void Unsubscribe(string subject)
         {
             _subscriptions.Remove(subject);
-            Log.Info(Name + " unsubscribing from " + subject);
-            _puffinRequestor.Unsubscribe(subject);
+            if (_puffinRequestor != null)
+            {
+                Log.Info(Name + " unsubscribing from " + subject);
+                _puffinRequestor.Unsubscribe(subject);
+            }
         }
 
         public bool IsSubjectCompatible(string subject)
@@ -112,7 +118,10 @@ namespace TS.Pisa.Plugin.Puffin
         public void Stop()
         {
             _running.SetValue(false);
-            _puffinRequestor.CloseSession();
+            if (_puffinRequestor != null)
+            {
+                _puffinRequestor.CloseSession();
+            }
             ProviderStatus = ProviderStatus.Closed;
             ProviderStatusText = "client closed connection";
         }

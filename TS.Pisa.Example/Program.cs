@@ -1,4 +1,4 @@
-//#define LOTS_OF_SUBSCRIPTIONS
+#define LOTS_OF_SUBSCRIPTIONS
 
 using System;
 using System.Net.NetworkInformation;
