@@ -28,7 +28,7 @@ namespace TS.Pisa.Plugin.Puffin
             return this;
         }
 
-        public PuffinElement AddAttribute(string name, PuffinToken value)
+        internal PuffinElement AddAttribute(string name, PuffinToken value)
         {
             if (value == null || !value.IsValueType())
             {
@@ -73,7 +73,7 @@ namespace TS.Pisa.Plugin.Puffin
             get { return _tag; }
         }
 
-        public IEnumerable<KeyValuePair<string, PuffinToken>> Attributes
+        internal IEnumerable<KeyValuePair<string, PuffinToken>> Attributes
         {
             get { return _attributes; }
         }
@@ -93,7 +93,7 @@ namespace TS.Pisa.Plugin.Puffin
             return _attributes.Count != 0;
         }
 
-        public PuffinToken AttributeValue(string name)
+        internal PuffinToken AttributeValue(string name)
         {
             foreach (var attribute in _attributes)
             {

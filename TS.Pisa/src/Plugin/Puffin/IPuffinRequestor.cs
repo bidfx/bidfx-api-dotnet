@@ -2,7 +2,7 @@
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public interface IPuffinRequestor
+    internal interface IPuffinRequestor
     {
         /// <summary>
         /// Subscribe to price information.

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -10,7 +9,7 @@ namespace TS.Pisa.Plugin.Puffin
     /// This class provides a reader for Puffin's binary, compressed, well-formed XML element messages.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class PuffinMessageReader
+    internal class PuffinMessageReader
     {
         private readonly byte[] _buffer = new byte[8192];
         private int _end;

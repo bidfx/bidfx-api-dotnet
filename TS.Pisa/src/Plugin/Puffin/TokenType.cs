@@ -1,6 +1,6 @@
 ﻿namespace TS.Pisa.Plugin.Puffin
 {
-    public enum TokenType
+    internal enum TokenType
     {
         TagEnd = 0,
         TagEndEmptyContent = 1,

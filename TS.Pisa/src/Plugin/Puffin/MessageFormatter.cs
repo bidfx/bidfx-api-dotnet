@@ -2,7 +2,7 @@ using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public class MessageFormatter
+    internal class MessageFormatter
     {
         private static readonly string[] Encodings = new string[256];
 

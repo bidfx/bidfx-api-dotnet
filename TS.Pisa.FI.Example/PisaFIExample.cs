@@ -1,4 +1,5 @@
 using System;
+using TS.Pisa.Plugin.Puffin;
 
 namespace TS.Pisa.FI.Example
 {
@@ -23,10 +24,10 @@ namespace TS.Pisa.FI.Example
         private static void OnPrice(object source, PriceEventArgs priceEvent)
         {
             var price = priceEvent.AllPriceFields;
-            var bid = price.DoubleField("Bid") ?? 0.0;
-            var ask = price.DoubleField("Ask") ?? 0.0;
+            var bid = price.DoubleField(FieldName.Bid) ?? 0.0;
+            var ask = price.DoubleField(FieldName.Ask) ?? 0.0;
             var spread = ask - bid;
-            Console.WriteLine(priceEvent.Subject.Isin + " bid = " + bid + " ask = " + ask + " (spread = " + spread + ")");
+            Console.WriteLine(priceEvent.Subject.Isin + " bid=" + bid + " ask=" + ask + " (spread=" + spread + ")");
         }
 
         private static void OnStatus(object source, StatusEventArgs statusEvent)

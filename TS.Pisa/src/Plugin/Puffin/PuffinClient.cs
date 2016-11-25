@@ -9,8 +9,10 @@ using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public class PuffinClient : IPuffinRequestor
+    internal class PuffinClient : IPuffinRequestor
     {
+        private const string Subject = "Subject";
+
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -170,14 +172,14 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             QueueMessage(new PuffinElement(PuffinTagName.Subscribe)
-                .AddAttribute("Subject", subject)
+                .AddAttribute(Subject, subject)
                 .ToString());
         }
 
         public void Unsubscribe(string subject)
         {
             QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe)
-                .AddAttribute("Subject", subject)
+                .AddAttribute(Subject, subject)
                 .ToString());
         }
 
@@ -228,7 +230,7 @@ namespace TS.Pisa.Plugin.Puffin
             var eventHandler = _provider.PriceUpdate;
             if (eventHandler != null)
             {
-                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+                var subject = element.AttributeValue(Subject).Text;
                 var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
                 eventHandler(this, new PriceUpdateEventArgs
                 {
@@ -244,7 +246,7 @@ namespace TS.Pisa.Plugin.Puffin
             var eventHandler = _provider.PriceUpdate;
             if (eventHandler != null)
             {
-                var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+                var subject = element.AttributeValue(Subject).Text;
                 var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
                 eventHandler(this, new PriceUpdateEventArgs
                 {
@@ -258,7 +260,7 @@ namespace TS.Pisa.Plugin.Puffin
         private void OnStatusMessage(PuffinElement element)
         {
             var eventHandler = _provider.PriceStatus;
-            var subject = element.AttributeValue(PuffinFieldName.Subject).Text;
+            var subject = element.AttributeValue(Subject).Text;
             var statusCode = element.AttributeValue("Id").ToInteger();
             var status = PriceAdaptor.ToStatus(statusCode);
             if (IsBadStatus(status))
@@ -292,11 +294,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
         {
-            Interval = TokenToInt(element.AttributeValue(PuffinFieldName.Interval), 600000);
-            var syncClock = TokenToBoolean(element.AttributeValue(PuffinFieldName.SyncClock), false);
+            Interval = TokenToInt(element.AttributeValue("Interval"), 600000);
+            var syncClock = TokenToBoolean(element.AttributeValue("SyncClock"), false);
             if (syncClock)
             {
-                var transmitTime = TokenToLong(element.AttributeValue(PuffinFieldName.TransmitTime), 0L);
+                var transmitTime = TokenToLong(element.AttributeValue("TransmitTime"), 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
                     .AddAttribute("ReceiveTime", receiveTime)

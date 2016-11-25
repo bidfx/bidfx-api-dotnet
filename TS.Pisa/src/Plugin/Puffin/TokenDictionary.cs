@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
@@ -9,7 +8,7 @@ namespace TS.Pisa.Plugin.Puffin
     /// An XmlDictionary is a dictionary used to encode and/or decode compressed Xml messages.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class TokenDictionary
+    internal class TokenDictionary
     {
         private const int TokenCodes = 9;
         private const int CodeBits = 7;
@@ -172,7 +171,7 @@ namespace TS.Pisa.Plugin.Puffin
         }
     }
 
-    public class XmlTokenCode
+    internal class XmlTokenCode
     {
         public PuffinToken Token { get; internal set; }
         public int Code { get; internal set; }

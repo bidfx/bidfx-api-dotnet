@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public class LoginEncryption
+    internal class LoginEncryption
     {
         /// <summary>
         /// Encrypts a message with the supplied public key.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    public class PriceAdaptor
+    internal class PriceAdaptor
     {
         public static IPriceMap ToPriceMap(PuffinElement element)
         {

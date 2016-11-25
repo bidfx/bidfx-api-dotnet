@@ -1,6 +1,6 @@
 ﻿namespace TS.Pisa.Plugin.Puffin
 {
-    public class PuffinTagName
+    internal class PuffinTagName
     {
         public const string Administer = "Administer";
         public const string ClockSync = "ClockSync";
