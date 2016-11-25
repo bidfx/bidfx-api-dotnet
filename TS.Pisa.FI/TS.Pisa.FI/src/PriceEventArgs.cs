@@ -2,22 +2,12 @@
 
 namespace TS.Pisa.FI
 {
-    public class PriceUpdateEventArgs : EventArgs
+    public class PriceEventArgs : EventArgs
     {
         /// <summary>
-        /// The venue code of the publisher of the price update.
+        /// The fixed income product of the update.
         /// </summary>
-        /// <remarks>
-        /// The venue code of the publisher of the price update.
-        /// This will normally be a bank, broker, exchange or other liquidity provider.
-        /// </remarks>
-        public string Venue { get; internal set; }
-
-        /// <summary>
-        /// The ISIN code of the fixed income product containing in the price update.
-        /// </summary>
-        public string Isin { get; internal set; }
-
+        public FixedIncomeSubject Subject { get; internal set; }
 
         /// <summary>
         /// The complete map of price fields containing all current prices published by the venue.
@@ -41,7 +31,7 @@ namespace TS.Pisa.FI
 
         public override string ToString()
         {
-            return "Venue: " + Venue + ", isin: " + Isin + " => " + AllPriceFields;
+            return Subject + " => " + AllPriceFields;
         }
     }
 }

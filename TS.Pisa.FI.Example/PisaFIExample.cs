@@ -1,48 +1,44 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace TS.Pisa.FI.Example
 {
     internal class PisaFIExample
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private const string SocGenVenue = "SGC";
 
         public static void Main(string[] args)
         {
-            new PisaFIExample().RunTest();
-        }
-
-        private void RunTest()
-        {
-            var session = new FIPisaSession
+            var session = new FixedIncomeSession
             {
                 Host = "ny-tunnel.uatdev.tradingscreen.com",
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             };
-            session.OnPriceUpdate += OnPriceUpdate;
-            session.OnPriceStatus += OnPriceStatus;
+            session.OnPrice += OnPrice;
+            session.OnStatus += OnStatus;
             session.Start();
             SendSubscriptions(session);
         }
 
-        private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
+        private static void OnPrice(object source, PriceEventArgs priceEvent)
         {
-            Log.Info("price update: " + args);
+            var price = priceEvent.AllPriceFields;
+            var bid = price.DoubleField("Bid") ?? 0.0;
+            var ask = price.DoubleField("Ask") ?? 0.0;
+            var spread = ask - bid;
+            Console.WriteLine(priceEvent.Subject.Isin + " bid = " + bid + " ask = " + ask + " (spread = " + spread + ")");
         }
 
-        private static void OnPriceStatus(object source, FIPriceStatusEventArgs args)
+        private static void OnStatus(object source, StatusEventArgs statusEvent)
         {
-            Log.Info("price status: " + args);
+            Console.WriteLine(statusEvent.Subject.Isin + " " + statusEvent.Status + " - " + statusEvent.Reason);
         }
 
-        private void SendSubscriptions(FIPisaSession session)
+        private static void SendSubscriptions(FixedIncomeSession session)
         {
             foreach (var isin in System.IO.File.ReadLines("ISIN_list_10.txt"))
             {
-               session.Subscribe("SGC", isin);
+                session.Subscribe(new FixedIncomeSubject(SocGenVenue, isin));
             }
         }
     }

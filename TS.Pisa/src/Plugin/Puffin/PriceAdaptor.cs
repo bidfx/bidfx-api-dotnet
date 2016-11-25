@@ -37,7 +37,77 @@ namespace TS.Pisa.Plugin.Puffin
 
             public IPriceField Field(string name)
             {
-                return _priceFields.ContainsKey(name) ? _priceFields[name] : null;
+                foreach (var pair in _priceFields)
+                {
+                    if (name.Equals(pair.Key))
+                    {
+                        return pair.Value;
+                    }
+                }
+                return null;
+            }
+
+            public double? DoubleField(string name)
+            {
+                var priceField = Field(name);
+                if (priceField == null) return null;
+                return priceField.Value as double? ?? ParseDouble(priceField);
+            }
+
+            public long? LongField(string name)
+            {
+                var priceField = Field(name);
+                if (priceField == null) return null;
+                return priceField.Value as long? ?? ParseLong(priceField);
+            }
+
+            public int? IntField(string name)
+            {
+                var priceField = Field(name);
+                if (priceField == null) return null;
+                return priceField.Value as int? ?? ParseInt(priceField);
+            }
+
+            public string StringField(string name)
+            {
+                var priceField = Field(name);
+                return priceField == null ? null : priceField.Text;
+            }
+
+            private static double? ParseDouble(IPriceField priceField)
+            {
+                try
+                {
+                    return double.Parse(priceField.Text);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            private static long? ParseLong(IPriceField priceField)
+            {
+                try
+                {
+                    return long.Parse(priceField.Text);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            private static int? ParseInt(IPriceField priceField)
+            {
+                try
+                {
+                    return int.Parse(priceField.Text);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
 
             public override string ToString()

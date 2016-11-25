@@ -271,7 +271,7 @@ namespace TS.Pisa.Plugin.Puffin
                 {
                     Subject = subject,
                     Status = status,
-                    StatusText = element.AttributeValue("Text").Text
+                    Reason = element.AttributeValue("Text").Text
                 });
             }
         }
