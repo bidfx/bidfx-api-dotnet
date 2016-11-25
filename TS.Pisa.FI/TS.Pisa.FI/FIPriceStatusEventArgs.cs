@@ -7,7 +7,7 @@ namespace TS.Pisa.FI
         /// <summary>
         /// The name of the bank which the price status update refers to
         /// </summary>
-        public string Bank { get; internal set; }
+        public string Venue { get; internal set; }
 
         /// <summary>
         /// The isin number which with the price status update refers to
@@ -26,7 +26,7 @@ namespace TS.Pisa.FI
 
         public override string ToString()
         {
-            return "Bank: " + Bank + "; isin: " + Isin + " => " + Status + " (" + StatusText + ")";
+            return "Bank: " + Venue + "; isin: " + Isin + " => " + Status + " (" + StatusText + ")";
         }
     }
 }

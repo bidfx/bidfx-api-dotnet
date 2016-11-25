@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</ProjectGuid>
+    <ProjectGuid>{5C8CA288-1771-4ED0-A3AB-8A234523379F}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TS.Pisa.FI</RootNamespace>
-    <AssemblyName>TS.Pisa.FI</AssemblyName>
+    <RootNamespace>TS.Pisa.Example</RootNamespace>
+    <AssemblyName>TS.Pisa.Example</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>4</LangVersion>
@@ -34,31 +34,34 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FIPriceStatusEventArgs.cs" />
-    <Compile Include="PriceUpdateEventArgs.cs" />
-    <Compile Include="FIPisaSession.cs" />
+    <Compile Include="PisaFIExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\TS.Pisa\bin\Release\log4net.dll">
-      <Link>log4net.dll</Link>
-    </Content>
-    <Content Include="..\..\TS.Pisa\bin\Release\TS.Pisa.dll">
-      <Link>TS.Pisa.dll</Link>
-    </Content>
+    <Content Include="App.config" />
+    <Content Include="ISIN_list_10.txt" />
+    <Content Include="ISIN_list_100.txt" />
+    <Content Include="ISIN_list_5000.txt" />
+    <Content Include="ISIN_list_all.txt" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TS.Pisa\TS.Pisa.csproj">
-      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
-      <Name>TS.Pisa</Name>
+    <Folder Include="Properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI\TS.Pisa.FI.csproj">
+      <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
+      <Name>TS.Pisa.FI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

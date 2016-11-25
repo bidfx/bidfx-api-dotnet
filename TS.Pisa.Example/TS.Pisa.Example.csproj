@@ -44,7 +44,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="PisaExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +58,10 @@
     <ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI\TS.Pisa.FI.csproj">
       <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
       <Name>TS.Pisa.FI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
+      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
+      <Name>TS.Pisa</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,10 +5,10 @@ using TS.Pisa.Plugin.Puffin;
 namespace TS.Pisa.FI
 {
     /// <summary>
-    /// This class creates a Pisa Master Session and adds a single Puffin Provider plugin to it.
-    /// It can be used to subscribe and unsubscribe from price updates.
+    /// This class creates a Pisa Session suitable for subscribing to fixed income products via TradingScreen's
+    /// Puffin price service. It can be used to subscribe and unsubscribe from fixed income instruments.
     /// </summary>
-    public class FixedIncomeSession
+    public class FIPisaSession
     {
         public string Host { get; set; }
         public int Port { get; set; }
@@ -21,7 +21,7 @@ namespace TS.Pisa.FI
         /// <summary>
         /// The event fired upon a price update being received
         /// </summary>
-        public event EventHandler<FIPriceUpdateEventArgs> OnPriceUpdate;
+        public event EventHandler<PriceUpdateEventArgs> OnPriceUpdate;
 
         /// <summary>
         /// The event fired upon a price status update being received
@@ -31,8 +31,10 @@ namespace TS.Pisa.FI
         /// <summary>
         /// Create the fixed income session
         /// </summary>
-        public FixedIncomeSession()
+        public FIPisaSession()
         {
+            Tunnel = true;
+            Port = 443;
             _subjects = new Dictionary<string, FixedIncomeSubject>();
             _session = DefaultSession.GetDefault();
             _session.PriceUpdate += OnPriceUpdateHandler;
@@ -64,16 +66,16 @@ namespace TS.Pisa.FI
             _subjects.Clear();
         }
 
-        private void OnPriceUpdateHandler(object source, PriceUpdateEventArgs args)
+        private void OnPriceUpdateHandler(object source, TS.Pisa.PriceUpdateEventArgs args)
         {
             var subject = _subjects[args.Subject] ?? GetSubject(args.Subject);
             if (subject == null) return;
-            var fiPriceUpdateEventArgs = new FIPriceUpdateEventArgs
+            var fiPriceUpdateEventArgs = new PriceUpdateEventArgs
             {
-                Bank = subject.Bank,
+                Venue = subject.Venue,
                 Isin = subject.Isin,
-                PriceImage = args.PriceImage,
-                PriceUpdate = args.PriceUpdate
+                AllPriceFields = args.PriceImage,
+                ChangedPriceFields = args.PriceUpdate
             };
             if (OnPriceUpdate != null)
             {
@@ -87,7 +89,7 @@ namespace TS.Pisa.FI
             if (subject == null) return;
             var fiPriceStatusEventArgs = new FIPriceStatusEventArgs
             {
-                Bank = subject.Bank,
+                Venue = subject.Venue,
                 Isin = subject.Isin,
                 Status = args.Status,
                 StatusText = args.StatusText
@@ -101,13 +103,13 @@ namespace TS.Pisa.FI
         /// <summary>
         /// Subscribes to price updates.
         /// </summary>
-        /// <param name="bank">The 3 letter code for the bank to subscribe to</param>
+        /// <param name="venue">The 3 letter code for the bank to subscribe to</param>
         /// <param name="isin">The 12 alphanumeric isin number to subscribe to</param>
-        public void Subscribe(string bank, string isin)
+        public void Subscribe(string venue, string isin)
         {
             var subject = new FixedIncomeSubject
             {
-                Bank = bank,
+                Venue = venue,
                 Isin = isin
             };
             _subjects.Add(subject.ToString(), subject);
@@ -123,7 +125,7 @@ namespace TS.Pisa.FI
         {
             var subject = new FixedIncomeSubject
             {
-                Bank = bank,
+                Venue = bank,
                 Isin = isin
             };
             _subjects.Add(subject.ToString(), subject);
@@ -139,19 +141,19 @@ namespace TS.Pisa.FI
             var isin = subject.Substring(isinStartIndex + 7, 12);
             return new FixedIncomeSubject
             {
-                Bank = bank,
+                Venue = bank,
                 Isin = isin
             };
         }
 
         private class FixedIncomeSubject
         {
-            public string Bank { get; set; }
+            public string Venue { get; set; }
             public string Isin { get; set; }
 
             public override string ToString()
             {
-                return "AssetClass=FixedIncome,Exchange=" + Bank + ",Level=1,Source=Lynx,Symbol=" + Isin;
+                return "AssetClass=FixedIncome,Exchange=" + Venue + ",Level=1,Source=Lynx,Symbol=" + Isin;
             }
         }
     }
