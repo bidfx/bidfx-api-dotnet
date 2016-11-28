@@ -227,10 +227,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnUpdateMessage(PuffinElement element)
         {
+            var subject = element.AttributeValue(Subject).Text;
+            _subjectsToResubscribe.Remove(subject);
             var eventHandler = _provider.PriceUpdate;
             if (eventHandler != null)
             {
-                var subject = element.AttributeValue(Subject).Text;
                 var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
                 eventHandler(this, new PriceUpdateEventArgs
                 {
@@ -243,10 +244,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnSetMessage(PuffinElement element)
         {
+            var subject = element.AttributeValue(Subject).Text;
+            _subjectsToResubscribe.Remove(subject);
             var eventHandler = _provider.PriceUpdate;
             if (eventHandler != null)
             {
-                var subject = element.AttributeValue(Subject).Text;
                 var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
                 eventHandler(this, new PriceUpdateEventArgs
                 {
@@ -266,6 +268,10 @@ namespace TS.Pisa.Plugin.Puffin
             if (IsBadStatus(status))
             {
                 _subjectsToResubscribe.Add(subject);
+            }
+            else
+            {
+                _subjectsToResubscribe.Remove(subject);
             }
             if (eventHandler != null)
             {
