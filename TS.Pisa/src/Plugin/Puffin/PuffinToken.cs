@@ -11,7 +11,7 @@ namespace TS.Pisa.Plugin.Puffin
     internal class PuffinToken : IPriceField
     {
         public static readonly PuffinToken EmptyToken = new PuffinToken(TokenType.TagEndEmptyContent, "", null);
-        public static readonly PuffinToken NullValueToken = new PuffinToken(TokenType.AttributeValueString, "", null);
+        public static readonly PuffinToken NullValueToken = new PuffinToken(TokenType.StringValue, "", null);
         public static readonly PuffinToken NullContentToken = new PuffinToken(TokenType.NestedContent, "", null);
 
         public string Text { get; private set; }
@@ -27,27 +27,27 @@ namespace TS.Pisa.Plugin.Puffin
 
         public static PuffinToken StringValue(string value)
         {
-            return new PuffinToken(TokenType.AttributeValueString, value, value);
+            return new PuffinToken(TokenType.StringValue, value, value);
         }
 
         public static PuffinToken IntegerValue(int value)
         {
-            return new PuffinToken(TokenType.AttributeValueInteger, value.ToString(), value);
+            return new PuffinToken(TokenType.IntegerValue, value.ToString(), value);
         }
 
         public static PuffinToken LongValue(long value)
         {
-            return new PuffinToken(TokenType.AttributeValueInteger, value.ToString(), value);
+            return new PuffinToken(TokenType.IntegerValue, value.ToString(), value);
         }
 
         public static PuffinToken DoubleValue(double value)
         {
-            return new PuffinToken(TokenType.AttributeValueDouble, value.ToString(CultureInfo.InvariantCulture), value);
+            return new PuffinToken(TokenType.DecimalValue, value.ToString(CultureInfo.InvariantCulture), value);
         }
 
         public static PuffinToken BooleanValue(bool value)
         {
-            return new PuffinToken(TokenType.AttributeValueString, value ? "true" : "false", value);
+            return new PuffinToken(TokenType.StringValue, value ? "true" : "false", value);
         }
 
         public PuffinToken ToEndTag()
@@ -62,12 +62,12 @@ namespace TS.Pisa.Plugin.Puffin
 
         public bool IsValueType()
         {
-            return TokenType >= TokenType.AttributeValueInteger;
+            return TokenType >= TokenType.IntegerValue;
         }
 
         public override string ToString()
         {
-            if (Text == (string) Value)
+            if (ReferenceEquals(Text, Value))
             {
                 return "token(" + TokenType + " text=\"" + Text + "\")";
             }

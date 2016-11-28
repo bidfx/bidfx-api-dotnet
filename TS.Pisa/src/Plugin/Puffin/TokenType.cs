@@ -7,9 +7,9 @@
         TagStart = 2,
         NestedContent = 3,
         AttributeName = 4,
-        AttributeValueInteger = 5,
-        AttributeValueDouble = 6,
-        AttributeValueFraction = 7,
-        AttributeValueString = 8
+        IntegerValue = 5,
+        DecimalValue = 6,
+        FractionValue = 7,
+        StringValue = 8
     }
 }

@@ -67,12 +67,12 @@ namespace TS.Pisa.Plugin.Puffin
             _builder.Append(' ' + name + "=\"");
             switch (value.TokenType)
             {
-                case TokenType.AttributeValueInteger:
-                case TokenType.AttributeValueDouble:
-                case TokenType.AttributeValueFraction:
+                case TokenType.IntegerValue:
+                case TokenType.DecimalValue:
+                case TokenType.FractionValue:
                     _builder.Append(value.Text);
                     break;
-                case TokenType.AttributeValueString:
+                case TokenType.StringValue:
                     EscapeToken(value);
                     break;
                 case TokenType.TagEnd:

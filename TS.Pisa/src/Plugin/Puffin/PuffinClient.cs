@@ -17,7 +17,9 @@ namespace TS.Pisa.Plugin.Puffin
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
-        private readonly Thread _consumerThread,_heartbeatThread,_resubscribeThread;
+        private readonly Thread _consumerThread;
+        private readonly Thread _heartbeatThread;
+        private readonly Thread _resubscribeThread;
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
@@ -152,20 +154,22 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void QueueMessage(string message)
         {
-            if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
-            _messageQueue.Add(message);
+            if (_running.Value)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
+                _messageQueue.Add(message);
+            }
         }
 
         private void Close(string reason)
         {
-            if (Log.IsDebugEnabled) Log.Debug("stream close (" + reason + ")");
             if (_running.CompareAndSet(true, false))
             {
+                Log.Info("closing connection to Puffin (" + reason + ")");
                 _consumerThread.Interrupt();
                 _resubscribeThread.Interrupt();
                 _stream.Close();
                 _messageQueue.Dispose();
-                Log.Info("disconnected (" + reason + ")");
             }
         }
 
@@ -263,7 +267,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var eventHandler = _provider.PriceStatus;
             var subject = element.AttributeValue(Subject).Text;
-            var statusCode = (int)element.AttributeValue("Id").Value;
+            var statusCode = (int) element.AttributeValue("Id").Value;
             var status = PriceAdaptor.ToStatus(statusCode);
             if (IsBadStatus(status))
             {
@@ -284,17 +288,17 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private bool IsBadStatus(PriceStatus status)
+        private static bool IsBadStatus(PriceStatus status)
         {
-            return !status.Equals(PriceStatus.OK);
+            return status != PriceStatus.OK;
         }
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
         {
-            HeartbeatInterval = (int)(element.AttributeValue("Interval").Value ?? 600000);
-            if ((bool)(element.AttributeValue("SyncClock").Value ?? false))
+            HeartbeatInterval = (int) (element.AttributeValue("Interval").Value ?? 600000);
+            if ("true".Equals(element.AttributeValue("SyncClock").Text))
             {
-                var transmitTime = (long)(element.AttributeValue("TransmitTime").Value ?? 0L);
+                var transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
                     .AddAttribute("ReceiveTime", receiveTime)

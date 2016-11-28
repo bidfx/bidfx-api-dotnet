@@ -84,10 +84,10 @@ namespace TS.Pisa.Plugin.Puffin
                             element.AddAttribute(name.Text, token);
                             break;
                         }
-                        case TokenType.AttributeValueInteger:
-                        case TokenType.AttributeValueDouble:
-                        case TokenType.AttributeValueFraction:
-                        case TokenType.AttributeValueString:
+                        case TokenType.IntegerValue:
+                        case TokenType.DecimalValue:
+                        case TokenType.FractionValue:
+                        case TokenType.StringValue:
                         case TokenType.NestedContent:
                         {
                             throw new PuffinSyntaxException("attribute value with no name " + token);
@@ -234,16 +234,16 @@ namespace TS.Pisa.Plugin.Puffin
                                     case TokenType.NestedContent:
                                         token = PuffinToken.NullContentToken;
                                         break;
-                                    case TokenType.AttributeValueInteger:
-                                        token = new PuffinToken(type, text, ValueParser.ParseLong(text, 0));
+                                    case TokenType.IntegerValue:
+                                        token = IntegerToken(text);
                                         break;
-                                    case TokenType.AttributeValueDouble:
+                                    case TokenType.DecimalValue:
                                         token = new PuffinToken(type, text, ValueParser.ParseDecimal(text, 0m));
                                         break;
-                                    case TokenType.AttributeValueFraction:
+                                    case TokenType.FractionValue:
                                         token = FractionToken(text);
                                         break;
-                                    case TokenType.AttributeValueString:
+                                    case TokenType.StringValue:
                                         token = new PuffinToken(type, text, text);
                                         break;
                                     default:
@@ -252,7 +252,7 @@ namespace TS.Pisa.Plugin.Puffin
                                 _dictionary.InsertToken(token);
                                 return token;
                             }
-                            if (type == TokenType.AttributeValueString)
+                            if (type == TokenType.StringValue)
                             {
                                 return PuffinToken.NullValueToken;
                             }
@@ -277,9 +277,18 @@ namespace TS.Pisa.Plugin.Puffin
             return null;
         }
 
+        private static PuffinToken IntegerToken(string text)
+        {
+            if (text.Length < 10)
+            {
+                return new PuffinToken(TokenType.IntegerValue, text, ValueParser.ParseInt(text, 0));
+            }
+            return new PuffinToken(TokenType.IntegerValue, text, ValueParser.ParseLong(text, 0L));
+        }
+
         private static PuffinToken FractionToken(string text)
         {
-            return new PuffinToken(TokenType.AttributeValueDouble, text, ValueParser.ParseFraction(text));
+            return new PuffinToken(TokenType.DecimalValue, text, ValueParser.ParseFraction(text));
         }
 
         private string MarkedText()

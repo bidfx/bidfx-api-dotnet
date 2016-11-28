@@ -27,7 +27,7 @@ namespace TS.Pisa.FI.Example
                 if (_pendingSubjects.Count == 0)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("complete price snapshots in "
+                    Console.WriteLine("complete "+_subscriptions+" price snapshots in "
                                       + _stopwatch.ElapsedMilliseconds + " milliseconds");
                     _session.Stop();
                 }
@@ -36,14 +36,14 @@ namespace TS.Pisa.FI.Example
 
         public void OnStatus(object source, StatusEventArgs statusEvent)
         {
-            Console.WriteLine("status received for " + statusEvent.Status + " - " + statusEvent.Subject);
+            Console.WriteLine(statusEvent.Subject.Isin + " status " + statusEvent.Status + " - " + statusEvent.Reason);
         }
 
         private void SendSubscriptions()
         {
             Console.WriteLine("making price subscriptions");
             var stopwatch = Stopwatch.StartNew();
-            foreach (var isin in System.IO.File.ReadLines("ISIN_list_all.txt"))
+            foreach (var isin in System.IO.File.ReadLines("ISIN_list_5000.txt"))
             {
                 var subject = new FixedIncomeSubject("SGC", isin.Trim());
                 _pendingSubjects.Add(subject);

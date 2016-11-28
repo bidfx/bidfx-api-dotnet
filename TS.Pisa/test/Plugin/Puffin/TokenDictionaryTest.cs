@@ -117,10 +117,10 @@ namespace TS.Pisa.Plugin.Puffin
             Assert.False(TokenDictionary.IsPlainText((byte) TokenType.TagStart));
             Assert.False(TokenDictionary.IsPlainText((byte) TokenType.NestedContent));
             Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeName));
-            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueInteger));
-            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueDouble));
-            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueFraction));
-            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.AttributeValueString));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.IntegerValue));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.DecimalValue));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.FractionValue));
+            Assert.False(TokenDictionary.IsPlainText((byte) TokenType.StringValue));
         }
 
         [Test]
@@ -193,10 +193,10 @@ namespace TS.Pisa.Plugin.Puffin
             Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.TagStart));
             Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.NestedContent));
             Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeName));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueInteger));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueDouble));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueFraction));
-            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.AttributeValueString));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.IntegerValue));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.DecimalValue));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.FractionValue));
+            Assert.False(TokenDictionary.IsSecondByteOfToken((byte) TokenType.StringValue));
         }
 
         [Test]
@@ -229,10 +229,10 @@ namespace TS.Pisa.Plugin.Puffin
             Assert.True(TokenDictionary.IsTokenType((byte) TokenType.TagStart));
             Assert.True(TokenDictionary.IsTokenType((byte) TokenType.NestedContent));
             Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeName));
-            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueInteger));
-            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueDouble));
-            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueFraction));
-            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.AttributeValueString));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.IntegerValue));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.DecimalValue));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.FractionValue));
+            Assert.True(TokenDictionary.IsTokenType((byte) TokenType.StringValue));
         }
 
         [Test]
@@ -302,7 +302,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 var tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
                 Assert.AreEqual(i, tokenCode.Code);
-                Assert.AreEqual(TokenType.AttributeValueInteger, tokenCode.Token.TokenType);
+                Assert.AreEqual(TokenType.IntegerValue, tokenCode.Token.TokenType);
                 Assert.AreEqual(i.ToString(), tokenCode.Token.Text);
             }
         }
