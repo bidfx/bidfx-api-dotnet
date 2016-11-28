@@ -49,5 +49,22 @@ namespace TS.Pisa.FI
         {
             return _pisaSubject;
         }
+
+        protected bool Equals(FixedIncomeSubject other)
+        {
+            return string.Equals(_pisaSubject, other._pisaSubject);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals((FixedIncomeSubject) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _pisaSubject.GetHashCode();
+        }
     }
 }
