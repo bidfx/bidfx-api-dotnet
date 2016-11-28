@@ -56,12 +56,6 @@
     <Compile Include="test\FixedIncomeSubjectTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\TS.Pisa\bin\Release\log4net.dll">
-      <Link>log4net.dll</Link>
-    </Content>
-    <Content Include="..\..\TS.Pisa\bin\Release\TS.Pisa.dll">
-      <Link>TS.Pisa.dll</Link>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\TS.Pisa\TS.Pisa.csproj">
