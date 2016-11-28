@@ -1,4 +1,4 @@
-﻿namespace TS.Pisa.Plugin.Puffin
+﻿namespace TS.Pisa
 {
     /// <summary>
     /// This class provides a list of price field name constants.
