@@ -1,6 +1,6 @@
 namespace TS.Pisa.FI.Example
 {
-    public class PisaFiExample
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -17,7 +17,7 @@ namespace TS.Pisa.FI.Example
                     new FieldAccessExample(session).Run();
                     break;
                 case 2:
-                    new SubscriptionTimimgTest(session).Run();
+                    new SnapshotTimingExample(session).Run();
                     break;
             }
         }

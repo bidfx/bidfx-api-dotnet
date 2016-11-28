@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace TS.Pisa.FI.Example
 {
-    public class SubscriptionTimimgTest
+    public class SnapshotTimingExample
     {
         private readonly FixedIncomeSession _session;
         private readonly HashSet<FixedIncomeSubject> _pendingSubjects = new HashSet<FixedIncomeSubject>();
@@ -12,7 +12,7 @@ namespace TS.Pisa.FI.Example
         private Stopwatch _stopwatch;
 
 
-        public SubscriptionTimimgTest(FixedIncomeSession session)
+        public SnapshotTimingExample(FixedIncomeSession session)
         {
             _session = session;
             session.OnPrice += OnPrice;
