@@ -28,7 +28,7 @@ namespace TS.Pisa.Example
             session.PriceStatus += OnPriceStatus;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
-                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Host = "ny-tunnel.qadev.tradingscreen.com",
                 Port = 443,
                 Tunnel = true,
                 Username = "axaapitest",

@@ -11,7 +11,7 @@ namespace TS.Pisa.FI.Example
         {
             var session = new FixedIncomeSession
             {
-                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Host = "ny-tunnel.qadev.tradingscreen.com",
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             };
@@ -37,7 +37,7 @@ namespace TS.Pisa.FI.Example
 
         private static void SendSubscriptions(FixedIncomeSession session)
         {
-            foreach (var isin in System.IO.File.ReadLines("ISIN_list_10.txt"))
+            foreach (var isin in System.IO.File.ReadLines("ISIN_list_all.txt"))
             {
                 session.Subscribe(new FixedIncomeSubject(SocGenVenue, isin));
             }
