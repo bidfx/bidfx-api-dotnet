@@ -40,7 +40,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor;
-        private long StartTime;
+        private long _startTime;
         private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
@@ -111,7 +111,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             if (_running.CompareAndSet(false, true))
             {
-                StartTime = JavaTime.CurrentTimeMillis();
+                _startTime = JavaTime.CurrentTimeMillis();
                 _outputThread.Start();
             }
         }
@@ -164,7 +164,7 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("GUID", _guid.ToString())
                     .AddAttribute("server", false)
                     .AddAttribute("discoverable", true)
-                    .AddAttribute("startTime", StartTime)
+                    .AddAttribute("startTime", _startTime)
                     .AddAttribute("username", Username)
                     .AddAttribute("userAlias", ServiceProperties.Username())
                     .AddAttribute("name", Pisa.Name)
