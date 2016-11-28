@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -47,25 +46,25 @@ namespace TS.Pisa.Plugin.Puffin
                 return null;
             }
 
-            public double? DoubleField(string name)
+            public decimal? DecimalField(string name)
             {
                 var priceField = Field(name);
                 if (priceField == null) return null;
-                return priceField.Value as double? ?? ParseDouble(priceField);
+                return priceField.Value as decimal? ?? ValueParser.ParseDecimal(priceField.Text, null);
             }
 
             public long? LongField(string name)
             {
                 var priceField = Field(name);
                 if (priceField == null) return null;
-                return priceField.Value as long? ?? ParseLong(priceField);
+                return priceField.Value as long? ?? ValueParser.ParseLong(priceField.Text, null);
             }
 
             public int? IntField(string name)
             {
                 var priceField = Field(name);
                 if (priceField == null) return null;
-                return priceField.Value as int? ?? ParseInt(priceField);
+                return priceField.Value as int? ?? ValueParser.ParseInt(priceField.Text, null);
             }
 
             public string StringField(string name)
@@ -74,41 +73,6 @@ namespace TS.Pisa.Plugin.Puffin
                 return priceField == null ? null : priceField.Text;
             }
 
-            private static double? ParseDouble(IPriceField priceField)
-            {
-                try
-                {
-                    return double.Parse(priceField.Text);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
-
-            private static long? ParseLong(IPriceField priceField)
-            {
-                try
-                {
-                    return long.Parse(priceField.Text);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
-
-            private static int? ParseInt(IPriceField priceField)
-            {
-                try
-                {
-                    return int.Parse(priceField.Text);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
 
             public override string ToString()
             {

@@ -145,7 +145,7 @@ namespace TS.Pisa.Plugin.Puffin
                     SendPuffinUrl();
                 }
                 var welcomeMessage = ReadMessage();
-                var publicKey = GetAttribute(welcomeMessage, "PublicKey");
+                var publicKey = AttributeValue(welcomeMessage, "PublicKey");
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage(new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
@@ -155,9 +155,9 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grantMessage = ReadMessage();
-                if (!Convert.ToBoolean(GetAttribute(grantMessage, "Access")))
+                if (!Convert.ToBoolean(AttributeValue(grantMessage, "Access")))
                 {
-                    throw new AuthenticationException("Access was not granted: " + GetAttribute(grantMessage, "Text"));
+                    throw new AuthenticationException("Access was not granted: " + AttributeValue(grantMessage, "Text"));
                 }
                 ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
@@ -176,9 +176,9 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
-                PuffinClient puffinClient = new PuffinClient(_stream, this)
+                var puffinClient = new PuffinClient(_stream, this)
                 {
-                    Interval = Convert.ToInt32(GetAttribute(welcomeMessage, "Interval"))
+                    HeartbeatInterval = Convert.ToInt32(AttributeValue(welcomeMessage, "Interval"))
                 };
                 ProviderStatus = ProviderStatus.Ready;
                 ProviderStatusText = "connected to puffin";
@@ -200,7 +200,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private string GetAttribute(string message, string key)
+        private static string AttributeValue(string message, string key)
         {
             var startOfKey = message.IndexOf(key, StringComparison.Ordinal);
             var startOfValue = startOfKey + key.Length + 2;

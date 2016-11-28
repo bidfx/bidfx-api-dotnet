@@ -22,14 +22,14 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
-        public int Interval { get; set; }
+        public int HeartbeatInterval { get; set; }
         private long TimeOfLastMessage { get; set; }
         private readonly HashSet<string> _subjectsToResubscribe = new HashSet<string>();
 
         protected internal PuffinClient(Stream stream, IProviderPlugin provider)
         {
             _stream = stream;
-            Interval = 60000;
+            HeartbeatInterval = 60000;
             _provider = provider;
             _consumerThread = new Thread(Consume) {Name = provider.Name + "-read"};
             _heartbeatThread = new Thread(ScheduleHeartbeat) {Name = provider.Name + "-heartbeat"};
@@ -61,8 +61,8 @@ namespace TS.Pisa.Plugin.Puffin
                         QueueMessage(new PuffinElement(PuffinTagName.Heartbeat)
                             .AddAttribute("TransmitTime", now)
                             .ToString());
-                        if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + Interval);
-                        Thread.Sleep(Interval);
+                        if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + HeartbeatInterval);
+                        Thread.Sleep(HeartbeatInterval);
                     }
                     else
                     {
@@ -261,7 +261,7 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var eventHandler = _provider.PriceStatus;
             var subject = element.AttributeValue(Subject).Text;
-            var statusCode = element.AttributeValue("Id").ToInteger();
+            var statusCode = (int)element.AttributeValue("Id").Value;
             var status = PriceAdaptor.ToStatus(statusCode);
             if (IsBadStatus(status))
             {
@@ -285,11 +285,10 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
         {
-            Interval = TokenToInt(element.AttributeValue("Interval"), 600000);
-            var syncClock = TokenToBoolean(element.AttributeValue("SyncClock"), false);
-            if (syncClock)
+            HeartbeatInterval = (int)(element.AttributeValue("Interval").Value ?? 600000);
+            if ((bool)(element.AttributeValue("SyncClock").Value ?? false))
             {
-                var transmitTime = TokenToLong(element.AttributeValue("TransmitTime"), 0L);
+                var transmitTime = (long)(element.AttributeValue("TransmitTime").Value ?? 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
                     .AddAttribute("ReceiveTime", receiveTime)
@@ -305,23 +304,8 @@ namespace TS.Pisa.Plugin.Puffin
 
         private bool IsMessageStreamActive()
         {
-            var time = JavaTime.CurrentTimeMillis() - Interval * 2;
+            var time = JavaTime.CurrentTimeMillis() - HeartbeatInterval * 2;
             return TimeOfLastMessage > time;
-        }
-
-        private bool TokenToBoolean(PuffinToken token, bool defaultValue)
-        {
-            return token == null ? defaultValue : token.ToBoolean();
-        }
-
-        private long TokenToLong(PuffinToken token, long defaultValue)
-        {
-            return token == null ? defaultValue : token.ToLong();
-        }
-
-        private int TokenToInt(PuffinToken token, int defaultValue)
-        {
-            return token == null ? defaultValue : token.ToInteger();
         }
 
         private string GetReadableTimeOfMillis(long milliseconds)

@@ -71,6 +71,7 @@
     <Compile Include="src\Plugin\Puffin\PuffinToken.cs" />
     <Compile Include="src\Plugin\Puffin\TokenDictionary.cs" />
     <Compile Include="src\Plugin\Puffin\TokenType.cs" />
+    <Compile Include="src\Plugin\Puffin\ValueParser.cs" />
     <Compile Include="src\PriceStatus.cs" />
     <Compile Include="src\PriceStatusEventArgs.cs" />
     <Compile Include="src\PriceUpdateEventArgs.cs" />
@@ -89,13 +90,13 @@
     <Compile Include="test\Plugin\Puffin\PuffinPluginProviderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" />
     <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\Plugin\Puffin" />
     <Folder Include="test" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

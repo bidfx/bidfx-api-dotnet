@@ -17,8 +17,8 @@ namespace TS.Pisa.FI.Example
         private static void OnPrice(object source, PriceEventArgs priceEvent)
         {
             var price = priceEvent.AllPriceFields;
-            var bid = price.DoubleField(FieldName.Bid) ?? 0.0;
-            var ask = price.DoubleField(FieldName.Ask) ?? 0.0;
+            var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
+            var ask = price.DecimalField(FieldName.Ask) ?? 0.0m;
             var spread = ask - bid;
             Console.WriteLine(priceEvent.Subject.Isin + " bid=" + bid + " ask=" + ask + " (spread=" + spread + ")");
         }

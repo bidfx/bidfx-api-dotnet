@@ -8,7 +8,7 @@ namespace TS.Pisa
         IEnumerable<KeyValuePair<string, IPriceField>> PriceFields { get; }
         IPriceField Field(string name);
 
-        double? DoubleField(string name);
+        decimal? DecimalField(string name);
         long? LongField(string name);
         int? IntField(string name);
         string StringField(string name);

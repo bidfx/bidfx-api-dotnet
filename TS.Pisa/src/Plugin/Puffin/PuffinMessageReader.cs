@@ -235,13 +235,13 @@ namespace TS.Pisa.Plugin.Puffin
                                         token = PuffinToken.NullContentToken;
                                         break;
                                     case TokenType.AttributeValueInteger:
-                                        token = new PuffinToken(type, text, Convert.ToInt64(text));
+                                        token = new PuffinToken(type, text, ValueParser.ParseLong(text, 0));
                                         break;
                                     case TokenType.AttributeValueDouble:
-                                        token = new PuffinToken(type, text, Convert.ToDouble(text));
+                                        token = new PuffinToken(type, text, ValueParser.ParseDecimal(text, 0m));
                                         break;
                                     case TokenType.AttributeValueFraction:
-                                        token = new PuffinToken(type, text, PuffinToken.FractionToDouble(text));
+                                        token = FractionToken(text);
                                         break;
                                     case TokenType.AttributeValueString:
                                         token = new PuffinToken(type, text, text);
@@ -275,6 +275,11 @@ namespace TS.Pisa.Plugin.Puffin
                 throw new PuffinSyntaxException("token completion expected");
             }
             return null;
+        }
+
+        private static PuffinToken FractionToken(string text)
+        {
+            return new PuffinToken(TokenType.AttributeValueDouble, text, ValueParser.ParseFraction(text));
         }
 
         private string MarkedText()
