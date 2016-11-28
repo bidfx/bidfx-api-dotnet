@@ -9,7 +9,7 @@
         public FixedIncomeSubject(string venue, string isin)
         {
             Venue = venue;
-            Isin = isin;
+            Isin = isin.Trim();
             _pisaSubject = "AssetClass=FixedIncome,Exchange=" + Venue + ",Level=1,Source=Lynx,Symbol=" + Isin;
         }
 
