@@ -9,6 +9,7 @@ namespace TS.Pisa
         string ProviderStatusText { get; }
         EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
         EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
+        EventHandler<ProviderPluginEventArgs> ProviderPlugin { get; set; }
         void Subscribe(string subject);
         void Unsubscribe(string subject);
         bool IsSubjectCompatible(string subject);

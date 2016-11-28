@@ -13,6 +13,7 @@ namespace TS.Pisa
 
         public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
         public event EventHandler<PriceStatusEventArgs> PriceStatus;
+        public event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
 
         public void Start()
         {
@@ -36,6 +37,7 @@ namespace TS.Pisa
         {
             providerPlugin.PriceUpdate = PriceUpdate;
             providerPlugin.PriceStatus = PriceStatus;
+            providerPlugin.ProviderPlugin = ProviderPlugin;
             _providerPlugins.Add(providerPlugin);
         }
 

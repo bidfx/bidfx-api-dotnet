@@ -33,31 +33,49 @@ namespace TS.Pisa.Plugin.Puffin
         public string Service { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
         private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
-        private IPuffinRequestor _puffinRequestor;
+        private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private long _startTime;
         private readonly HashSet<string> _subscriptions = new HashSet<string>();
 
+        public EventHandler<ProviderPluginEventArgs> ProviderPlugin { get; set; }
         public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
         public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
 
         public PuffinProviderPlugin()
         {
             Name = NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            ProviderStatus = ProviderStatus.TemporarilyDown;
-            ProviderStatusText = "waiting for remote connection";
+            NotifyStatusChange(ProviderStatus.TemporarilyDown, "waiting for remote connection");
             Host = "host_unknown";
             Port = 443;
             Service = "static://puffin";
             Username = ServiceProperties.Username();
             Password = "password_unset";
             Tunnel = true;
+            ReconnectInterval = TimeSpan.FromSeconds(10);
             _outputThread = new Thread(RunningLoop) {Name = Name};
+        }
+
+        private void NotifyStatusChange(ProviderStatus status, string reason)
+        {
+            ProviderStatus = status;
+            ProviderStatusText = reason;
+            var eventHandler = ProviderPlugin;
+            if (eventHandler != null)
+            {
+                eventHandler(this, new ProviderPluginEventArgs
+                {
+                    Provider = this,
+                    ProviderStatus = status,
+                    ProviderStatusText = reason
+                });
+            }
         }
 
         private void RunningLoop()
@@ -67,30 +85,27 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 Log.Info(Name + " running");
                 EstablishPuffinConnection();
-                ProviderStatus = ProviderStatus.TemporarilyDown;
-                ProviderStatusText = "lost connection - trying to reconnect in 10 seconds";
                 _buffer.Clear();
-                Thread.Sleep(10000);
+                Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                Thread.Sleep(ReconnectInterval);
             }
             Log.Info("thread stopped");
         }
 
         public void Subscribe(string subject)
         {
-            _subscriptions.Add(subject);
-            if (_puffinRequestor != null)
+            lock (_subscriptions)
             {
-                Log.Info(Name + " subscribing to " + subject);
+                _subscriptions.Add(subject);
                 _puffinRequestor.Subscribe(subject);
             }
         }
 
         public void Unsubscribe(string subject)
         {
-            _subscriptions.Remove(subject);
-            if (_puffinRequestor != null)
+            lock (_subscriptions)
             {
-                Log.Info(Name + " unsubscribing from " + subject);
+                _subscriptions.Remove(subject);
                 _puffinRequestor.Unsubscribe(subject);
             }
         }
@@ -119,16 +134,29 @@ namespace TS.Pisa.Plugin.Puffin
         public void Stop()
         {
             _running.SetValue(false);
-            if (_puffinRequestor != null)
+            _puffinRequestor.CloseSession();
+            NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
+            lock (_subscriptions)
             {
-                _puffinRequestor.CloseSession();
+                _subscriptions.Clear();
             }
-            ProviderStatus = ProviderStatus.Closed;
-            ProviderStatusText = "client closed connection";
-            _subscriptions.Clear();
         }
 
         private void EstablishPuffinConnection()
+        {
+            var heartbeatInterval = HandshakeWithServer();
+            var puffinClient = new PuffinClient(_stream, this)
+            {
+                HeartbeatInterval = heartbeatInterval
+            };
+            NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
+            _puffinRequestor = puffinClient;
+            ResubscribeToAll();
+            puffinClient.Start();
+            NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection - trying to reconnect in 10 seconds");
+        }
+
+        private int HandshakeWithServer()
         {
             try
             {
@@ -176,27 +204,25 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
-                var puffinClient = new PuffinClient(_stream, this)
-                {
-                    HeartbeatInterval = Convert.ToInt32(AttributeValue(welcomeMessage, "Interval"))
-                };
-                ProviderStatus = ProviderStatus.Ready;
-                ProviderStatusText = "connected to puffin";
-                _puffinRequestor = puffinClient;
-                Resubscribe();
-                puffinClient.Start();
+                return Convert.ToInt32(AttributeValue(welcomeMessage, "Interval"));
             }
             catch (Exception e)
             {
-                Log.Warn("failed to read from socket", e);
+                Log.Warn("failed to handshake with Puffin", e);
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
+                throw e;
             }
         }
 
-        private void Resubscribe()
+        private void ResubscribeToAll()
         {
-            foreach (var subject in _subscriptions)
+            // TODO this should not be here but in the Master Pisa Session
+            lock (_subscriptions)
             {
-                Subscribe(subject);
+                foreach (var subject in _subscriptions)
+                {
+                    _puffinRequestor.Subscribe(subject);
+                }
             }
         }
 

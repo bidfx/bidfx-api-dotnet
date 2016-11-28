@@ -77,6 +77,7 @@
     <Compile Include="src\PriceUpdateEventArgs.cs" />
     <Compile Include="src\ProviderStatus.cs" />
     <Compile Include="src\FieldName.cs" />
+    <Compile Include="src\ProviderPluginEventArgs.cs" />
     <Compile Include="src\Tools\AtomicBoolean.cs" />
     <Compile Include="src\Tools\ByteBuffer.cs" />
     <Compile Include="src\Tools\GUID.cs" />
