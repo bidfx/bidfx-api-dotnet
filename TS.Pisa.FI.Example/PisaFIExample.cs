@@ -39,7 +39,7 @@ namespace TS.Pisa.FI.Example
         {
             foreach (var isin in System.IO.File.ReadLines("ISIN_list_all.txt"))
             {
-                session.Subscribe(new FixedIncomeSubject(SocGenVenue, isin));
+                session.Subscribe(new FixedIncomeSubject(SocGenVenue, isin.Trim()));
             }
         }
     }
