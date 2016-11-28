@@ -29,6 +29,7 @@ namespace TS.Pisa.FI.Example
                     Console.WriteLine();
                     Console.WriteLine("complete price snapshots in "
                                       + _stopwatch.ElapsedMilliseconds + " milliseconds");
+                    _session.Stop();
                 }
             }
         }
@@ -42,7 +43,7 @@ namespace TS.Pisa.FI.Example
         {
             Console.WriteLine("making price subscriptions");
             var stopwatch = Stopwatch.StartNew();
-            foreach (var isin in System.IO.File.ReadLines("ISIN_list_5000.txt"))
+            foreach (var isin in System.IO.File.ReadLines("ISIN_list_all.txt"))
             {
                 var subject = new FixedIncomeSubject("SGC", isin.Trim());
                 _pendingSubjects.Add(subject);

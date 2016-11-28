@@ -10,7 +10,7 @@ namespace TS.Pisa.FI.Example
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             };
-            var test = 1;
+            var test = 2;
             switch (test)
             {
                 case 1:
