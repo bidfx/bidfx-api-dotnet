@@ -280,16 +280,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private bool IsBadStatus(PriceStatus status)
         {
-            return status.Equals(PriceStatus.REJECTED)
-                || status.Equals(PriceStatus.CANCELLED)
-                   || status.Equals(PriceStatus.STALE)
-                   || status.Equals(PriceStatus.DISCONTINUED)
-                   || status.Equals(PriceStatus.PROHIBITED)
-                   || status.Equals(PriceStatus.UNAVAILABLE)
-                   || status.Equals(PriceStatus.TIMEOUT)
-                   || status.Equals(PriceStatus.INACTIVE)
-                   || status.Equals(PriceStatus.EXHAUSTED)
-                   || status.Equals(PriceStatus.CLOSED);
+            return !status.Equals(PriceStatus.OK);
         }
 
         private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
