@@ -21,9 +21,7 @@ namespace TS.Pisa.FI
         public string Password { get; set; }
 
         private readonly ISession _session = DefaultSession.GetDefault();
-
-        private readonly Dictionary<string, FixedIncomeSubject> _subscriptions =
-            new Dictionary<string, FixedIncomeSubject>();
+        private readonly SubjectMap _subscriptions = new SubjectMap();
 
         /// <summary>
         /// The event fired upon a price update being received
@@ -80,7 +78,7 @@ namespace TS.Pisa.FI
             }
             else
             {
-                var subject = LookUpSubject(pisaPriceEvent.Subject);
+                var subject = _subscriptions.Get(pisaPriceEvent.Subject);
                 if (subject != null)
                 {
                     publishEvent(this, new PriceEventArgs
@@ -102,7 +100,7 @@ namespace TS.Pisa.FI
             }
             else
             {
-                var subject = LookUpSubject(pisaStatusEvent.Subject);
+                var subject = _subscriptions.Get(pisaStatusEvent.Subject);
                 if (subject != null)
                 {
                     publishEvent(this, new StatusEventArgs
@@ -115,13 +113,6 @@ namespace TS.Pisa.FI
             }
         }
 
-        private FixedIncomeSubject LookUpSubject(string pisaSubject)
-        {
-            FixedIncomeSubject subject;
-            _subscriptions.TryGetValue(pisaSubject, out subject);
-            return subject;
-        }
-
         /// <summary>
         /// Subscribes to price updates.
         /// </summary>
@@ -129,7 +120,7 @@ namespace TS.Pisa.FI
         public void Subscribe(FixedIncomeSubject subject)
         {
             var pisaSubject = subject.PisaSubject();
-            _subscriptions[pisaSubject] = subject;
+            _subscriptions.Put(pisaSubject, subject);
             _session.Subscribe(pisaSubject);
         }
 
@@ -142,6 +133,46 @@ namespace TS.Pisa.FI
             var pisaSubject = subject.PisaSubject();
             _subscriptions.Remove(pisaSubject);
             _session.Unsubscribe(pisaSubject);
+        }
+    }
+
+    internal class SubjectMap
+    {
+        private readonly Dictionary<string, FixedIncomeSubject> _map =
+            new Dictionary<string, FixedIncomeSubject>();
+
+
+        public void Put(string pisaSubject, FixedIncomeSubject fiSubject)
+        {
+            lock (_map)
+            {
+                _map[pisaSubject] = fiSubject;
+            }
+        }
+
+        public FixedIncomeSubject Get(string pisaSubject)
+        {
+            lock (_map)
+            {
+                FixedIncomeSubject fiSubject;
+                _map.TryGetValue(pisaSubject, out fiSubject);
+                return fiSubject;
+            }
+        }
+
+        public void Remove(string pisaSubject)
+        {
+            lock (_map)
+            {
+                _map.Remove(pisaSubject);
+            }
+        }
+        public void Clear()
+        {
+            lock (_map)
+            {
+                _map.Clear();
+            }
         }
     }
 }
