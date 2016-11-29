@@ -7,7 +7,7 @@ namespace TS.Pisa.FI.Example
     public class SnapshotTimingExample
     {
         private readonly FixedIncomeSession _session;
-        private readonly HashSet<FixedIncomeSubject> _pendingSubjects = new HashSet<FixedIncomeSubject>();
+        private readonly SubscriptionSet _pendingSubjects = new SubscriptionSet();
         private int _subscriptions;
         private Stopwatch _stopwatch;
 
@@ -27,7 +27,7 @@ namespace TS.Pisa.FI.Example
                 if (_pendingSubjects.Count == 0)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("complete "+_subscriptions+" price snapshots in "
+                    Console.WriteLine("complete " + _subscriptions + " price snapshots in "
                                       + _stopwatch.ElapsedMilliseconds + " milliseconds");
                     _session.Stop();
                 }
@@ -59,6 +59,38 @@ namespace TS.Pisa.FI.Example
             _session.Start();
             SendSubscriptions();
             _stopwatch = Stopwatch.StartNew();
+        }
+    }
+
+    internal class SubscriptionSet
+    {
+        private readonly ISet<FixedIncomeSubject> _set = new HashSet<FixedIncomeSubject>();
+
+        public int Count
+        {
+            get
+            {
+                lock (_set)
+                {
+                    return _set.Count;
+                }
+            }
+        }
+
+        public bool Remove(FixedIncomeSubject subject)
+        {
+            lock (_set)
+            {
+                return _set.Remove(subject);
+            }
+        }
+
+        public void Add(FixedIncomeSubject subject)
+        {
+            lock (_set)
+            {
+                _set.Add(subject);
+            }
         }
     }
 }
