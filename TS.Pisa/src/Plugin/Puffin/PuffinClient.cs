@@ -17,38 +17,34 @@ namespace TS.Pisa.Plugin.Puffin
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
-        private readonly Thread _consumerThread;
+        private readonly Thread _publisherThread;
         private readonly Thread _heartbeatThread;
-        private readonly Thread _resubscribeThread;
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<string> _messageQueue = new BlockingCollection<string>();
         private readonly PuffinMessageReader _puffinMessageReader;
-        public int HeartbeatInterval { get; set; }
-        private long TimeOfLastMessage { get; set; }
+        private readonly TimeSpan _heartbeatInterval;
+        private DateTime _timeOfLastMessage = DateTime.Now;
         private readonly HashSet<string> _subjectsToResubscribe = new HashSet<string>();
 
-        protected internal PuffinClient(Stream stream, IProviderPlugin provider)
+        protected internal PuffinClient(Stream stream, IProviderPlugin provider, TimeSpan heartbeatInterval)
         {
             _stream = stream;
-            HeartbeatInterval = 60000;
             _provider = provider;
-            _consumerThread = new Thread(Consume) {Name = provider.Name + "-read"};
+            _heartbeatInterval = heartbeatInterval;
+            _publisherThread = new Thread(SendOutgoingMessages) {Name = provider.Name + "-write"};
             _heartbeatThread = new Thread(ScheduleHeartbeat) {Name = provider.Name + "-heartbeat"};
-            _resubscribeThread = new Thread(ResubscribeToBadStatus) {Name = provider.Name + "-resubscribe"};
             _puffinMessageReader = new PuffinMessageReader(stream);
-            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
         }
 
-        protected internal void Start()
+        public void Start()
         {
             if (_running.CompareAndSet(false, true))
             {
-                _consumerThread.Start();
+                _publisherThread.Start();
                 _heartbeatThread.Start();
-                _resubscribeThread.Start();
+                ProcessIncommingMessages();
             }
-            Publish();
         }
 
         private void ScheduleHeartbeat()
@@ -63,14 +59,12 @@ namespace TS.Pisa.Plugin.Puffin
                         QueueMessage(new PuffinElement(PuffinTagName.Heartbeat)
                             .AddAttribute("TransmitTime", now)
                             .ToString());
-                        if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + HeartbeatInterval);
-                        Thread.Sleep(HeartbeatInterval);
+                        if (Log.IsDebugEnabled) Log.Debug("sleeping for the interval: " + _heartbeatInterval);
+                        Thread.Sleep(_heartbeatInterval);
                     }
                     else
                     {
-                        var timeSinceLastMessage =
-                            GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - TimeOfLastMessage);
-                        Log.Warn("no message have been received for " + timeSinceLastMessage +
+                        Log.Warn("no message have been received since " + _timeOfLastMessage +
                                  "; assume connection failure");
                         Close("inactive connection");
                     }
@@ -108,7 +102,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void Consume()
+        private void ProcessIncommingMessages()
         {
             try
             {
@@ -130,7 +124,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void Publish()
+        private void SendOutgoingMessages()
         {
             try
             {
@@ -166,9 +160,8 @@ namespace TS.Pisa.Plugin.Puffin
             if (_running.CompareAndSet(true, false))
             {
                 Log.Info("closing connection to Puffin (" + reason + ")");
-                _consumerThread.Interrupt();
-                _resubscribeThread.Interrupt();
                 _stream.Close();
+                _publisherThread.Interrupt();
                 _messageQueue.Dispose();
             }
         }
@@ -187,7 +180,7 @@ namespace TS.Pisa.Plugin.Puffin
                 .ToString());
         }
 
-        public void CloseSession()
+        public void Stop()
         {
             Close("session close requested");
         }
@@ -196,29 +189,27 @@ namespace TS.Pisa.Plugin.Puffin
         {
             if (IsMessageStreamActive())
             {
-                var timeSinceLastMessage = GetReadableTimeOfMillis(JavaTime.CurrentTimeMillis() - TimeOfLastMessage);
-                Log.Warn("no message have been received for " + timeSinceLastMessage +
-                         "; assume connection failure");
+                Log.Warn("no message have been received since " + _timeOfLastMessage + "; assume connection failure");
                 Close("inactive connection");
             }
         }
 
         private void OnMessage(PuffinElement element)
         {
-            TimeOfLastMessage = JavaTime.CurrentTimeMillis();
+            _timeOfLastMessage = DateTime.Now;
             switch (element.Tag)
             {
                 case PuffinTagName.Update:
                     OnUpdateMessage(element);
                     break;
                 case PuffinTagName.Set:
-                    OnSetMessage(element);
+                    OnUpdateMessage(element);
                     break;
                 case PuffinTagName.Status:
                     OnStatusMessage(element);
                     break;
                 case PuffinTagName.Heartbeat:
-                    OnHeartbeatMessage(element, TimeOfLastMessage);
+                    OnHeartbeatMessage(element);
                     break;
                 case PuffinTagName.Close:
                     OnCloseMessage(element);
@@ -233,43 +224,20 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var subject = element.AttributeValue(Subject).Text;
             _subjectsToResubscribe.Remove(subject);
-            var eventHandler = _provider.PriceUpdate;
-            if (eventHandler != null)
+            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            _provider.PisaEventHandler.OnPriceEvent(new PriceUpdateEventArgs
             {
-                var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-                eventHandler(this, new PriceUpdateEventArgs
-                {
-                    Subject = subject,
-                    PriceImage = priceMap,
-                    PriceUpdate = priceMap
-                });
-            }
-        }
-
-        private void OnSetMessage(PuffinElement element)
-        {
-            var subject = element.AttributeValue(Subject).Text;
-            _subjectsToResubscribe.Remove(subject);
-            var eventHandler = _provider.PriceUpdate;
-            if (eventHandler != null)
-            {
-                var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-                eventHandler(this, new PriceUpdateEventArgs
-                {
-                    Subject = subject,
-                    PriceImage = priceMap,
-                    PriceUpdate = priceMap
-                });
-            }
+                Subject = subject,
+                AllPriceFields = priceMap,
+                ChangedPriceFields = priceMap
+            });
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
-            var eventHandler = _provider.PriceStatus;
             var subject = element.AttributeValue(Subject).Text;
-            var statusCode = (int) element.AttributeValue("Id").Value;
-            var status = PriceAdaptor.ToStatus(statusCode);
-            if (IsBadStatus(status))
+            var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
+            if (status != SubscriptionStatus.OK)
             {
                 _subjectsToResubscribe.Add(subject);
             }
@@ -277,31 +245,22 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 _subjectsToResubscribe.Remove(subject);
             }
-            if (eventHandler != null)
+            _provider.PisaEventHandler.OnStatusEvent(new SubscriptionStatusEventArgs
             {
-                eventHandler(this, new PriceStatusEventArgs
-                {
-                    Subject = subject,
-                    Status = status,
-                    Reason = element.AttributeValue("Text").Text
-                });
-            }
+                Subject = subject,
+                Status = status,
+                Reason = element.AttributeValue("Text").Text
+            });
         }
 
-        private static bool IsBadStatus(PriceStatus status)
+        private void OnHeartbeatMessage(PuffinElement element)
         {
-            return status != PriceStatus.OK;
-        }
-
-        private void OnHeartbeatMessage(PuffinElement element, long receiveTime)
-        {
-            HeartbeatInterval = (int) (element.AttributeValue("Interval").Value ?? 600000);
             if ("true".Equals(element.AttributeValue("SyncClock").Text))
             {
                 var transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
-                    .AddAttribute("ReceiveTime", receiveTime)
+                    .AddAttribute("ReceiveTime", JavaTime.ToJavaTime(_timeOfLastMessage))
                     .AddAttribute("TransmitTime", JavaTime.CurrentTimeMillis())
                     .ToString());
             }
@@ -314,18 +273,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         private bool IsMessageStreamActive()
         {
-            var time = JavaTime.CurrentTimeMillis() - HeartbeatInterval * 2;
-            return TimeOfLastMessage > time;
+            var idleTime = DateTime.Now.Subtract(_timeOfLastMessage);
+            var twoBeats = _heartbeatInterval.Add(_heartbeatInterval);
+            var compareTo = idleTime.CompareTo(twoBeats);
+            return compareTo < 0;
         }
 
-        private string GetReadableTimeOfMillis(long milliseconds)
-        {
-            var t = TimeSpan.FromMilliseconds(milliseconds);
-            return string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
-                t.Hours,
-                t.Minutes,
-                t.Seconds,
-                t.Milliseconds);
-        }
     }
 }

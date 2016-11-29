@@ -20,18 +20,18 @@ namespace TS.Pisa.FI
         public string Username { get; set; }
         public string Password { get; set; }
 
-        private readonly ISession _session = DefaultSession.GetDefault();
+        private readonly ISubscriber _session = DefaultSession.GetSubscriber();
         private readonly SubjectMap _subscriptions = new SubjectMap();
 
         /// <summary>
-        /// The event fired upon a price update being received
+        /// The event fired upon a price update being received.
         /// </summary>
-        public event EventHandler<PriceEventArgs> OnPrice;
+        public event EventHandler<PriceUpdateEventArgs> OnPrice;
 
         /// <summary>
-        /// The event fired upon a price status update being received
+        /// The event fired upon a price status update being received.
         /// </summary>
-        public event EventHandler<StatusEventArgs> OnStatus;
+        public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
 
         /// <summary>
         /// Create the fixed income session
@@ -40,8 +40,6 @@ namespace TS.Pisa.FI
         {
             Tunnel = true;
             Port = 443;
-            _session.PriceUpdate += OnPriceUpdateHandler;
-            _session.PriceStatus += OnPriceStatusHandler;
         }
 
         /// <summary>
@@ -49,7 +47,8 @@ namespace TS.Pisa.FI
         /// </summary>
         public void Start()
         {
-            _session.AddProviderPlugin(new PuffinProviderPlugin
+            var session = DefaultSession.GetSession();
+            session.AddProviderPlugin(new PuffinProviderPlugin
             {
                 Host = Host,
                 Port = Port,
@@ -57,7 +56,9 @@ namespace TS.Pisa.FI
                 Username = Username,
                 Password = Password
             });
-            _session.Start();
+            session.PriceUpdate += OnPriceUpdate;
+            session.PriceStatus += OnPriceStatus;
+            session.Start();
         }
 
         /// <summary>
@@ -65,11 +66,11 @@ namespace TS.Pisa.FI
         /// </summary>
         public void Stop()
         {
-            _session.Stop();
+            DefaultSession.GetSession().Stop();
             _subscriptions.Clear();
         }
 
-        private void OnPriceUpdateHandler(object source, PriceUpdateEventArgs pisaPriceEvent)
+        private void OnPriceUpdate(object source, TS.Pisa.PriceUpdateEventArgs pisaPriceEvent)
         {
             var publishEvent = OnPrice;
             if (publishEvent == null)
@@ -81,17 +82,17 @@ namespace TS.Pisa.FI
                 var subject = _subscriptions.Get(pisaPriceEvent.Subject);
                 if (subject != null)
                 {
-                    publishEvent(this, new PriceEventArgs
+                    publishEvent(this, new PriceUpdateEventArgs
                     {
                         Subject = subject,
-                        AllPriceFields = pisaPriceEvent.PriceImage,
-                        ChangedPriceFields = pisaPriceEvent.PriceUpdate
+                        AllPriceFields = pisaPriceEvent.AllPriceFields,
+                        ChangedPriceFields = pisaPriceEvent.ChangedPriceFields
                     });
                 }
             }
         }
 
-        private void OnPriceStatusHandler(object source, PriceStatusEventArgs pisaStatusEvent)
+        private void OnPriceStatus(object source, TS.Pisa.SubscriptionStatusEventArgs pisaStatusEvent)
         {
             var publishEvent = OnStatus;
             if (publishEvent == null)
@@ -103,7 +104,7 @@ namespace TS.Pisa.FI
                 var subject = _subscriptions.Get(pisaStatusEvent.Subject);
                 if (subject != null)
                 {
-                    publishEvent(this, new StatusEventArgs
+                    publishEvent(this, new SubscriptionStatusEventArgs
                     {
                         Subject = subject,
                         Status = pisaStatusEvent.Status,

@@ -9,7 +9,12 @@ namespace TS.Pisa.Tools
 
         public static long CurrentTimeMillis()
         {
-            return (long) (DateTime.UtcNow - Jan1st1970).TotalMilliseconds;
+            return ToJavaTime(DateTime.UtcNow);
+        }
+
+        public static long ToJavaTime(DateTime dateTime)
+        {
+            return (long) (dateTime.ToUniversalTime() - Jan1st1970).TotalMilliseconds;
         }
     }
 }

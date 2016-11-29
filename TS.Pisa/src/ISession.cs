@@ -1,19 +1,34 @@
-﻿namespace TS.Pisa
+﻿using System;
+
+namespace TS.Pisa
 {
-    public interface ISession : ISubscriber
+    /// <summary>
+    /// Interface for a Pisa API session container that provides normalised access for one or more sources
+    /// of realtime market data via a set of provider plugin components.
+    /// </summary>
+    public interface ISession : IBackground
     {
         /// <summary>
         /// Add a provider plugin to the session
         /// </summary>
         /// <param name="providerPlugin">The provider plugin to get price updates</param>
         void AddProviderPlugin(IProviderPlugin providerPlugin);
+
         /// <summary>
-        /// Starts the session.
+        /// The event handler for price updates.
+        /// A consumer will receive all price updates from the session when they subscribe to this.
         /// </summary>
-        void Start();
+        event EventHandler<PriceUpdateEventArgs> PriceUpdate;
+
         /// <summary>
-        /// Stops the session.
+        /// The event handler for status updates.
+        /// A consumer will receive all price status updates from the session when they subscribe to this.
         /// </summary>
-        void Stop();
+        event EventHandler<SubscriptionStatusEventArgs> PriceStatus;
+
+        /// <summary>
+        /// The event handler for provider plugin updates.
+        /// </summary>
+        event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
     }
 }

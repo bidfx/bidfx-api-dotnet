@@ -8,6 +8,10 @@ namespace TS.Pisa
         {
         }
 
+        public IllegalSubjectException(string message, Exception e) : base(message, e)
+        {
+        }
+
         public IllegalSubjectException()
         {
         }

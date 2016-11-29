@@ -1,12 +1,8 @@
 ﻿
 namespace TS.Pisa.Plugin.Puffin
 {
-    internal interface IPuffinRequestor
+    internal interface IPuffinRequestor : ISubscriber, IBackground
     {
-        void Subscribe(string subject);
-        void Unsubscribe(string subject);
-        void CloseSession();
-        void CheckSessionIsActive();
     }
 
     internal class NullPuffinRequestor : IPuffinRequestor
@@ -19,11 +15,11 @@ namespace TS.Pisa.Plugin.Puffin
         {
         }
 
-        public void CloseSession()
+        public void Stop()
         {
         }
 
-        public void CheckSessionIsActive()
+        public void Start()
         {
         }
     }

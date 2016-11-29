@@ -48,13 +48,16 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\DefaultSession.cs" />
+    <Compile Include="src\IBackground.cs" />
+    <Compile Include="src\IPisaEventHandler.cs" />
+    <Compile Include="src\IllegalStateException.cs" />
     <Compile Include="src\IllegalSubjectException.cs" />
     <Compile Include="src\IPriceField.cs" />
     <Compile Include="src\IPriceMap.cs" />
     <Compile Include="src\IProviderPlugin.cs" />
     <Compile Include="src\ISession.cs" />
+    <Compile Include="src\IBulkSubscriber.cs" />
     <Compile Include="src\ISubscriber.cs" />
-    <Compile Include="src\ISubscriberSession.cs" />
     <Compile Include="src\MasterSession.cs" />
     <Compile Include="src\Pisa.cs" />
     <Compile Include="src\Plugin\Puffin\IPuffinRequestor.cs" />
@@ -72,8 +75,9 @@
     <Compile Include="src\Plugin\Puffin\TokenDictionary.cs" />
     <Compile Include="src\Plugin\Puffin\TokenType.cs" />
     <Compile Include="src\Plugin\Puffin\ValueParser.cs" />
-    <Compile Include="src\PriceStatus.cs" />
-    <Compile Include="src\PriceStatusEventArgs.cs" />
+    <Compile Include="src\Plugin\Puffin\FieldExtractor.cs" />
+    <Compile Include="src\SubscriptionStatus.cs" />
+    <Compile Include="src\SubscriptionStatusEventArgs.cs" />
     <Compile Include="src\PriceUpdateEventArgs.cs" />
     <Compile Include="src\ProviderStatus.cs" />
     <Compile Include="src\FieldName.cs" />
@@ -86,6 +90,7 @@
     <Compile Include="src\Tools\ServiceProperties.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="test\DefaultSessionTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" />
     <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinPluginProviderTest.cs" Condition=" '$(Configuration)' != 'Release' " />

@@ -1,5 +1,4 @@
 ﻿using System;
-using TS.Pisa.Plugin.Puffin;
 
 namespace TS.Pisa.FI.Example
 {
@@ -14,7 +13,7 @@ namespace TS.Pisa.FI.Example
             session.OnStatus += OnStatus;
         }
 
-        private static void OnPrice(object source, PriceEventArgs priceEvent)
+        private static void OnPrice(object source, PriceUpdateEventArgs priceEvent)
         {
             var price = priceEvent.AllPriceFields;
             var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
@@ -23,7 +22,7 @@ namespace TS.Pisa.FI.Example
             Console.WriteLine(priceEvent.Subject.Isin + " bid=" + bid + " ask=" + ask + " (spread=" + spread + ")");
         }
 
-        public void OnStatus(object source, StatusEventArgs statusEvent)
+        public void OnStatus(object source, SubscriptionStatusEventArgs statusEvent)
         {
             Console.WriteLine(statusEvent.Subject.Isin + " " + statusEvent.Status + " - " + statusEvent.Reason);
         }

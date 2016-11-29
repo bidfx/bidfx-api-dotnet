@@ -80,50 +80,50 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        public static PriceStatus ToStatus(int statusCode)
+        public static SubscriptionStatus ToStatus(int statusCode)
         {
             switch (statusCode)
             {
                 case 0:
-                    return PriceStatus.OK; // OK
+                    return SubscriptionStatus.OK; // OK
                 case 1:
-                    return PriceStatus.PENDING; // PENDING
+                    return SubscriptionStatus.PENDING; // PENDING
                 case 2:
-                    return PriceStatus.TIMEOUT; // TIMEOUT
+                    return SubscriptionStatus.TIMEOUT; // TIMEOUT
                 case 3:
-                    return PriceStatus.STALE; // LINE_DOWN
+                    return SubscriptionStatus.STALE; // LINE_DOWN
                 case 4:
-                    return PriceStatus.CLOSED; // CLIENT_SYNTAX
+                    return SubscriptionStatus.CLOSED; // CLIENT_SYNTAX
                 case 5:
-                    return PriceStatus.CLOSED; // SERVER_SYNTAX
+                    return SubscriptionStatus.CLOSED; // SERVER_SYNTAX
                 case 6:
-                    return PriceStatus.CLOSED; // CLIENT_VERSION
+                    return SubscriptionStatus.CLOSED; // CLIENT_VERSION
                 case 7:
-                    return PriceStatus.CLOSED; // SERVER_VERSION
+                    return SubscriptionStatus.CLOSED; // SERVER_VERSION
                 case 8:
-                    return PriceStatus.CLOSED; // SUBJECT_MALFORMED
+                    return SubscriptionStatus.CLOSED; // SUBJECT_MALFORMED
                 case 9:
-                    return PriceStatus.UNAVAILABLE; // SUBJECT_UNKNOWN
+                    return SubscriptionStatus.UNAVAILABLE; // SUBJECT_UNKNOWN
                 case 10:
-                    return PriceStatus.CLOSED; // SUBJECT_UNSUPPORTED
+                    return SubscriptionStatus.CLOSED; // SUBJECT_UNSUPPORTED
                 case 11:
-                    return PriceStatus.UNAVAILABLE; // SOURCE_UNAVAILABLE
+                    return SubscriptionStatus.UNAVAILABLE; // SOURCE_UNAVAILABLE
                 case 12:
-                    return PriceStatus.PROHIBITED; // ACCESS_DENIED
+                    return SubscriptionStatus.PROHIBITED; // ACCESS_DENIED
                 case 13:
-                    return PriceStatus.STALE; // PRICE_STALE
+                    return SubscriptionStatus.STALE; // PRICE_STALE
                 case 14:
-                    return PriceStatus.UNAVAILABLE; // PRICE_UNAVAILABLE
+                    return SubscriptionStatus.UNAVAILABLE; // PRICE_UNAVAILABLE
                 case 15:
-                    return PriceStatus.CLOSED; // PRICE_DELETED
+                    return SubscriptionStatus.CLOSED; // PRICE_DELETED
                 case 16:
-                    return PriceStatus.CLOSED; // RESOURCE_LOOKUP
+                    return SubscriptionStatus.CLOSED; // RESOURCE_LOOKUP
                 case 17:
-                    return PriceStatus.REJECTED; // REMOTE_FEED
+                    return SubscriptionStatus.REJECTED; // REMOTE_FEED
                 case 18:
-                    return PriceStatus.EXHAUSTED; // SUBSCRIPTIONS_LIMIT
+                    return SubscriptionStatus.EXHAUSTED; // SUBSCRIPTIONS_LIMIT
             }
-            return PriceStatus.UNAVAILABLE;
+            return SubscriptionStatus.UNAVAILABLE;
         }
     }
 }

@@ -2,7 +2,10 @@
 
 namespace TS.Pisa.FI
 {
-    public class PriceEventArgs : EventArgs
+    /// <summary>
+    /// Describes a single price update (or tick) on a subscription.
+    /// </summary>
+    public class PriceUpdateEventArgs : EventArgs
     {
         /// <summary>
         /// The fixed income product of the update.
@@ -13,7 +16,6 @@ namespace TS.Pisa.FI
         /// The complete map of price fields containing all current prices published by the venue.
         /// </summary>
         /// <remarks>
-        /// The complete map of price fields containing all current prices published by the venue.
         /// This map will contain all of the recently changed fields plus any other that remain current
         /// but have not changed in this price update.
         /// </remarks>
@@ -23,7 +25,6 @@ namespace TS.Pisa.FI
         /// The map of price fields that changed in the current price update event.
         /// </summary>
         /// <remarks>
-        /// The map of price fields that changed in the current price update event.
         /// This will be a subset of the full set of published price fields.
         /// A GUI application might make use of this set to visually flash the fields that have just changed.
         /// </remarks>

@@ -10,20 +10,18 @@ namespace TS.Pisa.Example
 
         public static void Main(string[] args)
         {
-            new PisaExample().RunText();
+            new PisaExample().Run();
         }
 
-        private void RunText()
+        private void Run()
         {
-            var session = PrepareSession();
-            Log.Info("starting the Pisa session");
-            session.Start();
-            SendSubscriptions(session);
+            PrepareSession();
+            SendSubscriptions();
         }
 
-        private static ISession PrepareSession()
+        private static void PrepareSession()
         {
-            var session = DefaultSession.GetDefault();
+            var session = DefaultSession.GetSession();
             session.PriceUpdate += OnPriceUpdate;
             session.PriceStatus += OnPriceStatus;
             session.AddProviderPlugin(new PuffinProviderPlugin
@@ -34,7 +32,8 @@ namespace TS.Pisa.Example
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });
-            return session;
+            Log.Info("starting the Pisa session");
+            session.Start();
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
@@ -42,18 +41,19 @@ namespace TS.Pisa.Example
             Log.Info("price update: " + args);
         }
 
-        private static void OnPriceStatus(object source, PriceStatusEventArgs args)
+        private static void OnPriceStatus(object source, SubscriptionStatusEventArgs args)
         {
             Log.Info("price status: " + args);
         }
 
-        private void SendSubscriptions(ISubscriber session)
+        private static void SendSubscriptions()
         {
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1288894691");
-            session.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=FR0010096941");
+            var subscriber = DefaultSession.GetSubscriber();
+            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
+            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
+            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");
+            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1288894691");
+            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=FR0010096941");
         }
     }
 }

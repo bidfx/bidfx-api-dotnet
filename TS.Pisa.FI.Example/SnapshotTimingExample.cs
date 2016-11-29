@@ -19,7 +19,7 @@ namespace TS.Pisa.FI.Example
             session.OnStatus += OnStatus;
         }
 
-        private void OnPrice(object source, PriceEventArgs priceEvent)
+        private void OnPrice(object source, PriceUpdateEventArgs priceEvent)
         {
             if (_pendingSubjects.Remove(priceEvent.Subject))
             {
@@ -34,7 +34,7 @@ namespace TS.Pisa.FI.Example
             }
         }
 
-        public void OnStatus(object source, StatusEventArgs statusEvent)
+        public void OnStatus(object source, SubscriptionStatusEventArgs statusEvent)
         {
             Console.WriteLine(statusEvent.Subject.Isin + " status " + statusEvent.Status + " - " + statusEvent.Reason);
         }

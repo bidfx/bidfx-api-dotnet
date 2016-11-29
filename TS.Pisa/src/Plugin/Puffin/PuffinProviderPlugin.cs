@@ -28,6 +28,7 @@ namespace TS.Pisa.Plugin.Puffin
         public string Name { get; set; }
         public ProviderStatus ProviderStatus { get; set; }
         public string ProviderStatusText { get; set; }
+        public IPisaEventHandler PisaEventHandler { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public string Service { get; set; }
@@ -42,16 +43,12 @@ namespace TS.Pisa.Plugin.Puffin
         private Stream _stream;
         private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
         private long _startTime;
-        private readonly HashSet<string> _subscriptions = new HashSet<string>();
-
-        public EventHandler<ProviderPluginEventArgs> ProviderPlugin { get; set; }
-        public EventHandler<PriceUpdateEventArgs> PriceUpdate { get; set; }
-        public EventHandler<PriceStatusEventArgs> PriceStatus { get; set; }
 
         public PuffinProviderPlugin()
         {
             Name = NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            NotifyStatusChange(ProviderStatus.TemporarilyDown, "waiting for remote connection");
+            ProviderStatus = ProviderStatus.TemporarilyDown;
+            ProviderStatusText = "not started";
             Host = "host_unknown";
             Port = 443;
             Service = "static://puffin";
@@ -66,21 +63,17 @@ namespace TS.Pisa.Plugin.Puffin
         {
             ProviderStatus = status;
             ProviderStatusText = reason;
-            var eventHandler = ProviderPlugin;
-            if (eventHandler != null)
+            PisaEventHandler.OnProviderEvent(new ProviderPluginEventArgs
             {
-                eventHandler(this, new ProviderPluginEventArgs
-                {
-                    Provider = this,
-                    ProviderStatus = status,
-                    ProviderStatusText = reason
-                });
-            }
+                Provider = this,
+                ProviderStatus = status,
+                Reason = reason
+            });
         }
 
         private void RunningLoop()
         {
-            Log.Info("starting thread for GUID " + _guid);
+            Log.Info("started thread for GUID " + _guid);
             while (_running.Value)
             {
                 Log.Info(Name + " running");
@@ -94,27 +87,19 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Subscribe(string subject)
         {
-            lock (_subscriptions)
-            {
-                _subscriptions.Add(subject);
-                _puffinRequestor.Subscribe(subject);
-            }
+            _puffinRequestor.Subscribe(subject);
         }
 
         public void Unsubscribe(string subject)
         {
-            lock (_subscriptions)
-            {
-                _subscriptions.Remove(subject);
-                _puffinRequestor.Unsubscribe(subject);
-            }
+            _puffinRequestor.Unsubscribe(subject);
         }
 
         public bool IsSubjectCompatible(string subject)
         {
             // TODO use a subject filter to route between plugins
             // Specific restriction for AXA
-            var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome") && subject.Contains("Source=Lynx");
+            var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome,") && subject.Contains("Source=Lynx,");
             if (!isSubjectCompatible)
             {
                 Log.Warn("Subject is not compatible: " + subject);
@@ -124,6 +109,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Start()
         {
+            if (PisaEventHandler == null) throw new IllegalStateException("set event handler before statring plugin");
             if (_running.CompareAndSet(false, true))
             {
                 _startTime = JavaTime.CurrentTimeMillis();
@@ -134,29 +120,20 @@ namespace TS.Pisa.Plugin.Puffin
         public void Stop()
         {
             _running.SetValue(false);
-            _puffinRequestor.CloseSession();
+            _puffinRequestor.Stop();
             NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
-            lock (_subscriptions)
-            {
-                _subscriptions.Clear();
-            }
         }
 
         private void EstablishPuffinConnection()
         {
             var heartbeatInterval = HandshakeWithServer();
-            var puffinClient = new PuffinClient(_stream, this)
-            {
-                HeartbeatInterval = heartbeatInterval
-            };
+            _puffinRequestor = new PuffinClient(_stream, this, heartbeatInterval);
             NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
-            _puffinRequestor = puffinClient;
-            ResubscribeToAll();
-            puffinClient.Start();
+            _puffinRequestor.Start();
             NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection - trying to reconnect in 10 seconds");
         }
 
-        private int HandshakeWithServer()
+        private TimeSpan HandshakeWithServer()
         {
             try
             {
@@ -172,8 +149,8 @@ namespace TS.Pisa.Plugin.Puffin
                 {
                     SendPuffinUrl();
                 }
-                var welcomeMessage = ReadMessage();
-                var publicKey = AttributeValue(welcomeMessage, "PublicKey");
+                var welcome = ReadMessage();
+                var publicKey = FieldExtractor.Extract(welcome, "PublicKey");
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 SendMessage(new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
@@ -182,10 +159,11 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("Description", Pisa.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
-                var grantMessage = ReadMessage();
-                if (!Convert.ToBoolean(AttributeValue(grantMessage, "Access")))
+                var grant = ReadMessage();
+                if (!Convert.ToBoolean(FieldExtractor.Extract(grant, "Access")))
                 {
-                    throw new AuthenticationException("Access was not granted: " + AttributeValue(grantMessage, "Text"));
+                    throw new AuthenticationException("Access was not granted: "
+                                                      + FieldExtractor.Extract(grant, "Text"));
                 }
                 ReadMessage(); //Service description
                 SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
@@ -204,7 +182,7 @@ namespace TS.Pisa.Plugin.Puffin
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
                     .ToString());
-                return Convert.ToInt32(AttributeValue(welcomeMessage, "Interval"));
+                return TimeSpan.FromMilliseconds(int.Parse(FieldExtractor.Extract(welcome, "Interval")));
             }
             catch (Exception e)
             {
@@ -212,30 +190,6 @@ namespace TS.Pisa.Plugin.Puffin
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
                 throw e;
             }
-        }
-
-        private void ResubscribeToAll()
-        {
-            // TODO this should not be here but in the Master Pisa Session
-            lock (_subscriptions)
-            {
-                foreach (var subject in _subscriptions)
-                {
-                    _puffinRequestor.Subscribe(subject);
-                }
-            }
-        }
-
-        private static string AttributeValue(string message, string key)
-        {
-            var startOfKey = message.IndexOf(key, StringComparison.Ordinal);
-            var startOfValue = startOfKey + key.Length + 2;
-            var substring = message.Substring(startOfValue);
-            var endOfValue = substring.IndexOf("\"", StringComparison.Ordinal);
-
-            var value = substring.Substring(0, endOfValue);
-            if (Log.IsDebugEnabled) Log.Debug("Value of " + key + " is:" + value);
-            return value;
         }
 
         private void UpgradeToSsl()

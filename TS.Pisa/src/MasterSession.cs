@@ -1,43 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using TS.Pisa.Tools;
 
 namespace TS.Pisa
 {
-    internal class MasterSession : ISession, ISubscriberSession
+    /// <summary>
+    /// A master Pisa session that provides access to market data from many provider plugin compoenets.
+    /// </summary>
+    internal class MasterSession : ISession, IBulkSubscriber
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
-        private readonly HashSet<string> _subscriptions = new HashSet<string>();
+        private readonly SubscriptionSet _subscriptions = new SubscriptionSet();
 
         public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
-        public event EventHandler<PriceStatusEventArgs> PriceStatus;
+        public event EventHandler<SubscriptionStatusEventArgs> PriceStatus;
         public event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
+        private readonly IPisaEventHandler _pisaEventHandler;
+
+        public MasterSession()
+        {
+            ProviderPlugin += OnProviderStatusEvent;
+            _pisaEventHandler = new PisaEventDispatcher(this);
+        }
 
         public void Start()
         {
-            Log.Info("MasterSession started");
-            foreach (var providerPlugin in _providerPlugins)
+            if (_running.CompareAndSet(false, true))
             {
-                providerPlugin.Start();
+                Log.Info("started");
+                foreach (var providerPlugin in _providerPlugins)
+                {
+                    providerPlugin.Start();
+                }
             }
         }
 
         public void Stop()
         {
-            Log.Info("MasterSession stopped");
-            foreach (var providerPlugin in _providerPlugins)
+            if (_running.CompareAndSet(true, false))
             {
-                providerPlugin.Stop();
+                Log.Info("stopping");
+                foreach (var providerPlugin in _providerPlugins)
+                {
+                    providerPlugin.Stop();
+                }
             }
         }
 
         public void AddProviderPlugin(IProviderPlugin providerPlugin)
         {
-            providerPlugin.PriceUpdate = PriceUpdate;
-            providerPlugin.PriceStatus = PriceStatus;
-            providerPlugin.ProviderPlugin = ProviderPlugin;
+            if (_running.Value) throw new IllegalStateException("add providers before starting the Pisa session");
+            providerPlugin.PisaEventHandler = _pisaEventHandler;
             _providerPlugins.Add(providerPlugin);
         }
 
@@ -69,25 +86,116 @@ namespace TS.Pisa
 
         public void UnsubscribeAll()
         {
-            foreach (var subject in _subscriptions)
+            foreach (var providerPlugin in _providerPlugins)
             {
-                Unsubscribe(subject);
+                foreach (var subject in _subscriptions.CopyAndClear())
+                {
+                    if (providerPlugin.IsSubjectCompatible(subject))
+                    {
+                        providerPlugin.Unsubscribe(subject);
+                    }
+                }
             }
         }
 
         public void ResubscribeAll()
         {
-            foreach (var subject in _subscriptions)
+            foreach (var providerPlugin in _providerPlugins)
             {
-                Subscribe(subject);
+                ResubscribeToAllOn(providerPlugin);
             }
         }
 
-        public void Close()
+        private void ResubscribeToAllOn(IProviderPlugin providerPlugin)
         {
-            foreach (var providerPlugin in _providerPlugins)
+            foreach (var subject in _subscriptions.Copy())
             {
-                providerPlugin.Stop();
+                if (providerPlugin.IsSubjectCompatible(subject))
+                {
+                    providerPlugin.Subscribe(subject);
+                }
+            }
+        }
+
+        private void OnProviderStatusEvent(object sender, ProviderPluginEventArgs evt)
+        {
+            Log.Info("received " + evt);
+            if (evt.ProviderStatus == ProviderStatus.Ready)
+            {
+                ResubscribeToAllOn(evt.Provider);
+            }
+        }
+
+        private class PisaEventDispatcher : IPisaEventHandler
+        {
+            private readonly MasterSession _session;
+
+            public PisaEventDispatcher(MasterSession session)
+            {
+                _session = session;
+            }
+
+            public void OnPriceEvent(PriceUpdateEventArgs updateEvent)
+            {
+                if (_session.PriceUpdate != null)
+                {
+                    _session.PriceUpdate(this, updateEvent);
+                }
+            }
+
+            public void OnStatusEvent(SubscriptionStatusEventArgs statusEvent)
+            {
+                if (_session.PriceStatus != null)
+                {
+                    _session.PriceStatus(this, statusEvent);
+                }
+            }
+
+            public void OnProviderEvent(ProviderPluginEventArgs providerEvent)
+            {
+                if (_session.ProviderPlugin != null)
+                {
+                    _session.ProviderPlugin(this, providerEvent);
+                }
+            }
+        }
+
+        private class SubscriptionSet
+        {
+            private readonly HashSet<string> _set = new HashSet<string>();
+
+            public void Add(string subject)
+            {
+                lock (_set)
+                {
+                    _set.Add(subject);
+                }
+            }
+
+            public void Remove(string subject)
+            {
+                lock (_set)
+                {
+                    _set.Remove(subject);
+                }
+            }
+
+            public IEnumerable<string> CopyAndClear()
+            {
+                lock (_set)
+                {
+                    var copy = new List<string>(_set);
+                    _set.Clear();
+                    return copy;
+                }
+            }
+
+            public IEnumerable<string> Copy()
+            {
+                lock (_set)
+                {
+                    return new List<string>(_set);
+                }
             }
         }
     }

@@ -125,7 +125,7 @@ namespace TS.Pisa.Plugin.Puffin
                     }
                     _mark = 0;
                     var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
-                    if (got == -1)
+                    if (got == 0)
                     {
                         return false;
                     }
@@ -138,7 +138,7 @@ namespace TS.Pisa.Plugin.Puffin
                         throw new PuffinSyntaxException("input buffer too small " + _buffer.Length);
                     }
                     var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
-                    if (got == -1)
+                    if (got == 0)
                     {
                         return false;
                     }

@@ -2,7 +2,7 @@
 
 namespace TS.Pisa.FI
 {
-    public class StatusEventArgs : EventArgs
+    public class SubscriptionStatusEventArgs : EventArgs
     {
         /// <summary>
         /// The subject of the subscription update event.
@@ -12,7 +12,7 @@ namespace TS.Pisa.FI
         /// <summary>
         /// The new status status of the subscription.
         /// </summary>
-        public PriceStatus Status { get; internal set; }
+        public SubscriptionStatus Status { get; internal set; }
 
         /// <summary>
         /// The reason for the status change.
