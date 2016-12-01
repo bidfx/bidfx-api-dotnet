@@ -2,6 +2,9 @@
 
 namespace TS.Pisa.FI
 {
+    /// <summary>
+    /// Describes a single status on a subscription
+    /// </summary>
     public class SubscriptionStatusEventArgs : EventArgs
     {
         /// <summary>
