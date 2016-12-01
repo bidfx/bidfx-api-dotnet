@@ -71,10 +71,11 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
-            if (!subject.Contains("AssetClass=FixedIncome,") && !subject.Contains("Source=Lynx,")) //Restriction for AXA
+            if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
-                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED, "You do not have the correct entitlements");
-            } else if (_puffinConnection == null)
+                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED, "permission denied");
+            }
+            else if (_puffinConnection == null)
             {
                 PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
             }
@@ -82,6 +83,11 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 _puffinConnection.Subscribe(subject);
             }
+        }
+
+        private static bool IsPermissionGranted(string subject)
+        {
+            return subject.Contains("AssetClass=FixedIncome,") && subject.Contains("Source=Lynx,");
         }
 
         public void Unsubscribe(string subject)
