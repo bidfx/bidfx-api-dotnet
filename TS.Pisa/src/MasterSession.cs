@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TS.Pisa.Tools;
 
 namespace TS.Pisa
@@ -102,27 +103,26 @@ namespace TS.Pisa
         {
             foreach (var providerPlugin in _providerPlugins)
             {
-                ResubscribeToAllOn(providerPlugin);
+                ResubscribeToAllOn(providerPlugin, _subscriptions.Copy());
             }
         }
 
-        private void ResubscribeToAllOn(IProviderPlugin providerPlugin)
+        private static void ResubscribeToAllOn(IProviderPlugin providerPlugin, IEnumerable<string> subscriptions)
         {
-            foreach (var subject in _subscriptions.Copy())
+            var subset = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
+            Log.Info("resubscribing to " + subset.Count + " instruments on " + providerPlugin.Name);
+            foreach (var subject in subset)
             {
-                if (providerPlugin.IsSubjectCompatible(subject))
-                {
-                    providerPlugin.Subscribe(subject);
-                }
+                providerPlugin.Subscribe(subject);
             }
         }
 
         private void OnProviderStatusEvent(object sender, ProviderPluginEventArgs evt)
         {
             Log.Info("received " + evt);
-            if (evt.ProviderStatus == ProviderStatus.Ready)
+            if (ProviderStatus.Ready.Equals(evt.ProviderStatus))
             {
-                ResubscribeToAllOn(evt.Provider);
+                ResubscribeToAllOn(evt.Provider, _subscriptions.Copy());
             }
         }
 
@@ -190,7 +190,7 @@ namespace TS.Pisa
                 }
             }
 
-            public IEnumerable<string> Copy()
+            public List<string> Copy()
             {
                 lock (_set)
                 {

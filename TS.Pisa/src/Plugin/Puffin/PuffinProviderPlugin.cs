@@ -3,17 +3,17 @@ using System.Text;
 using System.Threading;
 using TS.Pisa.Tools;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Authentication;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    /// <summary>PuffinProviderPlugin provides a Pisa provider plug-in that connects to a Puffin server to obtain prices.</summary>
+    /// <summary>PuffinProviderPlugin provides a Pisa provider plug-in that connects to
+    /// a remote Puffin server to obtain prices.</summary>
     /// <remarks>
-    /// PuffinProviderPlugin provides a Pisa provider plug-in that connects to a Puffin server to obtain prices.
-    /// Connection to Puffin is made using a TCP/IP socket connection. The Puffin server may therefore be either local to the
+    /// Connection to Puffin is made using a TCP/IP socket connection.
+    /// The Puffin server may therefore be either local to the
     /// client or on a remote machine perhaps connected via a WAN.
     /// </remarks>
     /// <author>Paul Sweeny</author>
@@ -63,24 +63,29 @@ namespace TS.Pisa.Plugin.Puffin
         {
             ProviderStatus = status;
             ProviderStatusText = reason;
-            PisaEventHandler.OnProviderEvent(new ProviderPluginEventArgs
+            var providerStatus = new ProviderPluginEventArgs
             {
                 Provider = this,
                 ProviderStatus = status,
                 Reason = reason
-            });
+            };
+            if (Log.IsDebugEnabled) Log.Debug("posting event " + providerStatus);
+            PisaEventHandler.OnProviderEvent(providerStatus);
         }
 
         public void Subscribe(string subject)
         {
+            if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (_puffinConnection == null)
             {
-                PisaEventHandler.OnStatusEvent(new SubscriptionStatusEventArgs
+                var status = new SubscriptionStatusEventArgs
                 {
                     Subject = subject,
                     Status = SubscriptionStatus.STALE,
                     Reason = "Puffin connection is down"
-                });
+                };
+                if (Log.IsDebugEnabled) Log.Debug("posting event " + status);
+                PisaEventHandler.OnStatusEvent(status);
             }
             else
             {
@@ -90,6 +95,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Unsubscribe(string subject)
         {
+            if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
             if (_puffinConnection != null)
             {
                 _puffinConnection.Unsubscribe(subject);
@@ -124,7 +130,7 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 if (_puffinConnection != null)
                 {
-                    _puffinConnection.Stop();
+                    _puffinConnection.Close(Name + " stopped");
                 }
                 NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
             }
@@ -151,7 +157,7 @@ namespace TS.Pisa.Plugin.Puffin
                 var heartbeatInterval = HandshakeWithServer();
                 _puffinConnection = new PuffinConnection(_stream, this, heartbeatInterval);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
-                _puffinConnection.Start();
+                _puffinConnection.ProcessIncommingMessages();
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Puffin");
             }
             catch (Exception e)
@@ -213,7 +219,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warn("failed to handshake with Puffin due to "+ e.Message);
+                Log.Warn("failed to handshake with Puffin due to " + e.Message);
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
                 throw e;
             }

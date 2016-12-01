@@ -8,14 +8,14 @@ using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
 {
-    internal class PuffinConnection : ISubscriber, IBackground
+    internal class PuffinConnection : ISubscriber
     {
         private const string Subject = "Subject";
 
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly AtomicBoolean _running = new AtomicBoolean(false);
+        private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Thread _publisherThread;
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
@@ -32,8 +32,9 @@ namespace TS.Pisa.Plugin.Puffin
             _stream = stream;
             _provider = provider;
             _heartbeatInterval = heartbeatInterval;
-            _publisherThread = new Thread(SendOutgoingMessages) {Name = provider.Name + "-write"};
             _puffinMessageReader = new PuffinMessageReader(stream);
+            _publisherThread = new Thread(SendOutgoingMessages) {Name = provider.Name + "-write"};
+            _publisherThread.Start();
         }
 
         public void Subscribe(string subject)
@@ -46,33 +47,18 @@ namespace TS.Pisa.Plugin.Puffin
             QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe).AddAttribute(Subject, subject).ToString());
         }
 
-        public void Start()
-        {
-            if (_running.CompareAndSet(false, true))
-            {
-                _publisherThread.Start();
-                ProcessIncommingMessages();
-            }
-        }
-
-        public void Stop()
-        {
-            Close("connection stopped");
-        }
-
-        private void Close(string reason)
+        public void Close(string reason)
         {
             if (_running.CompareAndSet(true, false))
             {
                 Log.Info("closing connection to Puffin (" + reason + ")");
                 _cancellationTokenSource.Cancel();
                 _stream.Close();
-                _publisherThread.Interrupt();
                 _messageQueue.Dispose();
             }
         }
 
-        private void ProcessIncommingMessages()
+        public void ProcessIncommingMessages()
         {
             try
             {
@@ -151,10 +137,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private static bool IsTimeOlderThan(DateTime time, TimeSpan interval)
         {
-            var now = DateTime.Now;
-            var timeSpan = now.Subtract(time);
-            var isTimeOlderThan = timeSpan.CompareTo(interval) > 0;
-            return isTimeOlderThan;
+            return DateTime.Now.Subtract(time).CompareTo(interval) > 0;
         }
 
         private void SendMessageToPuffin(string message)
