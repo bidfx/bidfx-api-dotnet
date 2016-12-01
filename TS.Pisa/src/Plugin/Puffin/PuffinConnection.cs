@@ -33,7 +33,11 @@ namespace TS.Pisa.Plugin.Puffin
             _provider = provider;
             _heartbeatInterval = heartbeatInterval;
             _puffinMessageReader = new PuffinMessageReader(stream);
-            _publisherThread = new Thread(SendOutgoingMessages) {Name = provider.Name + "-write"};
+            _publisherThread = new Thread(SendOutgoingMessages)
+            {
+                Name = provider.Name + "-write",
+                IsBackground = true
+            };
             _publisherThread.Start();
         }
 
@@ -105,7 +109,6 @@ namespace TS.Pisa.Plugin.Puffin
                     }
                 }
             }
-
             catch (OperationCanceledException)
             {
                 Log.Info("finished writing to Puffin"); // closed already called
@@ -163,10 +166,10 @@ namespace TS.Pisa.Plugin.Puffin
             switch (element.Tag)
             {
                 case PuffinTagName.Update:
-                    OnUpdateMessage(element);
+                    OnPriceUpdateMessage(element);
                     break;
                 case PuffinTagName.Set:
-                    OnUpdateMessage(element);
+                    OnPriceSetMessage(element);
                     break;
                 case PuffinTagName.Status:
                     OnStatusMessage(element);
@@ -183,28 +186,25 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
-        private void OnUpdateMessage(PuffinElement element)
+        private void OnPriceUpdateMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-            _provider.PisaEventHandler.OnPriceEvent(new PriceUpdateEventArgs
-            {
-                Subject = subject,
-                AllPriceFields = priceMap,
-                ChangedPriceFields = priceMap
-            });
+            _provider.PisaEventHandler.OnPriceEvent(subject, priceMap, false);
+        }
+
+        private void OnPriceSetMessage(PuffinElement element)
+        {
+            var subject = element.AttributeValue(Subject).Text;
+            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            _provider.PisaEventHandler.OnPriceEvent(subject, priceMap, true);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
-            _provider.PisaEventHandler.OnStatusEvent(new SubscriptionStatusEventArgs
-            {
-                Subject = subject,
-                Status = status,
-                Reason = element.AttributeValue("Text").Text
-            });
+            _provider.PisaEventHandler.OnStatusEvent(subject, status, element.AttributeValue("Text").Text);
         }
 
         private void OnHeartbeatMessage(PuffinElement element)

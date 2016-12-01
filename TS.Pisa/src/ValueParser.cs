@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace TS.Pisa.Plugin.Puffin
+namespace TS.Pisa
 {
     public class ValueParser
     {

@@ -46,7 +46,9 @@ namespace TS.Pisa.Plugin.Puffin
 
         public PuffinProviderPlugin()
         {
-            Name = NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            var name =
+                NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             ProviderStatusText = "not started";
             Host = "host_unknown";
@@ -56,21 +58,14 @@ namespace TS.Pisa.Plugin.Puffin
             Password = "password_unset";
             Tunnel = true;
             ReconnectInterval = TimeSpan.FromSeconds(10);
-            _outputThread = new Thread(RunningLoop) {Name = Name};
+            _outputThread = new Thread(RunningLoop) {Name = name};
         }
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
             ProviderStatus = status;
             ProviderStatusText = reason;
-            var providerStatus = new ProviderPluginEventArgs
-            {
-                Provider = this,
-                ProviderStatus = status,
-                Reason = reason
-            };
-            if (Log.IsDebugEnabled) Log.Debug("posting event " + providerStatus);
-            PisaEventHandler.OnProviderEvent(providerStatus);
+            PisaEventHandler.OnProviderEvent(this);
         }
 
         public void Subscribe(string subject)
@@ -78,14 +73,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (_puffinConnection == null)
             {
-                var status = new SubscriptionStatusEventArgs
-                {
-                    Subject = subject,
-                    Status = SubscriptionStatus.STALE,
-                    Reason = "Puffin connection is down"
-                };
-                if (Log.IsDebugEnabled) Log.Debug("posting event " + status);
-                PisaEventHandler.OnStatusEvent(status);
+                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
             }
             else
             {

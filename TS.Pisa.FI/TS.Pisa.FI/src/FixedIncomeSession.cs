@@ -107,7 +107,7 @@ namespace TS.Pisa.FI
                     publishEvent(this, new SubscriptionStatusEventArgs
                     {
                         Subject = subject,
-                        Status = pisaStatusEvent.Status,
+                        Status = pisaStatusEvent.SubscriptionStatus,
                         Reason = pisaStatusEvent.Reason
                     });
                 }

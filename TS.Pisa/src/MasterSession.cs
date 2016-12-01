@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using TS.Pisa.Tools;
 
 namespace TS.Pisa
@@ -16,16 +17,25 @@ namespace TS.Pisa
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
         private readonly SubscriptionSet _subscriptions = new SubscriptionSet();
+        private readonly IPisaEventHandler _pisaEventHandler;
+        private readonly Thread _subscriptionRefreshThread;
+
+        public TimeSpan SubscriptionRefreshInterval { get; set; }
 
         public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
         public event EventHandler<SubscriptionStatusEventArgs> PriceStatus;
         public event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
-        private readonly IPisaEventHandler _pisaEventHandler;
 
         public MasterSession()
         {
+            SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderPlugin += OnProviderStatusEvent;
             _pisaEventHandler = new PisaEventDispatcher(this);
+            _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
+            {
+                Name = "subscription-refresh",
+                IsBackground = true
+            };
         }
 
         public void Start()
@@ -37,6 +47,19 @@ namespace TS.Pisa
                 {
                     providerPlugin.Start();
                 }
+                _subscriptionRefreshThread.Start();
+            }
+        }
+
+        private void RefreshStaleSubscriptionsLoop()
+        {
+            while (_running.Value)
+            {
+                Thread.Sleep(SubscriptionRefreshInterval);
+                foreach (var subject in _subscriptions.StaleSubjects())
+                {
+                    RefreshSubscription(subject);
+                }
             }
         }
 
@@ -45,6 +68,7 @@ namespace TS.Pisa
             if (_running.CompareAndSet(true, false))
             {
                 Log.Info("stopping");
+                _subscriptions.Clear();
                 foreach (var providerPlugin in _providerPlugins)
                 {
                     providerPlugin.Stop();
@@ -63,6 +87,11 @@ namespace TS.Pisa
         {
             Log.Info("subscribe to " + subject);
             _subscriptions.Add(subject);
+            RefreshSubscription(subject);
+        }
+
+        private void RefreshSubscription(string subject)
+        {
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
@@ -89,7 +118,7 @@ namespace TS.Pisa
         {
             foreach (var providerPlugin in _providerPlugins)
             {
-                foreach (var subject in _subscriptions.CopyAndClear())
+                foreach (var subject in _subscriptions.Clear())
                 {
                     if (providerPlugin.IsSubjectCompatible(subject))
                     {
@@ -101,17 +130,26 @@ namespace TS.Pisa
 
         public void ResubscribeAll()
         {
+            var subjects = _subscriptions.Subjects();
+            Log.Info("resubscribing to all " + subjects.Count + " instruments");
             foreach (var providerPlugin in _providerPlugins)
             {
-                ResubscribeToAllOn(providerPlugin, _subscriptions.Copy());
+                if (ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
+                {
+                    ResubscribeToAllOn(providerPlugin, subjects);
+                }
+                else
+                {
+                    Log.Info("skip resubscriptions on " + providerPlugin.ProviderStatus + " " + providerPlugin.Name);
+                }
             }
         }
 
         private static void ResubscribeToAllOn(IProviderPlugin providerPlugin, IEnumerable<string> subscriptions)
         {
-            var subset = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
-            Log.Info("resubscribing to " + subset.Count + " instruments on " + providerPlugin.Name);
-            foreach (var subject in subset)
+            var subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
+            Log.Info("resubscribing to " + subjects.Count + " instruments on " + providerPlugin.Name);
+            foreach (var subject in subjects)
             {
                 providerPlugin.Subscribe(subject);
             }
@@ -122,7 +160,7 @@ namespace TS.Pisa
             Log.Info("received " + evt);
             if (ProviderStatus.Ready.Equals(evt.ProviderStatus))
             {
-                ResubscribeToAllOn(evt.Provider, _subscriptions.Copy());
+                ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
             }
         }
 
@@ -135,66 +173,126 @@ namespace TS.Pisa
                 _session = session;
             }
 
-            public void OnPriceEvent(PriceUpdateEventArgs updateEvent)
+            public void OnPriceEvent(string subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
+                var subscription = _session._subscriptions.GetSubscription(subject);
+                if (subscription == null) return;
+                subscription.AllPriceFields.MergedPriceMap(priceUpdate, replaceAllFields);
                 if (_session.PriceUpdate != null)
                 {
-                    _session.PriceUpdate(this, updateEvent);
+                    _session.PriceUpdate(this, new PriceUpdateEventArgs
+                    {
+                        Subject = subject,
+                        AllPriceFields = subscription.AllPriceFields,
+                        ChangedPriceFields = priceUpdate
+                    });
                 }
             }
 
-            public void OnStatusEvent(SubscriptionStatusEventArgs statusEvent)
+            public void OnStatusEvent(string subject, SubscriptionStatus status, string reason)
             {
+                var subscription = _session._subscriptions.GetSubscription(subject);
+                if (subscription == null) return;
+                subscription.SubscriptionStatus = status;
+                subscription.AllPriceFields.Clear();
                 if (_session.PriceStatus != null)
                 {
-                    _session.PriceStatus(this, statusEvent);
+                    _session.PriceStatus(this, new SubscriptionStatusEventArgs
+                    {
+                        Subject = subject,
+                        SubscriptionStatus = status,
+                        Reason = reason
+                    });
                 }
             }
 
-            public void OnProviderEvent(ProviderPluginEventArgs providerEvent)
+            public void OnProviderEvent(IProviderPlugin providerPlugin)
             {
                 if (_session.ProviderPlugin != null)
                 {
-                    _session.ProviderPlugin(this, providerEvent);
+                    _session.ProviderPlugin(this, new ProviderPluginEventArgs
+                    {
+                        Provider = providerPlugin,
+                        ProviderStatus = providerPlugin.ProviderStatus,
+                        Reason = providerPlugin.ProviderStatusText
+                    });
                 }
             }
         }
 
         private class SubscriptionSet
         {
-            private readonly HashSet<string> _set = new HashSet<string>();
+            private readonly Dictionary<string, Subscription> _map = new Dictionary<string, Subscription>();
 
             public void Add(string subject)
             {
-                lock (_set)
+                lock (_map)
                 {
-                    _set.Add(subject);
+                    if (!_map.ContainsKey(subject))
+                    {
+                        _map[subject] = new Subscription();
+                    }
                 }
             }
 
             public void Remove(string subject)
             {
-                lock (_set)
+                lock (_map)
                 {
-                    _set.Remove(subject);
+                    if (_map.ContainsKey(subject))
+                    {
+                        _map.Remove(subject);
+                    }
                 }
             }
 
-            public IEnumerable<string> CopyAndClear()
+            public IEnumerable<string> Clear()
             {
-                lock (_set)
+                lock (_map)
                 {
-                    var copy = new List<string>(_set);
-                    _set.Clear();
+                    var copy = new List<string>(_map.Keys);
+                    _map.Clear();
                     return copy;
                 }
             }
 
-            public List<string> Copy()
+            public List<string> Subjects()
             {
-                lock (_set)
+                lock (_map)
                 {
-                    return new List<string>(_set);
+                    return new List<string>(_map.Keys);
+                }
+            }
+
+            public IEnumerable<string> StaleSubjects()
+            {
+                lock (_map)
+                {
+                    return (from pair in _map
+                        where !SubscriptionStatus.OK.Equals(pair.Value.SubscriptionStatus)
+                        select pair.Key).ToList();
+                }
+            }
+
+            public Subscription GetSubscription(string subject)
+            {
+                lock (_map)
+                {
+                    Subscription subscription;
+                    _map.TryGetValue(subject, out subscription);
+                    return subscription;
+                }
+            }
+
+            internal class Subscription
+            {
+                public SubscriptionStatus SubscriptionStatus { get; set; }
+                public PriceMap AllPriceFields { get; private set; }
+
+                public Subscription()
+                {
+                    SubscriptionStatus = SubscriptionStatus.PENDING;
+                    AllPriceFields = new PriceMap();
                 }
             }
         }

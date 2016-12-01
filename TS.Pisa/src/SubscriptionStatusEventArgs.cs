@@ -15,7 +15,7 @@ namespace TS.Pisa
         /// <summary>
         /// The new subscription status.
         /// </summary>
-        public SubscriptionStatus Status { get; internal set; }
+        public SubscriptionStatus SubscriptionStatus { get; internal set; }
 
         /// <summary>
         /// Supplementary description of the reason for the status change.
@@ -24,7 +24,7 @@ namespace TS.Pisa
 
         public override string ToString()
         {
-            return Subject + " => " + Status + " (" + Reason + ")";
+            return Subject + " => " + SubscriptionStatus + " (" + Reason + ")";
         }
     }
 }
