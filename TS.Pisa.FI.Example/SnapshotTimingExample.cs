@@ -45,10 +45,17 @@ namespace TS.Pisa.FI.Example
             var stopwatch = Stopwatch.StartNew();
             foreach (var isin in System.IO.File.ReadLines("ISIN_list_5000.txt"))
             {
-                var subject = new FixedIncomeSubject("SGC", isin.Trim());
-                _pendingSubjects.Add(subject);
-                _session.Subscribe(subject);
-                _subscriptions++;
+                try
+                {
+                    var subject = new FixedIncomeSubject("SGC", isin.Trim());
+                    _pendingSubjects.Add(subject);
+                    _session.Subscribe(subject);
+                    _subscriptions++;
+                }
+                catch (IllegalSubjectException e)
+                {
+                    Console.WriteLine("cannot subscribe to isin="+isin,e);
+                }
             }
             Console.WriteLine("subscribed to " + _subscriptions + " instruments in "
                               + stopwatch.ElapsedMilliseconds + " milliseconds");

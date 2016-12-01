@@ -31,7 +31,14 @@ namespace TS.Pisa.FI.Example
         {
             foreach (var isin in System.IO.File.ReadLines("ISIN_list_5000.txt"))
             {
-                _session.Subscribe(new FixedIncomeSubject("SGC", isin.Trim()));
+                try
+                {
+                    _session.Subscribe(new FixedIncomeSubject("SGC", isin.Trim()));
+                }
+                catch (IllegalSubjectException e)
+                {
+                    Console.WriteLine("cannot subscribe to isin="+isin,e);
+                }
             }
         }
 
