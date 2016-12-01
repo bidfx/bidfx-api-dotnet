@@ -71,7 +71,10 @@ namespace TS.Pisa.Plugin.Puffin
         public void Subscribe(string subject)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
-            if (_puffinConnection == null)
+            if (!subject.Contains("AssetClass=FixedIncome,") && !subject.Contains("Source=Lynx,")) //Restriction for AXA
+            {
+                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED, "You do not have the correct entitlements");
+            } else if (_puffinConnection == null)
             {
                 PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
             }
@@ -93,18 +96,12 @@ namespace TS.Pisa.Plugin.Puffin
         public bool IsSubjectCompatible(string subject)
         {
             // TODO use a subject filter to route between plugins
-            // Specific restriction for AXA
-            var isSubjectCompatible = subject.Contains("AssetClass=FixedIncome,") && subject.Contains("Source=Lynx,");
-            if (!isSubjectCompatible)
-            {
-                Log.Warn("Subject is not compatible: " + subject);
-            }
-            return isSubjectCompatible;
+            return true;
         }
 
         public void Start()
         {
-            if (PisaEventHandler == null) throw new IllegalStateException("set event handler before statring plugin");
+            if (PisaEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
             if (_running.CompareAndSet(false, true))
             {
                 _startTime = JavaTime.CurrentTimeMillis();
