@@ -29,7 +29,7 @@ namespace TS.Pisa.FI.Example
 
         private void SendSubscriptions()
         {
-            foreach (var isin in System.IO.File.ReadLines("ISIN_list_all.txt"))
+            foreach (var isin in System.IO.File.ReadLines("ISIN_list_10.txt"))
             {
                 _session.Subscribe(new FixedIncomeSubject("SGC", isin.Trim()));
             }

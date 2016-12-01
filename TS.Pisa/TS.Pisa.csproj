@@ -60,12 +60,11 @@
     <Compile Include="src\ISubscriber.cs" />
     <Compile Include="src\MasterSession.cs" />
     <Compile Include="src\Pisa.cs" />
-    <Compile Include="src\Plugin\Puffin\IPuffinRequestor.cs" />
     <Compile Include="src\Plugin\Puffin\IPuffinSessionListener.cs" />
     <Compile Include="src\Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="src\Plugin\Puffin\MessageFormatter.cs" />
     <Compile Include="src\Plugin\Puffin\PriceAdaptor.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinClient.cs" />
+    <Compile Include="src\Plugin\Puffin\PuffinConnection.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinElement.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinMessageReader.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinProviderPlugin.cs" />
@@ -103,6 +102,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="src\Plugin\Puffin" />
     <Folder Include="test" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -41,7 +41,7 @@ namespace TS.Pisa.Plugin.Puffin
         private readonly Thread _outputThread;
         private readonly ByteBuffer _buffer = new ByteBuffer();
         private Stream _stream;
-        private IPuffinRequestor _puffinRequestor = new NullPuffinRequestor();
+        private PuffinConnection _puffinConnection;
         private long _startTime;
 
         public PuffinProviderPlugin()
@@ -71,28 +71,29 @@ namespace TS.Pisa.Plugin.Puffin
             });
         }
 
-        private void RunningLoop()
-        {
-            Log.Info("started thread for GUID " + _guid);
-            while (_running.Value)
-            {
-                Log.Info(Name + " running");
-                EstablishPuffinConnection();
-                _buffer.Clear();
-                Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
-                Thread.Sleep(ReconnectInterval);
-            }
-            Log.Info("thread stopped");
-        }
-
         public void Subscribe(string subject)
         {
-            _puffinRequestor.Subscribe(subject);
+            if (_puffinConnection == null)
+            {
+                PisaEventHandler.OnStatusEvent(new SubscriptionStatusEventArgs
+                {
+                    Subject = subject,
+                    Status = SubscriptionStatus.STALE,
+                    Reason = "Puffin connection is down"
+                });
+            }
+            else
+            {
+                _puffinConnection.Subscribe(subject);
+            }
         }
 
         public void Unsubscribe(string subject)
         {
-            _puffinRequestor.Unsubscribe(subject);
+            if (_puffinConnection != null)
+            {
+                _puffinConnection.Unsubscribe(subject);
+            }
         }
 
         public bool IsSubjectCompatible(string subject)
@@ -119,18 +120,44 @@ namespace TS.Pisa.Plugin.Puffin
 
         public void Stop()
         {
-            _running.SetValue(false);
-            _puffinRequestor.Stop();
-            NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
+            if (_running.CompareAndSet(true, false))
+            {
+                if (_puffinConnection != null)
+                {
+                    _puffinConnection.Stop();
+                }
+                NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
+            }
         }
 
-        private void EstablishPuffinConnection()
+        private void RunningLoop()
         {
-            var heartbeatInterval = HandshakeWithServer();
-            _puffinRequestor = new PuffinClient(_stream, this, heartbeatInterval);
-            NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
-            _puffinRequestor.Start();
-            NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection - trying to reconnect in 10 seconds");
+            Log.Info("started thread for GUID " + _guid);
+            while (_running.Value)
+            {
+                Log.Info(Name + " running");
+                ManagePuffinConnection();
+                _buffer.Clear();
+                Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                Thread.Sleep(ReconnectInterval);
+            }
+            Log.Info("thread stopped");
+        }
+
+        private void ManagePuffinConnection()
+        {
+            try
+            {
+                var heartbeatInterval = HandshakeWithServer();
+                _puffinConnection = new PuffinConnection(_stream, this, heartbeatInterval);
+                NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
+                _puffinConnection.Start();
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Puffin");
+            }
+            catch (Exception e)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("connection terminated by " + e.Message);
+            }
         }
 
         private TimeSpan HandshakeWithServer()
@@ -186,7 +213,7 @@ namespace TS.Pisa.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warn("failed to handshake with Puffin", e);
+                Log.Warn("failed to handshake with Puffin due to "+ e.Message);
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
                 throw e;
             }
