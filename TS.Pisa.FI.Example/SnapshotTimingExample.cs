@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace TS.Pisa.FI.Example
 {
@@ -21,28 +22,39 @@ namespace TS.Pisa.FI.Example
 
         private void OnPrice(object source, PriceUpdateEventArgs priceEvent)
         {
-            if (_pendingSubjects.Remove(priceEvent.Subject))
+            _pendingSubjects.HasPrice(priceEvent.Subject);
+            DisplayResults();
+        }
+
+        public void OnStatus(object source, SubscriptionStatusEventArgs status)
+        {
+            if (!"Puffin connection is down".Equals(status.Reason))
             {
-                Console.Write("\rprice snapshots: " + (_subscriptions - _pendingSubjects.Count));
-                if (_pendingSubjects.Count == 0)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("complete " + _subscriptions + " price snapshots in "
-                                      + _stopwatch.ElapsedMilliseconds + " milliseconds");
-                    _session.Stop();
-                }
+                _pendingSubjects.HasStatus(status.Subject);
+                DisplayResults();
             }
         }
 
-        public void OnStatus(object source, SubscriptionStatusEventArgs statusEvent)
+        private void DisplayResults()
         {
-            Console.WriteLine(statusEvent.Subject.Isin + " status " + statusEvent.Status + " - " + statusEvent.Reason);
+            var pendingUpdates = _pendingSubjects.CountPending;
+            Console.Write("\rpending price snapshots: " + pendingUpdates);
+            if (pendingUpdates == 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("complete " + _subscriptions + " price snapshots in "
+                                  + _stopwatch.ElapsedMilliseconds + " milliseconds: "
+                                  + _pendingSubjects.CountPrices + " OK, "
+                                  + _pendingSubjects.CountStatuses + " with status."
+                );
+                _session.Stop();
+            }
         }
+
 
         private void SendSubscriptions()
         {
             Console.WriteLine("making price subscriptions");
-            var stopwatch = Stopwatch.StartNew();
             foreach (var isin in System.IO.File.ReadLines("../../ISIN_list_5000.txt"))
             {
                 try
@@ -54,11 +66,10 @@ namespace TS.Pisa.FI.Example
                 }
                 catch (IllegalSubjectException e)
                 {
-                    Console.WriteLine("cannot subscribe to isin="+isin,e);
+                    Console.WriteLine("cannot subscribe to isin=" + isin, e);
                 }
             }
-            Console.WriteLine("subscribed to " + _subscriptions + " instruments in "
-                              + stopwatch.ElapsedMilliseconds + " milliseconds");
+            Console.WriteLine("subscribed to " + _subscriptions + " instruments");
         }
 
         public void Run()
@@ -71,32 +82,51 @@ namespace TS.Pisa.FI.Example
 
     internal class SubscriptionSet
     {
-        private readonly ISet<FixedIncomeSubject> _set = new HashSet<FixedIncomeSubject>();
+        private readonly Dictionary<FixedIncomeSubject, int> _map = new Dictionary<FixedIncomeSubject, int>();
 
-        public int Count
+        public int CountPending
         {
-            get
-            {
-                lock (_set)
-                {
-                    return _set.Count;
-                }
-            }
+            get { return CountWithType(0); }
         }
 
-        public bool Remove(FixedIncomeSubject subject)
+        public int CountPrices
         {
-            lock (_set)
-            {
-                return _set.Remove(subject);
-            }
+            get { return CountWithType(1); }
+        }
+
+        public int CountStatuses
+        {
+            get { return CountWithType(2); }
+        }
+
+        public void HasPrice(FixedIncomeSubject subject)
+        {
+            SetType(subject, 1);
+        }
+
+        public void HasStatus(FixedIncomeSubject subject)
+        {
+            SetType(subject, 2);
         }
 
         public void Add(FixedIncomeSubject subject)
         {
-            lock (_set)
+            SetType(subject, 0);
+        }
+
+        private int CountWithType(int t)
+        {
+            lock (_map)
             {
-                _set.Add(subject);
+                return _map.Values.Count(state => state == t);
+            }
+        }
+
+        private void SetType(FixedIncomeSubject subject, int t)
+        {
+            lock (_map)
+            {
+                _map[subject] = t;
             }
         }
     }
