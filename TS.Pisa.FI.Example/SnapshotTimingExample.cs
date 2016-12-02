@@ -43,7 +43,7 @@ namespace TS.Pisa.FI.Example
         {
             Console.WriteLine("making price subscriptions");
             var stopwatch = Stopwatch.StartNew();
-            foreach (var isin in System.IO.File.ReadLines("ISIN_list_5000.txt"))
+            foreach (var isin in System.IO.File.ReadLines("../../ISIN_list_5000.txt"))
             {
                 try
                 {

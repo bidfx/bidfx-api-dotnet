@@ -37,7 +37,7 @@
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb" Condition=" '$(Configuration)' != 'Release' " >
       <HintPath>..\packages\NUnit.3.5.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -91,13 +91,13 @@
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\ValueParser.cs" />
     <Compile Include="test\DefaultSessionTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" />
+    <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinPluginProviderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" />
+    <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <ItemGroup>
