@@ -162,6 +162,14 @@ namespace TS.Pisa
             {
                 ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
             }
+            else if (ProviderStatus.TemporarilyDown.Equals(evt.ProviderStatus))
+            {
+                var subjects = _subscriptions.Subjects().Where(evt.Provider.IsSubjectCompatible).ToList();
+                foreach (var subject in subjects)
+                {
+                    _pisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
+                }
+            }
         }
 
         private class PisaEventDispatcher : IPisaEventHandler
