@@ -205,7 +205,6 @@ namespace TS.Pisa.Plugin.Puffin
             catch (Exception e)
             {
                 Log.Warn("failed to handshake with Puffin due to " + e.Message);
-                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
                 throw e;
             }
         }
