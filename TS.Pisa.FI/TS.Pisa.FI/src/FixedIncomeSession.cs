@@ -20,7 +20,6 @@ namespace TS.Pisa.FI
         public string Username { get; set; }
         public string Password { get; set; }
 
-        private readonly ISubscriber _session = DefaultSession.GetSubscriber();
         private readonly SubjectMap _subscriptions = new SubjectMap();
 
         /// <summary>
@@ -32,6 +31,14 @@ namespace TS.Pisa.FI
         /// The event fired upon a price status update being received.
         /// </summary>
         public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
+
+        /// <summary>
+        /// The time interval between attemts to refresh subscriptions that have bad statuses.
+        /// </summary>
+        public TimeSpan SubscriptionRefreshInterval {
+            get { return DefaultSession.GetSession().SubscriptionRefreshInterval; }
+            set { DefaultSession.GetSession().SubscriptionRefreshInterval = value; }
+        }
 
         /// <summary>
         /// Create the fixed income session
@@ -122,7 +129,7 @@ namespace TS.Pisa.FI
         {
             var pisaSubject = subject.PisaSubject();
             _subscriptions.Put(pisaSubject, subject);
-            _session.Subscribe(pisaSubject);
+            DefaultSession.GetSubscriber().Subscribe(pisaSubject);
         }
 
         /// <summary>
@@ -133,7 +140,7 @@ namespace TS.Pisa.FI
         {
             var pisaSubject = subject.PisaSubject();
             _subscriptions.Remove(pisaSubject);
-            _session.Unsubscribe(pisaSubject);
+            DefaultSession.GetSubscriber().Unsubscribe(pisaSubject);
         }
     }
 

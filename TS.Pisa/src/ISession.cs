@@ -30,5 +30,11 @@ namespace TS.Pisa
         /// The event handler for provider plugin updates.
         /// </summary>
         event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
+
+        /// <summary>
+        /// The time interval between attemts to refresh subscriptions that have bad statuses.
+        /// </summary>
+        TimeSpan SubscriptionRefreshInterval { get; set; }
+
     }
 }

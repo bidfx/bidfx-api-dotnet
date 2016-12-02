@@ -36,6 +36,7 @@ namespace TS.Pisa.Plugin.Puffin
         public string Password { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
+
         private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly Thread _outputThread;
