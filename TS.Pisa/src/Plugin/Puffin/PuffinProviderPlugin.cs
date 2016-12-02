@@ -136,8 +136,11 @@ namespace TS.Pisa.Plugin.Puffin
                 Log.Info(Name + " running");
                 ManagePuffinConnection();
                 _buffer.Clear();
-                Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
-                Thread.Sleep(ReconnectInterval);
+                if (_running.Value)
+                {
+                    Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                    Thread.Sleep(ReconnectInterval);
+                }
             }
             Log.Info("thread stopped");
         }

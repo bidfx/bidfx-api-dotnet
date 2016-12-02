@@ -184,6 +184,7 @@ namespace TS.Pisa
 
             public void OnPriceEvent(string subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
+                if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
                 if (subscription == null) return;
                 subscription.AllPriceFields.MergedPriceMap(priceUpdate, replaceAllFields);
@@ -200,6 +201,7 @@ namespace TS.Pisa
 
             public void OnStatusEvent(string subject, SubscriptionStatus status, string reason)
             {
+                if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
                 if (subscription == null) return;
                 subscription.SubscriptionStatus = status;
@@ -217,6 +219,7 @@ namespace TS.Pisa
 
             public void OnProviderEvent(IProviderPlugin providerPlugin)
             {
+                if (!_session._running.Value) return;
                 if (_session.ProviderPlugin != null)
                 {
                     _session.ProviderPlugin(this, new ProviderPluginEventArgs
