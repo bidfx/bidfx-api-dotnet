@@ -37,19 +37,31 @@
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="TS.Pisa, Version=1.0.0.0">
-      <HintPath>..\packages\TS.Pisa.dll</HintPath>
-    </Reference>
-    <Reference Include="TS.Pisa.FI, Version=1.0.0.0">
-      <HintPath>..\packages\TS.Pisa.FI.dll</HintPath>
-    </Reference>
+    <!--<Reference Include="TS.Pisa, Version=1.0.0.0">-->
+      <!--<HintPath>..\packages\TS.Pisa.dll</HintPath>-->
+    <!--</Reference>-->
+    <!--<Reference Include="TS.Pisa.FI, Version=1.0.0.0">-->
+      <!--<HintPath>..\packages\TS.Pisa.FI.dll</HintPath>-->
+    <!--</Reference>-->
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
   </ItemGroup>
-  <ItemGroup>
+
+<ItemGroup>
+<ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI\TS.Pisa.FI.csproj">
+  <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
+  <Name>TS.Pisa.FI</Name>
+</ProjectReference>
+<ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
+  <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
+  <Name>TS.Pisa</Name>
+</ProjectReference>
+</ItemGroup>
+
+<ItemGroup>
     <Compile Include="FieldAccessTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

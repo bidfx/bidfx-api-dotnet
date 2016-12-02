@@ -48,6 +48,7 @@ namespace TS.Pisa
                     providerPlugin.Start();
                 }
                 _subscriptionRefreshThread.Start();
+                Thread.Sleep(500); // give the plugins a chance to connect
             }
         }
 
