@@ -16,31 +16,57 @@ namespace TS.Pisa.Plugin.Puffin
             return priceMap;
         }
 
-        internal static IPriceField AdaptPriceField(string name, IPriceField value)
+        internal static IPriceField AdaptPriceField(string name, IPriceField field)
         {
             if (IsTimeField(name))
             {
-                if (value.Value is long)
+                if (field.Value is long)
                 {
-                    value = JavaDateTimeField((long) value.Value);
+                    field = JavaDateTimeField((long) field.Value);
                 }
-                else if (value.Value is string)
+                else if (field.Value is string)
                 {
-                    value = GuessDateTimeField((string) value.Value, value);
+                    field = GuessDateTimeField((string) field.Value, field);
                 }
             }
             else if (IsDateField(name))
             {
-                if (value.Value is int)
+                if (field.Value is int)
                 {
-                    value = IntDateTimeField((int) value.Value);
+                    field = IntDateTimeField((int) field.Value);
                 }
-                else if (value.Value is string)
+                else if (field.Value is string)
                 {
-                    value = GuessDateTimeField((string) value.Value, value);
+                    field = GuessDateTimeField((string) field.Value, field);
                 }
             }
-            return value;
+            else if (field.Value is string && IsTickField(name))
+            {
+                field = AdaptTickField((string) field.Value);
+            }
+            return field;
+        }
+
+        private static IPriceField AdaptTickField(string value)
+        {
+            switch (value)
+            {
+                case "^":
+                case "Up":
+                case "WasUp":
+                    return new PriceField("^", Tick.Up);
+                case "v":
+                case "Down":
+                case "WasDown":
+                    return new PriceField("v", Tick.Down);
+                default:
+                    return new PriceField("=", Tick.Flat);
+            }
+        }
+
+        private static bool IsTickField(string name)
+        {
+            return name.EndsWith("Tick");
         }
 
         private static bool IsDateField(string name)
@@ -69,12 +95,12 @@ namespace TS.Pisa.Plugin.Puffin
             return new PriceField(dateTime.ToString("yyyy-MM-dd"), dateTime);
         }
 
-        private static IPriceField GuessDateTimeField(string s, IPriceField field)
+        private static IPriceField GuessDateTimeField(string value, IPriceField field)
         {
             DateTime dateTime;
-            if (DateTime.TryParse(s, out dateTime))
+            if (DateTime.TryParse(value, out dateTime))
             {
-                if (IsTimeOnly(s))
+                if (IsTimeOnly(value))
                 {
                     if (dateTime.CompareTo(DateTime.UtcNow) >= 0)
                     {

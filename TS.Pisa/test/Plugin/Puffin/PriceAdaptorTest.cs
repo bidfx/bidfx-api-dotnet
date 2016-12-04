@@ -106,12 +106,30 @@ namespace TS.Pisa.Plugin.Puffin
         public void PuffinDateTimeCanHaveSingleDigitDayAndMonth()
         {
             var dateTime = new DateTime(2016, 1, 2, 15, 19, 0);
-            const string dateText = "2016/1/2 15:19";
-            var priceField = new PriceField(dateText, dateText);
+            var priceField = StringField("2016/1/2 15:19");
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Value);
         }
 
+
+        private static IPriceField StringField(string s)
+        {
+            return new PriceField(s, s);
+        }
+
+        [Test]
+        public void TicksAreConvertedToTickTrend()
+        {
+            Assert.AreEqual(Tick.Up, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("^")).Value);
+            Assert.AreEqual(Tick.Down, PriceAdaptor.AdaptPriceField(FieldName.AskTick, StringField("v")).Value);
+            Assert.AreEqual(Tick.Flat, PriceAdaptor.AdaptPriceField(FieldName.LastTick, StringField("=")).Value);
+            Assert.AreEqual(Tick.Up, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Up")).Value);
+            Assert.AreEqual(Tick.Up, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("WasUp")).Value);
+            Assert.AreEqual(Tick.Down, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Down")).Value);
+            Assert.AreEqual(Tick.Down, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("WasDown")).Value);
+            Assert.AreEqual(Tick.Flat, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Steady")).Value);
+            Assert.AreEqual(Tick.Flat, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Balls")).Value);
+        }
 
     }
 }

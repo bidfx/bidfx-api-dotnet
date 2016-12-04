@@ -68,6 +68,12 @@ namespace TS.Pisa
             return priceField == null ? null : priceField.Value as DateTime?;
         }
 
+        public Tick? TickField(string name)
+        {
+            var priceField = Field(name);
+            return priceField == null ? null : priceField.Value as Tick?;
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
