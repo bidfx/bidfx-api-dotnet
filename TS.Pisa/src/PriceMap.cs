@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TS.Pisa
@@ -7,7 +8,7 @@ namespace TS.Pisa
     {
         private readonly Dictionary<string, IPriceField> _priceFields = new Dictionary<string, IPriceField>();
 
-        internal void Set(string name, IPriceField value)
+        internal void SetField(string name, IPriceField value)
         {
             _priceFields[name] = value;
         }
@@ -61,6 +62,12 @@ namespace TS.Pisa
             return priceField == null ? null : priceField.Text;
         }
 
+        public DateTime? DateTimeField(string name)
+        {
+            var priceField = Field(name);
+            return priceField == null ? null : priceField.Value as DateTime?;
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -83,7 +90,7 @@ namespace TS.Pisa
             }
             foreach (var field in priceUpdate.PriceFields)
             {
-                Set(field.Key, field.Value);
+                SetField(field.Key, field.Value);
             }
         }
 

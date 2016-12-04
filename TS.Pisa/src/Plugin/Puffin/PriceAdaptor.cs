@@ -1,4 +1,6 @@
-﻿namespace TS.Pisa.Plugin.Puffin
+﻿using TS.Pisa.Tools;
+
+namespace TS.Pisa.Plugin.Puffin
 {
     internal class PriceAdaptor
     {
@@ -8,9 +10,30 @@
             var priceMap = new PriceMap();
             foreach (var attribute in element.Attributes)
             {
-                priceMap.Set(attribute.Key, attribute.Value);
+                AddField(priceMap, attribute.Key, attribute.Value);
             }
             return priceMap;
+        }
+
+        private static void AddField(PriceMap priceMap, string name, IPriceField value)
+        {
+            if (value.Value is long && IsTimeField(name))
+            {
+                value = DateTimeField((long)value.Value);
+            }
+            priceMap.SetField(name, value);
+        }
+
+        private static IPriceField DateTimeField(long javaTime)
+        {
+            var dateTime = JavaTime.ToDateTime(javaTime);
+            var isoDate = JavaTime.IsoDateFormat(dateTime);
+            return new PriceField(isoDate, dateTime);
+        }
+
+        private static bool IsTimeField(string name)
+        {
+            return name.EndsWith("Time") || name.Equals(FieldName.TimeOfUpdate);
         }
 
         public static SubscriptionStatus ToStatus(int statusCode)
@@ -57,6 +80,18 @@
                     return SubscriptionStatus.EXHAUSTED; // SUBSCRIPTIONS_LIMIT
             }
             return SubscriptionStatus.UNAVAILABLE;
+        }
+    }
+
+    internal class PriceField : IPriceField
+    {
+        public string Text { get; private set; }
+        public object Value { get; private set; }
+
+        public PriceField(string text, object value)
+        {
+            Text = text;
+            Value = value;
         }
     }
 }

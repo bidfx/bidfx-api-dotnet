@@ -87,7 +87,7 @@ namespace TS.Pisa.Plugin.Puffin
             _builder.Append('"');
         }
 
-        private void EscapeToken(PuffinToken token)
+        private void EscapeToken(IPriceField token)
         {
             foreach (var c in token.Text)
             {

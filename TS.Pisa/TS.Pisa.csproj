@@ -37,7 +37,7 @@
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb" Condition=" '$(Configuration)' != 'Release' " >
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb" Condition=" '$(Configuration)' != 'Release' ">
       <HintPath>..\packages\NUnit.3.5.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -67,7 +67,6 @@
     <Compile Include="src\Plugin\Puffin\PriceAdaptor.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinConnection.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinElement.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinLevelOnePriceMap.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinMessageReader.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinProviderPlugin.cs" />
     <Compile Include="src\Plugin\Puffin\PuffinSyntaxException.cs" />

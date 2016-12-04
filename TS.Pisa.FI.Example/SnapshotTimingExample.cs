@@ -30,6 +30,7 @@ namespace TS.Pisa.FI.Example
         {
             if (!"Puffin connection is down".Equals(status.Reason))
             {
+                Console.WriteLine(status);
                 _pendingSubjects.HasStatus(status.Subject);
                 DisplayResults();
             }

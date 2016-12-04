@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TS.Pisa
 {
@@ -51,5 +52,12 @@ namespace TS.Pisa
         /// <param name="name">the name of the field <see cref="FieldName">common field names</see> </param>
         /// <returns>the value or null if the field is not present.</returns>
         string StringField(string name);
+
+        /// <summary>
+        /// Gets a field as a date-time value.
+        /// </summary>
+        /// <param name="name">the name of the field <see cref="FieldName">common field names</see> </param>
+        /// <returns>the value or null if the field is not present.</returns>
+        DateTime? DateTimeField(string name);
     }
 }
