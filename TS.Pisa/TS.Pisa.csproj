@@ -92,6 +92,7 @@
     <Compile Include="test\DefaultSessionTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PriceAdaptorTest.cs" />
     <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinPluginProviderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />

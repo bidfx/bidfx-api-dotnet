@@ -1,4 +1,5 @@
-﻿using TS.Pisa.Tools;
+﻿using System;
+using TS.Pisa.Tools;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -10,30 +11,85 @@ namespace TS.Pisa.Plugin.Puffin
             var priceMap = new PriceMap();
             foreach (var attribute in element.Attributes)
             {
-                AddField(priceMap, attribute.Key, attribute.Value);
+                priceMap.SetField(attribute.Key, AdaptPriceField(attribute.Key, attribute.Value));
             }
             return priceMap;
         }
 
-        private static void AddField(PriceMap priceMap, string name, IPriceField value)
+        internal static IPriceField AdaptPriceField(string name, IPriceField value)
         {
-            if (value.Value is long && IsTimeField(name))
+            if (IsTimeField(name))
             {
-                value = DateTimeField((long)value.Value);
+                if (value.Value is long)
+                {
+                    value = JavaDateTimeField((long) value.Value);
+                }
+                else if (value.Value is string)
+                {
+                    value = GuessDateTimeField((string) value.Value, value);
+                }
             }
-            priceMap.SetField(name, value);
+            else if (IsDateField(name))
+            {
+                if (value.Value is int)
+                {
+                    value = IntDateTimeField((int) value.Value);
+                }
+                else if (value.Value is string)
+                {
+                    value = GuessDateTimeField((string) value.Value, value);
+                }
+            }
+            return value;
         }
 
-        private static IPriceField DateTimeField(long javaTime)
+        private static bool IsDateField(string name)
+        {
+            return name.EndsWith("Date");
+        }
+
+        private static bool IsTimeField(string name)
+        {
+            return name.EndsWith("Time") || name.Equals(FieldName.TimeOfUpdate);
+        }
+
+        private static IPriceField JavaDateTimeField(long javaTime)
         {
             var dateTime = JavaTime.ToDateTime(javaTime);
             var isoDate = JavaTime.IsoDateFormat(dateTime);
             return new PriceField(isoDate, dateTime);
         }
 
-        private static bool IsTimeField(string name)
+        private static IPriceField IntDateTimeField(int yyyymmdd)
         {
-            return name.EndsWith("Time") || name.Equals(FieldName.TimeOfUpdate);
+            var year = yyyymmdd / 10000;
+            var month = yyyymmdd / 100 % 100;
+            var day = yyyymmdd % 100;
+            var dateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+            return new PriceField(dateTime.ToString("yyyy-MM-dd"), dateTime);
+        }
+
+        private static IPriceField GuessDateTimeField(string s, IPriceField field)
+        {
+            DateTime dateTime;
+            if (DateTime.TryParse(s, out dateTime))
+            {
+                if (IsTimeOnly(s))
+                {
+                    if (dateTime.CompareTo(DateTime.UtcNow) >= 0)
+                    {
+                        dateTime = dateTime.Subtract(TimeSpan.FromDays(1));
+                    }
+                }
+                var isoDate = JavaTime.IsoDateFormat(dateTime);
+                return new PriceField(isoDate, dateTime);
+            }
+            return field;
+        }
+
+        private static bool IsTimeOnly(string s)
+        {
+            return s.Length > 4 && s[2] == ':';
         }
 
         public static SubscriptionStatus ToStatus(int statusCode)
