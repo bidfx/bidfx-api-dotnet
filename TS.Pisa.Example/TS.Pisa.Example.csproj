@@ -35,10 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
-      <HintPath>..\Release\log4net.dll</HintPath>
+      <HintPath>..\$(Configuration)\log4net.dll</HintPath>
     </Reference>
     <Reference Include="TS.Pisa, Version=1.0.0.0">
-      <HintPath>..\Release\TS.Pisa.dll</HintPath>
+      <HintPath>..\$(Configuration)\TS.Pisa.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
