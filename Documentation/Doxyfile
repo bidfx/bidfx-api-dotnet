@@ -866,6 +866,7 @@ RECURSIVE              = YES
 EXCLUDE                = ../TS.Pisa.Example \
                          ../TS.Pisa.FI.Example \
                          ../TS.Pisa/test \
+                         ../TS.Pisa.FI/test \
                          ../TS.Pisa.FI/TS.Pisa.FI/test \
                          ../TS.Pisa/src/DefaultSession.cs \
                          ../TS.Pisa/src/IProviderPlugin.cs \

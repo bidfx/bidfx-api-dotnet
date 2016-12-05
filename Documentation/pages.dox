@@ -1,13 +1,15 @@
 #############INTRODUCTION#############
 /*! \mainpage Introduction
-This API is used to connect client .NET applications to TradingScreen's fixed income price services.
+Pisa.NET is an API used to connect .NET client applications to TradingScreen's realtime price services. The API makes use of a publish-subscribe paradigm in which clients register for price updates by subscribing on subjects. Subjects identify products. Liquidity providers publish individual streams of realtime prices against large numbers of subjects. The TradingScreen price servce matches client subscription subjects against published subjects and forwards on to the client only those price updates that match their subscriptions. 
 
-The package TS.Pisa.FI contains all of the classes, methods and events that are necessary to:
+The main Pisa API is general purpose in nature and can be used for accessing a wide variety of market data. This can add unwanted complexity for users with simpler requirements. To ease the adoption of the API we have added simplified layers on top of the main API. This document describes a simple facade intended for use in fixed income applications.
+
+The package TS.Pisa.FI contains all of the classes, methods and events that are necessary to subscribe to fixed income pricing from a number of liquidity providers. This simple API allows users to:
 <ul>
 <li>Create a connection to our extrernally accessible pricing services</li>
 <li>Subscribe to fixed income products for on or more venues</li>
 <li>Receive status and/or realtime price updates on each subscription</li>
 <li>Unsubscribe from price updates</li>
 </ul>
-The package TS.Pisa contains some supporting classes such as Enums and Price Maps which you will need to handle the published data.
+The main API package TS.Pisa provides some supporting classes such as enums and field names which you will need to handle the published data.
  */
