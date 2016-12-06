@@ -160,8 +160,9 @@ namespace TS.Pisa.Plugin.Puffin
                     return SubscriptionStatus.REJECTED; // REMOTE_FEED
                 case 18:
                     return SubscriptionStatus.EXHAUSTED; // SUBSCRIPTIONS_LIMIT
+                default:
+                    return SubscriptionStatus.UNAVAILABLE;
             }
-            return SubscriptionStatus.UNAVAILABLE;
         }
     }
 
