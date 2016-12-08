@@ -34,14 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\bin\$(Configuration)\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="TS.Pisa, Version=1.0.0.0">
-      <HintPath>..\bin\$(Configuration)\TS.Pisa.dll</HintPath>
-    </Reference>
-    <Reference Include="TS.Pisa.FI, Version=1.0.0.0">
-      <HintPath>..\bin\$(Configuration)\TS.Pisa.FI.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+      <HintPath>..\packages\log4net.2.0.5\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,10 +43,12 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
   </ItemGroup>
-
-<ItemGroup>
+  <ItemGroup>
     <Compile Include="FieldAccessTest.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties/SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotTimingExample.cs" />
   </ItemGroup>
@@ -66,6 +62,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI.csproj">
+      <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
+      <Name>TS.Pisa.FI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
+      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
+      <Name>TS.Pisa</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

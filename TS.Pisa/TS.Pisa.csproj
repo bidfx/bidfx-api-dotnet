@@ -19,6 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
+    <IntermediateOutputPath>..\obj\Debug\</IntermediateOutputPath>
     <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -28,6 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
+    <IntermediateOutputPath>..\obj\Release\</IntermediateOutputPath>
     <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -46,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties/SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\PriceMap.cs" />
     <Compile Include="src\DefaultSession.cs" />
@@ -94,9 +99,9 @@
     <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PriceAdaptorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
@@ -105,8 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\Plugin\Puffin" />
-    <Folder Include="test"/>
-    <Folder Include="test\Plugin\Puffin" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
