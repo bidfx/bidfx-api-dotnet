@@ -34,7 +34,7 @@ namespace TS.Pisa.FI
         public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
 
         /// <summary>
-        /// The event fire upon a provider plugin status update being received.
+        /// The event fired upon a provider plugin status update being received.
         /// </summary>
         public event EventHandler<ProviderPluginEventArgs> OnProviderStatus;
 
