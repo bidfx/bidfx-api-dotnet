@@ -11,6 +11,7 @@ namespace TS.Pisa.FI.Example
             _session = session;
             session.OnPrice += OnPrice;
             session.OnStatus += OnStatus;
+            session.OnProviderStatus += OnProviderStatus;
         }
 
         private static void OnPrice(object source, PriceUpdateEventArgs priceEvent)
@@ -25,6 +26,11 @@ namespace TS.Pisa.FI.Example
         public void OnStatus(object source, SubscriptionStatusEventArgs statusEvent)
         {
             Console.WriteLine(statusEvent.Subject.Isin + " " + statusEvent.Status + " - " + statusEvent.Reason);
+        }
+
+        private void OnProviderStatus(object source, ProviderPluginEventArgs providerEvent)
+        {
+            Console.WriteLine(providerEvent);
         }
 
         private void SendSubscriptions()
