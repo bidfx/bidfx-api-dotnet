@@ -9,9 +9,9 @@ namespace TS.Pisa.FI.Example
         {
             var session = new FixedIncomeSession
             {
-//                Host = "ny-tunnel.qadev.tradingscreen.com",
+                Host = "ny-tunnel.qadev.tradingscreen.com",
 //                Host = "ny-tunnel.uatdev.tradingscreen.com",
-                Host="localhost",Port=9901,Tunnel=false,
+//                Host="localhost",Port=9901,Tunnel=false,
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             };
