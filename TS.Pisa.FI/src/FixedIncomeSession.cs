@@ -34,6 +34,11 @@ namespace TS.Pisa.FI
         public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
 
         /// <summary>
+        /// The event fired upon a provider plugin status update being received.
+        /// </summary>
+        public event EventHandler<ProviderPluginEventArgs> OnProviderStatus;
+
+        /// <summary>
         /// The time interval between attemts to refresh subscriptions that have bad statuses.
         /// </summary>
         public TimeSpan SubscriptionRefreshInterval {
@@ -66,6 +71,7 @@ namespace TS.Pisa.FI
             });
             session.PriceUpdate += OnPriceUpdate;
             session.PriceStatus += OnPriceStatus;
+            session.ProviderPlugin += OnProviderStatusUpdate;
             session.Start();
         }
 
@@ -120,6 +126,24 @@ namespace TS.Pisa.FI
                     });
                 }
             }
+        }
+
+        private void OnProviderStatusUpdate(object source, TS.Pisa.ProviderPluginEventArgs pisaProviderStatusEvent)
+        {
+            var publishEvent = OnProviderStatus;
+            if (publishEvent == null)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("ignore provider status event as there are no subscribers");
+            }
+            else
+            {
+                publishEvent(this, new ProviderPluginEventArgs
+                {
+                    ProviderStatus = pisaProviderStatusEvent.ProviderStatus,
+                    Reason = pisaProviderStatusEvent.Reason
+                });
+            }
+
         }
 
         /// <summary>
