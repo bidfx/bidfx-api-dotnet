@@ -52,11 +52,8 @@ namespace TS.Pisa.Plugin.Puffin
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             ProviderStatusText = "not started";
-            Host = "host_unknown";
             Port = 443;
             Service = "static://puffin";
-            Username = ServiceProperties.Username();
-            Password = "password_unset";
             Tunnel = true;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             _outputThread = new Thread(RunningLoop) {Name = name};
@@ -74,11 +71,13 @@ namespace TS.Pisa.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
-                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED, "permission denied");
+                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED,
+                    "permission denied for subject");
             }
             else if (_puffinConnection == null)
             {
-                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
+                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE,
+                    "Puffin price server connection is down");
             }
             else
             {
@@ -88,6 +87,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private static bool IsPermissionGranted(string subject)
         {
+            // TODO remove this one we have better server-side entitlement checks
             return subject.Contains("AssetClass=FixedIncome,") && subject.Contains("Source=Lynx,");
         }
 
@@ -128,21 +128,54 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
+        public bool Running
+        {
+            get { return _running.Value; }
+        }
+
+        public bool Ready
+        {
+            get { return Running && ProviderStatus.Ready.Equals(ProviderStatus); }
+        }
+
         private void RunningLoop()
         {
             Log.Info("started thread for GUID " + _guid);
-            while (_running.Value)
+            if (IsConfigured())
             {
-                Log.Info(Name + " running");
-                ManagePuffinConnection();
-                _buffer.Clear();
-                if (_running.Value)
+                while (_running.Value)
                 {
-                    Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
-                    Thread.Sleep(ReconnectInterval);
+                    Log.Info(Name + " running");
+                    ManagePuffinConnection();
+                    _buffer.Clear();
+                    if (_running.Value)
+                    {
+                        Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                        Thread.Sleep(ReconnectInterval);
+                    }
                 }
             }
             Log.Info("thread stopped");
+        }
+
+        private bool IsConfigured()
+        {
+            if (Host == null)
+            {
+                NotifyStatusChange(ProviderStatus.Invalid, "Host property has not been set");
+                return false;
+            }
+            if (Username == null)
+            {
+                NotifyStatusChange(ProviderStatus.Invalid, "Username property has not been set");
+                return false;
+            }
+            if (Password == null)
+            {
+                NotifyStatusChange(ProviderStatus.Invalid, "Password property has not been set");
+                return false;
+            }
+            return true;
         }
 
         private void ManagePuffinConnection()
@@ -151,9 +184,9 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 var heartbeatInterval = HandshakeWithServer();
                 _puffinConnection = new PuffinConnection(_stream, this, heartbeatInterval);
-                NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin");
+                NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin price server");
                 _puffinConnection.ProcessIncommingMessages();
-                NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Puffin");
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Puffin price server");
             }
             catch (Exception e)
             {
@@ -214,8 +247,9 @@ namespace TS.Pisa.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warn("failed to handshake with Puffin due to " + e.Message);
-                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin");
+                Log.Warn("failed to handshake with Puffin price server due to " + e.Message);
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to Puffin price server: "
+                                                                   + e.Message);
                 throw e;
             }
         }
@@ -227,7 +261,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (sslStream.IsAuthenticated)
             {
                 _stream = sslStream;
-                Log.Info(Name + " upgraded stream to SSL");
+                if (Log.IsDebugEnabled) Log.Debug(Name + " upgraded stream to SSL");
             }
             else
             {
@@ -244,7 +278,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://" + Username + "@puffin:9901?encrypt=false&zipPrices=true&zipRequests=false\n");
+            SendMessage("puffin://" + Username + "@puffin?encrypt=false&zipPrices=true&zipRequests=false\n");
         }
 
         private void SendTunnelHeader()
@@ -263,7 +297,12 @@ namespace TS.Pisa.Plugin.Puffin
             }
             if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFromStream(_stream).Length != 0)
             {
-                throw new TunnelException("failed to tunnel to Puffin with response: " + response);
+                const string prefix = "HTTP/1.1 ";
+                if (response.StartsWith(prefix))
+                {
+                    response = response.Substring(prefix.Length, response.Length - prefix.Length);
+                }
+                throw new TunnelException("tunnel rejected with response: " + response);
             }
         }
 

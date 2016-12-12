@@ -9,7 +9,6 @@
         /// Subscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject to subscribe to.</param>
-
         void Subscribe(string subject);
 
         /// <summary>

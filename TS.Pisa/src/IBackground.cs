@@ -14,5 +14,10 @@
         /// Stops background tasks, shutting down any associated threads.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Checks if the background task is running (has been started and not stopped).
+        /// </summary>
+        bool Running { get; }
     }
 }

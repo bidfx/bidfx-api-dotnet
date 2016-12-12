@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using TS.Pisa.Plugin.Puffin;
 
 namespace TS.Pisa.FI
@@ -10,7 +9,7 @@ namespace TS.Pisa.FI
     /// This class creates a Pisa Session suitable for subscribing to fixed income products via TradingScreen's
     /// Puffin price service. It can be used to subscribe and unsubscribe from fixed income instruments.
     /// </summary>
-    public class FixedIncomeSession
+    public class FixedIncomeSession : IBackground
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -36,7 +35,8 @@ namespace TS.Pisa.FI
         /// <summary>
         /// The time interval between attemts to refresh subscriptions that have bad statuses.
         /// </summary>
-        public TimeSpan SubscriptionRefreshInterval {
+        public TimeSpan SubscriptionRefreshInterval
+        {
             get { return DefaultSession.GetSession().SubscriptionRefreshInterval; }
             set { DefaultSession.GetSession().SubscriptionRefreshInterval = value; }
         }
@@ -143,6 +143,39 @@ namespace TS.Pisa.FI
             _subscriptions.Remove(pisaSubject);
             DefaultSession.GetSubscriber().Unsubscribe(pisaSubject);
         }
+
+        public bool Running
+        {
+            get { return DefaultSession.GetSession().Running; }
+        }
+
+        /// <summary>
+        /// Checks if the session is ready for handling subscriptions.
+        /// </summary>
+        public bool Ready
+        {
+            get { return DefaultSession.GetSession().Ready; }
+        }
+
+        /// <summary>
+        /// Waits until the session is ready with all configured plugins connected, up and ready
+        /// to receive subscriptions.
+        /// </summary>
+        /// <param name="timeout"></param>
+        /// <returns>true if the session is ready and false if the wait timed out</returns>
+        public bool WaitUntilReady(TimeSpan timeout)
+        {
+            return DefaultSession.GetSession().WaitUntilReady(timeout);
+        }
+
+        /// <summary>
+        /// Gets a collection of provider properties.
+        /// </summary>
+        /// <returns>a collection of properties for each configured provider plugin</returns>
+        public ICollection<IProviderProperties> ProviderProperties()
+        {
+            return DefaultSession.GetSession().ProviderProperties();
+        }
     }
 
     internal class SubjectMap
@@ -176,6 +209,7 @@ namespace TS.Pisa.FI
                 _map.Remove(pisaSubject);
             }
         }
+
         public void Clear()
         {
             lock (_map)

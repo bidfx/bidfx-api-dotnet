@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using TS.Pisa.Tools;
@@ -19,6 +20,7 @@ namespace TS.Pisa
         private readonly SubscriptionSet _subscriptions = new SubscriptionSet();
         private readonly IPisaEventHandler _pisaEventHandler;
         private readonly Thread _subscriptionRefreshThread;
+        private readonly object _readyLock = new object();
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
@@ -75,6 +77,48 @@ namespace TS.Pisa
                     providerPlugin.Stop();
                 }
             }
+        }
+
+        public bool Running
+        {
+            get { return _running.Value; }
+        }
+
+        public bool Ready
+        {
+            get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus); }
+        }
+
+        public bool WaitUntilReady(TimeSpan timeout)
+        {
+            if (Ready) return true;
+            lock (_readyLock)
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                do
+                {
+                    var remaining = timeout.Subtract(stopwatch.Elapsed);
+                    if (remaining.CompareTo(TimeSpan.Zero) > 0 && Monitor.Wait(_readyLock, remaining)) continue;
+                    return false;
+                } while (!Ready);
+                return true;
+            }
+        }
+
+        public ICollection<IProviderProperties> ProviderProperties()
+        {
+            var list = new List<IProviderProperties>();
+            foreach (var providerPlugin in _providerPlugins)
+            {
+                list.Add(new ProviderProperties
+                {
+                    Name = providerPlugin.Name,
+                    ProviderStatus = providerPlugin.ProviderStatus,
+                    ProviderStatusText = providerPlugin.ProviderStatusText
+                });
+            }
+            return list;
         }
 
         public void AddProviderPlugin(IProviderPlugin providerPlugin)
@@ -159,6 +203,7 @@ namespace TS.Pisa
         private void OnProviderStatusEvent(object sender, ProviderPluginEventArgs evt)
         {
             Log.Info("received " + evt);
+            NotifyProviderStatusChange();
             if (ProviderStatus.Ready.Equals(evt.ProviderStatus))
             {
                 ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
@@ -170,6 +215,14 @@ namespace TS.Pisa
                 {
                     _pisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
                 }
+            }
+        }
+
+        private void NotifyProviderStatusChange()
+        {
+            lock (_readyLock)
+            {
+                Monitor.PulseAll(_readyLock);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TS.Pisa
 {
@@ -36,5 +37,23 @@ namespace TS.Pisa
         /// </summary>
         TimeSpan SubscriptionRefreshInterval { get; set; }
 
+        /// <summary>
+        /// Checks if the session is ready for handling subscriptions.
+        /// </summary>
+        bool Ready { get; }
+
+        /// <summary>
+        /// Waits until the session is ready with all configured plugins connected, up and ready
+        /// to receive subscriptions.
+        /// </summary>
+        /// <param name="timeout">the time to wait before giving up.</param>
+        /// <returns>true if the session is ready and false if the wait timed out</returns>
+        bool WaitUntilReady(TimeSpan timeout);
+
+        /// <summary>
+        /// Gets a collection of provider properties.
+        /// </summary>
+        /// <returns>a collection of properties for each configured provider plugin</returns>
+        ICollection<IProviderProperties> ProviderProperties();
     }
 }
