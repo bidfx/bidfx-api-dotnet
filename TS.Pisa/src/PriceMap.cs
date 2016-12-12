@@ -79,7 +79,7 @@ namespace TS.Pisa
             var sb = new StringBuilder();
             foreach (var pair in _priceFields)
             {
-                sb.Append(' ');
+                if (sb.Length > 0) sb.Append(' ');
                 sb.Append(pair.Key);
                 sb.Append('=').Append('"');
                 sb.Append(pair.Value.Text);

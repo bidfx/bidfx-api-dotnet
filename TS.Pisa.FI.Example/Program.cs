@@ -11,6 +11,7 @@ namespace TS.Pisa.FI.Example
 
         public static void Main(string[] args)
         {
+            Log.Info("testing with " + Pisa.Name + " version " + Pisa.Version);
             new Program().RunTest();
         }
 
@@ -52,11 +53,10 @@ namespace TS.Pisa.FI.Example
             var price = evt.AllPriceFields;
             var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
             var ask = price.DecimalField(FieldName.Ask) ?? 0.0m;
-            var spread = ask - bid;
             Log.Info(evt.Subject + " {"
                      + " bid=" + bid
                      + " ask=" + ask
-                     + " spread=" + spread
+                     + " spread=" + (ask - bid)
                      + " }");
         }
 
@@ -70,7 +70,7 @@ namespace TS.Pisa.FI.Example
 
         private void SendSubscriptions()
         {
-            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_10.txt"))
+            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_5000.txt"))
             {
                 try
                 {
