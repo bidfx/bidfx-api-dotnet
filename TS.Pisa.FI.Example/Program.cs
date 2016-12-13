@@ -53,9 +53,13 @@ namespace TS.Pisa.FI.Example
             var price = evt.AllPriceFields;
             var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
             var ask = price.DecimalField(FieldName.Ask) ?? 0.0m;
+            var bidSize = price.LongField(FieldName.BidSize) ?? 0L;
+            var askSize = price.LongField(FieldName.AskSize) ?? 0L;
             Log.Info(evt.Subject + " {"
+                     + " bidSize=" + bidSize
                      + " bid=" + bid
                      + " ask=" + ask
+                     + " askSize=" + askSize
                      + " spread=" + (ask - bid)
                      + " }");
         }
