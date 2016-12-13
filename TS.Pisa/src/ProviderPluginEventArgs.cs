@@ -15,6 +15,11 @@ namespace TS.Pisa
         /// <summary>
         /// The new provider status.
         /// </summary>
+        public ProviderStatus PreviousProviderStatus { get; internal set; }
+
+        /// <summary>
+        /// The new provider status.
+        /// </summary>
         public ProviderStatus ProviderStatus { get; internal set; }
 
         /// <summary>
@@ -25,8 +30,9 @@ namespace TS.Pisa
         public override string ToString()
         {
             return "provider " + Provider.Name
-                   + " is " + ProviderStatus
-                   + " (" + Reason + ")";
+                   + " changed from " + PreviousProviderStatus
+                   + " to " + ProviderStatus
+                   + " because:" + Reason;
         }
     }
 }

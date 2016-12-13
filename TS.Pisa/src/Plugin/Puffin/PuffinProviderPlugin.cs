@@ -61,9 +61,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
+            var previousStatus = ProviderStatus;
+            if (previousStatus == status && string.Equals(ProviderStatusText, reason)) return;
             ProviderStatus = status;
             ProviderStatusText = reason;
-            PisaEventHandler.OnProviderEvent(this);
+            PisaEventHandler.OnProviderEvent(this, previousStatus);
         }
 
         public void Subscribe(string subject)
@@ -145,7 +147,6 @@ namespace TS.Pisa.Plugin.Puffin
             {
                 while (_running.Value)
                 {
-                    Log.Info(Name + " running");
                     ManagePuffinConnection();
                     _buffer.Clear();
                     if (_running.Value)

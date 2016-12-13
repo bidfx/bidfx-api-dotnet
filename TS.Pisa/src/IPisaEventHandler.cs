@@ -25,6 +25,7 @@
         /// Handled a provider plugin status event from one of the providers.
         /// </summary>
         /// <param name="providerPlugin">the provider that changed status</param>
-        void OnProviderEvent(IProviderPlugin providerPlugin);
+        /// <param name="previousStatus">the previous status of the provider</param>
+        void OnProviderEvent(IProviderPlugin providerPlugin, ProviderStatus previousStatus);
     }
 }

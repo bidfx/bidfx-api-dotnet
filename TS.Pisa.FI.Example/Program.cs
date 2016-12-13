@@ -74,7 +74,7 @@ namespace TS.Pisa.FI.Example
 
         private void SendSubscriptions()
         {
-            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_5000.txt"))
+            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_10.txt"))
             {
                 try
                 {

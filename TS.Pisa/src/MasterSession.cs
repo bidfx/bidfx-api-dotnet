@@ -204,17 +204,40 @@ namespace TS.Pisa
         {
             Log.Info("received " + evt);
             NotifyProviderStatusChange();
-            if (ProviderStatus.Ready.Equals(evt.ProviderStatus))
+            if (evt.ProviderStatus != evt.PreviousProviderStatus)
             {
-                ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
-            }
-            else if (ProviderStatus.TemporarilyDown.Equals(evt.ProviderStatus))
-            {
-                var subjects = _subscriptions.Subjects().Where(evt.Provider.IsSubjectCompatible).ToList();
-                foreach (var subject in subjects)
+                if (ProviderStatus.Ready == evt.ProviderStatus)
                 {
-                    _pisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, "Puffin connection is down");
+                    ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
                 }
+                else
+                {
+                    var reason = ProviderStatusToSubscriptionReason(evt);
+                    var subjects = _subscriptions.Subjects().Where(evt.Provider.IsSubjectCompatible).ToList();
+                    foreach (var subject in subjects)
+                    {
+                        _pisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, reason);
+                    }
+                }
+            }
+        }
+
+        private static string ProviderStatusToSubscriptionReason(ProviderPluginEventArgs evt)
+        {
+            switch (evt.ProviderStatus)
+            {
+                case ProviderStatus.TemporarilyDown:
+                    return "Puffin connection is down";
+                case ProviderStatus.ScheduledDowntime:
+                    return "Puffin feed has scheduled downtime";
+                case ProviderStatus.Unavailable:
+                    return "Puffin feed is unavailable";
+                case ProviderStatus.Invalid:
+                    return "Puffin provider is invalid";
+                case ProviderStatus.Closed:
+                    return "Puffin provider is closed";
+                default:
+                    return evt.Reason;
             }
         }
 
@@ -270,7 +293,7 @@ namespace TS.Pisa
                 }
             }
 
-            public void OnProviderEvent(IProviderPlugin providerPlugin)
+            public void OnProviderEvent(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
             {
                 if (!_session._running.Value) return;
                 if (_session.ProviderPlugin != null)
@@ -278,6 +301,7 @@ namespace TS.Pisa
                     _session.ProviderPlugin(this, new ProviderPluginEventArgs
                     {
                         Provider = providerPlugin,
+                        PreviousProviderStatus = previousStatus,
                         ProviderStatus = providerPlugin.ProviderStatus,
                         Reason = providerPlugin.ProviderStatusText
                     });
