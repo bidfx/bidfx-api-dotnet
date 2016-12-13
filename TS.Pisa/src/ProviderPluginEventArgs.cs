@@ -29,10 +29,10 @@ namespace TS.Pisa
 
         public override string ToString()
         {
-            return "provider " + Provider.Name
-                   + " changed from " + PreviousProviderStatus
+            return Provider.Name
+                   + " changed status from " + PreviousProviderStatus
                    + " to " + ProviderStatus
-                   + " because:" + Reason;
+                   + " because: " + Reason;
         }
     }
 }

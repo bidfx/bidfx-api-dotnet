@@ -4,7 +4,7 @@ namespace TS.Pisa.FI.Example
 {
     public class Program
     {
-        private readonly FixedIncomeSession _session;
+        private readonly FixedIncomeSession _fixedIncomeSession;
 
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -17,35 +17,36 @@ namespace TS.Pisa.FI.Example
 
         private void RunTest()
         {
-            if (_session.WaitUntilReady(TimeSpan.FromSeconds(11)))
+            // Waiting for the session to be ready is not a requirement. It is done here for demonstration purposes.
+            if (_fixedIncomeSession.Session.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
-                Log.Info("session is ready");
+                Log.Info("fixed income pricing session is ready");
                 SendSubscriptions();
             }
             else
             {
                 Log.Warn("timed out waiting on session to be ready");
-                foreach (var providerPropertiese in _session.ProviderProperties())
+                foreach (var providerPropertiese in _fixedIncomeSession.Session.ProviderProperties())
                 {
                     Log.Info(providerPropertiese.ToString());
                 }
-                _session.Stop();
+                _fixedIncomeSession.Stop();
             }
         }
 
         private Program()
         {
-            _session = new FixedIncomeSession
+            _fixedIncomeSession = new FixedIncomeSession
             {
-                Host = "ny-tunnel.qadev.tradingscreen.com",
+//                Host = "ny-tunnel.qadev.tradingscreen.com",
 //                Host = "ny-tunnel.uatdev.tradingscreen.com",
-//                Host = "localhost", Port = 9901, Tunnel = false,
+                Host = "localhost", Port = 9901, Tunnel = false,
                 Username = "axaapi",
                 Password = "HelloWorld123"
             };
-            _session.OnPrice += OnPrice;
-            _session.OnStatus += OnStatus;
-            _session.Start();
+            _fixedIncomeSession.OnPrice += OnPrice;
+            _fixedIncomeSession.OnStatus += OnStatus;
+            _fixedIncomeSession.Start();
         }
 
         private static void OnPrice(object source, PriceUpdateEventArgs evt)
@@ -78,7 +79,7 @@ namespace TS.Pisa.FI.Example
             {
                 try
                 {
-                    _session.Subscribe(new FixedIncomeSubject("SGC", isin.Trim()));
+                    _fixedIncomeSession.Subscribe(new FixedIncomeSubject("SGC", isin.Trim()));
                 }
                 catch (IllegalSubjectException e)
                 {

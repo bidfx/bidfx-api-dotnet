@@ -32,7 +32,7 @@ namespace TS.Pisa
 
         public override string ToString()
         {
-            return Subject + " => " + AllPriceFields;
+            return Subject + " AllPriceFields{" + AllPriceFields + "} ChangedPriceFields{" + ChangedPriceFields + "}";
         }
     }
 }

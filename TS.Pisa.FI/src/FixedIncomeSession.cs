@@ -33,16 +33,7 @@ namespace TS.Pisa.FI
         public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
 
         /// <summary>
-        /// The time interval between attemts to refresh subscriptions that have bad statuses.
-        /// </summary>
-        public TimeSpan SubscriptionRefreshInterval
-        {
-            get { return DefaultSession.GetSession().SubscriptionRefreshInterval; }
-            set { DefaultSession.GetSession().SubscriptionRefreshInterval = value; }
-        }
-
-        /// <summary>
-        /// Create the fixed income session
+        /// Creates a new fixed income pricing session.
         /// </summary>
         public FixedIncomeSession()
         {
@@ -50,9 +41,6 @@ namespace TS.Pisa.FI
             Port = 443;
         }
 
-        /// <summary>
-        /// Adds a puffin provider plugin to the session and starts the connection
-        /// </summary>
         public void Start()
         {
             var session = DefaultSession.GetSession();
@@ -69,9 +57,6 @@ namespace TS.Pisa.FI
             session.Start();
         }
 
-        /// <summary>
-        /// Stops the puffin provider plugin
-        /// </summary>
         public void Stop()
         {
             DefaultSession.GetSession().Stop();
@@ -144,37 +129,16 @@ namespace TS.Pisa.FI
             DefaultSession.GetSubscriber().Unsubscribe(pisaSubject);
         }
 
+        /// <summary>
+        /// Gets the underlying Pisa session used by this session.
+        /// </summary>
+        public ISession Session {
+            get { return DefaultSession.GetSession(); }
+        }
+
         public bool Running
         {
-            get { return DefaultSession.GetSession().Running; }
-        }
-
-        /// <summary>
-        /// Checks if the session is ready for handling subscriptions.
-        /// </summary>
-        public bool Ready
-        {
-            get { return DefaultSession.GetSession().Ready; }
-        }
-
-        /// <summary>
-        /// Waits until the session is ready with all configured plugins connected, up and ready
-        /// to receive subscriptions.
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <returns>true if the session is ready and false if the wait timed out</returns>
-        public bool WaitUntilReady(TimeSpan timeout)
-        {
-            return DefaultSession.GetSession().WaitUntilReady(timeout);
-        }
-
-        /// <summary>
-        /// Gets a collection of provider properties.
-        /// </summary>
-        /// <returns>a collection of properties for each configured provider plugin</returns>
-        public ICollection<IProviderProperties> ProviderProperties()
-        {
-            return DefaultSession.GetSession().ProviderProperties();
+            get { return Session.Running; }
         }
     }
 

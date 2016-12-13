@@ -40,13 +40,23 @@ namespace TS.Pisa
         /// <summary>
         /// Checks if the session is ready for handling subscriptions.
         /// </summary>
+        /// <remarks>
+        /// The session is ready when it is running and all of its provider plugins are ready/
+        /// </remarks>
         bool Ready { get; }
 
         /// <summary>
         /// Waits until the session is ready with all configured plugins connected, up and ready
         /// to receive subscriptions.
         /// </summary>
-        /// <param name="timeout">the time to wait before giving up.</param>
+        /// <remarks>
+        /// It is not a requirement that a client wait for the session to become ready. It is fine just to start the
+        /// session and let it connect to and use the various provide plugins as they become available; the session
+        /// will re-subscribe automatically to compatible providers as they become ready. Waiting for all
+        /// providers to become ready however is useful in some applications, particularly those that submit
+        /// orders based on market data provided by the API.
+        /// </remarks>
+        /// <param name="timeout"></param>
         /// <returns>true if the session is ready and false if the wait timed out</returns>
         bool WaitUntilReady(TimeSpan timeout);
 
