@@ -1,4 +1,6 @@
-﻿namespace TS.Pisa
+﻿using System;
+
+namespace TS.Pisa
 {
     /// <summary>
     /// This class provides a list of price field name constants.
@@ -24,28 +26,31 @@
 
         /// <summary>
         /// The exchange on which the ask price was quoted. Type is string.
+        /// This field might be published for a quote from an aggregate market feed such as US equity NBBO.
         /// </summary>
         public const string AskExchange = "AskExchange";
 
 
         /// <summary>
-        /// The ask forward points as an offset from spot. Type is decimal.
+        /// The ask forward points as an offset from spot. Type is decimal. Used in FX quotes.
         /// </summary>
         public const string AskForwardPoints = "AskForwardPoints";
 
 
         /// <summary>
-        /// The ask size of the end leg of a swap. Type is long.
+        /// The ask size of the end leg of a swap. Type is long. Used in FX swaps.
         /// </summary>
         public const string AskEndSize = "AskEndSize";
 
         /// <summary>
         /// The ask quantity being quoted for in an RFS/RFQ. Type is decimal.
+        /// Used in FX when the quantity quoted is down to the penny.
         /// </summary>
         public const string AskQuantity = "AskQuantity";
 
         /// <summary>
         /// The ask quantity being quoted for in an RFS/RFQ on the end leg of a swap. Type is decimal.
+        /// Used in FX when the quantity quoted is down to the penny.
         /// </summary>
         public const string AskEndQuantity = "AskEndQuantity";
 
@@ -55,17 +60,17 @@
         public const string AskSize = "AskSize";
 
         /// <summary>
-        /// The ask spot rate. Type is decimal.
+        /// The ask spot rate. Type is decimal. Used in FX quotes.
         /// </summary>
         public const string AskSpot = "AskSpot";
 
         /// <summary>
-        /// The ask price tick trend. Type is TickTrend.
+        /// The ask price tick direction. Type is <see cref="Tick"/>.
         /// </summary>
         public const string AskTick = "AskTick";
 
         /// <summary>
-        /// The time of last ask price tick. Type is DateTime.
+        /// The time of last ask price or size tick. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string AskTime = "AskTime";
 
@@ -131,7 +136,8 @@
         public const string Ask1Y = "Ask1Y";
 
         /// <summary>
-        /// The auction imbalance, difference between the buy and the sell orders in the auction order book. Type is decimal.
+        /// The auction imbalance, difference between the buy and the sell orders in the auction order book.
+        /// Type is decimal.
         /// </summary>
         public const string AuctionImbalance = "AuctionImbalance";
 
@@ -146,7 +152,7 @@
         public const string AuctionSize = "AuctionSize";
 
         /// <summary>
-        /// The time of auction price. Type is DateTime.
+        /// The time of auction price. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string AuctionTime = "AuctionTime";
 
@@ -227,26 +233,29 @@
 
         /// <summary>
         /// The exchange on which the bid price was quoted. Type is string.
+        /// This field might be published for a quote from an aggregate market feed such as US equity NBBO.
         /// </summary>
         public const string BidExchange = "BidExchange";
 
         /// <summary>
-        /// The bid forward points as an offset from spot. Type is decimal.
+        /// The bid forward points as an offset from spot. Type is decimal.  Used in FX quotes.
         /// </summary>
         public const string BidForwardPoints = "BidForwardPoints";
 
         /// <summary>
-        /// The bid size of the end leg of a swap. Type is long.
+        /// The bid size of the end leg of a swap. Type is long.  Used in FX swaps.
         /// </summary>
         public const string BidEndSize = "BidEndSize";
 
         /// <summary>
         /// The bid quantity being quoted for in an RFS/RFQ. Type is decimal.
+        /// Used in FX when the quantity quoted is down to the penny.
         /// </summary>
         public const string BidQuantity = "BidQuantity";
 
         /// <summary>
         /// The bid quantity being quoted for in an RFS/RFQ on the end leg of a swap. Type is decimal.
+        /// Used in FX when the quantity quoted is down to the penny.
         /// </summary>
         public const string BidEndQuantity = "BidEndQuantity";
 
@@ -256,17 +265,17 @@
         public const string BidSize = "BidSize";
 
         /// <summary>
-        /// The bid spot rate. Type is decimal.
+        /// The bid spot rate. Type is decimal. Used in FX.
         /// </summary>
         public const string BidSpot = "BidSpot";
 
         /// <summary>
-        /// The bid price tick trend. Type is TickTrend.
+        /// The bid price tick direction. Type is <see cref="Tick"/>.
         /// </summary>
         public const string BidTick = "BidTick";
 
         /// <summary>
-        /// The time of last bid price tick. Type is DateTime.
+        /// The time of last bid price or size tick. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string BidTime = "BidTime";
 
@@ -346,28 +355,29 @@
         public const string PreviousClose = "PreviousClose";
 
         /// <summary>
-        /// The time of the market close price. Type is DateTime.
+        /// The time of the market close price. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string CloseTime = "CloseTime";
 
         /// <summary>
-        /// The convexity. Type is decimal.
+        /// Convexity is a measure of the curvature in the relationship between bond prices
+        /// and bond yields that demonstrates how the duration of a bond changes as the interest rate changes.
+        /// Type is decimal.
         /// </summary>
         public const string Convexity = "Convexity";
 
         /// <summary>
-        /// The dealability status of the price; Indicative, Dealable etc. Type
-        /// is string.
+        /// The dealability status of the price; Indicative, Dealable etc. Type is string.
         /// </summary>
         public const string Dealability = "Dealability";
 
         /// <summary>
-        /// The dividend. Type is decimal.
+        /// The dividend paid on a share. Type is decimal.
         /// </summary>
         public const string Dividend = "Dividend";
 
         /// <summary>
-        /// The dividend DateTime. Type is DateTime.
+        /// The dividend date. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string DividendDate = "DividendDate";
 
@@ -388,6 +398,7 @@
 
         /// <summary>
         /// The exchange on which the price is quoted. Type is string.
+        /// This field might be published for a quote from an aggregate market feed such as US equity NBBO.
         /// </summary>
         public const string Exchange = "Exchange";
 
@@ -397,7 +408,7 @@
         public const string ExMarker = "ExMarker";
 
         /// <summary>
-        /// The ex-marker start DateTime. Type is DateTime.
+        /// The ex-marker start date. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string ExMarkerDate = "ExMarkerDate";
 
@@ -407,7 +418,7 @@
         public const string High = "High";
 
         /// <summary>
-        /// The time of session high price. Type is DateTime.
+        /// The time of session high price. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string HighTime = "HighTime";
 
@@ -438,6 +449,7 @@
 
         /// <summary>
         /// The exchange on which the last trade price was executed. Type is string.
+        /// This field might be published for a quote from an aggregate market feed such as US equity NBBO.
         /// </summary>
         public const string LastExchange = "LastExchange";
 
@@ -447,12 +459,12 @@
         public const string LastSize = "LastSize";
 
         /// <summary>
-        /// The tick trend of the last trade price. Type is TickTrend.
+        /// The tick direction of the last trade price. Type is <see cref="Tick"/>.
         /// </summary>
         public const string LastTick = "LastTick";
 
         /// <summary>
-        /// The time of the last trade. Type is DateTime.
+        /// The time of the last trade. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string LastTime = "LastTime";
 
@@ -462,7 +474,7 @@
         public const string LastYield = "LastYield";
 
         /// <summary>
-        /// The execution time of the last trade. Type is DateTime.
+        /// The execution time of the last trade. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string ExecTime = "ExecTime";
 
@@ -472,28 +484,27 @@
         public const string Low = "Low";
 
         /// <summary>
-        /// The time of the session low price. Type is DateTime.
+        /// The time of the session low price. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string LowTime = "LowTime";
 
         /// <summary>
-        /// The code of the market maker making the price (bid and ask). Type is
-        /// string.
+        /// The code of the market maker or firm quoting the price (bid and ask). Type is string.
         /// </summary>
         public const string MarketMaker = "MarketMaker";
 
         /// <summary>
-        /// The market phase indicator code. Type is string.
+        /// The market phase indicator code. Type is string. Values are exchange dependent.
         /// </summary>
         public const string MarketPhase = "MarketPhase";
 
         /// <summary>
-        /// The market sector code. Type is string.
+        /// The market sector code. Type is string. Values are exchange dependent.
         /// </summary>
         public const string MarketSector = "MarketSector";
 
         /// <summary>
-        /// The market segment code. Type is string.
+        /// The market segment code. Type is string. Values are exchange dependent.
         /// </summary>
         public const string MarketSegment = "MarketSegment";
 
@@ -519,13 +530,13 @@
 
         /// <summary>
         /// The number of ask quotes or orders associated with the best ask price.
-        /// Type is Integer.
+        /// Type is int.
         /// </summary>
         public const string NumAsks = "NumAsks";
 
         /// <summary>
         /// The number of bid quotes or orders associated with the best bid price.
-        /// Type is Integer.
+        /// Type is int.
         /// </summary>
         public const string NumBids = "NumBids";
 
@@ -540,19 +551,19 @@
         public const string OpenInterest = "OpenInterest";
 
         /// <summary>
-        /// The time of the session opening price. Type is DateTime.
+        /// The time of the session opening price. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string OpenTime = "OpenTime";
 
         /// <summary>
         /// The origin time of the price update as generated at the origin liquidity provider, exchange or dealer.
-        /// Type is DateTime.
+        /// This time will always come from the source system and will be accurate to the millisecond.
+        /// Type is <see cref="DateTime"/>.
         /// </summary>
         public const string OriginTime = "OriginTime";
 
         /// <summary>
-        /// The percentage net change from open price of last trade price. Type is
-        /// decimal.
+        /// The percentage net change from open price of last trade price. Type is decimal.
         /// </summary>
         public const string PercentChange = "PercentChange";
 
@@ -609,8 +620,7 @@
         public const string Strike = "Strike";
 
         /// <summary>
-        /// The system delay time, measured in minutes, applied to the price. Type is
-        /// Integer.
+        /// The system delay time, measured in minutes, applied to the price. Type is int.
         /// </summary>
         public const string SystemDelay = "SystemDelay";
 
@@ -620,19 +630,22 @@
         public const string SystemLatency = "SystemLatency";
 
         /// <summary>
-        /// The route taken through the pricing infrastructure for the price. Type is
-        /// string.
+        /// The route taken through the pricing infrastructure for the price. Type is string.
         /// </summary>
         public const string SystemRoute = "SystemRoute";
 
         /// <summary>
-        /// The system time of the last price within the pricing infrastructure. Type is DateTime.
+        /// The system time of the last price update within the pricing infrastructure.
+        /// This will normally be populated by the price server closest to the source of liquidity
+        /// but not necessarity the the source itself. Should be to millisecond preceision.
+        /// Type is <see cref="DateTime"/>.
         /// </summary>
         public const string SystemTime = "SystemTime";
 
         /// <summary>
-        /// The time of the last price update as given by the price source. Type is
-        /// DateTime.
+        /// The time of the last price update as given by the price source or vendor feed.
+        /// May only be precise to the second. This field is replaced by <see cref="OriginTime"/> for newer feeds.
+        /// Type is <see cref="DateTime"/>.
         /// </summary>
         public const string TimeOfUpdate = "TimeOfUpdate";
 
@@ -668,8 +681,7 @@
         public const string VWAP = "VWAP";
 
         /// <summary>
-        /// The cummulative trade volume since the start of the trading session. Type
-        /// is long.
+        /// The cummulative trade volume since the start of the trading session. Type is long.
         /// </summary>
         public const string Volume = "Volume";
 
@@ -684,7 +696,7 @@
         public const string YearLow = "YearLow";
 
         /// <summary>
-        /// The time until which a quote is valid (used for FX and FI RFQ prices). Type is DateTime.
+        /// The time until which a quote is valid (used for FX and FI RFQ prices). Type is <see cref="DateTime"/>.
         /// </summary>
         public const string ValidUntilTime = "ValidUntilTime";
 
@@ -709,12 +721,12 @@
         public const string LowerThresholdPrice = "LowerThresholdPrice";
 
         /// <summary>
-        /// The aggregated no. of bids under the market depth. Type is a long
+        /// The aggregated number of bids under the market depth. Type is a long
         /// </summary>
         public const string BidUnderSize = "BidUnderSize";
 
         /// <summary>
-        /// The aggregated no. of asks over the market depth. Type is a long
+        /// The aggregated number of asks over the market depth. Type is a long
         /// </summary>
         public const string AskOverSize = "AskOverSize";
 
@@ -727,7 +739,7 @@
 
         /// <summary>
         /// A reference price, the content of which is exchange specific
-        /// For example, BMF&Bovespa will sometimes publish a reference price
+        /// For example, BMF and Bovespa will sometimes publish a reference price
         /// which is the mid price of the current trading range, but under
         /// some circumstances will instead use the settlement or closing
         /// price instead.
