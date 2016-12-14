@@ -179,7 +179,7 @@ namespace TS.Pisa
             Log.Info("resubscribing to all " + subjects.Count + " instruments");
             foreach (var providerPlugin in _providerPlugins)
             {
-                if (TS.Pisa.ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
+                if (ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
                 {
                     ResubscribeToAllOn(providerPlugin, subjects);
                 }
@@ -200,25 +200,25 @@ namespace TS.Pisa
             }
         }
 
-        private void OnProviderStatus(object sender, ProviderStatusEvent evt)
+        private void OnProviderStatus(object sender, ProviderStatusEvent providerStatusEvent)
         {
-            Log.Info("received " + evt);
+            Log.Info("received " + providerStatusEvent);
             NotifyProviderStatusChange();
-            if (evt.ProviderStatus != evt.PreviousProviderStatus)
+            if (providerStatusEvent.ProviderStatus != providerStatusEvent.PreviousProviderStatus)
             {
-                var providerPlugin = ProviderPluginByName(evt.Name);
+                var providerPlugin = ProviderPluginByName(providerStatusEvent.Name);
                 if (providerPlugin == null) return;
-                if (TS.Pisa.ProviderStatus.Ready == evt.ProviderStatus)
+                if (ProviderStatus.Ready == providerStatusEvent.ProviderStatus)
                 {
                     ResubscribeToAllOn(providerPlugin, _subscriptions.Subjects());
                 }
                 else
                 {
-                    var reason = ProviderStatusToSubscriptionReason(evt);
+                    var reason = ProviderStatusToSubscriptionReason(providerStatusEvent);
                     var subjects = _subscriptions.Subjects().Where(providerPlugin.IsSubjectCompatible).ToList();
                     foreach (var subject in subjects)
                     {
-                        _pisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.STALE, reason);
+                        _pisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE, reason);
                     }
                 }
             }
@@ -241,15 +241,15 @@ namespace TS.Pisa
         {
             switch (properties.ProviderStatus)
             {
-                case TS.Pisa.ProviderStatus.TemporarilyDown:
+                case ProviderStatus.TemporarilyDown:
                     return "Puffin connection is down";
-                case TS.Pisa.ProviderStatus.ScheduledDowntime:
+                case ProviderStatus.ScheduledDowntime:
                     return "Puffin feed has scheduled downtime";
-                case TS.Pisa.ProviderStatus.Unavailable:
+                case ProviderStatus.Unavailable:
                     return "Puffin feed is unavailable";
-                case TS.Pisa.ProviderStatus.Invalid:
+                case ProviderStatus.Invalid:
                     return "Puffin provider is invalid";
-                case TS.Pisa.ProviderStatus.Closed:
+                case ProviderStatus.Closed:
                     return "Puffin provider is closed";
                 default:
                     return properties.StatusReason;
@@ -273,7 +273,7 @@ namespace TS.Pisa
                 _session = session;
             }
 
-            public void OnPriceUpdateEvent(string subject, IPriceMap priceUpdate, bool replaceAllFields)
+            public void OnPriceUpdate(string subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
@@ -290,7 +290,7 @@ namespace TS.Pisa
                 }
             }
 
-            public void OnSubscriptionStatusEvent(string subject, SubscriptionStatus status, string reason)
+            public void OnSubscriptionStatus(string subject, SubscriptionStatus status, string reason)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
@@ -308,7 +308,7 @@ namespace TS.Pisa
                 }
             }
 
-            public void OnProviderStatusEvent(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
+            public void OnProviderStatus(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
             {
                 if (!_session._running.Value) return;
                 if (_session.ProviderStatusEventHandler != null)
@@ -373,7 +373,7 @@ namespace TS.Pisa
                 lock (_map)
                 {
                     return (from pair in _map
-                        where !TS.Pisa.SubscriptionStatus.OK.Equals(pair.Value.SubscriptionStatus)
+                        where SubscriptionStatus.OK != pair.Value.SubscriptionStatus
                         select pair.Key).ToList();
                 }
             }

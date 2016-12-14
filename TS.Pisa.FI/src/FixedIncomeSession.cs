@@ -53,7 +53,7 @@ namespace TS.Pisa.FI
                 Password = Password
             });
             session.PriceUpdateEventHandler += OnPriceUpdate;
-            session.SubscriptionStatusEventHandler += OnSubscriptionStatusEventHandler;
+            session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
             session.Start();
         }
 
@@ -63,7 +63,7 @@ namespace TS.Pisa.FI
             _subscriptions.Clear();
         }
 
-        private void OnPriceUpdate(object source, PriceUpdateEvent pisaPriceEvent)
+        private void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
         {
             var publishEvent = PriceUpdateEventHandler;
             if (publishEvent == null)
@@ -72,20 +72,20 @@ namespace TS.Pisa.FI
             }
             else
             {
-                var subject = _subscriptions.Get(pisaPriceEvent.Subject);
+                var subject = _subscriptions.Get(priceUpdateEvent.Subject);
                 if (subject != null)
                 {
                     publishEvent(this, new FiPriceUpdateEvent
                     {
                         Subject = subject,
-                        AllPriceFields = pisaPriceEvent.AllPriceFields,
-                        ChangedPriceFields = pisaPriceEvent.ChangedPriceFields
+                        AllPriceFields = priceUpdateEvent.AllPriceFields,
+                        ChangedPriceFields = priceUpdateEvent.ChangedPriceFields
                     });
                 }
             }
         }
 
-        private void OnSubscriptionStatusEventHandler(object source, SubscriptionStatusEvent pisaStatusEvent)
+        private void OnSubscriptionStatus(object source, SubscriptionStatusEvent subscriptionStatusEvent)
         {
             var eventHandler = SubscriptionStatusEventHandler;
             if (eventHandler == null)
@@ -94,14 +94,14 @@ namespace TS.Pisa.FI
             }
             else
             {
-                var subject = _subscriptions.Get(pisaStatusEvent.Subject);
+                var subject = _subscriptions.Get(subscriptionStatusEvent.Subject);
                 if (subject != null)
                 {
                     eventHandler(this, new FiSubscriptionStatusEvent
                     {
                         Subject = subject,
-                        SubscriptionStatus = pisaStatusEvent.SubscriptionStatus,
-                        StatusReason = pisaStatusEvent.StatusReason
+                        SubscriptionStatus = subscriptionStatusEvent.SubscriptionStatus,
+                        StatusReason = subscriptionStatusEvent.StatusReason
                     });
                 }
             }

@@ -190,21 +190,21 @@ namespace TS.Pisa.Plugin.Puffin
         {
             var subject = element.AttributeValue(Subject).Text;
             var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-            _provider.PisaEventHandler.OnPriceUpdateEvent(subject, priceMap, false);
+            _provider.PisaEventHandler.OnPriceUpdate(subject, priceMap, false);
         }
 
         private void OnPriceSetMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-            _provider.PisaEventHandler.OnPriceUpdateEvent(subject, priceMap, true);
+            _provider.PisaEventHandler.OnPriceUpdate(subject, priceMap, true);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
-            _provider.PisaEventHandler.OnSubscriptionStatusEvent(subject, status, element.AttributeValue("Text").Text);
+            _provider.PisaEventHandler.OnSubscriptionStatus(subject, status, element.AttributeValue("Text").Text);
         }
 
         private void OnHeartbeatMessage(PuffinElement element)

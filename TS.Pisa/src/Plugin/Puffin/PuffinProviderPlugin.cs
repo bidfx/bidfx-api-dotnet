@@ -65,7 +65,7 @@ namespace TS.Pisa.Plugin.Puffin
             if (previousStatus == status && string.Equals(StatusReason, reason)) return;
             ProviderStatus = status;
             StatusReason = reason;
-            PisaEventHandler.OnProviderStatusEvent(this, previousStatus);
+            PisaEventHandler.OnProviderStatus(this, previousStatus);
         }
 
         public void Subscribe(string subject)
@@ -73,12 +73,12 @@ namespace TS.Pisa.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
-                PisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.PROHIBITED,
+                PisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.PROHIBITED,
                     "permission denied for subject");
             }
             else if (_puffinConnection == null)
             {
-                PisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.STALE,
+                PisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
                     "Puffin price server connection is down");
             }
             else

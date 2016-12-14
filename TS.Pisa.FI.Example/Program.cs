@@ -32,7 +32,6 @@ namespace TS.Pisa.FI.Example
 
         private void RunTest()
         {
-            // Waiting for the session to be ready is not a requirement. It is done here for demonstration purposes.
             if (_fixedIncomeSession.Session.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("fixed income pricing session is ready");
@@ -49,28 +48,22 @@ namespace TS.Pisa.FI.Example
             }
         }
 
-        private static void OnPriceUpdate(object source, FiPriceUpdateEvent evt)
+        private static void OnPriceUpdate(object source, FiPriceUpdateEvent priceUpdateEvent)
         {
-            var price = evt.AllPriceFields;
+            var price = priceUpdateEvent.AllPriceFields;
             var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
             var ask = price.DecimalField(FieldName.Ask) ?? 0.0m;
             var bidSize = price.LongField(FieldName.BidSize) ?? 0L;
             var askSize = price.LongField(FieldName.AskSize) ?? 0L;
-            Log.Info(evt.Subject + " {"
-                     + " bidSize=" + bidSize
-                     + " bid=" + bid
-                     + " ask=" + ask
-                     + " askSize=" + askSize
-                     + " spread=" + (ask - bid)
-                     + " }");
+            Log.Info(priceUpdateEvent.Subject + " {" + " bidSize=" + bidSize + " bid=" + bid
+                     + " ask=" + ask + " askSize=" + askSize + " }");
         }
 
-        private static void OnSubscriptionStatus(object source, FiSubscriptionStatusEvent evt)
+        private static void OnSubscriptionStatus(object source, FiSubscriptionStatusEvent subscriptionStatusEvent)
         {
-            Log.Warn(evt.Subject + " {"
-                     + " status=" + evt.SubscriptionStatus
-                     + " reason=\"" + evt.StatusReason + '"'
-                     + " }");
+            Log.Warn(subscriptionStatusEvent.Subject + " {"
+                     + " status=" + subscriptionStatusEvent.SubscriptionStatus
+                     + " reason=\"" + subscriptionStatusEvent.StatusReason + '"' + " }");
         }
 
         private void SendSubscriptions()
