@@ -28,6 +28,7 @@ namespace TS.Pisa.Example
             });
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
+            session.ProviderStatusEventHandler += OnProviderStatus;
             session.Start();
         }
 
@@ -58,6 +59,15 @@ namespace TS.Pisa.Example
         private static void OnSubscriptionStatus(object source, SubscriptionStatusEvent subscriptionStatusEvent)
         {
             Log.Info("price status: " + subscriptionStatusEvent);
+        }
+
+        private static void OnProviderStatus(object sender, ProviderStatusEvent providerStatusEvent)
+        {
+            Log.Info("provider status: " +
+                     providerStatusEvent.Name + " changed status from " +
+                     providerStatusEvent.PreviousProviderStatus
+                     + " to " + providerStatusEvent.ProviderStatus
+                     + " because: " + providerStatusEvent.StatusReason);
         }
 
         private static void SendSubscriptions()

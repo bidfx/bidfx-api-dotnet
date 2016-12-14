@@ -25,10 +25,11 @@ namespace TS.Pisa.Plugin.Puffin
 
         public const int ProtocolVersion = 8;
 
-        public string Name { get; set; }
-        public ProviderStatus ProviderStatus { get; set; }
-        public string StatusReason { get; set; }
+        public string Name { get; private set; }
+        public ProviderStatus ProviderStatus { get; private set; }
+        public string StatusReason { get; private set; }
         public IPisaEventHandler PisaEventHandler { get; set; }
+
         public string Host { get; set; }
         public int Port { get; set; }
         public string Service { get; set; }
