@@ -12,11 +12,11 @@
 
         public ProviderStatus ProviderStatus { get; internal set; }
 
-        public string ProviderStatusText { get; internal set; }
+        public string StatusReason { get; internal set; }
 
         public override string ToString()
         {
-            return "price provider \"" + Name + "\" is " + ProviderStatus + " (" + ProviderStatusText + ")";
+            return "price provider \"" + Name + "\" is " + ProviderStatus + " (" + StatusReason + ")";
         }
     }
 }

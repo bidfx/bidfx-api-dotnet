@@ -83,11 +83,11 @@
     <Compile Include="src\Plugin\Puffin\FieldExtractor.cs" />
     <Compile Include="src\ProviderProperties.cs" />
     <Compile Include="src\SubscriptionStatus.cs" />
-    <Compile Include="src\SubscriptionStatusEventArgs.cs" />
-    <Compile Include="src\PriceUpdateEventArgs.cs" />
+    <Compile Include="src\SubscriptionStatusEvent.cs" />
+    <Compile Include="src\PriceUpdateEvent.cs" />
     <Compile Include="src\ProviderStatus.cs" />
     <Compile Include="src\FieldName.cs" />
-    <Compile Include="src\ProviderPluginEventArgs.cs" />
+    <Compile Include="src\ProviderStatusEvent.cs" />
     <Compile Include="src\Tick.cs" />
     <Compile Include="src\Tools\AtomicBoolean.cs" />
     <Compile Include="src\Tools\ByteBuffer.cs" />

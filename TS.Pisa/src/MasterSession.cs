@@ -24,14 +24,14 @@ namespace TS.Pisa
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
-        public event EventHandler<PriceUpdateEventArgs> PriceUpdate;
-        public event EventHandler<SubscriptionStatusEventArgs> PriceStatus;
-        public event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
+        public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
+        public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
+        public event EventHandler<ProviderStatusEvent> ProviderStatusEventHandler;
 
         public MasterSession()
         {
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
-            ProviderPlugin += OnProviderStatusEvent;
+            ProviderStatusEventHandler += OnProviderStatus;
             _pisaEventHandler = new PisaEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
             {
@@ -86,7 +86,7 @@ namespace TS.Pisa
 
         public bool Ready
         {
-            get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus); }
+            get { return Running && _providerPlugins.All(pp => TS.Pisa.ProviderStatus.Ready == pp.ProviderStatus); }
         }
 
         public bool WaitUntilReady(TimeSpan timeout)
@@ -115,7 +115,7 @@ namespace TS.Pisa
                 {
                     Name = providerPlugin.Name,
                     ProviderStatus = providerPlugin.ProviderStatus,
-                    ProviderStatusText = providerPlugin.ProviderStatusText
+                    StatusReason = providerPlugin.StatusReason
                 });
             }
             return list;
@@ -179,7 +179,7 @@ namespace TS.Pisa
             Log.Info("resubscribing to all " + subjects.Count + " instruments");
             foreach (var providerPlugin in _providerPlugins)
             {
-                if (ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
+                if (TS.Pisa.ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
                 {
                     ResubscribeToAllOn(providerPlugin, subjects);
                 }
@@ -200,44 +200,59 @@ namespace TS.Pisa
             }
         }
 
-        private void OnProviderStatusEvent(object sender, ProviderPluginEventArgs evt)
+        private void OnProviderStatus(object sender, ProviderStatusEvent evt)
         {
             Log.Info("received " + evt);
             NotifyProviderStatusChange();
             if (evt.ProviderStatus != evt.PreviousProviderStatus)
             {
-                if (ProviderStatus.Ready == evt.ProviderStatus)
+                var providerPlugin = ProviderPluginByName(evt.Name);
+                if (providerPlugin == null) return;
+                if (TS.Pisa.ProviderStatus.Ready == evt.ProviderStatus)
                 {
-                    ResubscribeToAllOn(evt.Provider, _subscriptions.Subjects());
+                    ResubscribeToAllOn(providerPlugin, _subscriptions.Subjects());
                 }
                 else
                 {
                     var reason = ProviderStatusToSubscriptionReason(evt);
-                    var subjects = _subscriptions.Subjects().Where(evt.Provider.IsSubjectCompatible).ToList();
+                    var subjects = _subscriptions.Subjects().Where(providerPlugin.IsSubjectCompatible).ToList();
                     foreach (var subject in subjects)
                     {
-                        _pisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE, reason);
+                        _pisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.STALE, reason);
                     }
                 }
             }
         }
 
-        private static string ProviderStatusToSubscriptionReason(ProviderPluginEventArgs evt)
+        private IProviderPlugin ProviderPluginByName(string name)
         {
-            switch (evt.ProviderStatus)
+            foreach (var providerPlugin in _providerPlugins)
             {
-                case ProviderStatus.TemporarilyDown:
+                if (name.Equals(providerPlugin.Name))
+                {
+                    return providerPlugin;
+                }
+            }
+            Log.Error("cannot find provider plugin with name \"" + name + '"');
+            return null;
+        }
+
+        private static string ProviderStatusToSubscriptionReason(IProviderProperties properties)
+        {
+            switch (properties.ProviderStatus)
+            {
+                case TS.Pisa.ProviderStatus.TemporarilyDown:
                     return "Puffin connection is down";
-                case ProviderStatus.ScheduledDowntime:
+                case TS.Pisa.ProviderStatus.ScheduledDowntime:
                     return "Puffin feed has scheduled downtime";
-                case ProviderStatus.Unavailable:
+                case TS.Pisa.ProviderStatus.Unavailable:
                     return "Puffin feed is unavailable";
-                case ProviderStatus.Invalid:
+                case TS.Pisa.ProviderStatus.Invalid:
                     return "Puffin provider is invalid";
-                case ProviderStatus.Closed:
+                case TS.Pisa.ProviderStatus.Closed:
                     return "Puffin provider is closed";
                 default:
-                    return evt.Reason;
+                    return properties.StatusReason;
             }
         }
 
@@ -258,15 +273,15 @@ namespace TS.Pisa
                 _session = session;
             }
 
-            public void OnPriceEvent(string subject, IPriceMap priceUpdate, bool replaceAllFields)
+            public void OnPriceUpdateEvent(string subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
                 if (subscription == null) return;
                 subscription.AllPriceFields.MergedPriceMap(priceUpdate, replaceAllFields);
-                if (_session.PriceUpdate != null)
+                if (_session.PriceUpdateEventHandler != null)
                 {
-                    _session.PriceUpdate(this, new PriceUpdateEventArgs
+                    _session.PriceUpdateEventHandler(this, new PriceUpdateEvent
                     {
                         Subject = subject,
                         AllPriceFields = subscription.AllPriceFields,
@@ -275,35 +290,35 @@ namespace TS.Pisa
                 }
             }
 
-            public void OnStatusEvent(string subject, SubscriptionStatus status, string reason)
+            public void OnSubscriptionStatusEvent(string subject, SubscriptionStatus status, string reason)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
                 if (subscription == null) return;
                 subscription.SubscriptionStatus = status;
                 subscription.AllPriceFields.Clear();
-                if (_session.PriceStatus != null)
+                if (_session.SubscriptionStatusEventHandler != null)
                 {
-                    _session.PriceStatus(this, new SubscriptionStatusEventArgs
+                    _session.SubscriptionStatusEventHandler(this, new SubscriptionStatusEvent
                     {
                         Subject = subject,
                         SubscriptionStatus = status,
-                        Reason = reason
+                        StatusReason = reason
                     });
                 }
             }
 
-            public void OnProviderEvent(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
+            public void OnProviderStatusEvent(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
             {
                 if (!_session._running.Value) return;
-                if (_session.ProviderPlugin != null)
+                if (_session.ProviderStatusEventHandler != null)
                 {
-                    _session.ProviderPlugin(this, new ProviderPluginEventArgs
+                    _session.ProviderStatusEventHandler(this, new ProviderStatusEvent
                     {
-                        Provider = providerPlugin,
+                        Name = providerPlugin.Name,
                         PreviousProviderStatus = previousStatus,
                         ProviderStatus = providerPlugin.ProviderStatus,
-                        Reason = providerPlugin.ProviderStatusText
+                        StatusReason = providerPlugin.StatusReason
                     });
                 }
             }
@@ -358,7 +373,7 @@ namespace TS.Pisa
                 lock (_map)
                 {
                     return (from pair in _map
-                        where !SubscriptionStatus.OK.Equals(pair.Value.SubscriptionStatus)
+                        where !TS.Pisa.SubscriptionStatus.OK.Equals(pair.Value.SubscriptionStatus)
                         select pair.Key).ToList();
                 }
             }

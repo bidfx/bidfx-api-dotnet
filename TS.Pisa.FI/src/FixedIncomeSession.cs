@@ -25,12 +25,12 @@ namespace TS.Pisa.FI
         /// <summary>
         /// The event fired upon a price update being received.
         /// </summary>
-        public event EventHandler<PriceUpdateEventArgs> OnPrice;
+        public event EventHandler<FiPriceUpdateEvent> PriceUpdateEventHandler;
 
         /// <summary>
         /// The event fired upon a price status update being received.
         /// </summary>
-        public event EventHandler<SubscriptionStatusEventArgs> OnStatus;
+        public event EventHandler<FiSubscriptionStatusEvent> SubscriptionStatusEventHandler;
 
         /// <summary>
         /// Creates a new fixed income pricing session.
@@ -52,8 +52,8 @@ namespace TS.Pisa.FI
                 Username = Username,
                 Password = Password
             });
-            session.PriceUpdate += OnPriceUpdate;
-            session.PriceStatus += OnPriceStatus;
+            session.PriceUpdateEventHandler += OnPriceUpdate;
+            session.SubscriptionStatusEventHandler += OnSubscriptionStatusEventHandler;
             session.Start();
         }
 
@@ -63,9 +63,9 @@ namespace TS.Pisa.FI
             _subscriptions.Clear();
         }
 
-        private void OnPriceUpdate(object source, TS.Pisa.PriceUpdateEventArgs pisaPriceEvent)
+        private void OnPriceUpdate(object source, PriceUpdateEvent pisaPriceEvent)
         {
-            var publishEvent = OnPrice;
+            var publishEvent = PriceUpdateEventHandler;
             if (publishEvent == null)
             {
                 if (Log.IsDebugEnabled) Log.Debug("ignore prive event as there are no subscribers");
@@ -75,7 +75,7 @@ namespace TS.Pisa.FI
                 var subject = _subscriptions.Get(pisaPriceEvent.Subject);
                 if (subject != null)
                 {
-                    publishEvent(this, new PriceUpdateEventArgs
+                    publishEvent(this, new FiPriceUpdateEvent
                     {
                         Subject = subject,
                         AllPriceFields = pisaPriceEvent.AllPriceFields,
@@ -85,23 +85,23 @@ namespace TS.Pisa.FI
             }
         }
 
-        private void OnPriceStatus(object source, TS.Pisa.SubscriptionStatusEventArgs pisaStatusEvent)
+        private void OnSubscriptionStatusEventHandler(object source, SubscriptionStatusEvent pisaStatusEvent)
         {
-            var publishEvent = OnStatus;
-            if (publishEvent == null)
+            var eventHandler = SubscriptionStatusEventHandler;
+            if (eventHandler == null)
             {
-                if (Log.IsDebugEnabled) Log.Debug("ignore status event as there are no subscribers");
+                if (Log.IsDebugEnabled) Log.Debug("ignore subscription status event as there are no subscribers");
             }
             else
             {
                 var subject = _subscriptions.Get(pisaStatusEvent.Subject);
                 if (subject != null)
                 {
-                    publishEvent(this, new SubscriptionStatusEventArgs
+                    eventHandler(this, new FiSubscriptionStatusEvent
                     {
                         Subject = subject,
-                        Status = pisaStatusEvent.SubscriptionStatus,
-                        Reason = pisaStatusEvent.Reason
+                        SubscriptionStatus = pisaStatusEvent.SubscriptionStatus,
+                        StatusReason = pisaStatusEvent.StatusReason
                     });
                 }
             }

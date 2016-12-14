@@ -15,6 +15,21 @@ namespace TS.Pisa.FI.Example
             new Program().RunTest();
         }
 
+        private Program()
+        {
+            _fixedIncomeSession = new FixedIncomeSession
+            {
+//                Host = "ny-tunnel.qadev.tradingscreen.com",
+//                Host = "ny-tunnel.uatdev.tradingscreen.com",
+                Host = "localhost", Port = 9901, Tunnel = false,
+                Username = "axaapi",
+                Password = "HelloWorld123"
+            };
+            _fixedIncomeSession.PriceUpdateEventHandler += OnPriceUpdate;
+            _fixedIncomeSession.SubscriptionStatusEventHandler += OnSubscriptionStatus;
+            _fixedIncomeSession.Start();
+        }
+
         private void RunTest()
         {
             // Waiting for the session to be ready is not a requirement. It is done here for demonstration purposes.
@@ -26,30 +41,15 @@ namespace TS.Pisa.FI.Example
             else
             {
                 Log.Warn("timed out waiting on session to be ready");
-                foreach (var providerPropertiese in _fixedIncomeSession.Session.ProviderProperties())
+                foreach (var providerProperties in _fixedIncomeSession.Session.ProviderProperties())
                 {
-                    Log.Info(providerPropertiese.ToString());
+                    Log.Info(providerProperties.ToString());
                 }
                 _fixedIncomeSession.Stop();
             }
         }
 
-        private Program()
-        {
-            _fixedIncomeSession = new FixedIncomeSession
-            {
-//                Host = "ny-tunnel.qadev.tradingscreen.com",
-//                Host = "ny-tunnel.uatdev.tradingscreen.com",
-                Host = "localhost", Port = 9901, Tunnel = false,
-                Username = "axaapi",
-                Password = "HelloWorld123"
-            };
-            _fixedIncomeSession.OnPrice += OnPrice;
-            _fixedIncomeSession.OnStatus += OnStatus;
-            _fixedIncomeSession.Start();
-        }
-
-        private static void OnPrice(object source, PriceUpdateEventArgs evt)
+        private static void OnPriceUpdate(object source, FiPriceUpdateEvent evt)
         {
             var price = evt.AllPriceFields;
             var bid = price.DecimalField(FieldName.Bid) ?? 0.0m;
@@ -65,17 +65,17 @@ namespace TS.Pisa.FI.Example
                      + " }");
         }
 
-        private static void OnStatus(object source, SubscriptionStatusEventArgs evt)
+        private static void OnSubscriptionStatus(object source, FiSubscriptionStatusEvent evt)
         {
             Log.Warn(evt.Subject + " {"
-                     + " status=" + evt.Status
-                     + " reason=\"" + evt.Reason + '"'
+                     + " status=" + evt.SubscriptionStatus
+                     + " reason=\"" + evt.StatusReason + '"'
                      + " }");
         }
 
         private void SendSubscriptions()
         {
-            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_10.txt"))
+            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_5000.txt"))
             {
                 try
                 {

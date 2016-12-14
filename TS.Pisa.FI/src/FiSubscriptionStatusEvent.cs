@@ -1,30 +1,30 @@
 ﻿using System;
 
-namespace TS.Pisa
+namespace TS.Pisa.FI
 {
     /// <summary>
-    /// Described a status change on a subscription.
+    /// Describes a single status on a fixed income price subscription
     /// </summary>
-    public class SubscriptionStatusEventArgs : EventArgs
+    public class FiSubscriptionStatusEvent : EventArgs
     {
         /// <summary>
         /// The subject of the subscription.
         /// </summary>
-        public string Subject { get; internal set; }
+        public FixedIncomeSubject Subject { get; internal set; }
 
         /// <summary>
-        /// The new subscription status.
+        /// The new status of the subscription.
         /// </summary>
         public SubscriptionStatus SubscriptionStatus { get; internal set; }
 
         /// <summary>
         /// Supplementary description of the reason for the status change.
         /// </summary>
-        public string Reason { get; internal set; }
+        public string StatusReason { get; internal set; }
 
         public override string ToString()
         {
-            return Subject + " => " + SubscriptionStatus + " (" + Reason + ")";
+            return Subject + " => " + SubscriptionStatus + " (" + StatusReason + ")";
         }
     }
 }

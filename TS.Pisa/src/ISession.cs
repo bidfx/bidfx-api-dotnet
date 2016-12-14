@@ -19,29 +19,36 @@ namespace TS.Pisa
         /// The event handler for price updates.
         /// A consumer will receive all price updates from the session when they subscribe to this.
         /// </summary>
-        event EventHandler<PriceUpdateEventArgs> PriceUpdate;
+        event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
 
         /// <summary>
-        /// The event handler for status updates.
+        /// The event handler for subscription status updates.
         /// A consumer will receive all price status updates from the session when they subscribe to this.
         /// </summary>
-        event EventHandler<SubscriptionStatusEventArgs> PriceStatus;
+        event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
 
         /// <summary>
-        /// The event handler for provider plugin updates.
+        /// The event handler for provider plugin status updates.
         /// </summary>
-        event EventHandler<ProviderPluginEventArgs> ProviderPlugin;
+        event EventHandler<ProviderStatusEvent> ProviderStatusEventHandler;
 
         /// <summary>
-        /// The time interval between attemts to refresh subscriptions that have bad statuses.
+        /// The time interval between attemts to refresh subscriptions that have irrecoverable statuses.
         /// </summary>
+        /// <remarks>
+        /// A status is deemed to be irrecoverable when the price service cannot cannot create
+        /// or maintain a subscription for it.  For example an invalid subject is irrecoverable.
+        /// However even irrecoverable status types can be recovered over time by making price service
+        /// changes and resubscribing. For this reason the API will periodically resubscribe to them until
+        /// the user does calls Unsubscribe.
+        /// </remarks>
         TimeSpan SubscriptionRefreshInterval { get; set; }
 
         /// <summary>
         /// Checks if the session is ready for handling subscriptions.
         /// </summary>
         /// <remarks>
-        /// The session is ready when it is running and all of its provider plugins are ready/
+        /// The session is ready when it is running and all of its provider plugins are ready.
         /// </remarks>
         bool Ready { get; }
 
@@ -63,7 +70,10 @@ namespace TS.Pisa
         /// <summary>
         /// Gets a collection of provider properties.
         /// </summary>
-        /// <returns>a collection of properties for each configured provider plugin</returns>
+        /// <remarks>
+        /// Provider properties give access to the name, status
+        /// </remarks>
+        /// <returns>S collection of properties for each configured provider plugin.</returns>
         ICollection<IProviderProperties> ProviderProperties();
     }
 }

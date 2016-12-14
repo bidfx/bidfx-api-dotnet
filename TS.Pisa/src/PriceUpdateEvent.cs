@@ -3,9 +3,9 @@
 namespace TS.Pisa
 {
     /// <summary>
-    /// Describes a single price update (or tick) on a subscription.
+    /// Describes a single price update event (or tick) on a price subscription.
     /// </summary>
-    public class PriceUpdateEventArgs : EventArgs
+    public class PriceUpdateEvent : EventArgs
     {
         /// <summary>
         /// The subject of the subscription.

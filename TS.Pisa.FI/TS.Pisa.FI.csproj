@@ -53,9 +53,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\FixedIncomeSession.cs" />
-    <Compile Include="src\SubscriptionStatusEventArgs.cs" />
+    <Compile Include="src\FiSubscriptionStatusEvent.cs" />
     <Compile Include="src\FixedIncomeSubject.cs" />
-    <Compile Include="src\PriceUpdateEventArgs.cs" />
+    <Compile Include="src\FiPriceUpdateEvent.cs" />
     <Compile Include="test\FixedIncomeSubjectTest.cs" Condition=" '$(Configuration)' != 'Release' " />
   </ItemGroup>
   <ItemGroup>

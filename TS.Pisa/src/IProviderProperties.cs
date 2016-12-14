@@ -14,13 +14,13 @@
         string Name { get; }
 
         /// <summary>
-        /// The provider status.
+        /// The current provider status.
         /// </summary>
         ProviderStatus ProviderStatus { get; }
 
         /// <summary>
-        /// Additional descriptive text associated with the provider status.
+        /// Additional descriptive text associated with the provider status giving the reason for the status.
         /// </summary>
-        string ProviderStatusText { get; }
+        string StatusReason { get; }
     }
 }

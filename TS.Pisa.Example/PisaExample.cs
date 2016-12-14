@@ -22,8 +22,8 @@ namespace TS.Pisa.Example
         private static void PrepareSession()
         {
             var session = DefaultSession.GetSession();
-            session.PriceUpdate += OnPriceUpdate;
-            session.PriceStatus += OnPriceStatus;
+            session.PriceUpdateEventHandler += OnPriceUpdate;
+            session.SubscriptionStatusEventHandler += OnSubscriptionStatusEventHandler;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
                 Host = "ny-tunnel.qadev.tradingscreen.com",
@@ -36,12 +36,12 @@ namespace TS.Pisa.Example
             session.Start();
         }
 
-        private static void OnPriceUpdate(object source, PriceUpdateEventArgs args)
+        private static void OnPriceUpdate(object source, PriceUpdateEvent args)
         {
             Log.Info("price update: " + args);
         }
 
-        private static void OnPriceStatus(object source, SubscriptionStatusEventArgs args)
+        private static void OnSubscriptionStatusEventHandler(object source, SubscriptionStatusEvent args)
         {
             Log.Info("price status: " + args);
         }

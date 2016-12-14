@@ -3,9 +3,9 @@
 namespace TS.Pisa.FI
 {
     /// <summary>
-    /// Describes a single price update (or tick) on a subscription.
+    /// Describes a single price update (or tick) on a fixed income price subscription.
     /// </summary>
-    public class PriceUpdateEventArgs : EventArgs
+    public class FiPriceUpdateEvent : EventArgs
     {
         /// <summary>
         /// The fixed income product of the update.

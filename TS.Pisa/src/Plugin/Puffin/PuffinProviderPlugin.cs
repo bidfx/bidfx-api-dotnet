@@ -27,7 +27,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         public string Name { get; set; }
         public ProviderStatus ProviderStatus { get; set; }
-        public string ProviderStatusText { get; set; }
+        public string StatusReason { get; set; }
         public IPisaEventHandler PisaEventHandler { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
@@ -51,7 +51,7 @@ namespace TS.Pisa.Plugin.Puffin
                 NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
-            ProviderStatusText = "not started";
+            StatusReason = "not started";
             Port = 443;
             Service = "static://puffin";
             Tunnel = true;
@@ -62,10 +62,10 @@ namespace TS.Pisa.Plugin.Puffin
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
             var previousStatus = ProviderStatus;
-            if (previousStatus == status && string.Equals(ProviderStatusText, reason)) return;
+            if (previousStatus == status && string.Equals(StatusReason, reason)) return;
             ProviderStatus = status;
-            ProviderStatusText = reason;
-            PisaEventHandler.OnProviderEvent(this, previousStatus);
+            StatusReason = reason;
+            PisaEventHandler.OnProviderStatusEvent(this, previousStatus);
         }
 
         public void Subscribe(string subject)
@@ -73,12 +73,12 @@ namespace TS.Pisa.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
-                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.PROHIBITED,
+                PisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.PROHIBITED,
                     "permission denied for subject");
             }
             else if (_puffinConnection == null)
             {
-                PisaEventHandler.OnStatusEvent(subject, SubscriptionStatus.STALE,
+                PisaEventHandler.OnSubscriptionStatusEvent(subject, SubscriptionStatus.STALE,
                     "Puffin price server connection is down");
             }
             else
