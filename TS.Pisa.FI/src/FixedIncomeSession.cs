@@ -43,7 +43,7 @@ namespace TS.Pisa.FI
 
         public void Start()
         {
-            var session = DefaultSession.GetSession();
+            var session = DefaultSession.Session;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
                 Host = Host,
@@ -59,7 +59,7 @@ namespace TS.Pisa.FI
 
         public void Stop()
         {
-            DefaultSession.GetSession().Stop();
+            DefaultSession.Session.Stop();
             _subscriptions.Clear();
         }
 
@@ -115,7 +115,7 @@ namespace TS.Pisa.FI
         {
             var pisaSubject = subject.PisaSubject();
             _subscriptions.Put(pisaSubject, subject);
-            DefaultSession.GetSubscriber().Subscribe(pisaSubject);
+            DefaultSession.Subscriber.Subscribe(pisaSubject);
         }
 
         /// <summary>
@@ -126,14 +126,14 @@ namespace TS.Pisa.FI
         {
             var pisaSubject = subject.PisaSubject();
             _subscriptions.Remove(pisaSubject);
-            DefaultSession.GetSubscriber().Unsubscribe(pisaSubject);
+            DefaultSession.Subscriber.Unsubscribe(pisaSubject);
         }
 
         /// <summary>
         /// Gets the underlying Pisa session used by this session.
         /// </summary>
         public ISession Session {
-            get { return DefaultSession.GetSession(); }
+            get { return DefaultSession.Session; }
         }
 
         public bool Running

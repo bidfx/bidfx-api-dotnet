@@ -9,21 +9,19 @@
         private static readonly MasterSession MasterSession = new MasterSession();
 
         /// <summary>
-        /// Gets the default session instance used for configuring the pricing API.
+        /// The default session instance used for configuring the Pisa pricing API.
         /// </summary>
-        /// <returns>The default PisaSession instance</returns>
-        public static ISession GetSession()
+        public static ISession Session
         {
-            return MasterSession;
+            get { return MasterSession; }
         }
 
         /// <summary>
-        /// Gets the default subscriber instance used for subscribing to prices.
+        /// The default subscriber instance used for subscribing to prices.
         /// </summary>
-        /// <returns>The default PisaSession instance</returns>
-        public static IBulkSubscriber GetSubscriber()
+        public static IBulkSubscriber Subscriber
         {
-            return MasterSession;
+            get { return MasterSession; }
         }
     }
 }

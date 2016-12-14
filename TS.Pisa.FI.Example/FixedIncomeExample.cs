@@ -2,7 +2,7 @@ using System;
 
 namespace TS.Pisa.FI.Example
 {
-    public class Program
+    public class FixedIncomeExample
     {
         private readonly FixedIncomeSession _fixedIncomeSession;
 
@@ -12,10 +12,10 @@ namespace TS.Pisa.FI.Example
         public static void Main(string[] args)
         {
             Log.Info("testing with " + Pisa.Name + " version " + Pisa.Version);
-            new Program().RunTest();
+            new FixedIncomeExample().RunTest();
         }
 
-        private Program()
+        private FixedIncomeExample()
         {
             _fixedIncomeSession = new FixedIncomeSession
             {

@@ -7,11 +7,19 @@ namespace TS.Pisa
     public class DefaultSessionTest
     {
         [Test]
-        public void TestGetDefaultSession()
+        public void TestDefaultSession()
         {
-            var defaultSession = DefaultSession.GetSession();
+            var defaultSession = DefaultSession.Session;
             Assert.NotNull(defaultSession);
-            Assert.AreSame(defaultSession, DefaultSession.GetSession());
+            Assert.AreSame(defaultSession, DefaultSession.Session);
+        }
+
+        [Test]
+        public void TestDefaultSubscriber()
+        {
+            var defaultSubscriber = DefaultSession.Subscriber;
+            Assert.NotNull(defaultSubscriber);
+            Assert.AreSame(defaultSubscriber, DefaultSession.Subscriber);
         }
     }
 }

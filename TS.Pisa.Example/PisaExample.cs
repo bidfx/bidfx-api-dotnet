@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using TS.Pisa.Plugin.Puffin;
 
@@ -10,20 +11,13 @@ namespace TS.Pisa.Example
 
         public static void Main(string[] args)
         {
-            new PisaExample().Run();
+            Log.Info("testing with " + Pisa.Name + " version " + Pisa.Version);
+            new PisaExample().RunTest();
         }
 
-        private void Run()
+        private PisaExample()
         {
-            PrepareSession();
-            SendSubscriptions();
-        }
-
-        private static void PrepareSession()
-        {
-            var session = DefaultSession.GetSession();
-            session.PriceUpdateEventHandler += OnPriceUpdate;
-            session.SubscriptionStatusEventHandler += OnSubscriptionStatusEventHandler;
+            var session = DefaultSession.Session;
             session.AddProviderPlugin(new PuffinProviderPlugin
             {
                 Host = "ny-tunnel.qadev.tradingscreen.com",
@@ -32,23 +26,43 @@ namespace TS.Pisa.Example
                 Username = "axaapitest",
                 Password = "B3CarefulWithThatAXAEug3n3!"
             });
-            Log.Info("starting the Pisa session");
+            session.PriceUpdateEventHandler += OnPriceUpdate;
+            session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
             session.Start();
         }
 
-        private static void OnPriceUpdate(object source, PriceUpdateEvent args)
+        private void RunTest()
         {
-            Log.Info("price update: " + args);
+            var session = DefaultSession.Session;
+            if (session.WaitUntilReady(TimeSpan.FromSeconds(15)))
+            {
+                Log.Info("pricing session is ready");
+                SendSubscriptions();
+            }
+            else
+            {
+                Log.Warn("timed out waiting on session to be ready");
+                foreach (var providerProperties in session.ProviderProperties())
+                {
+                    Log.Info(providerProperties.ToString());
+                }
+                session.Stop();
+            }
         }
 
-        private static void OnSubscriptionStatusEventHandler(object source, SubscriptionStatusEvent args)
+        private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
         {
-            Log.Info("price status: " + args);
+            Log.Info("price update: " + priceUpdateEvent.Subject + " -> " + priceUpdateEvent.ChangedPriceFields);
+        }
+
+        private static void OnSubscriptionStatus(object source, SubscriptionStatusEvent subscriptionStatusEvent)
+        {
+            Log.Info("price status: " + subscriptionStatusEvent);
         }
 
         private static void SendSubscriptions()
         {
-            var subscriber = DefaultSession.GetSubscriber();
+            var subscriber = DefaultSession.Subscriber;
             subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
             subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
             subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");

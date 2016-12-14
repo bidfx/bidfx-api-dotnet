@@ -50,7 +50,6 @@ namespace TS.Pisa
                     providerPlugin.Start();
                 }
                 _subscriptionRefreshThread.Start();
-                Thread.Sleep(500); // give the plugins a chance to connect
             }
         }
 
@@ -86,7 +85,7 @@ namespace TS.Pisa
 
         public bool Ready
         {
-            get { return Running && _providerPlugins.All(pp => TS.Pisa.ProviderStatus.Ready == pp.ProviderStatus); }
+            get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus); }
         }
 
         public bool WaitUntilReady(TimeSpan timeout)
