@@ -867,24 +867,6 @@ EXCLUDE                = ../TS.Pisa.Example \
                          ../TS.Pisa.FI.Example \
                          ../TS.Pisa/test \
                          ../TS.Pisa.FI/test \
-                         ../TS.Pisa.FI/TS.Pisa.FI/test \
-                         ../TS.Pisa/src/DefaultSession.cs \
-                         ../TS.Pisa/src/IProviderPlugin.cs \
-                         ../TS.Pisa/src/ISession.cs \
-                         ../TS.Pisa/src/ISubscriber.cs \
-                         ../TS.Pisa/src/PriceStatusEventArgs.cs \
-                         ../TS.Pisa/src/PriceUpdateEventArgs.cs \
-                         ../TS.Pisa/src/ProviderPluginEventArgs.cs \
-                         ../TS.Pisa/src/Plugin/Puffin \
-                         ../TS.Pisa/src/MasterSession.cs \
-                         ../TS.Pisa/src/Pisa.cs \
-                         ../TS.Pisa/src/Tools \
-                         ../TS.Pisa/src/IBackground.cs \
-                         ../TS.Pisa/src/IBulkSubscriber.cs \
-                         ../TS.Pisa/src/IPisaEventHandler.cs \
-                         ../TS.Pisa/src/SubscriptionStatusEventArgs.cs \
-                         ../TS.Pisa/src/ValueParser.cs \
-                         ../TS.Pisa/src/IllegalStateException.cs
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
