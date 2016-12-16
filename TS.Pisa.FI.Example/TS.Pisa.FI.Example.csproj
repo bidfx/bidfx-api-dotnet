@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5C8CA288-1771-4ED0-A3AB-8A234523379F}</ProjectGuid>
+    <ProjectGuid>{AC8CA288-1887-4ED0-A3AB-8A13452337E0}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -35,13 +35,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
-      <HintPath>..\packages\log4net.2.0.5\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>..\bin\Release\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
+    <Reference Include="TS.Pisa, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\bin\Release\TS.Pisa.dll</HintPath>
+    </Reference>
+    <Reference Include="TS.Pisa.FI, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\bin\Release\TS.Pisa.FI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixedIncomeExample.cs" />
@@ -56,21 +62,8 @@
     <Content Include="ISIN_list_100.txt" />
     <Content Include="ISIN_list_5000.txt" />
     <Content Include="ISIN_list_all.txt" />
-    <Content Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TS.Pisa.FI\TS.Pisa.FI.csproj">
-      <Project>{F788BD2C-B6B9-49AB-AC22-937A92019E27}</Project>
-      <Name>TS.Pisa.FI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TS.Pisa\TS.Pisa.csproj">
-      <Project>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</Project>
-      <Name>TS.Pisa</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
