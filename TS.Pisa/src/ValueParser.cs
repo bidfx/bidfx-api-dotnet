@@ -15,7 +15,7 @@ namespace TS.Pisa
         {
             try
             {
-                return decimal.Parse(s, DecimalStyle);
+                return decimal.Parse(s, DecimalStyle, CultureInfo.InvariantCulture);
             }
             catch (Exception)
             {
@@ -57,7 +57,7 @@ namespace TS.Pisa
                 var slash = fraction.IndexOf('/');
                 if (slash == -1)
                 {
-                    return decimal.Parse(fraction, DecimalStyle);
+                    return decimal.Parse(fraction, DecimalStyle, CultureInfo.InvariantCulture);
                 }
                 var s = fraction.Substring(slash + 1);
                 var denominator = int.Parse(s);

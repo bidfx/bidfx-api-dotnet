@@ -23,8 +23,8 @@ namespace TS.Pisa.Example
                 Host = "ny-tunnel.qadev.tradingscreen.com",
                 Port = 443,
                 Tunnel = true,
-                Username = "axaapitest",
-                Password = "B3CarefulWithThatAXAEug3n3!"
+                Username = "axaapi",
+                Password = "HelloWorld123"
             });
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
