@@ -4,8 +4,11 @@ using System.Threading;
 using TS.Pisa.Tools;
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace TS.Pisa.Plugin.Puffin
 {
@@ -37,6 +40,7 @@ namespace TS.Pisa.Plugin.Puffin
         public string Password { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
+        public bool DisableHostnameSSLChecks { get; set; }
 
         private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
@@ -256,9 +260,14 @@ namespace TS.Pisa.Plugin.Puffin
             }
         }
 
+        private bool AllowCertsFromTS(Object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors errors)
+        {
+            return chain.ChainStatus.Length==0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
+        }
+
         private void UpgradeToSsl()
         {
-            var sslStream = new SslStream(_stream, false);
+            var sslStream = DisableHostnameSSLChecks ? new SslStream(_stream, false, AllowCertsFromTS) : new SslStream(_stream, false);
             sslStream.AuthenticateAsClient(Host);
             if (sslStream.IsAuthenticated)
             {
