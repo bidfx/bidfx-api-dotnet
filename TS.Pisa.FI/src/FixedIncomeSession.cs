@@ -17,7 +17,7 @@ namespace TS.Pisa.FI
         public string Host { get; set; }
         public int Port { get; set; }
         public bool Tunnel { get; set; }
-        public bool AllowTSCommonName { get; set; }
+        public bool DisableHostnameSSLChecks { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
 
@@ -52,7 +52,7 @@ namespace TS.Pisa.FI
                 Tunnel = Tunnel,
                 Username = Username,
                 Password = Password,
-                AllowTSCommonName = AllowTSCommonName
+                DisableHostnameSSLChecks = DisableHostnameSSLChecks
             });
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;

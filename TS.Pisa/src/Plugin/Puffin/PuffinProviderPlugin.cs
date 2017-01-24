@@ -40,7 +40,7 @@ namespace TS.Pisa.Plugin.Puffin
         public string Password { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
-        public bool AllowTSCommonName { get; set; }
+        public bool DisableHostnameSSLChecks { get; set; }
 
         private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
@@ -267,7 +267,7 @@ namespace TS.Pisa.Plugin.Puffin
 
         private void UpgradeToSsl()
         {
-            var sslStream = AllowTSCommonName ? new SslStream(_stream, false, AllowCertsFromTS) : new SslStream(_stream, false);
+            var sslStream = DisableHostnameSSLChecks ? new SslStream(_stream, false, AllowCertsFromTS) : new SslStream(_stream, false);
             sslStream.AuthenticateAsClient(Host);
             if (sslStream.IsAuthenticated)
             {
