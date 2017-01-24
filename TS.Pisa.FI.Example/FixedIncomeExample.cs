@@ -19,9 +19,11 @@ namespace TS.Pisa.FI.Example
         {
             _fixedIncomeSession = new FixedIncomeSession
             {
-                Host = "ny-tunnel.qadev.tradingscreen.com",
-                Username = "axaapi",
-                Password = "HelloWorld123"
+                Host = "ln2-sao-001.dev.tradingscreen.com",
+                Port = 51111,
+                Username = "pmacdona",
+                Password = "Secret99",
+                AllowTSCommonName = true
             };
             _fixedIncomeSession.PriceUpdateEventHandler += OnPriceUpdate;
             _fixedIncomeSession.SubscriptionStatusEventHandler += OnSubscriptionStatus;
@@ -66,7 +68,7 @@ namespace TS.Pisa.FI.Example
 
         private void SendSubscriptions()
         {
-            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_5000.txt"))
+            foreach (var isin in System.IO.File.ReadLines("../../TS.Pisa.FI.Example/ISIN_list_all.txt"))
             {
                 try
                 {
