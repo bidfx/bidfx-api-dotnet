@@ -11,7 +11,7 @@ using BidFX.Public.NAPI.Tools;
 
 namespace BidFX.Public.NAPI.Plugin.Puffin
 {
-    /// <summary>PuffinProviderPlugin provides a Pisa provider plug-in that connects to
+    /// <summary>PuffinProviderPlugin provides a NAPI provider plug-in that connects to
     /// a remote Puffin server to obtain prices.</summary>
     /// <remarks>
     /// Connection to Puffin is made using a TCP/IP socket connection.
@@ -30,7 +30,7 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
         public string Name { get; private set; }
         public ProviderStatus ProviderStatus { get; private set; }
         public string StatusReason { get; private set; }
-        public IPisaEventHandler PisaEventHandler { get; set; }
+        public INAPIEventHandler InapiEventHandler { get; set; }
 
         public string Host { get; set; }
         public int Port { get; set; }
@@ -69,7 +69,7 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
             if (previousStatus == status && string.Equals(StatusReason, reason)) return;
             ProviderStatus = status;
             StatusReason = reason;
-            PisaEventHandler.OnProviderStatus(this, previousStatus);
+            InapiEventHandler.OnProviderStatus(this, previousStatus);
         }
 
         public void Subscribe(string subject)
@@ -77,12 +77,12 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
-                PisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.PROHIBITED,
+                InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.PROHIBITED,
                     "permission denied for subject");
             }
             else if (_puffinConnection == null)
             {
-                PisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
+                InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
                     "Puffin price server connection is down");
             }
             else
@@ -114,7 +114,7 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
 
         public void Start()
         {
-            if (PisaEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
+            if (InapiEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
             if (_running.CompareAndSet(false, true))
             {
                 _startTime = JavaTime.CurrentTimeMillis();
@@ -222,7 +222,7 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
                     .AddAttribute("Alias", ServiceProperties.Username())
                     .AddAttribute("Name", Username)
                     .AddAttribute("Password", encryptedPassword)
-                    .AddAttribute("Description", Pisa.Name)
+                    .AddAttribute("Description", NAPI.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grant = ReadMessage();
@@ -239,9 +239,9 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
                     .AddAttribute("startTime", _startTime)
                     .AddAttribute("username", Username)
                     .AddAttribute("userAlias", ServiceProperties.Username())
-                    .AddAttribute("name", Pisa.Name)
-                    .AddAttribute("package", Pisa.Package)
-                    .AddAttribute("version", Pisa.Version)
+                    .AddAttribute("name", NAPI.Name)
+                    .AddAttribute("package", NAPI.Package)
+                    .AddAttribute("version", NAPI.Version)
                     .AddAttribute("protocolVersion", ProtocolVersion)
                     .AddAttribute("environment", ServiceProperties.Environment(Host))
                     .AddAttribute("city", ServiceProperties.City())

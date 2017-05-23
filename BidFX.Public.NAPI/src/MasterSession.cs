@@ -8,7 +8,7 @@ using BidFX.Public.NAPI.Tools;
 namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// A master Pisa session that provides access to market data from many provider plugin compoenets.
+    /// A master NAPI session that provides access to market data from many provider plugin compoenets.
     /// </summary>
     internal class MasterSession : ISession, IBulkSubscriber
     {
@@ -18,7 +18,7 @@ namespace BidFX.Public.NAPI
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
         private readonly SubscriptionSet _subscriptions = new SubscriptionSet();
-        private readonly IPisaEventHandler _pisaEventHandler;
+        private readonly INAPIEventHandler _inapiEventHandler;
         private readonly Thread _subscriptionRefreshThread;
         private readonly object _readyLock = new object();
 
@@ -32,7 +32,7 @@ namespace BidFX.Public.NAPI
         {
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderStatusEventHandler += OnProviderStatus;
-            _pisaEventHandler = new PisaEventDispatcher(this);
+            _inapiEventHandler = new INAPIEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
             {
                 Name = "subscription-refresh",
@@ -122,8 +122,8 @@ namespace BidFX.Public.NAPI
 
         public void AddProviderPlugin(IProviderPlugin providerPlugin)
         {
-            if (_running.Value) throw new IllegalStateException("add providers before starting the Pisa session");
-            providerPlugin.PisaEventHandler = _pisaEventHandler;
+            if (_running.Value) throw new IllegalStateException("add providers before starting the NAPI session");
+            providerPlugin.InapiEventHandler = _inapiEventHandler;
             _providerPlugins.Add(providerPlugin);
         }
 
@@ -217,7 +217,7 @@ namespace BidFX.Public.NAPI
                     var subjects = _subscriptions.Subjects().Where(providerPlugin.IsSubjectCompatible).ToList();
                     foreach (var subject in subjects)
                     {
-                        _pisaEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE, reason);
+                        _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE, reason);
                     }
                 }
             }
@@ -263,11 +263,11 @@ namespace BidFX.Public.NAPI
             }
         }
 
-        private class PisaEventDispatcher : IPisaEventHandler
+        private class INAPIEventDispatcher : INAPIEventHandler
         {
             private readonly MasterSession _session;
 
-            public PisaEventDispatcher(MasterSession session)
+            public INAPIEventDispatcher(MasterSession session)
             {
                 _session = session;
             }

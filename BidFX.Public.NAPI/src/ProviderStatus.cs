@@ -8,7 +8,7 @@
     {
         /// <summary>Indicates that the provider is available and ready for use.</summary>
         /// <remarks>
-        /// Pisa normally subscribes to instruments via a provider only when the provider is Ready.
+        /// NAPI normally subscribes to instruments via a provider only when the provider is Ready.
         /// </remarks>
         Ready,
 
@@ -38,7 +38,7 @@
 
         /// <summary>Indicates that the provider is invalid.</summary>
         /// <remarks>
-        /// A provider is invalid when its configuration is corrupted. Only a reconfiguration of the Pisa Session
+        /// A provider is invalid when its configuration is corrupted. Only a reconfiguration of the NAPI Session
         /// or the closure of the provider can result in this state changing.
         /// </remarks>
         Invalid,
@@ -46,8 +46,8 @@
         /// <summary>Indicates that the provider is closed.</summary>
         /// <remarks>
         /// This status is set when a provider is being disposed of and once set the status will never again
-        /// change. Because the closure of a provider is initiated by the Pisa
-        /// Session it is not normal for a provider to notify Pisa when its status
+        /// change. Because the closure of a provider is initiated by the NAPI
+        /// Session it is not normal for a provider to notify NAPI when its status
         /// changes to Closed.
         /// </remarks>
         Closed

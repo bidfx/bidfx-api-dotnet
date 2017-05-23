@@ -6,9 +6,9 @@
     public interface IProviderPlugin : IProviderProperties, ISubscriber, IBackground
     {
         /// <summary>
-        /// The event handler used for propagating events to the users of the Pisa API.
+        /// The event handler used for propagating events to the users of the NAPI API.
         /// </summary>
-        IPisaEventHandler PisaEventHandler { get; set; }
+        INAPIEventHandler InapiEventHandler { get; set; }
 
         /// <summary>
         /// Checks if a given subject is compatible with the provider plugin.

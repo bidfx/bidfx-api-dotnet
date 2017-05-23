@@ -1,15 +1,15 @@
 ﻿namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// This class provides a holder for the default Pisa session.
-    /// Most application will share a single Pisa session and get access to it from here.
+    /// This class provides a holder for the default NAPI session.
+    /// Most application will share a single NAPI session and get access to it from here.
     /// </summary>
     public class DefaultSession
     {
         private static readonly MasterSession MasterSession = new MasterSession();
 
         /// <summary>
-        /// The default session instance used for configuring the Pisa pricing API.
+        /// The default session instance used for configuring the NAPI pricing API.
         /// </summary>
         public static ISession Session
         {

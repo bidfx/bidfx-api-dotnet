@@ -4,18 +4,18 @@ using BidFX.Public.NAPI.Plugin.Puffin;
 
 namespace BidFX.Public.NAPI.Example
 {
-    internal class PisaExample
+    internal class NAPIExample
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + Pisa.Name + " version " + Pisa.Version);
-            new PisaExample().RunTest();
+            Log.Info("testing with " + NAPI.Name + " version " + NAPI.Version);
+            new NAPIExample().RunTest();
         }
 
-        private PisaExample()
+        private NAPIExample()
         {
             var session = DefaultSession.Session;
             session.AddProviderPlugin(new PuffinProviderPlugin

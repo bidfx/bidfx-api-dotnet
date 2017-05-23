@@ -3,19 +3,19 @@
 namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Provides version information about this implementation of the Pisa API.
+    /// Provides version information about this implementation of the NAPI.
     /// </summary>
-    public class Pisa
+    public class NAPI
     {
         /// <summary>
         /// The API implementation name.
         /// </summary>
-        public const string Name = "Pisa.NET";
+        public const string Name = "NAPI.NET";
 
         /// <summary>
         /// The assemble reference.
         /// </summary>
-        public static readonly Assembly Reference = typeof(Pisa).Assembly;
+        public static readonly Assembly Reference = typeof(NAPI).Assembly;
 
         /// <summary>
         /// The package name.

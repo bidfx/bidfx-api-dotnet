@@ -6,7 +6,7 @@ namespace BidFX.Public.NAPI
     /// This class provides a list of price field name constants.
     /// </summary>
     /// <remarks>
-    /// Field name constants for typical fields that may be published through the Pisa price API.
+    /// Field name constants for typical fields that may be published through the NAPI price API.
     /// No provider ever publishes more than a small subset of there fields.
     /// </remarks>
     ///

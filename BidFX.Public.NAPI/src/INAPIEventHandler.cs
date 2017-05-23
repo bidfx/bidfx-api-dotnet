@@ -1,9 +1,9 @@
 ﻿namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Interface for components that can handle Pisa events.
+    /// Interface for components that can handle NAPI events.
     /// </summary>
-    public interface IPisaEventHandler
+    public interface INAPIEventHandler
     {
         /// <summary>
         /// Handled a price update event from one of the connected price feeds.

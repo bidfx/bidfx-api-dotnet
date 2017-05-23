@@ -1,7 +1,7 @@
 ﻿namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Interface used by components that can subscribe to pricing using Pisa subjects.
+    /// Interface used by components that can subscribe to pricing using NAPI subjects.
     /// </summary>
     public interface ISubscriber
     {

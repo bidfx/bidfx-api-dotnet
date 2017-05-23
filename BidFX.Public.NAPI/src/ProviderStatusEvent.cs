@@ -3,7 +3,7 @@
 namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Describes a change in the status of a Pisa provider plugin component.
+    /// Describes a change in the status of a NAPI provider plugin component.
     /// </summary>
     public class ProviderStatusEvent : EventArgs, IProviderProperties
     {

@@ -54,7 +54,7 @@
     <Compile Include="src\PriceMap.cs" />
     <Compile Include="src\DefaultSession.cs" />
     <Compile Include="src\IBackground.cs" />
-    <Compile Include="src\IPisaEventHandler.cs" />
+    <Compile Include="src\INAPIEventHandler.cs" />
     <Compile Include="src\IllegalStateException.cs" />
     <Compile Include="src\IllegalSubjectException.cs" />
     <Compile Include="src\IPriceField.cs" />
@@ -64,7 +64,7 @@
     <Compile Include="src\IBulkSubscriber.cs" />
     <Compile Include="src\ISubscriber.cs" />
     <Compile Include="src\MasterSession.cs" />
-    <Compile Include="src\Pisa.cs" />
+    <Compile Include="src\NAPI.cs" />
     <Compile Include="src\Plugin\Puffin\IPuffinSessionListener.cs" />
     <Compile Include="src\Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="src\Plugin\Puffin\MessageFormatter.cs" />

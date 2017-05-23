@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Interface for a Pisa API session container that provides normalised access for one or more sources
+    /// Interface for a NAPI session container that provides normalised access for one or more sources
     /// of realtime market data via a set of provider plugin components.
     /// </summary>
     public interface ISession : IBackground
