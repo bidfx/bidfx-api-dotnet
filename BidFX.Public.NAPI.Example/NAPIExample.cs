@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
-using BidFX.Public.NAPI.Plugin.Puffin;
+using BidFX.Public.NAPI.PriceManager;
+using BidFX.Public.NAPI.PriceManager.Plugin.Puffin;
 
 namespace BidFX.Public.NAPI.Example
 {
@@ -11,7 +12,7 @@ namespace BidFX.Public.NAPI.Example
 
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + NAPI.Name + " version " + NAPI.Version);
+            Log.Info("testing with " + PriceManager.NAPI.Name + " version " + PriceManager.NAPI.Version);
             new NAPIExample().RunTest();
         }
 

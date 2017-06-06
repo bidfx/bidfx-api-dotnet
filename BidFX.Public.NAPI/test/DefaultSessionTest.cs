@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using BidFX.Public.NAPI.PriceManager;
+using NUnit.Framework;
 
 namespace BidFX.Public.NAPI.test
 {

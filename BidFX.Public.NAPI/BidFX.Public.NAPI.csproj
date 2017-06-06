@@ -50,59 +50,60 @@
       <Link>Properties/SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\IProviderProperties.cs" />
-    <Compile Include="src\Plugin\Pixie\Messages\GrantMessage.cs" />
-    <Compile Include="src\Plugin\Pixie\Messages\IPixieMessage.cs" />
-    <Compile Include="src\Plugin\Pixie\Messages\LoginMessage.cs" />
-    <Compile Include="src\Plugin\Pixie\Messages\PixieMessageType.cs" />
-    <Compile Include="src\Plugin\Pixie\Messages\WelcomeMessage.cs" />
-    <Compile Include="src\Plugin\Pixie\PixieConnection.cs" />
-    <Compile Include="src\Plugin\Pixie\PixieProviderPlugin.cs" />
-    <Compile Include="src\PriceMap.cs" />
-    <Compile Include="src\DefaultSession.cs" />
-    <Compile Include="src\IBackground.cs" />
-    <Compile Include="src\INAPIEventHandler.cs" />
-    <Compile Include="src\IllegalStateException.cs" />
-    <Compile Include="src\IllegalSubjectException.cs" />
-    <Compile Include="src\IPriceField.cs" />
-    <Compile Include="src\IPriceMap.cs" />
-    <Compile Include="src\IProviderPlugin.cs" />
-    <Compile Include="src\ISession.cs" />
-    <Compile Include="src\IBulkSubscriber.cs" />
-    <Compile Include="src\ISubscriber.cs" />
-    <Compile Include="src\MasterSession.cs" />
-    <Compile Include="src\NAPI.cs" />
-    <Compile Include="src\Plugin\Puffin\IPuffinSessionListener.cs" />
-    <Compile Include="src\Plugin\Puffin\LoginEncryption.cs" />
-    <Compile Include="src\Plugin\Puffin\MessageFormatter.cs" />
-    <Compile Include="src\Plugin\Puffin\PriceAdaptor.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinConnection.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinElement.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinMessageReader.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinProviderPlugin.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinSyntaxException.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinTagName.cs" />
-    <Compile Include="src\Plugin\Puffin\PuffinToken.cs" />
-    <Compile Include="src\Plugin\Puffin\TokenDictionary.cs" />
-    <Compile Include="src\Plugin\Puffin\TokenType.cs" />
-    <Compile Include="src\Plugin\Puffin\FieldExtractor.cs" />
-    <Compile Include="src\ProviderProperties.cs" />
-    <Compile Include="src\SubscriptionStatus.cs" />
-    <Compile Include="src\SubscriptionStatusEvent.cs" />
-    <Compile Include="src\PriceUpdateEvent.cs" />
-    <Compile Include="src\ProviderStatus.cs" />
-    <Compile Include="src\FieldName.cs" />
-    <Compile Include="src\ProviderStatusEvent.cs" />
-    <Compile Include="src\Tick.cs" />
-    <Compile Include="src\Tools\AtomicBoolean.cs" />
-    <Compile Include="src\Tools\ByteBuffer.cs" />
-    <Compile Include="src\Tools\GUID.cs" />
-    <Compile Include="src\Tools\JavaTime.cs" />
-    <Compile Include="src\Tools\NameCache.cs" />
-    <Compile Include="src\Tools\ServiceProperties.cs" />
-    <Compile Include="src\Tools\TunnelException.cs" />
-    <Compile Include="src\Tools\Varint.cs" />
-    <Compile Include="src\ValueParser.cs" />
+    <Compile Include="src\NAPIClient.cs" />
+    <Compile Include="src\PriceManager\DefaultSession.cs" />
+    <Compile Include="src\PriceManager\FieldName.cs" />
+    <Compile Include="src\PriceManager\IBackground.cs" />
+    <Compile Include="src\PriceManager\IBulkSubscriber.cs" />
+    <Compile Include="src\PriceManager\IllegalStateException.cs" />
+    <Compile Include="src\PriceManager\IllegalSubjectException.cs" />
+    <Compile Include="src\PriceManager\INAPIEventHandler.cs" />
+    <Compile Include="src\PriceManager\IPriceField.cs" />
+    <Compile Include="src\PriceManager\IPriceMap.cs" />
+    <Compile Include="src\PriceManager\IProviderPlugin.cs" />
+    <Compile Include="src\PriceManager\IProviderProperties.cs" />
+    <Compile Include="src\PriceManager\ISession.cs" />
+    <Compile Include="src\PriceManager\ISubscriber.cs" />
+    <Compile Include="src\PriceManager\MasterSession.cs" />
+    <Compile Include="src\PriceManager\NAPI.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\Messages\GrantMessage.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\Messages\IPixieMessage.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\Messages\LoginMessage.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\Messages\PixieMessageType.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\Messages\WelcomeMessage.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\PixieConnection.cs" />
+    <Compile Include="src\PriceManager\Plugin\Pixie\PixieProviderPlugin.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\FieldExtractor.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\IPuffinSessionListener.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\LoginEncryption.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\MessageFormatter.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PriceAdaptor.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinConnection.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinElement.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinMessageReader.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinProviderPlugin.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinSyntaxException.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinTagName.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\PuffinToken.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\TokenDictionary.cs" />
+    <Compile Include="src\PriceManager\Plugin\Puffin\TokenType.cs" />
+    <Compile Include="src\PriceManager\PriceMap.cs" />
+    <Compile Include="src\PriceManager\PriceUpdateEvent.cs" />
+    <Compile Include="src\PriceManager\ProviderProperties.cs" />
+    <Compile Include="src\PriceManager\ProviderStatus.cs" />
+    <Compile Include="src\PriceManager\ProviderStatusEvent.cs" />
+    <Compile Include="src\PriceManager\SubscriptionStatus.cs" />
+    <Compile Include="src\PriceManager\SubscriptionStatusEvent.cs" />
+    <Compile Include="src\PriceManager\Tick.cs" />
+    <Compile Include="src\PriceManager\Tools\AtomicBoolean.cs" />
+    <Compile Include="src\PriceManager\Tools\ByteBuffer.cs" />
+    <Compile Include="src\PriceManager\Tools\GUID.cs" />
+    <Compile Include="src\PriceManager\Tools\JavaTime.cs" />
+    <Compile Include="src\PriceManager\Tools\NameCache.cs" />
+    <Compile Include="src\PriceManager\Tools\ServiceProperties.cs" />
+    <Compile Include="src\PriceManager\Tools\TunnelException.cs" />
+    <Compile Include="src\PriceManager\Tools\Varint.cs" />
+    <Compile Include="src\PriceManager\ValueParser.cs" />
     <Compile Include="test\DefaultSessionTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
@@ -112,9 +113,6 @@
     <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" Condition=" '$(Configuration)' != 'Release' " />
     <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\Plugin\Puffin" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

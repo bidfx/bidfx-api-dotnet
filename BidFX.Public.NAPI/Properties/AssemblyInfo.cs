@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("BidFX.Public.NAPI")]
+[assembly: AssemblyTitle("BidFX.Public.NAPIClient")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("BidFX.Public.NAPI")]
+[assembly: AssemblyProduct("BidFX.Public.NAPIClient")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

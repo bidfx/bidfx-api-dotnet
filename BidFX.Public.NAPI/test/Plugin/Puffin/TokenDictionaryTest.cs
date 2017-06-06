@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BidFX.Public.NAPI.Plugin.Puffin;
+using BidFX.Public.NAPI.PriceManager.Plugin.Puffin;
 using NUnit.Framework;
 
 namespace BidFX.Public.NAPI.test.Plugin.Puffin
