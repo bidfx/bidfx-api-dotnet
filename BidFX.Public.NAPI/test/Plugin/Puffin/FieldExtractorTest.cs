@@ -9,7 +9,7 @@ namespace BidFX.Public.NAPI.test.Plugin.Puffin
         private const string GrantMsg = "<Grant Text=\"\" Access=\"true\"/>";
 
         private const string WelcomeMsg =
-            "<Welcome Name=\"PublicPuffin\" Version=\"8\" ZipRequests=\"false\" ZipPrices=\"true\" Encrypt=\"false\" SessionKey=\"162asosvck5wy\" Interval=\"60000\" Host=\"lndwc-27-230.dev.tradingscreen.com\" Port=\"9901\" Time=\"1480424571256\" ServerId=\"027f06ada41786c54e9ead0f2142fd4d\" SendWeightedMatchers=\"false\" PublicKey=\"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI1cki5X8ON3arU1UToapmjjXlQOM4k7TCGrSLL4uYcdhpTFpWcsS+UWmX9SaWHytLEwEW8onnzIx+GUvG9wyXMCAwEAAQ==\"/>";
+            "<WelcomeMessage Name=\"PublicPuffin\" Version=\"8\" ZipRequests=\"false\" ZipPrices=\"true\" Encrypt=\"false\" SessionKey=\"162asosvck5wy\" Interval=\"60000\" Host=\"lndwc-27-230.dev.tradingscreen.com\" Port=\"9901\" Time=\"1480424571256\" ServerId=\"027f06ada41786c54e9ead0f2142fd4d\" SendWeightedMatchers=\"false\" PublicKey=\"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI1cki5X8ON3arU1UToapmjjXlQOM4k7TCGrSLL4uYcdhpTFpWcsS+UWmX9SaWHytLEwEW8onnzIx+GUvG9wyXMCAwEAAQ==\"/>";
 
         [Test]
         public void BlankFieldExtraction()

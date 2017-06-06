@@ -10,7 +10,7 @@ namespace BidFX.Public.NAPI
         /// <summary>
         /// The API implementation name.
         /// </summary>
-        public const string Name = "NAPI.NET";
+        public const string Name = "NAPI";
 
         /// <summary>
         /// The assemble reference.
