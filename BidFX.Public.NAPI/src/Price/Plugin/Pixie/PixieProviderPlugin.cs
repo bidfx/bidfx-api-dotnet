@@ -140,8 +140,8 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
                     Username = Username,
                     Password = Password,
                     Alias = ServiceProperties.Username(),
-                    Application = NAPI.Name,
-                    ApplicationVersion = NAPI.Version
+                    Application = PublicNAPI.Name,
+                    ApplicationVersion = PublicNAPI.Version
                 };
                 WriteMesasge(login);
                 var grantMessage = ReadGrantMessage();

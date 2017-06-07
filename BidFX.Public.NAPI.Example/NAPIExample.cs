@@ -13,7 +13,7 @@ namespace BidFX.Public.NAPI.Example
 
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + Price.NAPI.Name + " version " + Price.NAPI.Version);
+            Log.Info("testing with " + PublicNAPI.Name + " version " + PublicNAPI.Version);
             new NAPIExample().RunTest();
         }
 

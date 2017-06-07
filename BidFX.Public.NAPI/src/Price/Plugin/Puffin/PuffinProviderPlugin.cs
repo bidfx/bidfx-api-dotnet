@@ -222,7 +222,7 @@ namespace BidFX.Public.NAPI.Price.Plugin.Puffin
                     .AddAttribute("Alias", ServiceProperties.Username())
                     .AddAttribute("Name", Username)
                     .AddAttribute("Password", encryptedPassword)
-                    .AddAttribute("Description", NAPI.Name)
+                    .AddAttribute("Description", PublicNAPI.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grant = ReadMessage();
@@ -239,9 +239,9 @@ namespace BidFX.Public.NAPI.Price.Plugin.Puffin
                     .AddAttribute("startTime", _startTime)
                     .AddAttribute("username", Username)
                     .AddAttribute("userAlias", ServiceProperties.Username())
-                    .AddAttribute("name", NAPI.Name)
-                    .AddAttribute("package", NAPI.Package)
-                    .AddAttribute("version", NAPI.Version)
+                    .AddAttribute("name", PublicNAPI.Name)
+                    .AddAttribute("package", PublicNAPI.Package)
+                    .AddAttribute("version", PublicNAPI.Version)
                     .AddAttribute("protocolVersion", ProtocolVersion)
                     .AddAttribute("environment", ServiceProperties.Environment(Host))
                     .AddAttribute("city", ServiceProperties.City())

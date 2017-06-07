@@ -1,21 +1,21 @@
 ﻿using System.Reflection;
 
-namespace BidFX.Public.NAPI.Price
+namespace BidFX.Public.NAPI
 {
     /// <summary>
-    /// Provides version information about this implementation of the NAPIClient.
+    /// Provides version information about this implementation of the Public-API.
     /// </summary>
-    public class NAPI
+    public class PublicNAPI
     {
         /// <summary>
         /// The API implementation name.
         /// </summary>
-        public const string Name = "NAPIClient";
+        public const string Name = "Public API .Net";
 
         /// <summary>
         /// The assemble reference.
         /// </summary>
-        public static readonly Assembly Reference = typeof(NAPI).Assembly;
+        public static readonly Assembly Reference = typeof(PublicNAPI).Assembly;
 
         /// <summary>
         /// The package name.
