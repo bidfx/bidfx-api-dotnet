@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BidFX.Public.NAPI.PriceManager.Tools;
+using BidFX.Public.NAPI.Price.Tools;
 using NUnit.Framework;
 
 namespace BidFX.Public.NAPI.test.Tools

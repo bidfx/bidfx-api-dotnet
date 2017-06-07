@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
-using BidFX.Public.NAPI.PriceManager;
-using BidFX.Public.NAPI.PriceManager.Plugin.Puffin;
+using BidFX.Public.NAPI.Price;
 
 namespace BidFX.Public.NAPI.Example
 {
@@ -10,33 +9,33 @@ namespace BidFX.Public.NAPI.Example
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly PriceManager _priceManager;
+
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + PriceManager.NAPI.Name + " version " + PriceManager.NAPI.Version);
+            Log.Info("testing with " + Price.NAPI.Name + " version " + Price.NAPI.Version);
             new NAPIExample().RunTest();
         }
 
         private NAPIExample()
         {
-            var session = DefaultSession.Session;
-            session.AddProviderPlugin(new PuffinProviderPlugin
+            var client = new Client
             {
-                Host = "ny-tunnel.qadev.tradingscreen.com",
+                Host = "ny-tunnel.uatdev.tradingscreen.com",
                 Port = 443,
                 Tunnel = true,
-                Username = "axaapi",
-                Password = "HelloWorld123"
-            });
-            session.PriceUpdateEventHandler += OnPriceUpdate;
-            session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
-            session.ProviderStatusEventHandler += OnProviderStatus;
-            session.Start();
+                Username = "pmacdona",
+                Password = "Secret99"
+            };
+            _priceManager = client.GetPriceManager();
+            _priceManager.PriceUpdateEventHandler += OnPriceUpdate;
+            _priceManager.SubscriptionStatusEventHandler += OnSubscriptionStatus;
+            _priceManager.ProviderStatusEventHandler += OnProviderStatus;
         }
 
         private void RunTest()
         {
-            var session = DefaultSession.Session;
-            if (session.WaitUntilReady(TimeSpan.FromSeconds(15)))
+            if (_priceManager.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
                 SendSubscriptions();
@@ -44,12 +43,21 @@ namespace BidFX.Public.NAPI.Example
             else
             {
                 Log.Warn("timed out waiting on session to be ready");
-                foreach (var providerProperties in session.ProviderProperties())
+                foreach (var providerProperties in _priceManager.ProviderProperties())
                 {
                     Log.Info(providerProperties.ToString());
                 }
-                session.Stop();
+                _priceManager.Stop();
             }
+        }
+
+        private void SendSubscriptions()
+        {
+            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURGBP");
+            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD");
+            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD");
+            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD");
+            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD");
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
@@ -69,16 +77,6 @@ namespace BidFX.Public.NAPI.Example
                      providerStatusEvent.PreviousProviderStatus
                      + " to " + providerStatusEvent.ProviderStatus
                      + " because: " + providerStatusEvent.StatusReason);
-        }
-
-        private static void SendSubscriptions()
-        {
-            var subscriber = DefaultSession.Subscriber;
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1288894691");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=FR0010096941");
         }
     }
 }

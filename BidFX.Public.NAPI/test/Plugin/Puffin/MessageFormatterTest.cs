@@ -1,4 +1,4 @@
-﻿using BidFX.Public.NAPI.PriceManager.Plugin.Puffin;
+﻿using BidFX.Public.NAPI.Price.Plugin.Puffin;
 using NUnit.Framework;
 
 namespace BidFX.Public.NAPI.test.Plugin.Puffin
