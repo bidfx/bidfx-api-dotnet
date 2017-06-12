@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BidFX.Public.API</RootNamespace>
+    <AssemblyName>BidFX.Public.API</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>4</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb" Condition=" '$(Configuration)' != 'Release' ">
+      <HintPath>..\packages\NUnit.3.5.0\lib\net40\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties/SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Client.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\AckMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\SubscriptionSync.cs" />
+    <Compile Include="src\PublicApi.cs" />
+    <Compile Include="src\Price\FieldName.cs" />
+    <Compile Include="src\Price\IBackground.cs" />
+    <Compile Include="src\Price\IBulkSubscriber.cs" />
+    <Compile Include="src\Price\IllegalStateException.cs" />
+    <Compile Include="src\Price\IllegalSubjectException.cs" />
+    <Compile Include="src\Price\IApiEventHandler.cs" />
+    <Compile Include="src\Price\IPriceField.cs" />
+    <Compile Include="src\Price\IPriceMap.cs" />
+    <Compile Include="src\Price\IProviderPlugin.cs" />
+    <Compile Include="src\Price\IProviderProperties.cs" />
+    <Compile Include="src\Price\ISession.cs" />
+    <Compile Include="src\Price\ISubscriber.cs" />
+    <Compile Include="src\Price\PriceManager.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\GrantMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\IOutgoingPixieMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\LoginMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\PixieMessageType.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\WelcomeMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\PixieConnection.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\PixieProviderPlugin.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\FieldExtractor.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\IPuffinSessionListener.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\LoginEncryption.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\MessageFormatter.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PriceAdaptor.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinConnection.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinElement.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinMessageReader.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinProviderPlugin.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinSyntaxException.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinTagName.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\PuffinToken.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\TokenDictionary.cs" />
+    <Compile Include="src\Price\Plugin\Puffin\TokenType.cs" />
+    <Compile Include="src\Price\PriceMap.cs" />
+    <Compile Include="src\Price\PriceUpdateEvent.cs" />
+    <Compile Include="src\Price\ProviderProperties.cs" />
+    <Compile Include="src\Price\ProviderStatus.cs" />
+    <Compile Include="src\Price\ProviderStatusEvent.cs" />
+    <Compile Include="src\Price\SubscriptionStatus.cs" />
+    <Compile Include="src\Price\SubscriptionStatusEvent.cs" />
+    <Compile Include="src\Price\Tick.cs" />
+    <Compile Include="src\Price\Tools\AtomicBoolean.cs" />
+    <Compile Include="src\Price\Tools\ByteBuffer.cs" />
+    <Compile Include="src\Price\Tools\GUID.cs" />
+    <Compile Include="src\Price\Tools\JavaTime.cs" />
+    <Compile Include="src\Price\Tools\NameCache.cs" />
+    <Compile Include="src\Price\Tools\ServiceProperties.cs" />
+    <Compile Include="src\Price\Tools\TunnelException.cs" />
+    <Compile Include="src\Price\Tools\Varint.cs" />
+    <Compile Include="src\Price\ValueParser.cs" />
+    <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PriceAdaptorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
