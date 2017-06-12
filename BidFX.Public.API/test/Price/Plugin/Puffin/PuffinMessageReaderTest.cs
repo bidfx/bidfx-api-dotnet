@@ -1,9 +1,8 @@
 using System.IO;
 using System.Text;
-using BidFX.Public.API.Price.Plugin.Puffin;
 using NUnit.Framework;
 
-namespace BidFX.Public.API.test.Plugin.Puffin
+namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     /// <author>Paul Sweeny</author>
     [TestFixture]

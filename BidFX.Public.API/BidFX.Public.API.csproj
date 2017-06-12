@@ -103,17 +103,20 @@
     <Compile Include="src\Price\Tools\TunnelException.cs" />
     <Compile Include="src\Price\Tools\Varint.cs" />
     <Compile Include="src\Price\ValueParser.cs" />
-    <Compile Include="test\Plugin\Puffin\FieldExtractorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\MessageFormatterTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PriceAdaptorTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PuffinElementTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\PuffinMessageReaderTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\TokenDictionaryTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Plugin\Puffin\ValueParserTest.cs" Condition=" '$(Configuration)' != 'Release' " />
-    <Compile Include="test\Tools\NameCacheTest.cs" Condition=" '$(Configuration)' != 'Release' " />
+    <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\MessageFormatterTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\PriceAdaptorTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\PuffinElementTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\PuffinMessageReaderTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\TokenDictionaryTest.cs" />
+    <Compile Include="test\Price\Plugin\Puffin\ValueParserTest.cs" />
+    <Compile Include="test\Price\Tools\NameCacheTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="test\Price" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

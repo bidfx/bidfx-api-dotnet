@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using BidFX.Public.API.Price.Tools;
 using NUnit.Framework;
 
-namespace BidFX.Public.API.test.Tools
+namespace BidFX.Public.API.Price.Tools
 {
     [TestFixture]
     public class NameCacheTest
