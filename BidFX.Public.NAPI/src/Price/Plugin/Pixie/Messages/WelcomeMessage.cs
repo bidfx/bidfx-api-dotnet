@@ -5,7 +5,7 @@ using BidFX.Public.NAPI.Price.Tools;
 
 namespace BidFX.Public.NAPI.Price.Plugin.Pixie.Messages
 {
-    public class WelcomeMessage : IPixieMessage
+    public class WelcomeMessage
     {
         public int Options { get; set; }
         public int Version { get; set; }
@@ -38,17 +38,37 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie.Messages
                    ", serverID=" + HexId(ServerId) + ')';
         }
 
-        public MemoryStream Encode(int version)
-        {
-            throw new NotImplementedException();
-        }
-
         public static string HexId(int id)
         {
             var hex = id.ToString("X");
             return new StringBuilder()
                 .Append("0x")
                 .Append(hex).ToString();
+        }
+
+        protected bool Equals(WelcomeMessage other)
+        {
+            return Options == other.Options && Version == other.Version && ClientId == other.ClientId && ServerId == other.ServerId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((WelcomeMessage) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Options;
+                hashCode = (hashCode * 397) ^ Version;
+                hashCode = (hashCode * 397) ^ ClientId;
+                hashCode = (hashCode * 397) ^ ServerId;
+                return hashCode;
+            }
         }
     }
 }

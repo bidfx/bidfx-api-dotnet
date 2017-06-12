@@ -49,8 +49,8 @@ namespace BidFX.Public.NAPI.Price
 
         public void Start()
         {
-            AddPublicPuffinProvider();
-//            AddHighwayProvider();
+//            AddPublicPuffinProvider();
+            AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
                 Log.Info("started");

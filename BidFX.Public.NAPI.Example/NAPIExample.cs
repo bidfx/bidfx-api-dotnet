@@ -38,7 +38,7 @@ namespace BidFX.Public.NAPI.Example
             if (_priceManager.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendSubscriptions();
+//                SendSubscriptions();
             }
             else
             {

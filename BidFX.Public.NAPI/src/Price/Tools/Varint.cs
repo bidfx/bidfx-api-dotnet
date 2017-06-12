@@ -36,6 +36,16 @@ namespace BidFX.Public.NAPI.Price.Tools
             stream.WriteByte((byte)value);
         }
 
+        public static void WriteU64(Stream stream, long value)
+        {
+            while ((value & ~MaskLow7Bits) != 0)
+            {
+                stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
+                value = (int) ((uint)value >> BitsPerByte);
+            }
+            stream.WriteByte((byte)value);
+        }
+
         private static bool IsFinalByte(int b)
         {
             return b >= 0;

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -35,7 +36,6 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
         private int _negotiatedVersion;
         private readonly GUID _guid = new GUID();
         private Stream _stream;
-        private readonly ByteBuffer _buffer = new ByteBuffer();
 
         public PixieProviderPlugin()
         {
@@ -49,22 +49,6 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
             Tunnel = true;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             _outputThread = new Thread(RunningLoop) {Name = name};
-        }
-
-        private void RunningLoop()
-        {
-            Log.Info("started thread for GUID " + _guid);
-            while (_running.Value)
-            {
-                HandshakeWithServer();
-                _buffer.Clear();
-                if (_running.Value)
-                {
-                    Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
-                    Thread.Sleep(ReconnectInterval);
-                }
-            }
-            Log.Info("thread stopped");
         }
 
         public void Subscribe(string subject)
@@ -116,6 +100,38 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
             }
         }
 
+        private void RunningLoop()
+        {
+            Log.Info("started thread for GUID " + _guid);
+            while (_running.Value)
+            {
+                ManagePixieConnection();
+                if (_running.Value)
+                {
+                    Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                    Thread.Sleep(ReconnectInterval);
+                }
+            }
+            Log.Info("thread stopped");
+        }
+
+        private void ManagePixieConnection()
+        {
+            try
+            {
+                HandshakeWithServer();
+//                _pixieConnection = new PixieConnection();
+                NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
+//                _pixieConnection.ProcessIncommingMessages();
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Pixie price server");
+            }
+            catch (Exception e)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("connection terminated by " + e.Message);
+            }
+        }
+
+
         private void HandshakeWithServer()
         {
             try
@@ -126,7 +142,9 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
                 if (Tunnel)
                 {
                     UpgradeToSsl();
-                    TunnelToHighway();
+                    SendTunnelHeader();
+                    SendPixieUrl();
+                    ReadTunnelResponse();
                 }
                 else
                 {
@@ -146,6 +164,8 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
                 WriteMesasge(login);
                 var grantMessage = ReadGrantMessage();
                 Log.Info("Received grant: "+grantMessage);
+                if (!grantMessage.Granted) throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
+                Log.Info("Authenticated with Pixie server, client is logged in.");
             }
             catch (Exception e)
             {
@@ -170,7 +190,7 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
             return new GrantMessage(message);
         }
 
-        private void CheckType(Stream stream, byte expectedType)
+        private static void CheckType(Stream stream, byte expectedType)
         {
             var receivedType = (byte) stream.ReadByte();
             if (receivedType != expectedType)
@@ -179,7 +199,7 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
             }
         }
 
-        private void WriteMesasge(IPixieMessage message)
+        private void WriteMesasge(IOutgoingPixieMessage message)
         {
             var memoryStream = message.Encode(_negotiatedVersion);
             var frameLength = Convert.ToInt32(memoryStream.Length);
@@ -229,13 +249,6 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
             return chain.ChainStatus.Length == 0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
         }
 
-        private void TunnelToHighway()
-        {
-            SendTunnelHeader();
-            SendPixieUrl();
-            ReadTunnelResponse();
-        }
-
         private void SendTunnelHeader()
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
@@ -250,12 +263,13 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie
 
         private void ReadTunnelResponse()
         {
-            var response = _buffer.ReadLineFromStream(_stream);
+            var buffer = new ByteBuffer();
+            var response = buffer.ReadLineFromStream(_stream);
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("received: " + response);
             }
-            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFromStream(_stream).Length != 0)
+            if (!"HTTP/1.1 200 OK".Equals(response) || buffer.ReadLineFromStream(_stream).Length != 0)
             {
                 const string prefix = "HTTP/1.1 ";
                 if (response.StartsWith(prefix))

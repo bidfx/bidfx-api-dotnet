@@ -209,7 +209,9 @@ namespace BidFX.Public.NAPI.Price.Plugin.Puffin
                 if (Tunnel)
                 {
                     UpgradeToSsl();
-                    TunnelToPuffin();
+                    SendTunnelHeader();
+                    SendPuffinUrl();
+                    ReadTunnelResponse();
                 }
                 else
                 {
@@ -277,13 +279,6 @@ namespace BidFX.Public.NAPI.Price.Plugin.Puffin
             {
                 throw new TunnelException(Name + " failed to upgrade stream to SSL, cannot tunnel to puffin");
             }
-        }
-
-        private void TunnelToPuffin()
-        {
-            SendTunnelHeader();
-            SendPuffinUrl();
-            ReadTunnelResponse();
         }
 
         private void SendPuffinUrl()

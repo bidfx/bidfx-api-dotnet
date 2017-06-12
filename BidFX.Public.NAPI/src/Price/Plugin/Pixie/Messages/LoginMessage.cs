@@ -3,7 +3,7 @@ using BidFX.Public.NAPI.Price.Tools;
 
 namespace BidFX.Public.NAPI.Price.Plugin.Pixie.Messages
 {
-    public class LoginMessage : IPixieMessage
+    public class LoginMessage : IOutgoingPixieMessage
     {
         public string Username { get; set; }
         public string Password { get; set; }
@@ -22,6 +22,32 @@ namespace BidFX.Public.NAPI.Price.Plugin.Pixie.Messages
             Varint.WriteString(memoryStream, Application);
             Varint.WriteString(memoryStream, ApplicationVersion);
             return memoryStream;
+        }
+
+        protected bool Equals(LoginMessage other)
+        {
+            return string.Equals(Username, other.Username) && string.Equals(Password, other.Password) && string.Equals(Alias, other.Alias) && string.Equals(Application, other.Application) && string.Equals(ApplicationVersion, other.ApplicationVersion);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LoginMessage) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Username != null ? Username.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Password != null ? Password.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Alias != null ? Alias.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Application != null ? Application.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ApplicationVersion != null ? ApplicationVersion.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }
