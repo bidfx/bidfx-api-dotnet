@@ -5,10 +5,14 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("BidFX.Public.NAPIClient")]
+[assembly: AssemblyVersion("1.0.2")]
+[assembly: AssemblyFileVersion("1.0.2")]
+[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCompany("BidFX Limited")]
+[assembly: AssemblyTitle("BidFX.Public.API")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("BidFX.Public.NAPIClient")]
+[assembly: AssemblyProduct("BidFX.Public.API")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
