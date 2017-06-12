@@ -94,7 +94,7 @@ namespace BidFX.Public.NAPI.Plugin.Puffin
         private static bool IsPermissionGranted(string subject)
         {
             // TODO remove this one we have better server-side entitlement checks
-            return subject.Contains("AssetClass=FixedIncome,") && subject.Contains("Source=Lynx,");
+            return true;
         }
 
         public void Unsubscribe(string subject)

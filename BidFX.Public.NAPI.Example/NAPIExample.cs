@@ -73,11 +73,7 @@ namespace BidFX.Public.NAPI.Example
         private static void SendSubscriptions()
         {
             var subscriber = DefaultSession.Subscriber;
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A1R04X6");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1344742892");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS0906394043");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=XS1288894691");
-            subscriber.Subscribe("AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=FR0010096941");
+            subscriber.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD");
         }
     }
 }
