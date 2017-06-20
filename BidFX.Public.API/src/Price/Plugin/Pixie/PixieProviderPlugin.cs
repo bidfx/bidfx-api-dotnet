@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Tools;
@@ -33,9 +29,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private PixieConnection _pixieConnection;
-        private int _negotiatedVersion;
         private readonly GUID _guid = new GUID();
         private Stream _stream;
+        private readonly PixieProtocolOptions _protocolOptions = new PixieProtocolOptions();
 
         public PixieProviderPlugin()
         {
@@ -51,7 +47,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _outputThread = new Thread(RunningLoop) {Name = name};
         }
 
-        public void Subscribe(string subject)
+        public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (_pixieConnection == null)
@@ -65,7 +61,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
         }
 
-        public void Unsubscribe(string subject)
+        public void Unsubscribe(Subject.Subject subject)
         {
             if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
             if (_pixieConnection != null)
@@ -120,7 +116,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             try
             {
                 HandshakeWithServer();
-//                _pixieConnection = new PixieConnection();
+                _pixieConnection = new PixieConnection(_stream, this, _protocolOptions);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
 //                _pixieConnection.ProcessIncommingMessages();
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Pixie price server");
@@ -141,25 +137,27 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    UpgradeToSsl();
-                    SendTunnelHeader();
-                    SendPixieUrl();
-                    ReadTunnelResponse();
+                    ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
+                    var tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    ConnectionTools.SendMessage(_stream, tunnelHeader);
+                    ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
+                    ConnectionTools.ReadTunnelResponse(_stream);
                 }
                 else
                 {
-                    SendPixieUrl();
+                    ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                 }
+                _protocolOptions.ConfigureStream(_stream);
                 var welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
-                _negotiatedVersion = welcome.Version;
+                _protocolOptions.Version = welcome.Version;
                 var login = new LoginMessage
                 {
                     Username = Username,
                     Password = Password,
                     Alias = ServiceProperties.Username(),
-                    Application = PublicNAPI.Name,
-                    ApplicationVersion = PublicNAPI.Version
+                    Application = PublicApi.Name,
+                    ApplicationVersion = PublicApi.Version
                 };
                 WriteFrame(login);
                 var grantMessage = ReadGrantMessage();
@@ -201,7 +199,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode(_negotiatedVersion);
+            var encodedMessage = message.Encode(_protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
             var buffer = encodedMessage.GetBuffer();
             Varint.WriteU32(_stream, frameLength);
@@ -227,72 +225,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return new MemoryStream(frameBuffer);
         }
 
-        private void UpgradeToSsl()
-        {
-            var sslStream = DisableHostnameSslChecks
-                ? new SslStream(_stream, false, AllowCertsFromTS)
-                : new SslStream(_stream, false);
-            sslStream.AuthenticateAsClient(Host);
-            if (sslStream.IsAuthenticated)
-            {
-                _stream = sslStream;
-                if (Log.IsDebugEnabled) Log.Debug(Name + " upgraded stream to SSL");
-            }
-            else
-            {
-                throw new TunnelException(Name + " failed to upgrade stream to SSL, cannot tunnel to puffin");
-            }
-        }
-
-        private bool AllowCertsFromTS(Object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors errors)
-        {
-            return chain.ChainStatus.Length == 0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
-        }
-
-        private void SendTunnelHeader()
-        {
-            var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
-            SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + _guid + "\r\n\r\n");
-        }
-
-        private void SendPixieUrl()
-        {
-            SendMessage("pixie://" + Username + "@localhost:9902?version=3&heartbeat=30&idle=60&minti=100\n");
-        }
-
-        private void ReadTunnelResponse()
-        {
-            var buffer = new ByteBuffer();
-            var response = buffer.ReadLineFromStream(_stream);
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("received: " + response);
-            }
-            if (!"HTTP/1.1 200 OK".Equals(response) || buffer.ReadLineFromStream(_stream).Length != 0)
-            {
-                const string prefix = "HTTP/1.1 ";
-                if (response.StartsWith(prefix))
-                {
-                    response = response.Substring(prefix.Length, response.Length - prefix.Length);
-                }
-                throw new TunnelException("tunnel rejected with response: " + response);
-            }
-        }
-
-
-        private void SendMessage(string message)
-        {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug(Name + " sending: " + message);
-            }
-            _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
-            _stream.Flush();
-        }
-
         // TODO implement subject check
-        public bool IsSubjectCompatible(string subject)
+        public bool IsSubjectCompatible(Subject.Subject subject)
         {
             return true;
         }
