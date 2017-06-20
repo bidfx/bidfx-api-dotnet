@@ -1,10 +1,11 @@
 using System;
 using System.Reflection;
 using BidFX.Public.API.Price;
+using BidFX.Public.API.Price.Subject;
 
 namespace BidFX.Public.API.Example
 {
-    internal class NapiExample
+    internal class ApiExample
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -13,11 +14,11 @@ namespace BidFX.Public.API.Example
 
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + PublicNAPI.Name + " version " + PublicNAPI.Version);
-            new NapiExample().RunTest();
+            Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
+            new ApiExample().RunTest();
         }
 
-        private NapiExample()
+        private ApiExample()
         {
             var client = new Client
             {
@@ -38,7 +39,7 @@ namespace BidFX.Public.API.Example
             if (_priceManager.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-//                SendSubscriptions();
+                SendSubscriptions();
             }
             else
             {
@@ -53,11 +54,11 @@ namespace BidFX.Public.API.Example
 
         private void SendSubscriptions()
         {
-            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURGBP");
-            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD");
-            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD");
-            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD");
-            _priceManager.Subscribe("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD");
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURGBP"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD"));
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)

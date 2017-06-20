@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public string Password { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
-        public bool DisableHostnameSSLChecks { get; set; }
+        public bool DisableHostnameSslChecks { get; set; }
 
         private readonly GUID _guid = new GUID();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
@@ -72,7 +72,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             InapiEventHandler.OnProviderStatus(this, previousStatus);
         }
 
-        public void Subscribe(string subject)
+        public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA
@@ -91,13 +91,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
         }
 
-        private static bool IsPermissionGranted(string subject)
+        private static bool IsPermissionGranted(Subject.Subject subject)
         {
             // TODO remove this one we have better server-side entitlement checks
             return true;
         }
 
-        public void Unsubscribe(string subject)
+        public void Unsubscribe(Subject.Subject subject)
         {
             if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
             if (_puffinConnection != null)
@@ -106,7 +106,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
         }
 
-        public bool IsSubjectCompatible(string subject)
+        public bool IsSubjectCompatible(Subject.Subject subject)
         {
             // TODO use a subject filter to route between plugins
             return true;
@@ -208,10 +208,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    UpgradeToSsl();
-                    SendTunnelHeader();
+                    ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
+                    var tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    ConnectionTools.SendMessage(_stream, tunnelHeader);
                     SendPuffinUrl();
-                    ReadTunnelResponse();
+                    ConnectionTools.ReadTunnelResponse(_stream);
                 }
                 else
                 {
@@ -220,11 +221,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 var welcome = ReadMessage();
                 var publicKey = FieldExtractor.Extract(welcome, "PublicKey");
                 var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
-                SendMessage(new PuffinElement(PuffinTagName.Login)
+                ConnectionTools.SendMessage(_stream, new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
                     .AddAttribute("Name", Username)
                     .AddAttribute("Password", encryptedPassword)
-                    .AddAttribute("Description", PublicNAPI.Name)
+                    .AddAttribute("Description", PublicApi.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
                 var grant = ReadMessage();
@@ -234,16 +235,16 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                                                       + FieldExtractor.Extract(grant, "Text"));
                 }
                 ReadMessage(); //Service description
-                SendMessage(new PuffinElement(PuffinTagName.ServiceDescription)
+                ConnectionTools.SendMessage(_stream, new PuffinElement(PuffinTagName.ServiceDescription)
                     .AddAttribute("GUID", _guid.ToString())
                     .AddAttribute("server", false)
                     .AddAttribute("discoverable", true)
                     .AddAttribute("startTime", _startTime)
                     .AddAttribute("username", Username)
                     .AddAttribute("userAlias", ServiceProperties.Username())
-                    .AddAttribute("name", PublicNAPI.Name)
-                    .AddAttribute("package", PublicNAPI.Package)
-                    .AddAttribute("version", PublicNAPI.Version)
+                    .AddAttribute("name", PublicApi.Name)
+                    .AddAttribute("package", PublicApi.Package)
+                    .AddAttribute("version", PublicApi.Version)
                     .AddAttribute("protocolVersion", ProtocolVersion)
                     .AddAttribute("environment", ServiceProperties.Environment(Host))
                     .AddAttribute("city", ServiceProperties.City())
@@ -261,64 +262,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
         }
 
-        private bool AllowCertsFromTS(Object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors errors)
-        {
-            return chain.ChainStatus.Length==0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
-        }
-
-        private void UpgradeToSsl()
-        {
-            var sslStream = DisableHostnameSSLChecks ? new SslStream(_stream, false, AllowCertsFromTS) : new SslStream(_stream, false);
-            sslStream.AuthenticateAsClient(Host);
-            if (sslStream.IsAuthenticated)
-            {
-                _stream = sslStream;
-                if (Log.IsDebugEnabled) Log.Debug(Name + " upgraded stream to SSL");
-            }
-            else
-            {
-                throw new TunnelException(Name + " failed to upgrade stream to SSL, cannot tunnel to puffin");
-            }
-        }
-
         private void SendPuffinUrl()
         {
-            SendMessage("puffin://" + Username + "@puffin?encrypt=false&zipPrices=true&zipRequests=false\n");
-        }
-
-        private void SendTunnelHeader()
-        {
-            var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(Username + ':' + Password));
-            SendMessage("CONNECT " + Service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + _guid + "\r\n\r\n");
-        }
-
-        private void ReadTunnelResponse()
-        {
-            var response = _buffer.ReadLineFromStream(_stream);
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("received: " + response);
-            }
-            if (!"HTTP/1.1 200 OK".Equals(response) || _buffer.ReadLineFromStream(_stream).Length != 0)
-            {
-                const string prefix = "HTTP/1.1 ";
-                if (response.StartsWith(prefix))
-                {
-                    response = response.Substring(prefix.Length, response.Length - prefix.Length);
-                }
-                throw new TunnelException("tunnel rejected with response: " + response);
-            }
-        }
-
-        private void SendMessage(string message)
-        {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug(Name + " sending: " + message);
-            }
-            _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
-            _stream.Flush();
+            ConnectionTools.SendMessage(_stream,
+                "puffin://" + Username + "@puffin?encrypt=false&zipPrices=true&zipRequests=false\n");
         }
 
         private string ReadMessage()

@@ -11,7 +11,7 @@
         /// <param name="subject">the subscribed subject</param>
         /// <param name="priceUpdate">the price update</param>
         /// <param name="replaceAllFields">flags if all fields should change</param>
-        void OnPriceUpdate(string subject, IPriceMap priceUpdate, bool replaceAllFields);
+        void OnPriceUpdate(Subject.Subject subject, IPriceMap priceUpdate, bool replaceAllFields);
 
         /// <summary>
         /// Handled a subscription status event from one of the connected price feeds.
@@ -19,7 +19,7 @@
         /// <param name="subject">the subject of the updated subscription</param>
         /// <param name="status">the new status</param>
         /// <param name="reason">the reason for the status change</param>
-        void OnSubscriptionStatus(string subject, SubscriptionStatus status, string reason);
+        void OnSubscriptionStatus(Subject.Subject subject, SubscriptionStatus status, string reason);
 
         /// <summary>
         /// Handled a provider plugin status event from one of the providers.

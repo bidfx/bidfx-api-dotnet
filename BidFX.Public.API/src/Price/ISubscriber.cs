@@ -9,12 +9,13 @@
         /// Subscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject to subscribe to.</param>
-        void Subscribe(string subject);
+        /// <param name="refresh">A flag that is set to true when the caller is attempting to refresh an existing subscription.</param>
+        void Subscribe(Subject.Subject subject, bool refresh = false);
 
         /// <summary>
         /// Unsubscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject to unsubscribe from.</param>
-        void Unsubscribe(string subject);
+        void Unsubscribe(Subject.Subject subject);
     }
 }

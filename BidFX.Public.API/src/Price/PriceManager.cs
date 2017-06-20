@@ -49,8 +49,8 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
-//            AddPublicPuffinProvider();
-            AddHighwayProvider();
+            AddPublicPuffinProvider();
+//            AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
                 Log.Info("started");
@@ -162,25 +162,25 @@ namespace BidFX.Public.API.Price
             _providerPlugins.Add(providerPlugin);
         }
 
-        public void Subscribe(string subject)
+        public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
             _subscriptions.Add(subject);
-            RefreshSubscription(subject);
+            RefreshSubscription(subject, refresh);
         }
 
-        private void RefreshSubscription(string subject)
+        private void RefreshSubscription(Subject.Subject subject, bool refresh = true)
         {
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
                 {
-                    providerPlugin.Subscribe(subject);
+                    providerPlugin.Subscribe(subject, refresh);
                 }
             }
         }
 
-        public void Unsubscribe(string subject)
+        public void Unsubscribe(Subject.Subject subject)
         {
             Log.Info("unsubscribe from " + subject);
             _subscriptions.Remove(subject);
@@ -224,7 +224,7 @@ namespace BidFX.Public.API.Price
             }
         }
 
-        private static void ResubscribeToAllOn(IProviderPlugin providerPlugin, IEnumerable<string> subscriptions)
+        private static void ResubscribeToAllOn(IProviderPlugin providerPlugin, IEnumerable<Subject.Subject> subscriptions)
         {
             var subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
             Log.Info("resubscribing to " + subjects.Count + " instruments on " + providerPlugin.Name);
@@ -307,7 +307,7 @@ namespace BidFX.Public.API.Price
                 _session = session;
             }
 
-            public void OnPriceUpdate(string subject, IPriceMap priceUpdate, bool replaceAllFields)
+            public void OnPriceUpdate(Subject.Subject subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
@@ -324,7 +324,7 @@ namespace BidFX.Public.API.Price
                 }
             }
 
-            public void OnSubscriptionStatus(string subject, SubscriptionStatus status, string reason)
+            public void OnSubscriptionStatus(Subject.Subject subject, SubscriptionStatus status, string reason)
             {
                 if (!_session._running.Value) return;
                 var subscription = _session._subscriptions.GetSubscription(subject);
@@ -360,9 +360,9 @@ namespace BidFX.Public.API.Price
 
         private class SubscriptionSet
         {
-            private readonly Dictionary<string, Subscription> _map = new Dictionary<string, Subscription>();
+            private readonly Dictionary<Subject.Subject, Subscription> _map = new Dictionary<Subject.Subject, Subscription>();
 
-            public void Add(string subject)
+            public void Add(Subject.Subject subject)
             {
                 lock (_map)
                 {
@@ -373,7 +373,7 @@ namespace BidFX.Public.API.Price
                 }
             }
 
-            public void Remove(string subject)
+            public void Remove(Subject.Subject subject)
             {
                 lock (_map)
                 {
@@ -384,25 +384,25 @@ namespace BidFX.Public.API.Price
                 }
             }
 
-            public IEnumerable<string> Clear()
+            public IEnumerable<Subject.Subject> Clear()
             {
                 lock (_map)
                 {
-                    var copy = new List<string>(_map.Keys);
+                    var copy = new List<Subject.Subject>(_map.Keys);
                     _map.Clear();
                     return copy;
                 }
             }
 
-            public List<string> Subjects()
+            public List<Subject.Subject> Subjects()
             {
                 lock (_map)
                 {
-                    return new List<string>(_map.Keys);
+                    return new List<Subject.Subject>(_map.Keys);
                 }
             }
 
-            public IEnumerable<string> StaleSubjects()
+            public IEnumerable<Subject.Subject> StaleSubjects()
             {
                 lock (_map)
                 {
@@ -412,7 +412,7 @@ namespace BidFX.Public.API.Price
                 }
             }
 
-            public Subscription GetSubscription(string subject)
+            public Subscription GetSubscription(Subject.Subject subject)
             {
                 lock (_map)
                 {

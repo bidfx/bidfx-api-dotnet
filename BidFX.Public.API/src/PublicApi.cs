@@ -5,7 +5,7 @@ namespace BidFX.Public.API
     /// <summary>
     /// Provides version information about this implementation of the Public-API.
     /// </summary>
-    public class PublicNAPI
+    public class PublicApi
     {
         /// <summary>
         /// The API implementation name.
@@ -15,7 +15,7 @@ namespace BidFX.Public.API
         /// <summary>
         /// The assemble reference.
         /// </summary>
-        public static readonly Assembly Reference = typeof(PublicNAPI).Assembly;
+        public static readonly Assembly Reference = typeof(PublicApi).Assembly;
 
         /// <summary>
         /// The package name.

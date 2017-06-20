@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
@@ -41,14 +42,14 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             _publisherThread.Start();
         }
 
-        public void Subscribe(string subject)
+        public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
-            QueueMessage(new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject).ToString());
+            QueueMessage(new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject.ToString()).ToString());
         }
 
-        public void Unsubscribe(string subject)
+        public void Unsubscribe(Subject.Subject subject)
         {
-            QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe).AddAttribute(Subject, subject).ToString());
+            QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe).AddAttribute(Subject, subject.ToString()).ToString());
         }
 
         public void Close(string reason)
@@ -190,21 +191,21 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             var subject = element.AttributeValue(Subject).Text;
             var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-            _provider.InapiEventHandler.OnPriceUpdate(subject, priceMap, false);
+            _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, false);
         }
 
         private void OnPriceSetMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
-            _provider.InapiEventHandler.OnPriceUpdate(subject, priceMap, true);
+            _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, true);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
             var subject = element.AttributeValue(Subject).Text;
             var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
-            _provider.InapiEventHandler.OnSubscriptionStatus(subject, status, element.AttributeValue("Text").Text);
+            _provider.InapiEventHandler.OnSubscriptionStatus(new Subject.Subject(subject), status, element.AttributeValue("Text").Text);
         }
 
         private void OnHeartbeatMessage(PuffinElement element)

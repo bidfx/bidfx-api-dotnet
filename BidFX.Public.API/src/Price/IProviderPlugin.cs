@@ -15,6 +15,6 @@
         /// </summary>
         /// <param name="subject">the subject to check</param>
         /// <returns>true if the subject is compatible and false otherwise</returns>
-        bool IsSubjectCompatible(string subject);
+        bool IsSubjectCompatible(Subject.Subject subject);
     }
 }

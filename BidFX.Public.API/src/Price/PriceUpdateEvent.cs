@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price
         /// <summary>
         /// The subject of the subscription.
         /// </summary>
-        public string Subject { get; internal set; }
+        public Subject.Subject Subject { get; internal set; }
 
         /// <summary>
         /// The complete map of price fields containing all current prices published by the venue.
