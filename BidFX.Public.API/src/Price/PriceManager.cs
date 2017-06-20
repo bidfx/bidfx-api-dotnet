@@ -49,8 +49,8 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
-            AddPublicPuffinProvider();
-//            AddHighwayProvider();
+//            AddPublicPuffinProvider();
+            AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
                 Log.Info("started");

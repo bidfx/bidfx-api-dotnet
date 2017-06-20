@@ -44,6 +44,11 @@ namespace BidFX.Public.API.Price.Subject
         {
             return _components.Length >> 1;
         }
+
+        public string[] InternalComponents()
+        {
+            return _components;
+        }
         
         public IEnumerator<SubjectComponent> GetEnumerator()
         {

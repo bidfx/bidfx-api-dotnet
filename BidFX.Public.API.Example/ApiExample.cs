@@ -54,11 +54,11 @@ namespace BidFX.Public.API.Example
 
         private void SendSubscriptions()
         {
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURGBP"));
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD"));
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD"));
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD"));
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1.00,QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20080702"));
+//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD"));
+//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD"));
+//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD"));
+//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD"));
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)

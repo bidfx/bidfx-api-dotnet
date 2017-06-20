@@ -69,19 +69,17 @@ namespace BidFX.Public.API.Price.Subject
 
         private static string InternaliseKey(string key)
         {
-            if (!CommonComponents.IsCommonKey(key))
-            {
-                SubjectValidator.ValidatePart(key, SubjectPart.Key);
-            }
+            var alt = CommonComponents.CommonKey(key);
+            if (alt != null) return alt;
+            SubjectValidator.ValidatePart(key, SubjectPart.Key);
             return key;
         }
 
         private static string InternaliseValue(string value)
         {
-            if (!CommonComponents.IsCommonKey(value))
-            {
-                SubjectValidator.ValidatePart(value, SubjectPart.Value);
-            }
+            var alt = CommonComponents.CommonKey(value);
+            if (alt != null) return alt;
+            SubjectValidator.ValidatePart(value, SubjectPart.Value);
             return value;
         }
 

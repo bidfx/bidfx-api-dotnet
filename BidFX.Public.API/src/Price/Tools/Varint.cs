@@ -28,10 +28,15 @@ namespace BidFX.Public.API.Price.Tools
 
         public static void WriteU32(Stream stream, int value)
         {
+            WriteU32(stream, (uint) value);
+        }
+
+        public static void WriteU32(Stream stream, uint value)
+        {
             while ((value & ~MaskLow7Bits) != 0)
             {
                 stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
-                value = (int) ((uint)value >> BitsPerByte);
+                value =  value >> BitsPerByte;
             }
             stream.WriteByte((byte)value);
         }
@@ -46,7 +51,7 @@ namespace BidFX.Public.API.Price.Tools
             stream.WriteByte((byte)value);
         }
 
-        private static bool IsFinalByte(int b)
+        public static bool IsFinalByte(int b)
         {
             return b >= 0;
         }
@@ -79,6 +84,15 @@ namespace BidFX.Public.API.Price.Tools
                 var bytes = Encoding.ASCII.GetBytes(s);
                 WriteU32(stream, bytes.Length + 1);
                 stream.Write(bytes, 0, bytes.Length);
+            }
+        }
+
+        public static void WriteStringArray(Stream stream, string[] array)
+        {
+            WriteU32(stream, array.Length);
+            foreach (var s in array)
+            {
+                WriteString(stream, s);
             }
         }
     }

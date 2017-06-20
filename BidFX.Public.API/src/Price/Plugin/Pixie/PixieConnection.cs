@@ -16,14 +16,22 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<AckData> _ackQueue = new BlockingCollection<AckData>();
+        private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
+        private long _lastSubscriptionCheckTime = 0;
+        private long _lastWriteTime = 0;
+        private long _subscriptionInterval = 250;
+        private readonly PixieProtocolOptions _protocolOptions;
         
         public long SubscriptionInterval { get; set; }
+        public bool CompressSubscriptions { get; set; }
 
-        public PixieConnection(Stream stream, IProviderPlugin provider)
+        public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions)
         {
             _stream = stream;
             _provider = provider;
+            _protocolOptions = protocolOptions;
             SubscriptionInterval = 250L;
+            CompressSubscriptions = true;
             new Thread(SendOutgoingMessages)
             {
                 Name = provider.Name + "-write",
@@ -31,19 +39,19 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }.Start();
         }
         
-        public void Subscribe(string subject)
+        public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
-            throw new System.NotImplementedException();
+            _subjectSetRegister.Register(subject, refresh);
         }
 
-        public void Unsubscribe(string subject)
+        public void Unsubscribe(Subject.Subject subject)
         {
-            throw new System.NotImplementedException();
+            _subjectSetRegister.Unregister(subject);
         }
 
         public void Close(string reason)
         {
-            throw new System.NotImplementedException();
+//            throw new System.NotImplementedException();
         }
 
         private void SendOutgoingMessages()
@@ -55,8 +63,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     var ackData = PollNextAck();
                     if (ackData != null)
                     {
-                        
+                        WriteFrame(ackData.ToAckMessage());
                     }
+                    else
+                    {
+                        TryAndWriteHeartbeat();
+                    }
+                    PeriodicallyCheckSubscriptions();
                 }
             }
             catch (OperationCanceledException)
@@ -78,14 +91,47 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return ackData;
         }
 
-        private void WriteMesasge(IOutgoingPixieMessage message)
+        private void TryAndWriteHeartbeat()
         {
-////            var memoryStream = message.Encode(_negotiatedVersion);
-//            var frameLength = Convert.ToInt32(memoryStream.Length);
-//            var buffer = memoryStream.GetBuffer();
-//            Varint.WriteU32(_stream, frameLength);
-//            _stream.Write(buffer, 0, frameLength);
-//            _stream.Flush();
+            var timeSinceLastWrite = DateTime.UtcNow.Millisecond - _lastWriteTime;
+            if (timeSinceLastWrite > _protocolOptions.Heartbeat * 1000)
+            {
+                WriteFrame(new HeartbeatMessage());
+            }
+        }
+
+        private void PeriodicallyCheckSubscriptions()
+        {
+            var timeNow = DateTime.UtcNow.Millisecond;
+            if (timeNow - _lastSubscriptionCheckTime > _subscriptionInterval)
+            {
+                _lastSubscriptionCheckTime = timeNow;
+                CheckAndSendSubscriptions();
+            }
+        }
+
+        private void CheckAndSendSubscriptions()
+        {
+            var subscriptionSync = _subjectSetRegister.NextSubscriptionSync();
+            if (subscriptionSync != null)
+            {
+                if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= 2)
+                {
+                    subscriptionSync.SetCompressed(CompressSubscriptions);
+                    Log.Info("syncronising subscriptions with " + subscriptionSync.Summarize());
+                    WriteFrame(subscriptionSync);
+                }
+            }
+        }
+
+        private void WriteFrame(IOutgoingPixieMessage message)
+        {
+            var encodedMessage = message.Encode(_protocolOptions.Version);
+            var frameLength = Convert.ToInt32(encodedMessage.Length);
+            var buffer = encodedMessage.GetBuffer();
+            Varint.WriteU32(_stream, frameLength);
+            _stream.Write(buffer, 0, frameLength);
+            _stream.Flush();
         }
     }
 }

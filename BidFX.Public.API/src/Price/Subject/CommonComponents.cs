@@ -432,14 +432,28 @@ namespace BidFX.Public.API.Price.Subject
         private static readonly Dictionary<string, string> ValueMap =
             CommonValues.Distinct().ToDictionary(item => item, item => item);
 
-        public static bool IsCommonKey(string key)
+        public static string CommonKey(string key)
         {
-            return KeyMap.ContainsKey(key);
+            try
+            {
+                return KeyMap[key];
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        public static bool IsCommonValue(string value)
+        public static string CommonValue(string value)
         {
-            return ValueMap.ContainsKey(value);
+            try
+            {
+                return ValueMap[value];
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }
