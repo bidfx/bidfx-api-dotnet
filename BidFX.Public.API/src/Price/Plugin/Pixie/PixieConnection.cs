@@ -39,6 +39,69 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }.Start();
         }
         
+        public void ProcessIncommingMessages()
+        {
+            try
+            {
+                while (_running.Value)
+                {
+                    var message = ReadMessageFrame();
+                    var msgType = message.ReadByte();
+                    switch (msgType)
+                    {
+                        case PixieMessageType.DataDictionary:
+
+                            break;
+                        case PixieMessageType.PriceSync:
+                            var receivedTimeNanos = JavaTime.NanoTime();
+                            var receivedTime = JavaTime.CurrentTimeMillis();
+                            var priceSync = new PriceSync(message);
+                            _ackQueue.Add(new AckData
+                            {
+                                Revision = priceSync.Revision,
+                                RevisionTime = priceSync.RevisionTime,
+                                PriceReceivedTime = receivedTime,
+                                HandlingStartNanoTime = receivedTimeNanos
+                            });
+                            break;
+                        default:
+                            if (Log.IsDebugEnabled) Log.Debug("received message with type: " + (char) msgType);
+                            break;
+                    }
+                }
+            }
+            catch (ThreadInterruptedException)
+            {
+                Log.Warn("thread interrupted while consuming");
+            }
+            catch (Exception e)
+            {
+                Log.Error("unexpected error reading from Puffin: "+ e.Message);
+            }
+            finally
+            {
+                Close("the input stream from Puffin terminated");
+            }
+        }
+
+        private MemoryStream ReadMessageFrame()
+        {
+            var frameLength = Varint.ReadU32(_stream);
+            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
+            var frameBuffer = new byte[frameLength];
+            var totalRead = 0;
+            while (totalRead < frameLength)
+            {
+                int got = _stream.Read(frameBuffer, totalRead, (int) frameLength - totalRead);
+                if (got == -1)
+                {
+                    throw new IOException("end of message stream reached (perhaps the server closed the connection)");
+                }
+                totalRead += got;
+            }
+            return new MemoryStream(frameBuffer);
+        }
+        
         public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             _subjectSetRegister.Register(subject, refresh);
@@ -93,7 +156,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void TryAndWriteHeartbeat()
         {
-            var timeSinceLastWrite = DateTime.UtcNow.Millisecond - _lastWriteTime;
+            var timeSinceLastWrite = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond) - _lastWriteTime;
             if (timeSinceLastWrite > _protocolOptions.Heartbeat * 1000)
             {
                 WriteFrame(new HeartbeatMessage());
@@ -102,7 +165,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void PeriodicallyCheckSubscriptions()
         {
-            var timeNow = DateTime.UtcNow.Millisecond;
+            var timeNow =  (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
             if (timeNow - _lastSubscriptionCheckTime > _subscriptionInterval)
             {
                 _lastSubscriptionCheckTime = timeNow;
@@ -126,12 +189,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode(_protocolOptions.Version);
+            if(Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+            var encodedMessage = message.Encode((int) _protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
-            var buffer = encodedMessage.GetBuffer();
+            var buffer = encodedMessage.ToArray();
             Varint.WriteU32(_stream, frameLength);
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
+            _lastWriteTime = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
         }
     }
 }

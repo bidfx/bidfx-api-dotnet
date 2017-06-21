@@ -6,8 +6,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     public class AckMessage : IOutgoingPixieMessage
     {
-        public long Revision { get; set; }
-        public long RevisionTime { get; set; }
+        public ulong Revision { get; set; }
+        public ulong RevisionTime { get; set; }
         public long PriceReceivedTime { get; set; }
         public long AckTime { get; set; }
         public long HandlingDuration { get; set; }
@@ -30,7 +30,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public override string ToString()
         {
             return "Ack(revision=" + Revision
-                   + ", revisionTime=" + JavaTime.IsoDateFormat(new DateTime(RevisionTime))
+                   + ", revisionTime=" + JavaTime.IsoDateFormat(new DateTime((long) RevisionTime))
                    + ", priceReceivedTime=" + JavaTime.IsoDateFormat(new DateTime(PriceReceivedTime))
                    + ", ackTime=" + JavaTime.IsoDateFormat(new DateTime(AckTime))
                    + ", handlingDuration=" + HandlingDuration

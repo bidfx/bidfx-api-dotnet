@@ -7,7 +7,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
     {
         public override void SkipFieldValue(Stream stream)
         {
-            int size = Varint.ReadU32(stream);
+            var size = Varint.ReadU32(stream);
             SkipFieldValue(stream, size - 1);
         }
     }

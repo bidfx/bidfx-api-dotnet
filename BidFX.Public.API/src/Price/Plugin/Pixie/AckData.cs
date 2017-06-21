@@ -6,8 +6,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     public class AckData
     {
-        public long Revision { get; set; }
-        public long RevisionTime { get; set; }
+        public ulong Revision { get; set; }
+        public ulong RevisionTime { get; set; }
         public long PriceReceivedTime { get; set; }
         public long HandlingStartNanoTime { get; set; }
         

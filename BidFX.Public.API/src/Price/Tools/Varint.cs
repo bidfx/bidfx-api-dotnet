@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -7,12 +8,12 @@ namespace BidFX.Public.API.Price.Tools
     {
         private const int BitsPerByte = 7;
         private const int ContinuationBit = 1 << BitsPerByte;
-        private const int MaskLow7Bits = ContinuationBit - 1;
+        private const uint MaskLow7Bits = ContinuationBit - 1;
         
-        public static int ReadU32(Stream stream)
+        public static uint ReadU32(Stream stream)
         {
-            var result = 0;
-            for (var offset = 0; offset < 32; offset += 7)
+            uint result = 0;
+            for (var offset = 0; offset < 32; offset += BitsPerByte)
             {
                 var nextByte = stream.ReadByte();
                 if (nextByte == -1)
@@ -20,8 +21,25 @@ namespace BidFX.Public.API.Price.Tools
                     throw new EndOfStreamException("stream ended while reading varint");
                 }
                 var b = (byte) nextByte;
-                result |= (b & 0x7f) << offset;
+                result |= (uint) (b & 0x7f) << offset;
                 if (IsFinalByte(b)) break;
+            }
+            return result;
+        }
+
+        public static ulong ReadU64(Stream stream)
+        {
+            ulong result = 0L;
+            for (var offset = 0; offset < 64; offset += BitsPerByte)
+            {
+                var nextByte = stream.ReadByte();
+                if (nextByte == -1)
+                {
+                    throw new EndOfStreamException("stream ended while reading varint");
+                }
+                var b = (byte) nextByte;
+                result |= (ulong) (b & MaskLow7Bits) << offset;
+                if(IsFinalByte(b)) break;
             }
             return result;
         }
@@ -30,7 +48,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             WriteU32(stream, (uint) value);
         }
-
+        
         public static void WriteU32(Stream stream, uint value)
         {
             while ((value & ~MaskLow7Bits) != 0)
@@ -43,17 +61,22 @@ namespace BidFX.Public.API.Price.Tools
 
         public static void WriteU64(Stream stream, long value)
         {
+            WriteU64(stream, (ulong) value);
+        }
+
+        public static void WriteU64(Stream stream, ulong value)
+        {
             while ((value & ~MaskLow7Bits) != 0)
             {
                 stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
-                value = (int) ((uint)value >> BitsPerByte);
+                value = (uint)value >> BitsPerByte;
             }
             stream.WriteByte((byte)value);
         }
 
         public static bool IsFinalByte(int b)
         {
-            return b >= 0;
+            return (b & (1 << 7)) == 0;
         }
 
         public static string ReadString(Stream stream)

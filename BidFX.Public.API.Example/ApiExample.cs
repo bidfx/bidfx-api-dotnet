@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
 
@@ -22,9 +23,9 @@ namespace BidFX.Public.API.Example
         {
             var client = new Client
             {
-                Host = "ny-tunnel.uatdev.tradingscreen.com",
-                Port = 443,
-                Tunnel = true,
+                Host = "localhost",
+                Port = 9902,
+                Tunnel = false,
                 Username = "pmacdona",
                 Password = "Secret99"
             };
@@ -54,11 +55,12 @@ namespace BidFX.Public.API.Example
 
         private void SendSubscriptions()
         {
+            Thread.Sleep(5000);
             _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1.00,QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20080702"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=EURUSD"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPAUD"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=USDCAD"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Exchange=OTC,Level=1,Source=Indi,Symbol=GBPCAD"));
+            Thread.Sleep(5000);
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1.00,QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20080702"));
+            Thread.Sleep(5000);
+            _priceManager.Unsubscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1.00,QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20080702"));
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)

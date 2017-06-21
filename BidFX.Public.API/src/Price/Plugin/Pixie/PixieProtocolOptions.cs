@@ -5,12 +5,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     public class PixieProtocolOptions
     {
-        private int _version = 3;
+        private uint _version = 3;
         private int _heartbeat = 15;
         private int _idle = 120;
         private int _minti = 0;
         
-        public int Version
+        public uint Version
         {
             get { return _version; }
             set

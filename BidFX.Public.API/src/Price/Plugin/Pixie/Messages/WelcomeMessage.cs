@@ -7,8 +7,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     public class WelcomeMessage
     {
-        public int Options { get; set; }
-        public int Version { get; set; }
+        public uint Options { get; set; }
+        public uint Version { get; set; }
         public int ClientId { get; set; }
         public int ServerId { get; set; }
 
@@ -27,7 +27,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 bytes[i] = (byte) stream.ReadByte();
             }
-            Array.Reverse(bytes);
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes);
+            }
             return BitConverter.ToInt32(bytes, 0);
         }
 
@@ -63,8 +66,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             unchecked
             {
-                var hashCode = Options;
-                hashCode = (hashCode * 397) ^ Version;
+                var hashCode = (int) Options;
+                hashCode = (hashCode * 397) ^ (int) Version;
                 hashCode = (hashCode * 397) ^ ClientId;
                 hashCode = (hashCode * 397) ^ ServerId;
                 return hashCode;

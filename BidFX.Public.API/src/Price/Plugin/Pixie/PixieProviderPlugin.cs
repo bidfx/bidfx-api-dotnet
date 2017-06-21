@@ -118,7 +118,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 HandshakeWithServer();
                 _pixieConnection = new PixieConnection(_stream, this, _protocolOptions);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
-//                _pixieConnection.ProcessIncommingMessages();
+                _pixieConnection.ProcessIncommingMessages();
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Pixie price server");
             }
             catch (Exception e)
@@ -199,7 +199,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode(_protocolOptions.Version);
+            var encodedMessage = message.Encode((int) _protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
             var buffer = encodedMessage.GetBuffer();
             Varint.WriteU32(_stream, frameLength);
@@ -215,7 +215,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             int totalRead = 0;
             while (totalRead < frameLength)
             {
-                int got = _stream.Read(frameBuffer, totalRead, frameLength - totalRead);
+                int got = _stream.Read(frameBuffer, totalRead, (int) frameLength - totalRead);
                 if (got == -1)
                 {
                     throw new IOException("end of message stream reached (perhaps the server closed the connection)");

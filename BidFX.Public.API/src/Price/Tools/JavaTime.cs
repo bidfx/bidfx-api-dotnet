@@ -18,7 +18,8 @@ namespace BidFX.Public.API.Price.Tools
 
         public static long ToJavaTime(DateTime dateTime)
         {
-            return (long) (dateTime.ToUniversalTime() - Jan1st1970).TotalMilliseconds;
+            var timeSpan = (dateTime.ToUniversalTime() - Jan1st1970);
+            return (long) timeSpan.TotalMilliseconds;
         }
 
         public static long ToJavaTimeNano(DateTime dateTime)

@@ -7,22 +7,23 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     public class ZlibBufferCompressor : IBufferCompressor
     {
         private readonly MemoryStream _stream = new MemoryStream();
-        private readonly ZlibStream _compressor;
+        private readonly DeflateStream _compressor;
 
         public ZlibBufferCompressor(int level)
         {
-            _compressor = new ZlibStream(_stream, CompressionMode.Compress, ToCompressionLevel(level));
+            _compressor = new DeflateStream(_stream, CompressionMode.Compress, ToCompressionLevel(level));
         }
 
         public void Compress(MemoryStream fragment)
         {
-            var buffer = fragment.GetBuffer();
+            var buffer = fragment.ToArray();
             _compressor.Write(buffer, 0, buffer.Length);
             fragment.SetLength(0);
         }
 
         public byte[] GetCompressed()
         {
+            _compressor.Flush();
             _compressor.Dispose();
             return _stream.ToArray();
         }

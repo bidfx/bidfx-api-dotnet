@@ -7,7 +7,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
     {
         public abstract void SkipFieldValue(Stream stream);
 
-        public static void SkipFieldValue(Stream stream, int length)
+        public static void SkipFieldValue(Stream stream, uint length)
         {
             stream.Seek(length, SeekOrigin.Current);
         }

@@ -75,6 +75,7 @@
     <Compile Include="src\Price\Plugin\Pixie\Messages\IBufferCompressor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\IGridHeaderRegistry.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\HeartbeatMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\PriceSync.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\SubscriptionSync.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\UncompressedBufferCompressor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibBufferCompressor.cs" />
