@@ -1,9 +1,9 @@
 ﻿namespace BidFX.Public.API.Price.Subject
 {
-    public static class SubjectPart
+    public enum SubjectPart
     {
-        public const int Key = 0;
-        public const int Encoded = 1;
-        public const int Value = 2;
+        Key = 0,
+        Encoded = 1,
+        Value = 2
     }
 }

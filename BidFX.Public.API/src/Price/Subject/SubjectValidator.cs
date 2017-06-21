@@ -20,12 +20,12 @@
             ValidatePart(value, SubjectPart.Value);
         }
 
-        public static void ValidatePart(string s, int subjectPart)
+        public static void ValidatePart(string s, SubjectPart subjectPart)
         {
             if (s == null) throw new IllegalSubjectException("null " + subjectPart);
             var length = s.Length;
             if (length == 0) throw new IllegalSubjectException("zero length " + subjectPart);
-            var mask = 1 << subjectPart;
+            var mask = 1 << (int) subjectPart;
 
             var charArray = s.ToCharArray();
             foreach (var c in charArray)
