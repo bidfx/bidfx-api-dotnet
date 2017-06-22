@@ -111,7 +111,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             lock (_lock)
             {
-                foreach (var subjectSet in _subjectSetCache.Keys)
+                var keyCollection = _subjectSetCache.Keys.ToList();
+                foreach (var subjectSet in keyCollection)
                 {
                     if (subjectSet < edition)
                     {

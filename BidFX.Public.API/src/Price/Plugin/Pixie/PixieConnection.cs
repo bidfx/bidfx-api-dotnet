@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     {
         private static readonly log4net.ILog Log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private long _lastWriteTime = 0;
         private long _subscriptionInterval = 250;
         private readonly PixieProtocolOptions _protocolOptions;
-        
+
         public long SubscriptionInterval { get; set; }
         public bool CompressSubscriptions { get; set; }
 
@@ -40,7 +40,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 IsBackground = true
             }.Start();
         }
-        
+
         public void ProcessIncommingMessages()
         {
             try
@@ -67,6 +67,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                                 PriceReceivedTime = receivedTime,
                                 HandlingStartNanoTime = receivedTimeNanos
                             });
+                            Log.Info(msgType);
                             break;
                         default:
                             if (Log.IsDebugEnabled) Log.Debug("received message with type: " + (char) msgType);
@@ -80,7 +81,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                Log.Error("unexpected error reading from Puffin: "+ e.Message);
+                Log.Error("unexpected error reading from Puffin: " + e.Message);
             }
             finally
             {
@@ -106,18 +107,17 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private void OnPriceSync(PriceSync priceSync)
         {
             var edition = (int) priceSync.Edition;
-                var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
-                if (subjectSet == null)
-                {
-                    Log.Error("tried to get edition " + edition +
-                              " but SubjectSetRegister returned null. Cannot process PriceSync!");
-                    throw new IllegalStateException("received PriceSync for edition " + edition +
-                                                    " but it's not in the SubjectSetRegister.");
-                }
-                else
-                {
-                    
-                }
+            var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
+            if (subjectSet == null)
+            {
+                Log.Error("tried to get edition " + edition +
+                          " but SubjectSetRegister returned null. Cannot process PriceSync!");
+                throw new IllegalStateException("received PriceSync for edition " + edition +
+                                                " but it's not in the SubjectSetRegister.");
+            }
+            else
+            {
+            }
         }
 
         private MemoryStream ReadMessageFrame()
@@ -137,7 +137,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             return new MemoryStream(frameBuffer);
         }
-        
+
         public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             _subjectSetRegister.Register(subject, refresh);
@@ -201,7 +201,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void PeriodicallyCheckSubscriptions()
         {
-            var timeNow =  (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
+            var timeNow = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
             if (timeNow - _lastSubscriptionCheckTime > _subscriptionInterval)
             {
                 _lastSubscriptionCheckTime = timeNow;
@@ -225,7 +225,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            if(Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+            if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
             var encodedMessage = message.Encode((int) _protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
             var buffer = encodedMessage.ToArray();
