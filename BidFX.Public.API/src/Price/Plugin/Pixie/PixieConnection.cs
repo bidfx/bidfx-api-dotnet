@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Tools;
 
@@ -16,6 +17,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<AckData> _ackQueue = new BlockingCollection<AckData>();
+        private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
         private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
         private long _lastSubscriptionCheckTime = 0;
         private long _lastWriteTime = 0;
@@ -50,12 +52,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     switch (msgType)
                     {
                         case PixieMessageType.DataDictionary:
-
+                            var dictionaryMessage = new DataDictionaryMessage(message);
+                            OnDataDictionary(dictionaryMessage);
                             break;
                         case PixieMessageType.PriceSync:
                             var receivedTimeNanos = JavaTime.NanoTime();
                             var receivedTime = JavaTime.CurrentTimeMillis();
                             var priceSync = new PriceSync(message);
+                            OnPriceSync(priceSync);
                             _ackQueue.Add(new AckData
                             {
                                 Revision = priceSync.Revision,
@@ -82,6 +86,38 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 Close("the input stream from Puffin terminated");
             }
+        }
+
+        private void OnDataDictionary(DataDictionaryMessage dataDictionaryMessage)
+        {
+            if (dataDictionaryMessage.IsUpdate())
+            {
+                Log.Info("adding " + dataDictionaryMessage + " to current DataDictionaryMessage");
+                DataDictionaryUtils.AddAllFields(_dataDictionary, dataDictionaryMessage.FieldDefs);
+            }
+            else
+            {
+                Log.Info("replacing DataDictionaryMessage with: " + dataDictionaryMessage);
+                _dataDictionary = new ExtendableDataDictionary();
+                DataDictionaryUtils.AddAllFields(_dataDictionary, dataDictionaryMessage.FieldDefs);
+            }
+        }
+
+        private void OnPriceSync(PriceSync priceSync)
+        {
+            var edition = (int) priceSync.Edition;
+                var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
+                if (subjectSet == null)
+                {
+                    Log.Error("tried to get edition " + edition +
+                              " but SubjectSetRegister returned null. Cannot process PriceSync!");
+                    throw new IllegalStateException("received PriceSync for edition " + edition +
+                                                    " but it's not in the SubjectSetRegister.");
+                }
+                else
+                {
+                    
+                }
         }
 
         private MemoryStream ReadMessageFrame()

@@ -9,6 +9,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 
         public int Fid { get; set; }
         public string Name { get; set; }
+        public int Type { get; set; }
         public FieldEncoding Encoding { get; set; }
         public int Scale { get; set; }
 
