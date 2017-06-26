@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     public class PixieConnection : ISubscriber
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;

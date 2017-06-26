@@ -1,13 +1,11 @@
 using System;
 using System.IO;
-using System.Net.Security;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
@@ -22,8 +20,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// <author>Paul MacDonald</author>
     public class PuffinProviderPlugin : IProviderPlugin
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public const int ProtocolVersion = 8;
 
@@ -52,7 +50,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public PuffinProviderPlugin()
         {
             var name =
-                NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+                NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";

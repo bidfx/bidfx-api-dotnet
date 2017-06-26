@@ -1,17 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     public class PixieProviderPlugin : IProviderPlugin
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public string Name { get; private set; }
         public string Service { get; set; }
@@ -36,7 +38,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public PixieProviderPlugin()
         {
             var name =
-                NameCache.Default().CreateUniqueName(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+                NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";

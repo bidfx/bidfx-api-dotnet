@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 
 namespace BidFX.Public.API.Price.Tools
 {
@@ -35,7 +36,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             try
             {
-                return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                return WindowsIdentity.GetCurrent().Name;
             }
             catch (Exception)
             {

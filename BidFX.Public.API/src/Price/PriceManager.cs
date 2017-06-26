@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie;
 using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 
 namespace BidFX.Public.API.Price
 {
@@ -14,8 +16,8 @@ namespace BidFX.Public.API.Price
     /// </summary>
     public class PriceManager : ISession, IBulkSubscriber
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();

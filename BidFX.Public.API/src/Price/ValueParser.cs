@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection;
+using log4net;
 
 namespace BidFX.Public.API.Price
 {
     public class ValueParser
     {
-        private static readonly log4net.ILog Log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;

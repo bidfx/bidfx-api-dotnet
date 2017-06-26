@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
