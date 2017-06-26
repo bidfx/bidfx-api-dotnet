@@ -100,7 +100,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 int currentState;
                 var exists = _subjectState.TryGetValue(subject, out currentState);
-                return !exists || currentState == StateUnsubscribed;
+                return exists & currentState != StateUnsubscribed;
             }
         }
 

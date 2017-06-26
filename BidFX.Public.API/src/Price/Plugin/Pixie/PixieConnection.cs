@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
+using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -26,6 +28,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private long _subscriptionInterval = 250;
         private readonly PixieProtocolOptions _protocolOptions;
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
+        private readonly GridCache _gridCache = new GridCache();
 
         public long SubscriptionInterval { get; set; }
         public bool CompressSubscriptions { get; set; }
@@ -119,8 +122,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     throw new IllegalStateException("received PriceSync for edition " + edition +
                                                     " but it's not in the SubjectSetRegister.");
                 }
+                var visitor = new PriceSyncVisitor(subjectSet, this);
                 var gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(subjectSet);
-                priceSync.Visit(_dataDictionary, gridHeaderRegistryByEdition);
+                priceSync.Visit(_dataDictionary, gridHeaderRegistryByEdition, visitor);
             }
             catch (Exception e)
             {
@@ -149,17 +153,24 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
+            _gridCache.Add(subject);
             _subjectSetRegister.Register(subject, refresh);
         }
 
         public void Unsubscribe(Subject.Subject subject)
         {
+            _gridCache.Remove(subject);
             _subjectSetRegister.Unregister(subject);
         }
 
         public void Close(string reason)
         {
-//            throw new System.NotImplementedException();
+            if (_running.CompareAndSet(true, false))
+            {
+                _gridCache.Reset();
+                Log.Info("closing connection to Puffin (" + reason + ")");
+                _stream.Close();
+            }
         }
 
         private void SendOutgoingMessages()
@@ -242,6 +253,221 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
             _lastWriteTime = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
+        }
+
+        public SubjectSetRegister SubjectSetRegister
+        {
+            get
+            {
+                return _subjectSetRegister;
+            }
+        }
+
+        public GridCache GridCache
+        {
+            get { return _gridCache; }
+        }
+
+        public IApiEventHandler EventHandler
+        {
+            get { return _provider.InapiEventHandler; }
+        }
+
+        private class PriceSyncVisitor : ISyncable
+        {
+            private readonly List<Subject.Subject> _subjectSet;
+            private readonly PixieConnection _pixieConnection;
+
+            private Subject.Subject _gridSubject;
+            private Grid _grid;
+
+            internal PriceSyncVisitor(List<Subject.Subject> subjectSet, PixieConnection pixieConnection)
+            {
+                _subjectSet = subjectSet;
+                _pixieConnection = pixieConnection;
+            }
+            
+            public void PriceImage(int sid, Dictionary<string, object> price)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("received price image SID: " + sid + ", price: " + price);
+                HandlePriceUpdateEvent(sid, price, true);
+            }
+
+            public void PriceUpdate(int sid, Dictionary<string, object> price)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("received price update SID: " + sid + ", price: " + price);
+                HandlePriceUpdateEvent(sid, price, false);
+            }
+
+            private void HandlePriceUpdateEvent(int sid, Dictionary<string, object> price, bool replaceAllFields)
+            {
+                if (sid >= _subjectSet.Count) return;
+                
+                var subject = _subjectSet[sid];
+                
+                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
+                
+                CalculateHopLatency2(price);
+                var priceMap = CreatePriceMap(price);
+                _pixieConnection.EventHandler.OnPriceUpdate(subject, priceMap, replaceAllFields);
+            }
+
+            private static IPriceMap CreatePriceMap(Dictionary<string, object> price)
+            {
+                var priceMap = new PriceMap();
+                foreach (var attribute in price)
+                {
+                    priceMap.SetField(attribute.Key, new PriceField(attribute.Value.ToString(), attribute.Value));
+                }
+                return priceMap;
+            }
+
+            private void CalculateHopLatency2(Dictionary<string, object> price)
+            {
+                try
+                {
+                    var sysTime = price["SystemTime"];
+                    if (sysTime.GetType() is long)
+                    {
+                        var now = JavaTime.CurrentTimeMillis();
+                        var hopLatency2 = now - (long) sysTime;
+                        price["HopLatency2"] = hopLatency2;
+                    }
+                }
+                catch (Exception e)
+                {
+                    //no-op
+                }
+            }
+
+            public void PriceStatus(int sid, SubscriptionStatus status, string explanation)
+            {
+                if (Log.IsDebugEnabled)
+                    Log.Debug("received price statis SID: " + sid + ", status: " + status + ", text: " + explanation);
+                
+                if (sid >= _subjectSet.Count) return;
+                
+                var subject = _subjectSet[sid];
+                
+                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
+
+                _pixieConnection.EventHandler.OnSubscriptionStatus(subject, status, explanation);
+            }
+
+            public void StartGridImage(int sid, int columnCount)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("start grid image SID: " + sid + ", columnCount: " + columnCount);
+                
+                if (sid >= _subjectSet.Count) return;
+                
+                _gridSubject = _subjectSet[sid];
+                _grid = _pixieConnection.GridCache.Get(_gridSubject);
+                if (_grid != null)
+                {
+                    _grid.StartGridImage(sid, columnCount);
+                }
+            }
+
+            public void ColumnImage(string name, int rowCount, object[] columnValues)
+            {
+                if (_grid != null)
+                {
+                    _grid.ColumnImage(name, rowCount, columnValues);
+                }
+            }
+
+            public void EndGridImage()
+            {
+                if (_grid != null)
+                {
+                    _grid.EndGridImage();
+                    PublishGrid();
+                }
+            }
+
+            private void PublishGrid()
+            {
+                var map = new Dictionary<string, object>();
+                var columnNames = _grid.ColumnNames;
+                var numBidLevels = 0;
+                var numAskLevels = 0;
+                for (var i = 0; i < _grid.NumberOfColumns; i++)
+                {
+                    var columnName = columnNames[i];
+                    var column = _grid.GetColumn(i);
+                    AddColumn(map, columnName, column);
+                    if ("Bid".Equals(columnName))
+                    {
+                        numBidLevels = _grid.GetColumn(i).Size();
+                    }
+                    else if ("Ask".Equals(columnName))
+                    {
+                        numAskLevels = _grid.GetColumn(i).Size();
+                    }
+                }
+                map["BidLevels"] = numBidLevels;
+                map["AskLevels"] = numAskLevels;
+                var priceMap = CreatePriceMap(map);
+                _pixieConnection.EventHandler.OnPriceUpdate(_gridSubject, priceMap, false);
+
+            }
+
+            private void AddColumn(Dictionary<string, object> map, string columnName, IColumn column)
+            {
+                for (var i = 0; i < column.Size(); i++)
+                {
+                    var rowNum = i + 1;
+                    map[columnName + rowNum] = column.Get(i);
+                }
+            }
+            
+            public void StartGridUpdate(int sid, int columnCount)
+            {
+                if (Log.IsDebugEnabled) Log.Debug("start grid update SID: " + sid + ", columnCount: " + columnCount);
+                
+                if (sid >= _subjectSet.Count) return;
+                
+                _gridSubject = _subjectSet[sid];
+                _grid = _pixieConnection.GridCache.Get(_gridSubject);
+                if (_grid != null)
+                {
+                    _grid.StartGridUpdate(sid, columnCount);
+                }
+            }
+
+            public void FullColumnUpdate(string name, int cid, int rowCount, object[] columnValues)
+            {
+                if (_grid != null)
+                {
+                    _grid.FullColumnUpdate(name, cid, rowCount, columnValues);
+                }
+            }
+
+            public void PartialColumnUpdate(string name, int cid, int rowCount, object[] columnValues, int[] rids)
+            {
+                if (_grid != null)
+                {
+                    _grid.PartialColumnUpdate(name, cid, rowCount, columnValues, rids);
+                }
+            }
+
+            public void PartialTruncatedColumnUpdate(string name, int cid, int rowCount, object[] columnValues, int[] rids,
+                int truncatedRid)
+            {
+                if (_grid != null)
+                {
+                    _grid.PartialTruncatedColumnUpdate(name, cid, rowCount, columnValues, rids, truncatedRid);
+                }
+            }
+
+            public void EndGridUpdate()
+            {
+                if (_grid != null)
+                {
+                    _grid.EndGridUpdate();
+                    PublishGrid();
+                }
+            }
         }
     }
 }

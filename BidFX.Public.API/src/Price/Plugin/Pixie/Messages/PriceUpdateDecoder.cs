@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     public class PriceUpdateDecoder
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
-            IGridHeaderRegistry gridHeaderRegistry)
+            IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
             for (var i = 0; i < size; i++)
             {
                 var type = (char) stream.ReadByte();
-                var sid = Varint.ReadU32(stream);
+                var sid = (int) Varint.ReadU32(stream);
                 switch (type)
                 {
                     case 'f':
-                        var decodePriceUpdate = DecodePriceUpdate(stream, dataDictionary);
+                        syncable.PriceImage(sid, DecodePriceUpdate(stream, dataDictionary));
                         break;
                     case 'p':
-                        var priceUpdate = DecodePriceUpdate(stream, dataDictionary);
+                        syncable.PriceUpdate(sid, DecodePriceUpdate(stream, dataDictionary));
                         break;
                     case 's':
-                        DecodeStatusUpdate(stream);
+                        DecodeStatusUpdate(stream, sid, syncable);
                         break;
                     case 'G':
                         break;
@@ -37,11 +42,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
         }
 
-        private static string DecodeStatusUpdate(Stream stream)
+        private static void DecodeStatusUpdate(Stream stream, int sid, ISyncable syncable)
         {
-            var readByte = (char) stream.ReadByte();
+            var status = (char) stream.ReadByte();
             var reason = DecodeAsString(stream);
-            return reason;
+            syncable.PriceStatus(sid, PriceStatusCodec.DecodeStatus(status), reason);
         }
 
         private static Dictionary<string, object> DecodePriceUpdate(Stream stream, IDataDictionary dataDictionary)

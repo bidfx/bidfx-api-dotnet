@@ -32,12 +32,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             return BitSetter.IsSet(Options, 0);
         }
 
-        public void Visit(IDataDictionary dataDictionary, IGridHeaderRegistry gridHeaderRegistry)
+        public void Visit(IDataDictionary dataDictionary, IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
             if (Size <= 0) return;
 
             var stream = IsCompressed() ? _inflator.Inflate(_priceUpdateStream) : _priceUpdateStream;
-            PriceUpdateDecoder.Visit(stream, (int) Size, dataDictionary, gridHeaderRegistry);
+            PriceUpdateDecoder.Visit(stream, (int) Size, dataDictionary, gridHeaderRegistry, syncable);
         }
     }
 }

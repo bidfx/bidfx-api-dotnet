@@ -24,11 +24,11 @@ namespace BidFX.Public.API.Example
         {
             var client = new Client
             {
-                Host = "localhost",
-                Port = 9902,
-                Tunnel = false,
-                Username = "pisagui",
-                Password = "pisagui123"
+                Host = "ny-tunnel.uatprod.tradingscreen.com",
+                Port = 443,
+                Tunnel = true,
+                Username = "pmacdona",
+                Password = "Secret99"
             };
             _priceManager = client.GetPriceManager();
             _priceManager.PriceUpdateEventHandler += OnPriceUpdate;
@@ -57,19 +57,19 @@ namespace BidFX.Public.API.Example
         private void SendSubscriptions()
         {
             Thread.Sleep(5000);
-            _priceManager.Subscribe(new Subject(
-                "AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=UBSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pisagui,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-//            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+//            _priceManager.Subscribe(new Subject(
+//                "AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=UBSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pisagui,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=DBFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=SSFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=EURUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=EURGBP,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
+            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
