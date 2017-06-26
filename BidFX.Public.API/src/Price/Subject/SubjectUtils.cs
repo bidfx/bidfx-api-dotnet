@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Price.Subject
                     return mid;
                 }
             }
-            
+
             return -1 - low;
         }
 

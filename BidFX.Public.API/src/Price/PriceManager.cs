@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
         public string Username { get; set; }
-        public string Password { get; set;  }
+        public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public bool Tunnel { get; set; }
@@ -226,7 +226,8 @@ namespace BidFX.Public.API.Price
             }
         }
 
-        private static void ResubscribeToAllOn(IProviderPlugin providerPlugin, IEnumerable<Subject.Subject> subscriptions)
+        private static void ResubscribeToAllOn(IProviderPlugin providerPlugin,
+            IEnumerable<Subject.Subject> subscriptions)
         {
             var subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
             Log.Info("resubscribing to " + subjects.Count + " instruments on " + providerPlugin.Name);
@@ -362,7 +363,8 @@ namespace BidFX.Public.API.Price
 
         private class SubscriptionSet
         {
-            private readonly Dictionary<Subject.Subject, Subscription> _map = new Dictionary<Subject.Subject, Subscription>();
+            private readonly Dictionary<Subject.Subject, Subscription> _map =
+                new Dictionary<Subject.Subject, Subscription>();
 
             public void Add(Subject.Subject subject)
             {

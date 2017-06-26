@@ -11,6 +11,5 @@ namespace BidFX.Public.API.Price
         public IllegalStateException(string message, Exception e) : base(message, e)
         {
         }
-
     }
 }

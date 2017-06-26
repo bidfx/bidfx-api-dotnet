@@ -61,9 +61,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                         .AddAttribute("Subject",
                             "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                         .AddElement(new PuffinElement("Price")
-                                .AddAttribute("Ask", 12.5)
-                                .AddAttribute("AskSize", 1230)
-                                .AddAttribute("BidSize", 12400)
+                            .AddAttribute("Ask", 12.5)
+                            .AddAttribute("AskSize", 1230)
+                            .AddAttribute("BidSize", 12400)
                         ))
             );
         }

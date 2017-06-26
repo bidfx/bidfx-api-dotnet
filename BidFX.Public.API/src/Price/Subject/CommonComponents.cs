@@ -427,7 +427,8 @@ namespace BidFX.Public.API.Price.Subject
             "disco",
         };
 
-        private static readonly Dictionary<string, string> KeyMap = CommonKeys.Distinct().ToDictionary(item => item, item => item);
+        private static readonly Dictionary<string, string> KeyMap =
+            CommonKeys.Distinct().ToDictionary(item => item, item => item);
 
         private static readonly Dictionary<string, string> ValueMap =
             CommonValues.Distinct().ToDictionary(item => item, item => item);

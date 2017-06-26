@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private int _heartbeat = 15;
         private int _idle = 120;
         private int _minti = 0;
-        
+
         public uint Version
         {
             get { return _version; }
@@ -22,7 +22,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _version = value;
             }
         }
-        
+
         public int Heartbeat
         {
             get { return _heartbeat; }
@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _heartbeat = value;
             }
         }
-        
+
         public int Idle
         {
             get { return _idle; }
@@ -56,7 +56,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _idle = value;
             }
         }
-        
+
         public int Minti
         {
             get { return _minti; }
@@ -78,7 +78,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public string GetProtocolSignature()
         {
             var signature = "pixie://localhost:9902?version=" + Version + "&heartbeat=" + Heartbeat + "&idle=" +
-                               Idle;
+                            Idle;
             if (Minti != 0) signature += "&minti=" + Minti;
             return signature + '\n';
         }

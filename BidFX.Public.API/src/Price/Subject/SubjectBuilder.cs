@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Price.Subject
             SubjectComponent(key, value);
             return this;
         }
-        
+
         public void SubjectComponent(string key, string value)
         {
             AddComponent(InternaliseKey(key), InternaliseValue(value));
@@ -47,7 +47,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private void AddComponentAt(int index, string key, string value)
         {
-            if(_size == _components.Length) ExtendCapacity();
+            if (_size == _components.Length) ExtendCapacity();
             Array.Copy(_components, index, _components, index + 2, _size - index);
             _components[index] = key;
             _components[index + 1] = value;

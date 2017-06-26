@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             _priceUpdateStream = stream;
             _inflator = inflator;
         }
-        
+
         public bool IsCompressed()
         {
             return BitSetter.IsSet(Options, 0);

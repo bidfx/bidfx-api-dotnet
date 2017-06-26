@@ -16,9 +16,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private const int StateToggle = 4;
 
         private readonly object _lock = new object();
-        private readonly SortedDictionary<int, List<Subject.Subject>> _subjectSetCache = new SortedDictionary<int, List<Subject.Subject>>();
+
+        private readonly SortedDictionary<int, List<Subject.Subject>> _subjectSetCache =
+            new SortedDictionary<int, List<Subject.Subject>>();
+
         private readonly Dictionary<Subject.Subject, int> _subjectState = new Dictionary<Subject.Subject, int>();
-        private readonly Dictionary<Subject.Subject, FieldDef[]> _subjectGridHeaders = new Dictionary<Subject.Subject, FieldDef[]>();
+
+        private readonly Dictionary<Subject.Subject, FieldDef[]> _subjectGridHeaders =
+            new Dictionary<Subject.Subject, FieldDef[]>();
+
         private bool _modified = false;
 
         public void Register(Subject.Subject subject, bool refresh)
@@ -149,13 +155,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void CleanUnsubscribeState()
         {
-            var toRemove = (from subjectState in _subjectState where subjectState.Value == StateUnsubscribed select subjectState.Key).ToList();
+            var toRemove = (from subjectState in _subjectState
+                where subjectState.Value == StateUnsubscribed
+                select subjectState.Key).ToList();
             foreach (var subject in toRemove)
             {
                 _subjectState.Remove(subject);
                 ClearHeaders(subject);
             }
-            
         }
 
         private List<Subject.Subject> CurrentSubjectSetSorted()
@@ -177,7 +184,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             SubscriptionSync subscriptionSync = new SubscriptionSync(edition, subjectSet);
             AddSubscriptionControls(subscriptionSync);
             return subscriptionSync;
-
         }
 
         private void AddSubscriptionControls(SubscriptionSync subscriptionSync)
@@ -187,7 +193,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 int currentState;
                 var exists = _subjectState.TryGetValue(subject, out currentState);
-                if(!exists) break;
+                if (!exists) break;
                 if (currentState == StateRefresh)
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Refresh);
@@ -198,17 +204,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 }
                 sid++;
             }
-            
         }
-        
     }
 
     internal class GridHeaderRegistry : IGridHeaderRegistry
     {
         private readonly Dictionary<Subject.Subject, FieldDef[]> _subjectGridHeaders;
         private readonly List<Subject.Subject> _subjectSetByEdition;
-        
-        public GridHeaderRegistry(Dictionary<Subject.Subject, FieldDef[]> subjectGridHeaders, List<Subject.Subject> subjectSetByEdition)
+
+        public GridHeaderRegistry(Dictionary<Subject.Subject, FieldDef[]> subjectGridHeaders,
+            List<Subject.Subject> subjectSetByEdition)
         {
             _subjectGridHeaders = subjectGridHeaders;
             _subjectSetByEdition = subjectSetByEdition;

@@ -26,7 +26,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         protected bool Equals(LoginMessage other)
         {
-            return string.Equals(Username, other.Username) && string.Equals(Password, other.Password) && string.Equals(Alias, other.Alias) && string.Equals(Application, other.Application) && string.Equals(ApplicationVersion, other.ApplicationVersion);
+            return string.Equals(Username, other.Username) && string.Equals(Password, other.Password) &&
+                   string.Equals(Alias, other.Alias) && string.Equals(Application, other.Application) &&
+                   string.Equals(ApplicationVersion, other.ApplicationVersion);
         }
 
         public override bool Equals(object obj)

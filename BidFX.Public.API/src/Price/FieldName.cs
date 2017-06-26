@@ -763,6 +763,5 @@ namespace BidFX.Public.API.Price
         /// Type is string.
         /// </summary>
         public const string ShortSaleRestricted = "ShortSaleRestricted";
-
     }
 }

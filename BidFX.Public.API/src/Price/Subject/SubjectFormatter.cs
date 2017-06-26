@@ -15,7 +15,8 @@ namespace BidFX.Public.API.Price.Subject
         private readonly char _keyValueSeperator;
         private readonly NumericCharacterEntity _numericCharacterEntity = new NumericCharacterEntity();
 
-        private static readonly ThreadLocal<StringBuilder> ThreadLocalBuilder = new ThreadLocal<StringBuilder>(() => new StringBuilder());
+        private static readonly ThreadLocal<StringBuilder> ThreadLocalBuilder =
+            new ThreadLocal<StringBuilder>(() => new StringBuilder());
 
         public SubjectFormatter() : this(DefaultComponentSeperator, DefaultKeyValueSeperator)
         {
@@ -56,7 +57,8 @@ namespace BidFX.Public.API.Price.Subject
             builder.Append(components[0]).Append(equal).Append(entity.EncodeString(components[1]));
             for (var i = 2; i < components.Length; i += 2)
             {
-                builder.Append(comma).Append(components[i]).Append(equal).Append(entity.EncodeString(components[i+1]));
+                builder.Append(comma).Append(components[i]).Append(equal)
+                    .Append(entity.EncodeString(components[i + 1]));
             }
             return builder.ToString();
         }

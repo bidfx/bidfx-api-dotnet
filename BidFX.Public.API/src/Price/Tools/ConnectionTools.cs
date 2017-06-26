@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Price.Tools
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {
             var sslStream = disableHostnameSslChecks
@@ -31,7 +31,8 @@ namespace BidFX.Public.API.Price.Tools
             }
         }
 
-        private static bool AllowCertsFromTs(Object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors errors)
+        private static bool AllowCertsFromTs(Object sender, X509Certificate cert, X509Chain chain,
+            SslPolicyErrors errors)
         {
             return chain.ChainStatus.Length == 0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
         }
@@ -40,7 +41,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ':' + password));
             return "CONNECT " + service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
-                        "GUID: " + guid + "\r\n\r\n";
+                   "GUID: " + guid + "\r\n\r\n";
         }
 
         public static void SendMessage(Stream stream, string message)

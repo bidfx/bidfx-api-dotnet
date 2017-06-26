@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Tools
@@ -107,6 +106,7 @@ namespace BidFX.Public.API.Price.Tools
             Assert.AreEqual("a&#32;few\nlines&#32;of\ntext\n",
                 mNumericCharacterEntity.EncodeString("a few\nlines of\ntext\n"));
         }
+
 //
 //        [Test]
 //        public void testDecodestring()

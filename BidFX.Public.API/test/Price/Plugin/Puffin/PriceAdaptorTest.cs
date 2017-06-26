@@ -38,7 +38,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             return new PriceField(javaDate.ToString(), javaDate);
         }
-        
+
         [Test]
         public void IntValuesAreNotConvertedIfTheyDoNotHaveDateFieldNames()
         {
@@ -94,7 +94,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             const string dateText = "20:30:56";
             var priceField = new PriceField(dateText, dateText);
-            var dateTime = (DateTime)PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value;
+            var dateTime = (DateTime) PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value;
             Assert.AreEqual(20, dateTime.Hour);
             Assert.AreEqual(30, dateTime.Minute);
             Assert.AreEqual(56, dateTime.Second);
@@ -130,6 +130,5 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(Tick.Flat, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Steady")).Value);
             Assert.AreEqual(Tick.Flat, PriceAdaptor.AdaptPriceField(FieldName.BidTick, StringField("Balls")).Value);
         }
-
     }
 }

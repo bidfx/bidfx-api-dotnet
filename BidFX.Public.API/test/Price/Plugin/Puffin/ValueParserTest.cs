@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(null, ValueParser.ParseDecimal("-number", null));
         }
 
-        
+
         [Test]
         public void ConvertLong()
         {
@@ -31,7 +31,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(null, ValueParser.ParseLong("-number", null));
         }
 
-        
+
         [Test]
         public void ConvertInt()
         {
@@ -62,6 +62,5 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(0m, ValueParser.ParseFraction("oops"));
             Assert.AreEqual(0m, ValueParser.ParseFraction("-number"));
         }
-
     }
 }

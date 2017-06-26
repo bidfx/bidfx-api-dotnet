@@ -64,9 +64,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.False(element.Equals("Price"));
             Assert.True(element.Equals(element));
             Assert.True(element.Equals(new PuffinElement("Price")
-                    .AddAttribute("Name", "AT&T")
-                    .AddAttribute("Quote", "\"quote text\"")
-                    .AddAttribute("Tag", "<XML>try this</XML>")
+                .AddAttribute("Name", "AT&T")
+                .AddAttribute("Quote", "\"quote text\"")
+                .AddAttribute("Tag", "<XML>try this</XML>")
             ));
         }
 
@@ -77,9 +77,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 .AddAttribute("Subject",
                     "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                 .AddElement(new PuffinElement("Price")
-                        .AddAttribute("Ask", 12.5)
-                        .AddAttribute("AskSize", 1230)
-                        .AddAttribute("BidSize", 12400)
+                    .AddAttribute("Ask", 12.5)
+                    .AddAttribute("AskSize", 1230)
+                    .AddAttribute("BidSize", 12400)
                 );
             Assert.False(element.Equals(null));
             Assert.False(element.Equals("Price"));
@@ -88,9 +88,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 .AddAttribute("Subject",
                     "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                 .AddElement(new PuffinElement("Price")
-                        .AddAttribute("Ask", 12.5)
-                        .AddAttribute("AskSize", 1230)
-                        .AddAttribute("BidSize", 12400)
+                    .AddAttribute("Ask", 12.5)
+                    .AddAttribute("AskSize", 1230)
+                    .AddAttribute("BidSize", 12400)
                 )));
         }
     }

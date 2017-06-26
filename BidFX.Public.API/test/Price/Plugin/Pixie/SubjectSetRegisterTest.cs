@@ -1,5 +1,4 @@
 ﻿using System;
-using BidFX.Public.API.Price.Plugin.Puffin;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
@@ -46,7 +45,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (ArgumentException e)
             {
-                
             }
         }
 

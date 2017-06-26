@@ -7,12 +7,12 @@ namespace BidFX.Public.API.Price.Subject
     {
         private readonly string[] _components;
         private int _position = -1;
-        
+
         public SubjectIterator(string[] components)
         {
             _components = components;
         }
-        
+
         public void Dispose()
         {
         }
@@ -43,7 +43,8 @@ namespace BidFX.Public.API.Price.Subject
             };
         }
 
-        public SubjectComponent Current {
+        public SubjectComponent Current
+        {
             get { return GetCurrent(); }
         }
 

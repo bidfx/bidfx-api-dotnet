@@ -9,11 +9,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     public class SubscriptionSync : IOutgoingPixieMessage
     {
         private const int CompressionLevel = 6;
-        
+
         private const int CompressionBit = 0;
         private const int ControlsBit = 1;
         private const int UnchangedBit = 1;
-        
+
         private uint _options = 0;
         private readonly int _edition;
         private readonly int _size;
@@ -61,7 +61,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             return BitSetter.IsSet(_options, CompressionBit);
         }
-        
+
         public MemoryStream Encode(int version)
         {
             if (version < 2 && !IsChangedEdition())
@@ -109,7 +109,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                    + ", compressed=" + IsCompressed()
                    + ", controls=" + _controls.Count
                    + ", changed=" + IsChangedEdition()
-                   + ", subjects=" + _size+')';
+                   + ", subjects=" + _size + ')';
         }
     }
 }

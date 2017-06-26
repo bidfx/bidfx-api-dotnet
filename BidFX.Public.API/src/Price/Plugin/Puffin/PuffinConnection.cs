@@ -45,12 +45,14 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
-            QueueMessage(new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject.ToString()).ToString());
+            QueueMessage(
+                new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject.ToString()).ToString());
         }
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe).AddAttribute(Subject, subject.ToString()).ToString());
+            QueueMessage(new PuffinElement(PuffinTagName.Unsubscribe).AddAttribute(Subject, subject.ToString())
+                .ToString());
         }
 
         public void Close(string reason)
@@ -86,7 +88,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Error("unexpected error reading from Puffin: "+ e.Message);
+                Log.Error("unexpected error reading from Puffin: " + e.Message);
             }
             finally
             {
@@ -206,7 +208,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             var subject = element.AttributeValue(Subject).Text;
             var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
-            _provider.InapiEventHandler.OnSubscriptionStatus(new Subject.Subject(subject), status, element.AttributeValue("Text").Text);
+            _provider.InapiEventHandler.OnSubscriptionStatus(new Subject.Subject(subject), status,
+                element.AttributeValue("Text").Text);
         }
 
         private void OnHeartbeatMessage(PuffinElement element)

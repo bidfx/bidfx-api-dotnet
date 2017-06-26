@@ -15,7 +15,6 @@ namespace BidFX.Public.API.Price.Tools
             _mDelimiter = delimiter;
             _end = _string.Length;
             Reset();
-            
         }
 
         public void Reset(string s)

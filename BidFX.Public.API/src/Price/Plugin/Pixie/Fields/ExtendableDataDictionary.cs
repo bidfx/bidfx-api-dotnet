@@ -17,8 +17,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         {
             _fieldDefsByFid = new FieldDef[CapacityPowerOfTwo(minimumCapacity)];
         }
-            
-        
+
+
         public FieldDef FieldDefByFid(int fid)
         {
             if (fid < 0) return null;

@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     {
         private static readonly byte[] RawBytes = {PixieMessageType.Heartbeat};
         private static readonly MemoryStream Heartbeat = new MemoryStream(RawBytes);
-        
+
         public MemoryStream Encode(int version)
         {
             return Heartbeat;

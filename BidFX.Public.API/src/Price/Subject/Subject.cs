@@ -7,13 +7,12 @@ namespace BidFX.Public.API.Price.Subject
     public class Subject : IEnumerable<SubjectComponent>
     {
         private static readonly SubjectFormatter Formatter = new SubjectFormatter();
-        
+
         private readonly string[] _components;
         private int _hash;
 
         public Subject(string formattedSubject) : this(BuildComponents(formattedSubject))
         {
-            
         }
 
         public Subject(string[] components)
@@ -48,7 +47,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             return _components;
         }
-        
+
         public IEnumerator<SubjectComponent> GetEnumerator()
         {
             return new SubjectIterator(_components);

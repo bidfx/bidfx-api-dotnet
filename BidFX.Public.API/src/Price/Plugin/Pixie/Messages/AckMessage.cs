@@ -11,7 +11,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public long PriceReceivedTime { get; set; }
         public long AckTime { get; set; }
         public long HandlingDuration { get; set; }
-        
+
         public MemoryStream Encode(int version)
         {
             var memoryStream = new MemoryStream();
@@ -39,7 +39,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         protected bool Equals(AckMessage other)
         {
-            return Revision == other.Revision && RevisionTime == other.RevisionTime && PriceReceivedTime == other.PriceReceivedTime && AckTime == other.AckTime && HandlingDuration == other.HandlingDuration;
+            return Revision == other.Revision && RevisionTime == other.RevisionTime &&
+                   PriceReceivedTime == other.PriceReceivedTime && AckTime == other.AckTime &&
+                   HandlingDuration == other.HandlingDuration;
         }
 
         public override bool Equals(object obj)

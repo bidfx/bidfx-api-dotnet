@@ -22,11 +22,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
-                            .AddAttribute("Ask", 102.5)
-                            .AddAttribute("Bid", 100.5)
-                            .AddAttribute("BidSize", 1000)
-                            .AddAttribute("Name", "Vodafone plc")
-                            .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("Name", "Vodafone plc")
+                        .AddAttribute("AskSize", 3000)
                     ), tokenizer.ReadMessage());
         }
 
@@ -48,11 +48,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
-                            .AddAttribute("Ask", 102.5)
-                            .AddAttribute("Bid", 100.5)
-                            .AddAttribute("BidSize", 1000)
-                            .AddAttribute("Name", "Vodafone plc")
-                            .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("Name", "Vodafone plc")
+                        .AddAttribute("AskSize", 3000)
                     ), element1);
 
             Assert.AreEqual(
@@ -60,11 +60,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     .AddAttribute("Subject",
                         "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
-                            .AddAttribute("Ask", 102.5)
-                            .AddAttribute("Bid", 100.5)
-                            .AddAttribute("BidSize", 1000)
-                            .AddAttribute("Name", "Vodafone plc")
-                            .AddAttribute("AskSize", 3000)
+                        .AddAttribute("Ask", 102.5)
+                        .AddAttribute("Bid", 100.5)
+                        .AddAttribute("BidSize", 1000)
+                        .AddAttribute("Name", "Vodafone plc")
+                        .AddAttribute("AskSize", 3000)
                     ), element2);
         }
 

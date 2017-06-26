@@ -36,7 +36,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         protected bool Equals(WelcomeMessage other)
         {
-            return Options == other.Options && Version == other.Version && ClientId == other.ClientId && ServerId == other.ServerId;
+            return Options == other.Options && Version == other.Version && ClientId == other.ClientId &&
+                   ServerId == other.ServerId;
         }
 
         public override bool Equals(object obj)

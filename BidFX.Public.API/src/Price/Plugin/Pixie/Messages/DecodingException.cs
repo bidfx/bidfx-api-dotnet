@@ -11,9 +11,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public DecodingException(string msg) : base(msg)
         {
-            
         }
-        
+
         public DecodingException(string msg, Stream stream, Dictionary<string, object> resultSoFar) : base(msg)
         {
             MemoryStream = stream;

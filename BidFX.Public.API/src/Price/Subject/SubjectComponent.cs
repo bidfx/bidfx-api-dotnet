@@ -9,7 +9,6 @@ namespace BidFX.Public.API.Price.Subject
 
         public SubjectComponent()
         {
-            
         }
 
         public SubjectComponent(string key, string value)
@@ -17,7 +16,7 @@ namespace BidFX.Public.API.Price.Subject
             Key = key;
             Value = value;
         }
-        
+
         public override string ToString()
         {
             return new StringBuilder().Append(Key).Append('=').Append(Value).ToString();

@@ -5,8 +5,9 @@ namespace BidFX.Public.API.Price.Tools
 {
     public class NumericCharacterEntity
     {
-        private static readonly ThreadLocal<StringBuilder> ThreadLocalBuilder = new ThreadLocal<StringBuilder>(() => new StringBuilder());
-        
+        private static readonly ThreadLocal<StringBuilder> ThreadLocalBuilder =
+            new ThreadLocal<StringBuilder>(() => new StringBuilder());
+
         private readonly char[][] _encodingTable = new char[255][];
 
         public NumericCharacterEntity()
@@ -113,7 +114,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             var i = start + 1;
             var c = s[i++];
-            
+
             if (c == '#')
             {
                 c = s[i++];
@@ -133,7 +134,7 @@ namespace BidFX.Public.API.Price.Tools
                     }
                 }
             }
-            
+
             endofstring:
             builder.Append('&');
             return start;

@@ -2,7 +2,8 @@
 {
     public class SubjectValidator : IComponentHandler
     {
-        private static readonly int[] ValidChars = {
+        private static readonly int[] ValidChars =
+        {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,

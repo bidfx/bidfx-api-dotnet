@@ -163,8 +163,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 };
                 WriteFrame(login);
                 var grantMessage = ReadGrantMessage();
-                Log.Info("Received grant: "+grantMessage);
-                if (!grantMessage.Granted) throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
+                Log.Info("Received grant: " + grantMessage);
+                if (!grantMessage.Granted)
+                    throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
                 Log.Info("Authenticated with Pixie server, client is logged in.");
             }
             catch (Exception e)
@@ -195,7 +196,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             var receivedType = (byte) stream.ReadByte();
             if (receivedType != expectedType)
             {
-                throw new ArgumentException("received a message of type " + (char)receivedType + " when expecting a message of type " + (char) expectedType);
+                throw new ArgumentException("received a message of type " + (char) receivedType +
+                                            " when expecting a message of type " + (char) expectedType);
             }
         }
 

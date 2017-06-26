@@ -2,6 +2,8 @@
 {
     public enum Tick
     {
-        Up, Flat, Down
+        Up,
+        Flat,
+        Down
     }
 }

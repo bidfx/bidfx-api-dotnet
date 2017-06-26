@@ -1,5 +1,4 @@
 ﻿using System;
-using BidFX.Public.API.Price.Subject;
 using Moq;
 using NUnit.Framework;
 

@@ -10,8 +10,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public ulong RevisionTime { get; set; }
         public long PriceReceivedTime { get; set; }
         public long HandlingStartNanoTime { get; set; }
-        
-        
+
+
         public AckMessage ToAckMessage()
         {
             var ackTime = JavaTime.CurrentTimeMillis();

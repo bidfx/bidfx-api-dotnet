@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     {
         private readonly uint _options;
         private readonly List<FieldDef> _fieldDefs;
-        
+
         public DataDictionaryMessage(Stream stream)
         {
             _options = Varint.ReadU32(stream);
