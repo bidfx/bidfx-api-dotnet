@@ -2,9 +2,9 @@ using System.IO;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
 {
-    public class NoopFieldEncoding : FieldEncoding
+    public class NoopFieldEncoding : IFieldEncoding
     {
-        public override void SkipFieldValue(Stream stream)
+        public void SkipFieldValue(Stream stream)
         {
             //Do nothing
         }

@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public interface IBufferCompressor
+    public interface IStreamCompressor
     {
         void Compress(MemoryStream fragment);
 

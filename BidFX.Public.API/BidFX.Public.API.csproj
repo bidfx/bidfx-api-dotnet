@@ -59,6 +59,7 @@
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldDef.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\ByteArrayFieldEncoding.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\IFieldEncoding.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\FieldEncoding.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed1FieldEncoding.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed16FieldEncoding.cs" />
@@ -76,13 +77,18 @@
     <Compile Include="src\Price\Plugin\Pixie\Messages\AckMessage.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\ControlOperation.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\DataDictionaryMessage.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Messages\IBufferCompressor.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\DecodingException.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\IStreamCompressor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\IGridHeaderRegistry.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\HeartbeatMessage.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\IStreamInflator.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\PriceSync.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\PriceSyncDecoder.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\PriceUpdateDecoder.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\SubscriptionSync.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Messages\UncompressedBufferCompressor.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibBufferCompressor.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\UncompressedStreamCompressor.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamCompressor.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamInflator.cs" />
     <Compile Include="src\Price\Plugin\Pixie\PixieProtocolOptions.cs" />
     <Compile Include="src\Price\Plugin\Pixie\SubjectSetRegister.cs" />
     <Compile Include="src\Price\Subject\CommonComponents.cs" />
@@ -100,6 +106,7 @@
     <Compile Include="src\Price\Tools\BitSetter.cs" />
     <Compile Include="src\Price\Tools\ConnectionTools.cs" />
     <Compile Include="src\Price\Tools\NumericCharacterEntity.cs" />
+    <Compile Include="src\Price\Tools\StreamReaderHelper.cs" />
     <Compile Include="src\Price\Tools\StringCharIterator.cs" />
     <Compile Include="src\PublicApi.cs" />
     <Compile Include="src\Price\FieldName.cs" />
@@ -170,6 +177,7 @@
     <Compile Include="test\Price\Tools\BitSetterTest.cs" />
     <Compile Include="test\Price\Tools\NameCacheTest.cs" />
     <Compile Include="test\Price\Tools\NumericCharacterEntityTest.cs" />
+    <Compile Include="test\Price\Tools\VarintTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

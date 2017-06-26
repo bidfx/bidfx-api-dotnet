@@ -1,0 +1,173 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using BidFX.Public.API.Price.Plugin.Pixie.Fields;
+using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
+using BidFX.Public.API.Price.Tools;
+
+namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
+{
+    public class PriceUpdateDecoder
+    {
+        public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
+            IGridHeaderRegistry gridHeaderRegistry)
+        {
+            for (var i = 0; i < size; i++)
+            {
+                var type = (char) stream.ReadByte();
+                var sid = Varint.ReadU32(stream);
+                switch (type)
+                {
+                    case 'f':
+                        var decodePriceUpdate = DecodePriceUpdate(stream, dataDictionary);
+                        break;
+                    case 'p':
+                        var priceUpdate = DecodePriceUpdate(stream, dataDictionary);
+                        break;
+                    case 's':
+                        DecodeStatusUpdate(stream);
+                        break;
+                    case 'G':
+                        break;
+                    case 'g':
+                        break;
+                    default:
+                        throw new DecodingException("unexpected price update type '" + type + "'");
+                }
+            }
+        }
+
+        private static string DecodeStatusUpdate(Stream stream)
+        {
+            var readByte = (char) stream.ReadByte();
+            var reason = DecodeAsString(stream);
+            return reason;
+        }
+
+        private static Dictionary<string, object> DecodePriceUpdate(Stream stream, IDataDictionary dataDictionary)
+        {
+            var size = (int) Varint.ReadU32(stream);
+            var priceMap = new Dictionary<string, object>(size);
+            for (var i = 0; i < size; i++)
+            {
+                var fid = (int) Varint.ReadU32(stream);
+                if (fid == FieldDef.ReferecingFid)
+                {
+                    var referenceFid = Varint.ReadU32(stream);
+                    var fieldDef = GetFieldDef(stream, dataDictionary, priceMap, (int) referenceFid);
+                    priceMap[fieldDef.Name] = null;
+                }
+                else
+                {
+                    var fieldDef = GetFieldDef(stream, dataDictionary, priceMap, fid);
+                    priceMap[fieldDef.Name] = DecodeField(stream, fieldDef);
+                }
+            }
+            return priceMap;
+        }
+
+        private static FieldDef GetFieldDef(Stream stream, IDataDictionary dataDictionary,
+            Dictionary<string, object> priceMap, int fid)
+        {
+            var fieldDef = dataDictionary.FieldDefByFid(fid);
+            if (fieldDef == null)
+            {
+                throw new DecodingException("received a FID that is not in the data dictionary: " + fid, stream,
+                    priceMap);
+            }
+            return fieldDef;
+        }
+
+        private static object DecodeField(Stream stream, FieldDef fieldDef)
+        {
+            switch (fieldDef.Type)
+            {
+                case FieldType.Double:
+                    return DecodeAsDouble(stream, fieldDef);
+                case FieldType.Long:
+                    return DecodeAsLong(stream, fieldDef);
+                case FieldType.Integer:
+                    return DecodeAsInteger(stream, fieldDef);
+                case FieldType.String:
+                    return DecodeAsString(stream);
+                default:
+                    fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+                    return null;
+            }
+        }
+
+        private static double? DecodeAsDouble(Stream stream, FieldDef fieldDef)
+        {
+            switch (fieldDef.Encoding)
+            {
+                case FieldEncoding.Fixed4:
+                    return StreamReaderHelper.ReadFloat4(stream);
+                case FieldEncoding.Fixed8:
+                    return StreamReaderHelper.ReadDouble8(stream);
+                case FieldEncoding.Varint:
+                    return DecodeDecimal((long) Varint.ReadU64(stream), fieldDef.Scale);
+                case FieldEncoding.ZigZag:
+                    return DecodeDecimal(Varint.ZigzagToLong(Varint.ReadU64(stream)), fieldDef.Scale);
+            }
+            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            return null;
+        }
+
+        private static long? DecodeAsLong(Stream stream, FieldDef fieldDef)
+        {
+            switch (fieldDef.Encoding)
+            {
+                case FieldEncoding.Fixed1:
+                    return stream.ReadByte();
+                case FieldEncoding.Fixed2:
+                    return StreamReaderHelper.ReadShort(stream);
+                case FieldEncoding.Fixed3:
+                    return StreamReaderHelper.ReadMedium(stream);
+                case FieldEncoding.Fixed4:
+                    return StreamReaderHelper.ReadInt4(stream);
+                case FieldEncoding.Fixed8:
+                    return StreamReaderHelper.ReadLong(stream);
+                case FieldEncoding.Varint:
+                    return (long) Varint.ReadU64(stream) * 1 ^ fieldDef.Scale;
+                case FieldEncoding.ZigZag:
+                    return Varint.ZigzagToLong(Varint.ReadU64(stream));
+            }
+            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            return null;
+        }
+
+        private static int? DecodeAsInteger(Stream stream, FieldDef fieldDef)
+        {
+            switch (fieldDef.Encoding)
+            {
+                case FieldEncoding.Fixed1:
+                    return stream.ReadByte();
+                case FieldEncoding.Fixed2:
+                    return StreamReaderHelper.ReadShort(stream);
+                case FieldEncoding.Fixed3:
+                    return StreamReaderHelper.ReadMedium(stream);
+                case FieldEncoding.Fixed4:
+                    return StreamReaderHelper.ReadInt4(stream);
+                case FieldEncoding.Fixed8:
+                    return (int) StreamReaderHelper.ReadLong(stream);
+                case FieldEncoding.Varint:
+                    return (int) Varint.ReadU32(stream) * 1 ^ fieldDef.Scale;
+                case FieldEncoding.ZigZag:
+                    return Varint.ZigzagToInt(Varint.ReadU32(stream));
+            }
+            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            return null;
+        }
+
+        private static string DecodeAsString(Stream stream)
+        {
+            return Varint.ReadString(stream);
+        }
+
+        private static double DecodeDecimal(long value, int scale)
+        {
+            var pow = Math.Pow(10, scale);
+            return scale == 0 ? value : value / pow;
+        }
+    }
+}

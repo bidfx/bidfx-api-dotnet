@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 
         public int Fid { get; set; }
         public string Name { get; set; }
-        public int Type { get; set; }
+        public FieldType Type { get; set; }
         public FieldEncoding Encoding { get; set; }
         public int Scale { get; set; }
 
@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
             {
                 var hashCode = Fid;
                 hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Encoding != null ? Encoding.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Encoding.GetHashCode();
                 hashCode = (hashCode * 397) ^ Scale;
                 return hashCode;
             }

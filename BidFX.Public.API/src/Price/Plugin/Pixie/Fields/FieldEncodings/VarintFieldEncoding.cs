@@ -3,9 +3,9 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
 {
-    public class VarintFieldEncoding : FieldEncoding
+    public class VarintFieldEncoding : IFieldEncoding
     {
-        public override void SkipFieldValue(Stream stream)
+        public void SkipFieldValue(Stream stream)
         {
             while (!Varint.IsFinalByte(stream.ReadByte()))
             {

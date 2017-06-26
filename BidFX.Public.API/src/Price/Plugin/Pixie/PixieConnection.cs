@@ -23,6 +23,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private long _lastWriteTime = 0;
         private long _subscriptionInterval = 250;
         private readonly PixieProtocolOptions _protocolOptions;
+        private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
 
         public long SubscriptionInterval { get; set; }
         public bool CompressSubscriptions { get; set; }
@@ -58,7 +59,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                         case PixieMessageType.PriceSync:
                             var receivedTimeNanos = JavaTime.NanoTime();
                             var receivedTime = JavaTime.CurrentTimeMillis();
-                            var priceSync = new PriceSync(message);
+                            var priceSync = _priceSyncDecoder.DecodePriceSync(message);
                             OnPriceSync(priceSync);
                             _ackQueue.Add(new AckData
                             {
@@ -67,7 +68,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                                 PriceReceivedTime = receivedTime,
                                 HandlingStartNanoTime = receivedTimeNanos
                             });
-                            Log.Info(msgType);
                             break;
                         default:
                             if (Log.IsDebugEnabled) Log.Debug("received message with type: " + (char) msgType);
@@ -107,16 +107,23 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private void OnPriceSync(PriceSync priceSync)
         {
             var edition = (int) priceSync.Edition;
-            var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
-            if (subjectSet == null)
+            try
             {
-                Log.Error("tried to get edition " + edition +
-                          " but SubjectSetRegister returned null. Cannot process PriceSync!");
-                throw new IllegalStateException("received PriceSync for edition " + edition +
-                                                " but it's not in the SubjectSetRegister.");
+                var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
+                if (subjectSet == null)
+                {
+                    Log.Error("tried to get edition " + edition +
+                              " but SubjectSetRegister returned null. Cannot process PriceSync!");
+                    throw new IllegalStateException("received PriceSync for edition " + edition +
+                                                    " but it's not in the SubjectSetRegister.");
+                }
+                var gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(subjectSet);
+                priceSync.Visit(_dataDictionary, gridHeaderRegistryByEdition);
             }
-            else
+            catch (Exception e)
             {
+                Log.Warn("Could not process PricSync due to " + e);
+                throw e;
             }
         }
 

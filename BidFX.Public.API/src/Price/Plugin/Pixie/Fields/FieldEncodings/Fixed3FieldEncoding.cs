@@ -2,11 +2,11 @@ using System.IO;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
 {
-    public class Fixed3FieldEncoding : FieldEncoding
+    public class Fixed3FieldEncoding : IFieldEncoding
     {
-        public override void SkipFieldValue(Stream stream)
+        public void SkipFieldValue(Stream stream)
         {
-            SkipFieldValue(stream, 3);
+            stream.Seek(3, SeekOrigin.Current);
         }
     }
 }

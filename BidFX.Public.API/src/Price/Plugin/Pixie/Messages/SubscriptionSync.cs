@@ -75,8 +75,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             Varint.WriteU32(memoryStream, _size);
 
             var appender = IsCompressed()
-                ? (IBufferCompressor) new ZlibBufferCompressor(CompressionLevel)
-                : new UncompressedBufferCompressor();
+                ? (IStreamCompressor) new ZlibStreamCompressor(CompressionLevel)
+                : new UncompressedStreamCompressor();
 
             var subjectBuffer = new MemoryStream();
             if (IsChangedEdition())

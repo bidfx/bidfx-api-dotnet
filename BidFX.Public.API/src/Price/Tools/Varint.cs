@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Price.Tools
         private const int BitsPerByte = 7;
         private const int ContinuationBit = 1 << BitsPerByte;
         private const uint MaskLow7Bits = ContinuationBit - 1;
-        
+
         public static uint ReadU32(Stream stream)
         {
             uint result = 0;
@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Price.Tools
                 }
                 var b = (byte) nextByte;
                 result |= (ulong) (b & MaskLow7Bits) << offset;
-                if(IsFinalByte(b)) break;
+                if (IsFinalByte(b)) break;
             }
             return result;
         }
@@ -48,15 +48,15 @@ namespace BidFX.Public.API.Price.Tools
         {
             WriteU32(stream, (uint) value);
         }
-        
+
         public static void WriteU32(Stream stream, uint value)
         {
             while ((value & ~MaskLow7Bits) != 0)
             {
                 stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
-                value =  value >> BitsPerByte;
+                value = value >> BitsPerByte;
             }
-            stream.WriteByte((byte)value);
+            stream.WriteByte((byte) value);
         }
 
         public static void WriteU64(Stream stream, long value)
@@ -69,9 +69,9 @@ namespace BidFX.Public.API.Price.Tools
             while ((value & ~MaskLow7Bits) != 0)
             {
                 stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
-                value = (uint)value >> BitsPerByte;
+                value = value >> BitsPerByte;
             }
-            stream.WriteByte((byte)value);
+            stream.WriteByte((byte) value);
         }
 
         public static bool IsFinalByte(int b)
@@ -117,6 +117,16 @@ namespace BidFX.Public.API.Price.Tools
             {
                 WriteString(stream, s);
             }
+        }
+
+        public static long ZigzagToLong(ulong zigzag)
+        {
+            return (long) (zigzag >> 1) ^ -(long) (zigzag & 1L);
+        }
+
+        public static int ZigzagToInt(uint zigzag)
+        {
+            return (int) (zigzag >> 1) ^ -(int) (zigzag & 1);
         }
     }
 }

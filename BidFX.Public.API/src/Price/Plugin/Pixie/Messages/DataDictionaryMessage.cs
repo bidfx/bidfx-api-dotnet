@@ -30,8 +30,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             return new FieldDef()
             {
                 Fid = (int) Varint.ReadU32(stream),
-                Type = stream.ReadByte(),
-                Encoding = FieldEncoding.ValueOf(stream.ReadByte()),
+                Type = FieldTypeMethods.ValueOf(stream.ReadByte()),
+                Encoding = FieldEncodingMethods.ValueOf(stream.ReadByte()),
                 Scale = (int) Varint.ReadU32(stream),
                 Name = Varint.ReadString(stream)
             };

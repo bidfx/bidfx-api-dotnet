@@ -16,22 +16,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             Options = Varint.ReadU32(stream);
             Version = Varint.ReadU32(stream);
-            ClientId = ReadInt4(stream);
-            ServerId = ReadInt4(stream);
-        }
-
-        private static int ReadInt4(Stream stream)
-        {
-            var bytes = new byte[4];
-            for (var i = 0; i < 4; i++)
-            {
-                bytes[i] = (byte) stream.ReadByte();
-            }
-            if (BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(bytes);
-            }
-            return BitConverter.ToInt32(bytes, 0);
+            ClientId = StreamReaderHelper.ReadInt4(stream);
+            ServerId = StreamReaderHelper.ReadInt4(stream);
         }
 
         public override string ToString()
