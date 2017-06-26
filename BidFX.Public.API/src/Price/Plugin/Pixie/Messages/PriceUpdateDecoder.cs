@@ -33,8 +33,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                         DecodeStatusUpdate(stream, sid, syncable);
                         break;
                     case 'G':
+                        DecodeFullGridImage(sid, stream, dataDictionary, gridHeaderRegistry, syncable);
                         break;
                     case 'g':
+                        DecodeGridUpdate(sid, stream, dataDictionary, gridHeaderRegistry, syncable);
                         break;
                     default:
                         throw new DecodingException("unexpected price update type '" + type + "'");
@@ -69,6 +71,79 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 }
             }
             return priceMap;
+        }
+
+        private static void DecodeFullGridImage(int sid, Stream stream, IDataDictionary dataDictionary,
+            IGridHeaderRegistry gridHeaderRegistry, ISyncable synable)
+        {
+            var columnCount = (int) Varint.ReadU32(stream);
+            synable.StartGridImage(sid, columnCount);
+            var headers = new FieldDef[columnCount];
+            for (var i = 0; i < columnCount; i++)
+            {
+                var fid = (int) Varint.ReadU32(stream);
+                if (fid == FieldDef.ReferecingFid)
+                {
+                    throw new IllegalStateException("unexpected field " + fid);
+                }
+                var rowCount = (int) Varint.ReadU32(stream);
+                var column = new object[rowCount];
+                var fieldDef = GetFieldDef(stream, dataDictionary, new Dictionary<string, object>(), fid);
+                for (var j = 0; j < rowCount; j++)
+                {
+                    column[j] = DecodeField(stream, fieldDef);
+                }
+                synable.ColumnImage(fieldDef.Name, rowCount, column);
+                headers[i] = fieldDef;
+            }
+            gridHeaderRegistry.SetGridHeader(sid, headers);
+            synable.EndGridImage();
+        }
+
+        private static void DecodeGridUpdate(int sid, Stream stream, IDataDictionary dataDictionary,
+            IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
+        {
+            var header = gridHeaderRegistry.GetGridHeader(sid);
+
+            var columnCount = (int) Varint.ReadU32(stream);
+            syncable.StartGridUpdate(sid, columnCount);
+
+            for (var i = 0; i < columnCount; i++)
+            {
+                var updateType = (char) stream.ReadByte();
+                var cid = (int) Varint.ReadU32(stream);
+                var rowCount = (int) Varint.ReadU32(stream);
+                var column = new object[rowCount];
+
+                var fieldDef = header[cid];
+                for (var j = 0; j < rowCount; j++)
+                {
+                    column[j] = DecodeField(stream, fieldDef);
+                }
+                if (updateType == 'f')
+                {
+                    syncable.FullColumnUpdate(fieldDef.Name, cid, rowCount, column);
+                }
+                else
+                {
+                    var rids = new int[rowCount];
+
+                    for (var j = 0; j < rowCount; j++)
+                    {
+                        rids[j] = (int) Varint.ReadU32(stream);
+                    }
+                    if (updateType == 't')
+                    {
+                        var deletedFrom = (int) Varint.ReadU32(stream);
+                        syncable.PartialTruncatedColumnUpdate(fieldDef.Name, cid, rowCount, column, rids, deletedFrom);
+                    }
+                    else
+                    {
+                        syncable.PartialColumnUpdate(fieldDef.Name, cid, rowCount, column, rids);
+                    }
+                }
+            }
+            syncable.EndGridUpdate();
         }
 
         private static FieldDef GetFieldDef(Stream stream, IDataDictionary dataDictionary,
