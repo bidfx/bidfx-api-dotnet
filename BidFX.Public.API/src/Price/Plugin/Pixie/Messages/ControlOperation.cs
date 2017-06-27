@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
     static class ControlOperationExtenstions
     {
-        public static byte GetCode(ControlOperation controlOperation)
+        public static byte GetCode(this ControlOperation controlOperation)
         {
             if (controlOperation.Equals(ControlOperation.Refresh))
                 return (byte) 'R';
