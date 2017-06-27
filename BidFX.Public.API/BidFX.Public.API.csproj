@@ -112,6 +112,7 @@
     <Compile Include="src\Price\Tools\BitSetter.cs" />
     <Compile Include="src\Price\Tools\ConnectionTools.cs" />
     <Compile Include="src\Price\Tools\NumericCharacterEntity.cs" />
+    <Compile Include="src\Price\Tools\Params.cs" />
     <Compile Include="src\Price\Tools\StreamReaderHelper.cs" />
     <Compile Include="src\Price\Tools\StringCharIterator.cs" />
     <Compile Include="src\PublicApi.cs" />

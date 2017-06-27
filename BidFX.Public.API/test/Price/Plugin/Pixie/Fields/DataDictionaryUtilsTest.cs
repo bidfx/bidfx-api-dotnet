@@ -70,7 +70,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         {
             var fieldDef = new FieldDef()
             {
-                Fid = -1,
                 Name = "Bid",
                 Type = FieldType.Integer,
             };

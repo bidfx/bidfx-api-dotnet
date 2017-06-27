@@ -1,4 +1,5 @@
 using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
@@ -6,11 +7,29 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
     {
         public const int ReferecingFid = int.MaxValue;
 
-        public int Fid { get; set; }
-        public string Name { get; set; }
-        public FieldType Type { get; set; }
+        private int _fid = -1;
+        private string _name;
+        private FieldType _type;
         public FieldEncoding Encoding { get; set; }
         public int Scale { get; set; }
+
+        public int Fid
+        {
+            get { return _fid; }
+            set { _fid = Params.NotNegative(value); }
+        }
+
+        public FieldType Type
+        {
+            get { return _type; }
+            set { _type = Params.NotNull(value); }
+        }
+
+        public string Name
+        {
+            get { return _name; }
+            set { _name = Params.NotBlank(value); }
+        }
 
         protected bool Equals(FieldDef other)
         {

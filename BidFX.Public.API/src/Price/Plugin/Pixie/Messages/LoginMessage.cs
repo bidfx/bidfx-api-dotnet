@@ -5,12 +5,22 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     public class LoginMessage : IOutgoingPixieMessage
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Alias { get; set; }
-        public string Application { get; set; }
-        public string ApplicationVersion { get; set; }
+        public string Username { get; internal set; }
+        public string Password { get; internal set; }
+        public string Alias { get; internal set; }
+        public string Application { get; internal set; }
+        public string ApplicationVersion { get; internal set; }
 
+        public LoginMessage(string username, string password, string alias, string application,
+            string applicationVersion)
+        {
+            Username = Params.NotNull(username);
+            Password = Params.NotNull(password);
+            Alias = Params.NotNull(alias);
+            Application = Params.NotNull(application);
+            ApplicationVersion = Params.NotNull(applicationVersion);
+        }
+        
         public MemoryStream Encode(int version)
         {
             var memoryStream = new MemoryStream();

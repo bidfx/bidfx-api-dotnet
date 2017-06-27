@@ -22,7 +22,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public SubscriptionSync(int edition, List<Subject.Subject> subjects)
         {
-            _edition = edition;
+            _edition = Params.NotNegative(edition);
             Subjects = subjects;
             _size = subjects.Count;
         }

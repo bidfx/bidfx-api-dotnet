@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BidFX.Public.API.Price.Tools;
 using Ionic.Zlib;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -9,9 +10,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         private readonly MemoryStream _stream = new MemoryStream();
         private readonly DeflateStream _compressor;
 
-        public ZlibStreamCompressor(int level)
+        public ZlibStreamCompressor(int compressionLevel)
         {
-            _compressor = new DeflateStream(_stream, CompressionMode.Compress, ToCompressionLevel(level));
+            Params.InRange(compressionLevel, 1, 9);
+            _compressor = new DeflateStream(_stream, CompressionMode.Compress, ToCompressionLevel(compressionLevel));
         }
 
         public void Compress(MemoryStream fragment)

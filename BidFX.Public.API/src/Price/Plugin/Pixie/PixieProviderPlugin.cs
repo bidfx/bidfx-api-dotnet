@@ -153,14 +153,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 var welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = welcome.Version;
-                var login = new LoginMessage
-                {
-                    Username = Username,
-                    Password = Password,
-                    Alias = ServiceProperties.Username(),
-                    Application = PublicApi.Name,
-                    ApplicationVersion = PublicApi.Version
-                };
+                var login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
+                    PublicApi.Version);
                 WriteFrame(login);
                 var grantMessage = ReadGrantMessage();
                 Log.Info("Received grant: " + grantMessage);

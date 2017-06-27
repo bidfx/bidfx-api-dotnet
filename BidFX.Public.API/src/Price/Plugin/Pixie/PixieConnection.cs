@@ -29,8 +29,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly PixieProtocolOptions _protocolOptions;
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
         private readonly GridCache _gridCache = new GridCache();
-
-        public long SubscriptionInterval { get; set; }
+        
         public bool CompressSubscriptions { get; set; }
 
         public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions)
@@ -38,7 +37,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _stream = stream;
             _provider = provider;
             _protocolOptions = protocolOptions;
-            SubscriptionInterval = 250L;
             CompressSubscriptions = true;
             new Thread(SendOutgoingMessages)
             {
@@ -255,6 +253,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _lastWriteTime = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
         }
 
+        public long SubscriptionInterval
+        {
+            get { return _subscriptionInterval; }
+            set { _subscriptionInterval = Params.InRange(value, 25L, 5000L); }
+        }
+
         public SubjectSetRegister SubjectSetRegister
         {
             get { return _subjectSetRegister; }
@@ -280,7 +284,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             internal PriceSyncVisitor(List<Subject.Subject> subjectSet, PixieConnection pixieConnection)
             {
-                _subjectSet = subjectSet;
+                _subjectSet = Params.NotNull(subjectSet);
                 _pixieConnection = pixieConnection;
             }
 

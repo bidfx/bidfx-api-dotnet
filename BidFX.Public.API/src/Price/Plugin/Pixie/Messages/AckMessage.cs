@@ -10,7 +10,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public ulong RevisionTime { get; set; }
         public long PriceReceivedTime { get; set; }
         public long AckTime { get; set; }
-        public long HandlingDuration { get; set; }
+        private long _handlingDuration;
+
+        public long HandlingDuration
+        {
+            get { return _handlingDuration; }
+            set { _handlingDuration = Params.NotNegative(value); }
+        }
 
         public MemoryStream Encode(int version)
         {

@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         {
             return fieldDef != null &&
                    fieldDef.Fid >= 0 &&
-                   fieldDef.Type != 0 &&c
+                   fieldDef.Type != 0 &&
                    fieldDef.Name != null &&
                    fieldDef.Encoding != null;
         }
