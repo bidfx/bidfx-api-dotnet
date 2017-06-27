@@ -36,9 +36,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public override string ToString()
         {
             return "Ack(revision=" + Revision
-                   + ", revisionTime=" + JavaTime.IsoDateFormat(new DateTime((long) RevisionTime))
-                   + ", priceReceivedTime=" + JavaTime.IsoDateFormat(new DateTime(PriceReceivedTime))
-                   + ", ackTime=" + JavaTime.IsoDateFormat(new DateTime(AckTime))
+                   + ", revisionTime=" + JavaTime.ToIsoTime((long) RevisionTime)
+                   + ", priceReceivedTime=" + JavaTime.ToIsoTime(PriceReceivedTime)
+                   + ", ackTime=" + JavaTime.ToIsoTime(AckTime)
                    + ", handlingDuration=" + HandlingDuration
                    + "us)";
         }

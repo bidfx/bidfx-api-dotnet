@@ -206,7 +206,7 @@ namespace BidFX.Public.API.Price.Tools
             return new MemoryStream(memoryStream.ToArray());
         }
 
-        private static string StreamAsHex(MemoryStream stream)
+        public static string StreamAsHex(MemoryStream stream)
         {
             var array = stream.ToArray();
             return EncodeAsHex(array);

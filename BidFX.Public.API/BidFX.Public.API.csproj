@@ -171,6 +171,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\FieldEncodings\FieldEncodingTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\FieldTypeTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Messages\AckMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
