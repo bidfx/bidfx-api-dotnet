@@ -83,7 +83,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public override string ToString()
         {
             var builder = new StringBuilder();
-            builder.Append("GridColumn(size=").Append(_size).Append(',');
+            builder.Append("GridColumn(Size=").Append(_size).Append(',');
 
             builder.Append('[');
             var first = true;
