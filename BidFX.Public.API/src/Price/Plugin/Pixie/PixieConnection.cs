@@ -257,10 +257,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public SubjectSetRegister SubjectSetRegister
         {
-            get
-            {
-                return _subjectSetRegister;
-            }
+            get { return _subjectSetRegister; }
         }
 
         public GridCache GridCache
@@ -286,7 +283,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _subjectSet = subjectSet;
                 _pixieConnection = pixieConnection;
             }
-            
+
             public void PriceImage(int sid, Dictionary<string, object> price)
             {
                 if (Log.IsDebugEnabled) Log.Debug("received price image SID: " + sid + ", price: " + price);
@@ -302,11 +299,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             private void HandlePriceUpdateEvent(int sid, Dictionary<string, object> price, bool replaceAllFields)
             {
                 if (sid >= _subjectSet.Count) return;
-                
+
                 var subject = _subjectSet[sid];
-                
+
                 if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
-                
+
                 CalculateHopLatency2(price);
                 var priceMap = CreatePriceMap(price);
                 _pixieConnection.EventHandler.OnPriceUpdate(subject, priceMap, replaceAllFields);
@@ -344,11 +341,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 if (Log.IsDebugEnabled)
                     Log.Debug("received price statis SID: " + sid + ", status: " + status + ", text: " + explanation);
-                
+
                 if (sid >= _subjectSet.Count) return;
-                
+
                 var subject = _subjectSet[sid];
-                
+
                 if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
 
                 _pixieConnection.EventHandler.OnSubscriptionStatus(subject, status, explanation);
@@ -357,9 +354,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             public void StartGridImage(int sid, int columnCount)
             {
                 if (Log.IsDebugEnabled) Log.Debug("start grid image SID: " + sid + ", columnCount: " + columnCount);
-                
+
                 if (sid >= _subjectSet.Count) return;
-                
+
                 _gridSubject = _subjectSet[sid];
                 _grid = _pixieConnection.GridCache.Get(_gridSubject);
                 if (_grid != null)
@@ -409,7 +406,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 map["AskLevels"] = numAskLevels;
                 var priceMap = CreatePriceMap(map);
                 _pixieConnection.EventHandler.OnPriceUpdate(_gridSubject, priceMap, false);
-
             }
 
             private void AddColumn(Dictionary<string, object> map, string columnName, IColumn column)
@@ -420,13 +416,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     map[columnName + rowNum] = column.Get(i);
                 }
             }
-            
+
             public void StartGridUpdate(int sid, int columnCount)
             {
                 if (Log.IsDebugEnabled) Log.Debug("start grid update SID: " + sid + ", columnCount: " + columnCount);
-                
+
                 if (sid >= _subjectSet.Count) return;
-                
+
                 _gridSubject = _subjectSet[sid];
                 _grid = _pixieConnection.GridCache.Get(_gridSubject);
                 if (_grid != null)
@@ -451,7 +447,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 }
             }
 
-            public void PartialTruncatedColumnUpdate(string name, int cid, int rowCount, object[] columnValues, int[] rids,
+            public void PartialTruncatedColumnUpdate(string name, int cid, int rowCount, object[] columnValues,
+                int[] rids,
                 int truncatedRid)
             {
                 if (_grid != null)

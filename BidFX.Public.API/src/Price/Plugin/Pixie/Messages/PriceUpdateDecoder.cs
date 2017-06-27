@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
