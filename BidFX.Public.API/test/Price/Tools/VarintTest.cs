@@ -212,7 +212,7 @@ namespace BidFX.Public.API.Price.Tools
             return EncodeAsHex(array);
         }
 
-        private static MemoryStream HexStream(string hexString)
+        public static MemoryStream HexStream(string hexString)
         {
             var bytes = DecodeFromHex(hexString);
             return new MemoryStream(bytes);
