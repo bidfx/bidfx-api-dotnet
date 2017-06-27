@@ -26,13 +26,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
                     return FieldType.Long;
                 case (char) FieldType.String:
                     return FieldType.String;
-                case (char) FieldType.Discard:
-                    return FieldType.Discard;
-//                case (char) FieldType.Unrecognised:
-//                    return FieldType.Unrecognised;
                 default:
-                    throw new ArgumentException("unrecognised field type code: " + code + " ('" + (char) code +
-                                                "').");
+                    return FieldType.Unrecognised;
             }
         }
     }
