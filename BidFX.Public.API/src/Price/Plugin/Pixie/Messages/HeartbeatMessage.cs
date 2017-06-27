@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override string ToString()
         {
-            return "Heartbeat{}";
+            return "Heartbeat()";
         }
     }
 }
