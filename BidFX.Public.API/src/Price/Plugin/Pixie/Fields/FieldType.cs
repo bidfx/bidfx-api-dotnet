@@ -4,12 +4,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
     public enum FieldType
     {
+        Unrecognised = ' ',
         Double = 'D',
         Integer = 'I',
         Long = 'L',
         String = 'S',
-        Discard = ' ',
-        Unrecognised = ' '
+        Discard = ' '
     }
 
     static class FieldTypeMethods
