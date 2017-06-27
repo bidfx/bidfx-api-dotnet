@@ -60,7 +60,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         public override string ToString()
         {
             return "fieldDef(FID=" + Fid +
-                   ", name=\"" + Name + "\", encoding=" + Encoding + ", scale=" + Scale + ')';
+                   ", name=\"" + Name + "\", type=" + Type + ", encoding=" + Encoding + ", scale=" + Scale + ')';
         }
     }
 }

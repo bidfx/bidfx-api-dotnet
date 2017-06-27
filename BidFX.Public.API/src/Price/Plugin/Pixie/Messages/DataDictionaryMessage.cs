@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override string ToString()
         {
-            var join = string.Join("\n ", _fieldDefs.Select(x => x.ToString()).ToArray());
+            var join = string.Join("\n  ", _fieldDefs.Select(x => x.ToString()).ToArray());
             return new StringBuilder()
                 .Append("DataDictionaryMessage(" + "update=" + IsUpdate() + ", fields=[\n  ")
                 .Append(join)
