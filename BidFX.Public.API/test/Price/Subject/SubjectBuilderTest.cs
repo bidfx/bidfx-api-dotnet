@@ -138,7 +138,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void CantSetNullKeys()
         {
-            Assert.Throws<ArgumentNullException>(() => _subjectBuilder.SetComponent(null, "Reuters"));
+            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent(null, "Reuters"));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void CantSetNullValues()
         {
-            Assert.Throws<ArgumentNullException>(() => _subjectBuilder.SetComponent("Source", null));
+            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("Source", null));
         }
 
         [Test]

@@ -51,8 +51,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         [Test]
         public void SubjectSetByEditionReturnsNullInitially()
         {
-            Assert.IsNull(_register.SubjectSetByEdition(1));
-            Assert.IsNull(_register.SubjectSetByEdition(2));
+            try
+            {
+                _register.SubjectSetByEdition(1);
+                Assert.Fail("should throw exception");
+            }
+            catch (ArgumentException e)
+            {
+            }
         }
 
         [Test]
