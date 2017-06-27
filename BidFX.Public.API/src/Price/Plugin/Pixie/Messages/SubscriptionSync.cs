@@ -12,9 +12,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private const int CompressionBit = 0;
         private const int ControlsBit = 1;
-        private const int UnchangedBit = 1;
+        private const int UnchangedBit = 2;
 
-        private uint _options = 0;
+        private uint _options;
         private readonly int _edition;
         private readonly int _size;
         public List<Subject.Subject> Subjects { get; internal set; }
@@ -60,6 +60,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public bool IsCompressed()
         {
             return BitSetter.IsSet(_options, CompressionBit);
+        }
+
+        public int Size
+        {
+            get { return _size; }
         }
 
         public MemoryStream Encode(int version)

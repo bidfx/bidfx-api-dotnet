@@ -96,6 +96,7 @@
     <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamCompressor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamInflator.cs" />
     <Compile Include="src\Price\Plugin\Pixie\PixieProtocolOptions.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\PixieVersion.cs" />
     <Compile Include="src\Price\Plugin\Pixie\SubjectSetRegister.cs" />
     <Compile Include="src\Price\Subject\CommonComponents.cs" />
     <Compile Include="src\Price\Subject\IComponentHandler.cs" />
