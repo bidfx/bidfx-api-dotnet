@@ -327,10 +327,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 try
                 {
                     var sysTime = price["SystemTime"];
-                    if (sysTime.GetType() is long)
+                    var sysTimeLong = Convert.ToInt64(sysTime);
                     {
                         var now = JavaTime.CurrentTimeMillis();
-                        var hopLatency2 = now - (long) sysTime;
+                        var hopLatency2 = now - (long) sysTimeLong;
                         price["HopLatency2"] = hopLatency2;
                     }
                 }

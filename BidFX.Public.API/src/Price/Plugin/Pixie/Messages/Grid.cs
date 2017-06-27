@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {

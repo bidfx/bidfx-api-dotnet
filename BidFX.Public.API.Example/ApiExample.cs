@@ -22,6 +22,14 @@ namespace BidFX.Public.API.Example
 
         private ApiExample()
         {
+//            var client = new Client
+//            {
+//                Host = "localhost",
+//                Port = 9902,
+//                Tunnel = false,
+//                Username = "pisagui",
+//                Password = "pisagui123"
+//            };
             var client = new Client
             {
                 Host = "ny-tunnel.uatprod.tradingscreen.com",

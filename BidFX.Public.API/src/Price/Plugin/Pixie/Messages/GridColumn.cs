@@ -38,7 +38,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
             if (i < _values.Length)
             {
-                _values[1] = value;
+                _values[i] = value;
             }
             else
             {

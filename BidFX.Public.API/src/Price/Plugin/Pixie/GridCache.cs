@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     public class GridCache
     {
         private readonly Dictionary<Subject.Subject, Grid> _grids = new Dictionary<Subject.Subject, Grid>();
-        
+
         private object _lock = new object();
 
         public Grid Get(Subject.Subject subject)
