@@ -158,7 +158,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             return fieldDef;
         }
 
-        private static object DecodeField(Stream stream, FieldDef fieldDef)
+        internal static object DecodeField(Stream stream, FieldDef fieldDef)
         {
             switch (fieldDef.Type)
             {

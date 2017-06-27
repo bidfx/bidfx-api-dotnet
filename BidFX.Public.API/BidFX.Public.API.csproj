@@ -182,6 +182,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Messages\PixieMessageTypeTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceStatusCodecTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceSyncTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Messages\PriceUpdateDecoderTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
