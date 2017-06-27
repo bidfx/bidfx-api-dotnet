@@ -179,6 +179,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Messages\GridTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\HeartbeatMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\LoginMessageTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Messages\PixieMessageTypeTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceStatusCodecTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
