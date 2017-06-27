@@ -176,6 +176,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Messages\DataDictionaryMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\GrantMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\GridColumnTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Messages\GridTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
