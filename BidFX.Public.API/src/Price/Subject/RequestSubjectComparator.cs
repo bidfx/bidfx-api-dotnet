@@ -36,9 +36,13 @@ namespace BidFX.Public.API.Price.Subject
             var cmp = CompareObjects(s1, s2);
             try
             {
-                var d1 = ToQuantity(s1);
-                var d2 = ToQuantity(s2);
-                return cmp == BothNonNull ? d1.CompareTo(d2) : cmp;
+                if (cmp == BothNonNull)
+                {
+                    var d1 = ToQuantity(s1);
+                    var d2 = ToQuantity(s2);
+                    return d1.CompareTo(d2);
+                }
+                return cmp;
             }
             catch (FormatException e)
             {
@@ -48,9 +52,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private static decimal ToQuantity(string s)
         {
-            decimal number;
-            decimal.TryParse(s, out number);
-            return number;
+            return decimal.Parse(s);
         }
     }
 }
