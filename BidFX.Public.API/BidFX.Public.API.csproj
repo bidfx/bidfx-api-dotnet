@@ -156,6 +156,7 @@
     <Compile Include="src\Price\Tools\TunnelException.cs" />
     <Compile Include="src\Price\Tools\Varint.cs" />
     <Compile Include="src\Price\ValueParser.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\FieldEncodingTest.cs" />

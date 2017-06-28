@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return ToAckMessage(ackTime, handlingEndNanoTime);
         }
 
-        private AckMessage ToAckMessage(long ackTime, long handlingEndNanoTime)
+        internal AckMessage ToAckMessage(long ackTime, long handlingEndNanoTime)
         {
             var handlingDuration = Math.Max(0, handlingEndNanoTime - HandlingStartNanoTime);
             var handlingDurationMicros = (handlingDuration + 500L) / 1000L;
