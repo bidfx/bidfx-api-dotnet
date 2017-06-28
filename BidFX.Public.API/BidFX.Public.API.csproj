@@ -183,6 +183,7 @@
     <Compile Include="test\Price\Plugin\Puffin\PuffinMessageReaderTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\TokenDictionaryTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\ValueParserTest.cs" />
+    <Compile Include="test\Price\Subject\RequestSubjectComparatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />
     <Compile Include="test\Price\Subject\SubjectFormatterTest.cs" />
     <Compile Include="test\Price\Subject\SubjectIteratorTest.cs" />
