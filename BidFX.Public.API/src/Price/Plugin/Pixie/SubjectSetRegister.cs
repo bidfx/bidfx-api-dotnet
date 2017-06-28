@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly object _lock = new object();
 
         private readonly SortedDictionary<int, List<Subject.Subject>> _subjectSetCache =
-            new SortedDictionary<int, List<Subject.Subject>>();
+            new SortedDictionary<int, List<Subject.Subject>>(){{0, new List<Subject.Subject>()}};
 
         private readonly Dictionary<Subject.Subject, int> _subjectState = new Dictionary<Subject.Subject, int>();
 
@@ -27,15 +27,25 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private bool _modified = false;
 
+        public Dictionary<Subject.Subject, int> SubjectState
+        {
+            get { return _subjectState; }
+        }
+
+        public Dictionary<Subject.Subject, FieldDef[]> SubjectGridHeaders
+        {
+            get { return _subjectGridHeaders; }
+        }
+
         public void Register(Subject.Subject subject, bool refresh)
         {
             lock (_lock)
             {
-                _modified = true;
                 int state;
                 var exists = _subjectState.TryGetValue(subject, out state);
                 if (!exists)
                 {
+                    _modified = true;
                     _subjectState[subject] = StateNewlySubscribed;
                 }
                 else
@@ -44,15 +54,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     {
                         if ("RFQ".Equals(subject.LookupValue("QuoteStyle")))
                         {
+                            _modified = true;
                             _subjectState[subject] = StateToggle;
                         }
                         else
                         {
+                            _modified = true;
                             _subjectState[subject] = refresh ? StateRefresh : StateSubscribed;
                         }
                     }
                     else if (refresh && state == StateSubscribed)
                     {
+                        _modified = true;
                         _subjectState[subject] = StateRefresh;
                     }
                 }
@@ -136,7 +149,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _modified = false;
                 var subjectSet = CurrentSubjectSetSorted();
                 var edition = _subjectSetCache.Count == 0 ? 0 : _subjectSetCache.Keys.Last();
-                if (_subjectSetCache.ContainsKey(edition) && subjectSet.Equals(_subjectSetCache[edition]))
+                if (_subjectSetCache.ContainsKey(edition) && subjectSet.SequenceEqual(_subjectSetCache[edition]))
                 {
                     var subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
                     if (!subscriptionSync.HasControls()) return null; //unchanged with no controls so send nothing
@@ -194,6 +207,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 int currentState;
                 var exists = _subjectState.TryGetValue(subject, out currentState);
                 if (!exists) break;
+                _subjectState[subject] = StateSubscribed;
                 if (currentState == StateRefresh)
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Refresh);

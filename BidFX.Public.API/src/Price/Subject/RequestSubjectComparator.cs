@@ -48,7 +48,9 @@ namespace BidFX.Public.API.Price.Subject
 
         private static decimal ToQuantity(string s)
         {
-            return decimal.Parse(s);
+            decimal number;
+            decimal.TryParse(s, out number);
+            return number;
         }
     }
 }

@@ -20,6 +20,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public List<Subject.Subject> Subjects { get; internal set; }
         private readonly Dictionary<int, ControlOperation> _controls = new Dictionary<int, ControlOperation>();
 
+        public int Edition
+        {
+            get { return _edition; }
+        }
+
+        public Dictionary<int, ControlOperation> Controls
+        {
+            get { return _controls; }
+        }
+
         public SubscriptionSync(int edition, List<Subject.Subject> subjects)
         {
             _edition = Params.NotNegative(edition);
