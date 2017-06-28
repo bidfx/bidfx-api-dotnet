@@ -232,7 +232,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             var subscriptionSync = _subjectSetRegister.NextSubscriptionSync();
             if (subscriptionSync != null)
             {
-                if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= 2)
+                if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= PixieVersion.Version2)
                 {
                     subscriptionSync.SetCompressed(CompressSubscriptions);
                     Log.Info("syncronising subscriptions with " + subscriptionSync.Summarize());
@@ -244,7 +244,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private void WriteFrame(IOutgoingPixieMessage message)
         {
             if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
-            var encodedMessage = message.Encode((int) _protocolOptions.Version);
+            var encodedMessage = message.Encode(_protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
             var buffer = encodedMessage.ToArray();
             Varint.WriteU32(_stream, frameLength);

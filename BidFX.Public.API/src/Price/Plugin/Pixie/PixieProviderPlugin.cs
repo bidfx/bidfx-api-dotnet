@@ -152,7 +152,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 _protocolOptions.ConfigureStream(_stream);
                 var welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
-                _protocolOptions.Version = welcome.Version;
+                _protocolOptions.Version = (int) welcome.Version;
                 var login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version);
                 WriteFrame(login);
@@ -197,7 +197,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode((int) _protocolOptions.Version);
+            var encodedMessage = message.Encode(_protocolOptions.Version);
             var frameLength = Convert.ToInt32(encodedMessage.Length);
             var buffer = encodedMessage.GetBuffer();
             Varint.WriteU32(_stream, frameLength);

@@ -171,7 +171,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldType.String:
                     return DecodeAsString(stream);
                 default:
-                    fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+                    fieldDef.Encoding.SkipFieldValue(stream);
                     return null;
             }
         }
@@ -189,7 +189,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.ZigZag:
                     return DecodeDecimal(Varint.ZigzagToLong(Varint.ReadU64(stream)), fieldDef.Scale);
             }
-            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
 
@@ -212,7 +212,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.ZigZag:
                     return Varint.ZigzagToLong(Varint.ReadU64(stream));
             }
-            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
 
@@ -235,7 +235,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.ZigZag:
                     return Varint.ZigzagToInt(Varint.ReadU32(stream));
             }
-            fieldDef.Encoding.GetFieldEncoding().SkipFieldValue(stream);
+            fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
 

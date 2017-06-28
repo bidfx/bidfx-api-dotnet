@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
 {
@@ -19,32 +21,48 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
 
     static class FieldEncodingMethods
     {
-        public static IFieldEncoding GetFieldEncoding(this FieldEncoding fieldEncoding)
+        public static void SkipFieldValue(this FieldEncoding fieldEncoding, Stream stream)
         {
             switch (fieldEncoding)
             {
                 case FieldEncoding.Noop:
-                    return new NoopFieldEncoding();
+                    break;
                 case FieldEncoding.Fixed1:
-                    return new Fixed1FieldEncoding();
+                    stream.Seek(1, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Fixed2:
-                    return new Fixed2FieldEncoding();
+                    stream.Seek(2, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Fixed3:
-                    return new Fixed3FieldEncoding();
+                    stream.Seek(3, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Fixed4:
-                    return new Fixed4FieldEncoding();
+                    stream.Seek(4, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Fixed8:
-                    return new Fixed8FieldEncoding();
+                    stream.Seek(8, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Fixed16:
-                    return new Fixed16FieldEncoding();
+                    stream.Seek(16, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.ByteArray:
-                    return new ByteArrayFieldEncoding();
+                    var byteArraySize = Varint.ReadU32(stream);
+                    stream.Seek(byteArraySize, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.VarintString:
-                    return new VarintStringFieldEncoding();
+                    var varintStringSize = Varint.ReadU32(stream);
+                    stream.Seek(varintStringSize - 1, SeekOrigin.Current);
+                    break;
                 case FieldEncoding.Varint:
-                    return new VarintFieldEncoding();
+                    while (!Varint.IsFinalByte(stream.ReadByte()))
+                    {
+                    }
+                    break;
                 case FieldEncoding.ZigZag:
-                    return new ZigZagFieldEncoding();
+                    while (!Varint.IsFinalByte(stream.ReadByte()))
+                    {
+                    }
+                    break;
                 default:
                     throw new ArgumentException("unrecognised field encoding code: " + fieldEncoding + " ('" +
                                                 (char) fieldEncoding +

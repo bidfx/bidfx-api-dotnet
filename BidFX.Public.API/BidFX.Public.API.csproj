@@ -58,19 +58,7 @@
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldDef.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\ByteArrayFieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\IFieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed1FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed16FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed2FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed3FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed4FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\Fixed8FieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\NoopFieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\VarintFieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\VarintStringFieldEncoding.cs" />
-    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncodings\ZigZagFieldEncoding.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\Fields\FieldEncoding.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\FieldType.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\IDataDictionary.cs" />
     <Compile Include="src\Price\Plugin\Pixie\GridCache.cs" />
@@ -170,7 +158,7 @@
     <Compile Include="src\Price\ValueParser.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
-    <Compile Include="test\Price\Plugin\Pixie\Fields\FieldEncodings\FieldEncodingTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Fields\FieldEncodingTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\FieldTypeTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\AckMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\ControlOperationTest.cs" />
@@ -185,6 +173,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceUpdateDecoderTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\Messages\WelcomeMessageTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\MessageFormatterTest.cs" />
