@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             Application = Params.NotNull(application);
             ApplicationVersion = Params.NotNull(applicationVersion);
         }
-        
+
         public MemoryStream Encode(int version)
         {
             var memoryStream = new MemoryStream();

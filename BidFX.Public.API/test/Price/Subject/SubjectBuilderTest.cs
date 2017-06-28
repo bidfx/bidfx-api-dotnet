@@ -1,5 +1,4 @@
-﻿using System;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Subject

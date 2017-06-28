@@ -16,7 +16,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             var grantMessage = new GrantMessage(memoryStream);
             Assert.AreEqual(true, grantMessage.Granted);
         }
-        
+
         [Test]
         public void TestDecodeDeny()
         {

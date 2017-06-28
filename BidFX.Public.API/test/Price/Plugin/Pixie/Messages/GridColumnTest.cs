@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_to_string()
         {
-            _gridColumn.SetImage(new object[]{1, 2, 3}, 3);
+            _gridColumn.SetImage(new object[] {1, 2, 3}, 3);
             Assert.AreEqual("GridColumn(Size=3,[1,2,3])", _gridColumn.ToString());
         }
 
@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void an_image_replaces_the_existing_content()
         {
-            _gridColumn.SetImage(new object[]{4, 5}, 2);
+            _gridColumn.SetImage(new object[] {4, 5}, 2);
             _gridColumn.SetImage(Image, 3);
             Assert.AreEqual(3, _gridColumn.Size());
             Assert.AreEqual(1, _gridColumn.Get(0));
@@ -72,7 +72,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
             catch (IndexOutOfRangeException e)
             {
-
             }
         }
 
@@ -118,7 +117,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         }
 
         [Test]
-
         public void Get_after_the_end_after_a_delete_from_throws_exception()
         {
             try
@@ -130,7 +128,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
             catch (IndexOutOfRangeException e)
             {
-
             }
         }
 

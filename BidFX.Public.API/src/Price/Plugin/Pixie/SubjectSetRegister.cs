@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly object _lock = new object();
 
         private readonly SortedDictionary<int, List<Subject.Subject>> _subjectSetCache =
-            new SortedDictionary<int, List<Subject.Subject>>(){{0, new List<Subject.Subject>()}};
+            new SortedDictionary<int, List<Subject.Subject>>() {{0, new List<Subject.Subject>()}};
 
         private readonly Dictionary<Subject.Subject, int> _subjectState = new Dictionary<Subject.Subject, int>();
 

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
-using BidFX.Public.API.Price.Tools;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages

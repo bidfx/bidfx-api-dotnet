@@ -9,10 +9,37 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     public class PriceUpdateDecoderTest
     {
-        private readonly FieldDef _double = new FieldDef{Fid = 1, Type = FieldType.Double, Encoding = FieldEncoding.Fixed8, Name = "Field"};
-        private static FieldDef _long = new FieldDef{Fid = 1, Type = FieldType.Long, Encoding = FieldEncoding.Fixed8, Name = "Field"};
-        private static FieldDef _int = new FieldDef{Fid = 1, Type = FieldType.Integer, Encoding = FieldEncoding.Fixed4, Name = "Field"};
-        private static FieldDef _string = new FieldDef{Fid = 1, Type = FieldType.String, Encoding = FieldEncoding.VarintString, Name = "Field"};
+        private readonly FieldDef _double = new FieldDef
+        {
+            Fid = 1,
+            Type = FieldType.Double,
+            Encoding = FieldEncoding.Fixed8,
+            Name = "Field"
+        };
+
+        private static FieldDef _long = new FieldDef
+        {
+            Fid = 1,
+            Type = FieldType.Long,
+            Encoding = FieldEncoding.Fixed8,
+            Name = "Field"
+        };
+
+        private static FieldDef _int = new FieldDef
+        {
+            Fid = 1,
+            Type = FieldType.Integer,
+            Encoding = FieldEncoding.Fixed4,
+            Name = "Field"
+        };
+
+        private static FieldDef _string = new FieldDef
+        {
+            Fid = 1,
+            Type = FieldType.String,
+            Encoding = FieldEncoding.VarintString,
+            Name = "Field"
+        };
 
         [Test]
         public void test_decode_double_field()
@@ -95,8 +122,26 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             memoryStream.Position = 0;
 
             Assert.AreEqual(s, PriceUpdateDecoder.DecodeField(memoryStream, _string));
-            Assert.AreEqual(null, PriceUpdateDecoder.DecodeField(memoryStream,  new FieldDef{Fid = 1, Type = FieldType.Unrecognised,Encoding = FieldEncoding.ByteArray, Name = "field", Scale = 0}));
-            Assert.AreEqual(price, PriceUpdateDecoder.DecodeField(memoryStream, new FieldDef{Fid = 1, Type = FieldType.Double, Encoding = FieldEncoding.Varint, Name = "field", Scale = 6}));
+            Assert.AreEqual(null,
+                PriceUpdateDecoder.DecodeField(memoryStream,
+                    new FieldDef
+                    {
+                        Fid = 1,
+                        Type = FieldType.Unrecognised,
+                        Encoding = FieldEncoding.ByteArray,
+                        Name = "field",
+                        Scale = 0
+                    }));
+            Assert.AreEqual(price,
+                PriceUpdateDecoder.DecodeField(memoryStream,
+                    new FieldDef
+                    {
+                        Fid = 1,
+                        Type = FieldType.Double,
+                        Encoding = FieldEncoding.Varint,
+                        Name = "field",
+                        Scale = 6
+                    }));
         }
 
         [Test]
@@ -108,7 +153,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             Varint.WriteU64(memoryStream, priceTimesMillion);
 
             memoryStream.Position = 0;
-            Assert.AreEqual(price, PriceUpdateDecoder.DecodeField(memoryStream, new FieldDef{Fid = 1, Type = FieldType.Double, Encoding = FieldEncoding.Varint, Name = "field", Scale = 6}));
+            Assert.AreEqual(price,
+                PriceUpdateDecoder.DecodeField(memoryStream,
+                    new FieldDef
+                    {
+                        Fid = 1,
+                        Type = FieldType.Double,
+                        Encoding = FieldEncoding.Varint,
+                        Name = "field",
+                        Scale = 6
+                    }));
         }
 
         [Test]
@@ -119,7 +173,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             Varint.WriteU64(memoryStream, size);
 
             memoryStream.Position = 0;
-            Assert.AreEqual(size, PriceUpdateDecoder.DecodeField(memoryStream, new FieldDef(){Fid = 1, Type = FieldType.Long, Encoding = FieldEncoding.Varint, Name = "field"}));
+            Assert.AreEqual(size,
+                PriceUpdateDecoder.DecodeField(memoryStream,
+                    new FieldDef() {Fid = 1, Type = FieldType.Long, Encoding = FieldEncoding.Varint, Name = "field"}));
         }
 
         [Test]
@@ -131,7 +187,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             Varint.WriteU64(memoryStream, quantityTimesHundred);
 
             memoryStream.Position = 0;
-            Assert.AreEqual(quantity, PriceUpdateDecoder.DecodeField(memoryStream, new FieldDef{Fid = 1, Type = FieldType.Double, Encoding = FieldEncoding.Varint, Name = "field", Scale = 2}));
+            Assert.AreEqual(quantity,
+                PriceUpdateDecoder.DecodeField(memoryStream,
+                    new FieldDef
+                    {
+                        Fid = 1,
+                        Type = FieldType.Double,
+                        Encoding = FieldEncoding.Varint,
+                        Name = "field",
+                        Scale = 2
+                    }));
         }
 
         [Test]

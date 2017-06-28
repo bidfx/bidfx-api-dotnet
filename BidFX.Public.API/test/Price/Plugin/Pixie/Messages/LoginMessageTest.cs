@@ -103,14 +103,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public void EncodeVersion2()
         {
             var memoryStream = _message.Encode(2);
-            Assert.AreEqual(EncodedV2,memoryStream.ToArray());
+            Assert.AreEqual(EncodedV2, memoryStream.ToArray());
         }
 
         [Test]
         public void EncodeVersion3()
         {
             var memoryStream = _message.Encode(3);
-            Assert.AreEqual(EncodedV2,memoryStream.ToArray());
+            Assert.AreEqual(EncodedV2, memoryStream.ToArray());
         }
     }
 }

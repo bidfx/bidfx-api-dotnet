@@ -259,7 +259,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 Assert.AreEqual(null, _register.SubjectSetByEdition(1));
                 Assert.Fail();
             }
-            catch (ArgumentException e){}
+            catch (ArgumentException e)
+            {
+            }
         }
 
         [Test]
@@ -316,7 +318,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (ArgumentException e)
             {
-                
             }
             try
             {
@@ -325,7 +326,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (ArgumentException e)
             {
-                
             }
             Assert.AreSame(subjectSet3, _register.SubjectSetByEdition(3));
             Assert.AreSame(subjectSet3, _register.SubjectSetByEdition(3));

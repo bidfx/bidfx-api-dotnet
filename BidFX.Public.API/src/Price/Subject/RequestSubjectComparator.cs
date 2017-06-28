@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Price.Subject
             }
             catch (FormatException e)
             {
-                return cmp == BothNonNull ? s1.CompareTo(s2) : cmp;
+                return cmp == BothNonNull ? String.Compare(s1, s2, StringComparison.Ordinal) : cmp;
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Moq;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {

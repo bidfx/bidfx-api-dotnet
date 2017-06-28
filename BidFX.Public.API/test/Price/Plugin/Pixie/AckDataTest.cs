@@ -16,8 +16,22 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public void ToAckMessageComputesTheHandlingDurationInMicroseconds()
         {
             long endNanoTime = StartNanoTime + 321000;
-            AckData ackData = new AckData{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, HandlingStartNanoTime = StartNanoTime};
-            Assert.AreEqual(new AckMessage{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, AckTime = AckTime, HandlingDuration = 321},
+            AckData ackData = new AckData
+            {
+                Revision = Revision,
+                RevisionTime = RevisionTime,
+                PriceReceivedTime = PriceReceivedTime,
+                HandlingStartNanoTime = StartNanoTime
+            };
+            Assert.AreEqual(
+                new AckMessage
+                {
+                    Revision = Revision,
+                    RevisionTime = RevisionTime,
+                    PriceReceivedTime = PriceReceivedTime,
+                    AckTime = AckTime,
+                    HandlingDuration = 321
+                },
                 ackData.ToAckMessage(AckTime, endNanoTime));
         }
 
@@ -25,8 +39,22 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public void ToAckMessageComputesTheHandlingDurationInMicrosecondsAlwaysAsAPositiveValue()
         {
             long endNanoTime = StartNanoTime - 99000;
-            AckData ackData = new AckData{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, HandlingStartNanoTime = StartNanoTime};
-            Assert.AreEqual(new AckMessage{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, AckTime = AckTime, HandlingDuration = 0},
+            AckData ackData = new AckData
+            {
+                Revision = Revision,
+                RevisionTime = RevisionTime,
+                PriceReceivedTime = PriceReceivedTime,
+                HandlingStartNanoTime = StartNanoTime
+            };
+            Assert.AreEqual(
+                new AckMessage
+                {
+                    Revision = Revision,
+                    RevisionTime = RevisionTime,
+                    PriceReceivedTime = PriceReceivedTime,
+                    AckTime = AckTime,
+                    HandlingDuration = 0
+                },
                 ackData.ToAckMessage(AckTime, endNanoTime));
         }
 
@@ -34,12 +62,42 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public void ToAckMessageComputesTheHandlingDurationInMicrosecondsByRoundingToNearest()
         {
             long endNanoTime = StartNanoTime + 321000;
-            AckData ackData = new AckData{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, HandlingStartNanoTime = StartNanoTime};
-            Assert.AreEqual(new AckMessage{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, AckTime = AckTime, HandlingDuration = 321},
+            AckData ackData = new AckData
+            {
+                Revision = Revision,
+                RevisionTime = RevisionTime,
+                PriceReceivedTime = PriceReceivedTime,
+                HandlingStartNanoTime = StartNanoTime
+            };
+            Assert.AreEqual(
+                new AckMessage
+                {
+                    Revision = Revision,
+                    RevisionTime = RevisionTime,
+                    PriceReceivedTime = PriceReceivedTime,
+                    AckTime = AckTime,
+                    HandlingDuration = 321
+                },
                 ackData.ToAckMessage(AckTime, endNanoTime + 499));
-            Assert.AreEqual(new AckMessage{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, AckTime = AckTime, HandlingDuration = 322},
+            Assert.AreEqual(
+                new AckMessage
+                {
+                    Revision = Revision,
+                    RevisionTime = RevisionTime,
+                    PriceReceivedTime = PriceReceivedTime,
+                    AckTime = AckTime,
+                    HandlingDuration = 322
+                },
                 ackData.ToAckMessage(AckTime, endNanoTime + 999));
-            Assert.AreEqual(new AckMessage{Revision = Revision, RevisionTime = RevisionTime, PriceReceivedTime = PriceReceivedTime, AckTime = AckTime, HandlingDuration = 322},
+            Assert.AreEqual(
+                new AckMessage
+                {
+                    Revision = Revision,
+                    RevisionTime = RevisionTime,
+                    PriceReceivedTime = PriceReceivedTime,
+                    AckTime = AckTime,
+                    HandlingDuration = 322
+                },
                 ackData.ToAckMessage(AckTime, endNanoTime + 500));
         }
     }

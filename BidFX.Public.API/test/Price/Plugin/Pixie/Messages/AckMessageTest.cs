@@ -17,7 +17,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             AckTime = 1415120801201L,
             HandlingDuration = 666L
         };
-        
+
         [Test]
         public void TestCannotConstructWithNegativeHandlingDuration()
         {
@@ -31,7 +31,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
             catch (ArgumentException e)
             {
-                
             }
         }
 
@@ -67,7 +66,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestEqualsSimilar()
         {
-            var ackMessage = new AckMessage{
+            var ackMessage = new AckMessage
+            {
                 Revision = 1234567L,
                 RevisionTime = 1415120801000L,
                 PriceReceivedTime = 1415120801200L,

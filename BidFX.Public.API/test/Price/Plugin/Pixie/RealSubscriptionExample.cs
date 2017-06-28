@@ -2,8 +2,6 @@
 {
     public class RealSubscriptionsExample
     {
-        
-
         public static readonly Subject.Subject[] SortedSubjects =
         {
             new Subject.Subject(

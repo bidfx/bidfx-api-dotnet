@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Price.Tools
         private const long Minute = 60 * Second;
         private const long Hour = 60 * Minute;
         private const long Day = 24 * Hour;
-        
+
         private static readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private const int DaysToEpoch = 719468;
 
@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Price.Tools
 
         public static int DayToGregorianDate(int dayNumber)
         {
-            var year = (int)((10000L * dayNumber + 14780) / 3652425);
+            var year = (int) ((10000L * dayNumber + 14780) / 3652425);
             var ddd = dayNumber - (365 * year + year / 4 - year / 100 + year / 400);
             if (ddd < 0)
             {

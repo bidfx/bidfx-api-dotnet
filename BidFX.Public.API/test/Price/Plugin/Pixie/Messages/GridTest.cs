@@ -28,7 +28,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         }
 
         [Test]
-
         public void get_invalid_column_throws_out_of_bound_exception()
         {
             try
@@ -36,7 +35,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 _grid.GetColumn(0);
                 Assert.Fail();
             }
-            catch(IndexOutOfRangeException e){}
+            catch (IndexOutOfRangeException e)
+            {
+            }
         }
 
         [Test]
@@ -147,7 +148,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         }
 
         [Test]
-
         public void full_update_on_a_column_that_was_not_in_the_image_is_illegal()
         {
             try
@@ -171,7 +171,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         }
 
         [Test]
-
         public void partial_update_on_a_column_that_was_not_in_the_image_is_illegal()
         {
             try

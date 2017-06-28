@@ -29,7 +29,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             }
             catch (ArgumentException e)
             {
-
             }
         }
     }

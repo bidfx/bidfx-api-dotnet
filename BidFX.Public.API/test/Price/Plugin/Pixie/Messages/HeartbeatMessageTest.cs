@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     public class HeartbeatMessageTest
     {
         private const string EncodedMessage = "48";
-        
+
         [Test]
         public void TestEncode()
         {

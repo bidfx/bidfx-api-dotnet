@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Threading;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
 using log4net;
@@ -88,7 +87,8 @@ namespace BidFX.Public.API.Example
 //                "AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=USDJPY,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
 //            _priceManager.Subscribe(new Subject(
 //                "AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=CSFX,SubClass=Spot,Symbol=GBPUSD,Tenor=Spot,User=pmacdona,ValueDate=20170623"));
-            _priceManager.Subscribe(new Subject("AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFQ,Source=SSFX,SubClass=Spot,Tenor=Spot,User=pmacdona,ValueDate=20170629,Symbol=EURUSD"));
+            _priceManager.Subscribe(new Subject(
+                "AssetClass=Fx,Currency=EUR,Customer=0001,Dealer=101100,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFQ,Source=SSFX,SubClass=Spot,Tenor=Spot,User=pmacdona,ValueDate=20170629,Symbol=EURUSD"));
         }
 
         private void SendLevel2Subscriptions()

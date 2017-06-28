@@ -12,19 +12,19 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
             Assert.AreEqual(FieldType.Long, FieldTypeMethods.ValueOf((int) FieldType.Long));
             Assert.AreEqual(FieldType.String, FieldTypeMethods.ValueOf((int) FieldType.String));
         }
-        
+
         [Test]
         public void TestValueOfUnrecognisedCodeReturnsUnrecognised()
         {
             Assert.AreEqual(FieldType.Unrecognised, FieldTypeMethods.ValueOf((int) FieldType.Unrecognised));
         }
-        
+
         [Test]
         public void TestValueOfDiscardCodeReturnsUnrecognised()
         {
             Assert.AreEqual(FieldType.Unrecognised, FieldTypeMethods.ValueOf((int) FieldType.Discard));
         }
-        
+
         [Test]
         public void TestValueOfInvalidCodeReturnsUnrecognised()
         {

@@ -1,5 +1,3 @@
-using System;
-
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
     public enum FieldType

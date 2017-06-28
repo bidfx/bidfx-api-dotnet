@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     public class WelcomeMessageTest
     {
         private const string EncodedMessage = "570001000010e1000026ae";
-        
+
         [Test]
         public void decodes_a_buffer_into_a_message()
         {

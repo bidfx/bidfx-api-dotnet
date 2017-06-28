@@ -29,7 +29,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly PixieProtocolOptions _protocolOptions;
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
         private readonly GridCache _gridCache = new GridCache();
-        
+
         public bool CompressSubscriptions { get; set; }
 
         public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions)
