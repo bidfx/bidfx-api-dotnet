@@ -2,7 +2,7 @@
 using System.IO;
 using BidFX.Public.API.Price.Tools;
 
-namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
+namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
     public enum FieldEncoding
     {

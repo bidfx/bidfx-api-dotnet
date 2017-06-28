@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
-using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
 using BidFX.Public.API.Price.Tools;
 using Moq;
 using NUnit.Framework;

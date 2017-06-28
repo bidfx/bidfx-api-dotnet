@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
 using NUnit.Framework;
 using Moq;
 

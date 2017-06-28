@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings
+namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
     public class FieldEncodingTest
     {

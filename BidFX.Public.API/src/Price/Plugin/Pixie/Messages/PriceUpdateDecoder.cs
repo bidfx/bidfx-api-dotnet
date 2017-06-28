@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
-using BidFX.Public.API.Price.Plugin.Pixie.Fields.FieldEncodings;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
