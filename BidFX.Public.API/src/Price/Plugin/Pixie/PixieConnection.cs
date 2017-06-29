@@ -29,6 +29,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly PixieProtocolOptions _protocolOptions;
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
         private readonly GridCache _gridCache = new GridCache();
+        private long _lastMsgRecTime = CurrentTimeMillis();
+
+        private static long CurrentTimeMillis()
+        {
+            return DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+        }
 
         public bool CompressSubscriptions { get; set; }
 
@@ -131,24 +137,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
         }
 
-        private MemoryStream ReadMessageFrame()
-        {
-            var frameLength = Varint.ReadU32(_stream);
-            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
-            var frameBuffer = new byte[frameLength];
-            var totalRead = 0;
-            while (totalRead < frameLength)
-            {
-                int got = _stream.Read(frameBuffer, totalRead, (int) frameLength - totalRead);
-                if (got == -1)
-                {
-                    throw new IOException("end of message stream reached (perhaps the server closed the connection)");
-                }
-                totalRead += got;
-            }
-            return new MemoryStream(frameBuffer);
-        }
-
         public void Subscribe(Subject.Subject subject, bool refresh = false)
         {
             _gridCache.Add(subject);
@@ -166,7 +154,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             if (_running.CompareAndSet(true, false))
             {
                 _gridCache.Reset();
-                Log.Info("closing connection to Puffin (" + reason + ")");
+                Log.Info("closing connection to Pixie (" + reason + ")");
                 _stream.Close();
             }
         }
@@ -191,7 +179,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (OperationCanceledException)
             {
-                Log.Info("finished writing to Puffin"); // closed already called
+                Log.Info("finished writing to Pixie"); // closed already called
             }
             catch (Exception e)
             {
@@ -210,7 +198,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void TryAndWriteHeartbeat()
         {
-            var timeSinceLastWrite = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond) - _lastWriteTime;
+            var timeSinceLastWrite = CurrentTimeMillis() - _lastWriteTime;
             if (timeSinceLastWrite > _protocolOptions.Heartbeat * 1000)
             {
                 WriteFrame(new HeartbeatMessage());
@@ -219,7 +207,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void PeriodicallyCheckSubscriptions()
         {
-            var timeNow = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
+            var timeNow = CurrentTimeMillis();
             if (timeNow - _lastSubscriptionCheckTime > _subscriptionInterval)
             {
                 _lastSubscriptionCheckTime = timeNow;
@@ -250,7 +238,41 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             Varint.WriteU32(_stream, frameLength);
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
-            _lastWriteTime = (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond);
+            _lastWriteTime = CurrentTimeMillis();
+        }
+
+        private MemoryStream ReadMessageFrame()
+        {
+            UpdateIdleTimeout();
+            var frameLength = Varint.ReadU32(_stream);
+            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
+            var frameBuffer = new byte[frameLength];
+            var totalRead = 0;
+            while (totalRead < frameLength)
+            {
+                UpdateIdleTimeout();
+                int got = _stream.Read(frameBuffer, totalRead, (int) frameLength - totalRead);
+                if (got == -1)
+                {
+                    throw new IOException("end of message stream reached (perhaps the server closed the connection)");
+                }
+                totalRead += got;
+            }
+            _lastMsgRecTime = CurrentTimeMillis();
+            return new MemoryStream(frameBuffer);
+        }
+
+        private void UpdateIdleTimeout()
+        {
+            _stream.ReadTimeout = CalculateTimeout();
+        }
+
+        private int CalculateTimeout()
+        {
+            var fullIdleTimeoutMs = _protocolOptions.Idle * 1000;
+            var timeSinceRecLastMsgMs = CurrentTimeMillis() - _lastMsgRecTime;
+            var remainingTimeout = (int) (fullIdleTimeoutMs - timeSinceRecLastMsgMs);
+            return Math.Max(1, remainingTimeout);
         }
 
         public long SubscriptionInterval
