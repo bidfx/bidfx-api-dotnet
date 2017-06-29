@@ -115,5 +115,43 @@ namespace BidFX.Public.API.Price.Subject
         {
             return new SubjectFormatter().FormatToString(this);
         }
+
+        public static Subject CreateLevelOneSpotRfsSubject(string source, string symbol, string currency,
+            string quantity, string user, string account)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, symbol, currency, quantity, user, account, "1", "RFS", "Spot", source);
+            return subjectBuilder
+                .SetComponent("Customer",
+                    "0001") //need to remove this once highway supports getting this itself for level 1
+                .SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject();
+        }
+
+        public static Subject CreateLevelTwoSpotRfsSubject(string symbol, string currency, string quantity, string user,
+            string account)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, symbol, currency, quantity, user, account, "2", "RFS", "Spot", "FXTS");
+            return subjectBuilder
+                .SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject();
+        }
+
+        public static void AddBasicComponents(SubjectBuilder subjectBuilder, string symbol, string currency,
+            string quantity, string user, string account, string level, string quoteStyle, string subClass,
+            string source)
+        {
+            subjectBuilder
+                .SetComponent(SubjectComponentName.Account, account)
+                .SetComponent(SubjectComponentName.AssetClass, "Fx")
+                .SetComponent(SubjectComponentName.Currency, currency)
+                .SetComponent(SubjectComponentName.QuoteStyle, quoteStyle)
+                .SetComponent(SubjectComponentName.Exchange, "OTC")
+                .SetComponent(SubjectComponentName.Source, source)
+                .SetComponent(SubjectComponentName.SubClass, subClass)
+                .SetComponent(SubjectComponentName.Level, level)
+                .SetComponent(SubjectComponentName.Symbol, symbol)
+                .SetComponent(SubjectComponentName.Quantity, quantity)
+                .SetComponent(SubjectComponentName.User, user);
+        }
     }
 }
