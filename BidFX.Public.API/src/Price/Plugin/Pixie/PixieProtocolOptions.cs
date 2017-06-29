@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
@@ -9,6 +10,20 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private int _heartbeat = 15;
         private int _idle = 120;
         private int _minti = 0;
+        private long _subscriptionInterval = 250;
+        private bool _compressSubscriptions = true;
+
+        public bool CompressSubscriptions
+        {
+            get { return _compressSubscriptions; }
+            set { _compressSubscriptions = value; }
+        }
+
+        public long SubscriptionInterval
+        {
+            get { return _subscriptionInterval; }
+            set { _subscriptionInterval = Params.InRange(value, 25L, 5000L); }
+        }
 
         public int Version
         {
@@ -28,15 +43,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             get { return _heartbeat; }
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentException("heartbeat interval (" + value + ") < 1 second");
-                }
-                if (value > 90)
-                {
-                    throw new ArgumentException("heartbeat interval (" + value + ") > 90 seconds");
-                }
-                _heartbeat = value;
+                _heartbeat = Params.InRange(value, 1, 90);
             }
         }
 
@@ -45,15 +52,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             get { return _idle; }
             set
             {
-                if (value < 5)
-                {
-                    throw new ArgumentException("idle interval (" + value + ") < 5 seconds");
-                }
-                if (value > 600)
-                {
-                    throw new ArgumentException("idle interval (" + value + ") > 10 minutes");
-                }
-                _idle = value;
+                _idle = Params.InRange(value, 5, 600);
             }
         }
 

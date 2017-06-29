@@ -21,14 +21,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
         private readonly BlockingCollection<AckData> _ackQueue = new BlockingCollection<AckData>();
-        private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
-        private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
-        private long _lastSubscriptionCheckTime = 0;
-        private long _lastWriteTime = 0;
-        private long _subscriptionInterval = 250;
         private readonly PixieProtocolOptions _protocolOptions;
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
         private readonly GridCache _gridCache = new GridCache();
+
+        private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
+        private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
+        private long _lastSubscriptionCheckTime;
+        private long _lastWriteTime;
         private long _lastMsgRecTime = CurrentTimeMillis();
 
         private static long CurrentTimeMillis()
@@ -36,14 +36,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
-        public bool CompressSubscriptions { get; set; }
-
         public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions)
         {
             _stream = stream;
             _provider = provider;
             _protocolOptions = protocolOptions;
-            CompressSubscriptions = true;
             new Thread(SendOutgoingMessages)
             {
                 Name = provider.Name + "-write",
@@ -191,7 +188,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private AckData PollNextAck()
         {
             AckData ackData;
-            var timeout = Math.Max(1, SubscriptionInterval / 4);
+            var timeout = Math.Max(1, _protocolOptions.SubscriptionInterval / 4);
             _ackQueue.TryTake(out ackData, TimeSpan.FromMilliseconds(timeout));
             return ackData;
         }
@@ -208,7 +205,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private void PeriodicallyCheckSubscriptions()
         {
             var timeNow = CurrentTimeMillis();
-            if (timeNow - _lastSubscriptionCheckTime > _subscriptionInterval)
+            if (timeNow - _lastSubscriptionCheckTime > _protocolOptions.SubscriptionInterval)
             {
                 _lastSubscriptionCheckTime = timeNow;
                 CheckAndSendSubscriptions();
@@ -222,7 +219,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= PixieVersion.Version2)
                 {
-                    subscriptionSync.SetCompressed(CompressSubscriptions);
+                    subscriptionSync.SetCompressed(_protocolOptions.CompressSubscriptions);
                     Log.Info("syncronising subscriptions with " + subscriptionSync.Summarize());
                     WriteFrame(subscriptionSync);
                 }
@@ -273,12 +270,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             var timeSinceRecLastMsgMs = CurrentTimeMillis() - _lastMsgRecTime;
             var remainingTimeout = (int) (fullIdleTimeoutMs - timeSinceRecLastMsgMs);
             return Math.Max(1, remainingTimeout);
-        }
-
-        public long SubscriptionInterval
-        {
-            get { return _subscriptionInterval; }
-            set { _subscriptionInterval = Params.InRange(value, 25L, 5000L); }
         }
 
         public SubjectSetRegister SubjectSetRegister

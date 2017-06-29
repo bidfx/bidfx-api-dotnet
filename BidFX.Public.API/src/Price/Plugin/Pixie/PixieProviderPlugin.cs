@@ -15,6 +15,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly Thread _outputThread;
+        private readonly AtomicBoolean _running = new AtomicBoolean(false);
+        private readonly GUID _guid = new GUID();
+        private readonly PixieProtocolOptions _protocolOptions = new PixieProtocolOptions();
+
         public string Name { get; private set; }
         public string Service { get; set; }
         public string Username { get; set; }
@@ -28,12 +33,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public TimeSpan ReconnectInterval { get; set; }
         public string StatusReason { get; private set; }
 
-        private readonly Thread _outputThread;
-        private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private PixieConnection _pixieConnection;
-        private readonly GUID _guid = new GUID();
         private Stream _stream;
-        private readonly PixieProtocolOptions _protocolOptions = new PixieProtocolOptions();
 
         public PixieProviderPlugin()
         {
@@ -236,6 +237,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             ProviderStatus = status;
             StatusReason = reason;
             InapiEventHandler.OnProviderStatus(this, previousStatus);
+        }
+
+        public PixieProtocolOptions PixieProtocolOptions
+        {
+            get { return _protocolOptions; }
         }
     }
 }
