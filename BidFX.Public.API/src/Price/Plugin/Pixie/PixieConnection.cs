@@ -7,6 +7,7 @@ using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Plugin.Puffin;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -27,6 +28,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
         private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
+        private List<Subject.Subject> _autoRefreshSubjects = new List<Subject.Subject>();
         private long _lastSubscriptionCheckTime;
         private long _lastWriteTime;
         private long _lastMsgRecTime = CurrentTimeMillis();
@@ -138,12 +140,20 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             _gridCache.Add(subject);
             _subjectSetRegister.Register(subject, refresh);
+            if (subject.AutoRefresh && "RFQ".Equals(subject.LookupValue(SubjectComponentName.QuoteStyle)))
+            {
+                _autoRefreshSubjects.Add(subject);
+            }
         }
 
         public void Unsubscribe(Subject.Subject subject)
         {
             _gridCache.Remove(subject);
             _subjectSetRegister.Unregister(subject);
+            if (_autoRefreshSubjects.Contains(subject))
+            {
+                _autoRefreshSubjects.Remove(subject);
+            }
         }
 
         public void Close(string reason)
@@ -287,6 +297,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             get { return _provider.InapiEventHandler; }
         }
 
+        public List<Subject.Subject> AutoRefreshSubjects
+        {
+            get { return _autoRefreshSubjects; }
+        }
+
         private class PriceSyncVisitor : ISyncable
         {
             private readonly List<Subject.Subject> _subjectSet;
@@ -362,6 +377,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 if (sid >= _subjectSet.Count) return;
 
                 var subject = _subjectSet[sid];
+
+                if (status.Equals(SubscriptionStatus.CLOSED) && _pixieConnection.AutoRefreshSubjects.Contains(subject))
+                {
+                    _pixieConnection.Subscribe(subject, true);
+                }
 
                 if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
 

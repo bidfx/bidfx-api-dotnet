@@ -8,10 +8,11 @@ namespace BidFX.Public.API.Price.Subject
     {
         private string[] _components = new string[16];
         private int _size = 0;
+        public bool AutoRefresh { get; set; }
 
         public Subject CreateSubject()
         {
-            return new Subject(GetComponents());
+            return new Subject(GetComponents(), AutoRefresh);
         }
 
         public SubjectBuilder SetComponent(string key, string value)

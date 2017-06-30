@@ -10,14 +10,16 @@ namespace BidFX.Public.API.Price.Subject
 
         private readonly string[] _components;
         private int _hash;
+        public bool AutoRefresh { get; internal set; }
 
-        public Subject(string formattedSubject) : this(BuildComponents(formattedSubject))
+        public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject), autoRefresh)
         {
         }
 
-        public Subject(string[] components)
+        public Subject(string[] components, bool autoRefresh = false)
         {
             _components = components;
+            AutoRefresh = autoRefresh;
         }
 
         private static string[] BuildComponents(string formattedSubject)
@@ -65,7 +67,7 @@ namespace BidFX.Public.API.Price.Subject
 
         protected bool Equals(Subject other)
         {
-            return _components.SequenceEqual(other._components);
+            return InternalComponents().SequenceEqual(other.InternalComponents());
         }
 
         public override bool Equals(object obj)
