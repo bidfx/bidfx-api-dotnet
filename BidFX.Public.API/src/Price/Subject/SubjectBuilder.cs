@@ -136,7 +136,7 @@ namespace BidFX.Public.API.Price.Subject
         }
 
         public static Subject CreateLevelOneSpotRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, bool autoRefresh)
+            string quantity, string account, bool autoRefresh = false)
         {
             var levelOneSpotRfqSubject = CreateLevelOneSpotSubject(source, symbol, currency, quantity, account, "RFQ");
             levelOneSpotRfqSubject.AutoRefresh = autoRefresh;
@@ -163,7 +163,7 @@ namespace BidFX.Public.API.Price.Subject
         }
 
         public static Subject CreateLevelOneForwardRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, bool autoRefresh)
+            string quantity, string account, string valueDate, bool autoRefresh = false)
         {
             var levelOneForwardRfqSubject =
                 CreateLevelOneForwardSubject(source, symbol, currency, quantity, account, valueDate, "RFQ");
@@ -192,7 +192,7 @@ namespace BidFX.Public.API.Price.Subject
         }
 
         public static Subject CreateLevelOneNdfRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, string fixingDate, bool autoRefresh)
+            string quantity, string account, string valueDate, string fixingDate, bool autoRefresh = false)
         {
             var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(source, symbol, currency, quantity, account, valueDate,
                 fixingDate, "RFQ");
@@ -224,7 +224,7 @@ namespace BidFX.Public.API.Price.Subject
         }
 
         public static Subject CreateLevelOneSwapRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string quantity2, string valueDate, string valueDate2, bool autoRefresh)
+            string quantity, string account, string quantity2, string valueDate, string valueDate2, bool autoRefresh = false)
         {
             var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(source, symbol, currency, quantity, account,
                 quantity2, valueDate,
@@ -263,7 +263,7 @@ namespace BidFX.Public.API.Price.Subject
 
         public static Subject CreateLevelOneNdsRfqSubject(string source, string symbol, string currency,
             string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate,
-            string valueDate2, bool autoRefresh)
+            string valueDate2, bool autoRefresh = false = false)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(source, symbol, currency, quantity, account,
                 fixingDate, fixingDate2,
