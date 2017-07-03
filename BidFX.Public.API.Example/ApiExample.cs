@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Example
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly PriceManager _priceManager;
-
+        
         public static void Main(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
@@ -41,7 +41,7 @@ namespace BidFX.Public.API.Example
             if (_priceManager.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendLevel1RfsSubscriptions("DBFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBCFX", "RBSFX", "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendLevel1RfsSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBCFX", "RBSFX", "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevel2RfsSubscriptions();
                 SendLevel1RfqSubscriptions("SSFX");
             }
