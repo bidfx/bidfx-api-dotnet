@@ -8,22 +8,22 @@
         public const string Account = "Account";
 
         /// <summary>
-        /// 
+        /// Allocation account component field name.
         /// </summary>
         public const string AllocAccount = "AllocAccount";
 
         /// <summary>
-        /// 
+        /// Allocation end quantity component field name.
         /// </summary>
         public const string AllocEndQty = "AllocEndQty";
         
         /// <summary>
-        /// 
+        /// Allocation quantity component field name.
         /// </summary>
         public const string AllocQty = "AllocQty";
         
         /// <summary>
-        /// 
+        /// Alternate user name component field name used for receiving pricing for another user.
         /// </summary>
         public const string AltUserName = "AltUserName";
 
@@ -51,6 +51,11 @@
         /// Fixing date needed for FX NDF subscriptions.
         /// </summary>
         public const string FixingDate = "FixingDate";
+        
+        /// <summary>
+        /// Fixing date needed for FX NDF subscriptions.
+        /// </summary>
+        public const string FixingDate2 = "FixingDate2";
 
         /// <summary>
         /// Leg Count component field name.
@@ -63,7 +68,7 @@
         public const string Level = "Level";
 
         /// <summary>
-        /// 
+        /// Number of allocations component field name.
         /// </summary>
         public const string NumAllocs = "NumAllocs";
 

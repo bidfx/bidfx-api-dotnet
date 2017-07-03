@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Price
         private readonly object _readyLock = new object();
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
-        public string Username { get; set; }
+        public static string Username { get; internal set; }
         public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
@@ -37,8 +37,9 @@ namespace BidFX.Public.API.Price
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
         public event EventHandler<ProviderStatusEvent> ProviderStatusEventHandler;
 
-        public PriceManager()
+        public PriceManager(string username)
         {
+            Username = username;
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new INAPIEventDispatcher(this);

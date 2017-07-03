@@ -117,42 +117,191 @@ namespace BidFX.Public.API.Price.Subject
             return new SubjectFormatter().FormatToString(this);
         }
 
-        public static Subject CreateLevelOneSpotRfsSubject(string source, string symbol, string currency,
-            string quantity, string user, string account)
+        // ******************LEVEL 1 SPOT******************
+        
+        private static Subject CreateLevelOneSpotSubject(string source, string symbol, string currency, string quantity,
+            string account, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, symbol, currency, quantity, user, account, "1", "RFS", "Spot", source);
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
             return subjectBuilder
-                .SetComponent("Customer",
-                    "0001") //need to remove this once highway supports getting this itself for level 1
-                .SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject();
+                .SetComponent("Customer", "0001").CreateSubject();
         }
 
-        public static Subject CreateLevelTwoSpotRfsSubject(string symbol, string currency, string quantity, string user,
+        public static Subject CreateLevelOneSpotRfsSubject(string source, string symbol, string currency,
+            string quantity, string account)
+        {
+            return CreateLevelOneSpotSubject(source, symbol, currency, quantity, account, "RFS");
+        }
+
+        public static Subject CreateLevelOneSpotRfqSubject(string source, string symbol, string currency,
+            string quantity, string account)
+        {
+            return CreateLevelOneSpotSubject(source, symbol, currency, quantity, account, "RFQ");
+        }
+
+        // ******************LEVEL 1 FORWARD******************
+        
+        private static Subject CreateLevelOneForwardSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate, string quoteStyle)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            return subjectBuilder
+                .SetComponent(SubjectComponentName.ValueDate, valueDate)
+                .SetComponent("Customer", "0001").CreateSubject();
+        }
+
+        public static Subject CreateLevelOneForwardRfsSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate)
+        {
+            return CreateLevelOneForwardSubject(source, symbol, currency, quantity, account, valueDate, "RFS");
+        }
+
+        public static Subject CreateLevelOneForwardRfqSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate)
+        {
+            return CreateLevelOneForwardSubject(source, symbol, currency, quantity, account, valueDate, "RFQ");
+        }
+
+        // ******************LEVEL 1 NDF******************
+
+        private static Subject CreateLevelOneNdfSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate, string fixingDate, string quoteStyle)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            return subjectBuilder
+                .SetComponent(SubjectComponentName.ValueDate, valueDate)
+                .SetComponent(SubjectComponentName.FixingDate, fixingDate)
+                .SetComponent("Customer", "0001").CreateSubject();
+        }
+
+        public static Subject CreateLevelOneNdfRfsSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate, string fixingDate)
+        {
+            return CreateLevelOneNdfSubject(source, symbol, currency, quantity, account, valueDate, fixingDate, "RFS");
+        }
+
+        public static Subject CreateLevelOneNdfRfqSubject(string source, string symbol, string currency,
+            string quantity, string account, string valueDate, string fixingDate)
+        {
+            return CreateLevelOneNdfSubject(source, symbol, currency, quantity, account, valueDate, fixingDate, "RFQ");
+        }
+
+        // ******************LEVEL 1 SWAP******************
+        
+        private static Subject CreateLevelOneSwapSubject(string source, string symbol, string currency,
+            string quantity, string account, string quantity2, string valueDate, string valueDate2, string quoteStyle)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            return subjectBuilder
+                .SetComponent(SubjectComponentName.LegCount, "2")
+                .SetComponent(SubjectComponentName.Currency2, currency)
+                .SetComponent(SubjectComponentName.Quantity2, quantity2)
+                .SetComponent(SubjectComponentName.ValueDate, valueDate)
+                .SetComponent(SubjectComponentName.ValueDate2, valueDate2)
+                .SetComponent("Customer", "0001").CreateSubject();
+        }
+
+        public static Subject CreateLevelOneSwapRfsSubject(string source, string symbol, string currency,
+            string quantity, string account, string quantity2, string valueDate, string valueDate2)
+        {
+            return CreateLevelOneSwapSubject(source, symbol, currency, quantity, account, quantity2, valueDate,
+                valueDate2, "RFS");
+        }
+
+        public static Subject CreateLevelOneSwapRfqSubject(string source, string symbol, string currency,
+            string quantity, string account, string quantity2, string valueDate, string valueDate2)
+        {
+            return CreateLevelOneSwapSubject(source, symbol, currency, quantity, account, quantity2, valueDate,
+                valueDate2, "RFQ");
+        }
+        
+        // ******************LEVEL 1 NDS******************
+
+        private static Subject CreateLevelOneNdsSubject(string source, string symbol, string currency,
+            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate, string valueDate2, string quoteStyle)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            return subjectBuilder
+                .SetComponent(SubjectComponentName.FixingDate, fixingDate)
+                .SetComponent(SubjectComponentName.FixingDate2, fixingDate2)
+                .SetComponent(SubjectComponentName.LegCount, "2")
+                .SetComponent(SubjectComponentName.Currency2, currency)
+                .SetComponent(SubjectComponentName.Quantity2, quantity2)
+                .SetComponent(SubjectComponentName.ValueDate, valueDate)
+                .SetComponent(SubjectComponentName.ValueDate2, valueDate2)
+                .SetComponent("Customer", "0001").CreateSubject();
+        }
+
+        public static Subject CreateLevelOneNdsRfsSubject(string source, string symbol, string currency,
+            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate, string valueDate2)
+        {
+            return CreateLevelOneNdsSubject(source, symbol, currency, quantity, account, fixingDate, fixingDate2, quantity2,
+                valueDate, valueDate2, "RFS");
+        }
+
+        public static Subject CreateLevelOneNdsRfqSubject(string source, string symbol, string currency,
+            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate, string valueDate2)
+        {
+            return CreateLevelOneNdsSubject(source, symbol, currency, quantity, account, fixingDate, fixingDate2, quantity2,
+                valueDate, valueDate2, "RFQ");
+        }
+        
+        // ******************LEVEL 2 SPOT******************
+        
+        public static Subject CreateLevelTwoSpotRfsSubject(string symbol, string currency, string quantity,
             string account)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, symbol, currency, quantity, user, account, "2", "RFS", "Spot", "FXTS");
-            return subjectBuilder
-                .SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, "RFS", "FXTS", "Spot", symbol, "2");
+            return subjectBuilder.CreateSubject();
+        }
+        
+        // ******************LEVEL 2 FORWARD******************
+        
+        public static Subject CreateLevelTwoForwardRfsSubject(string symbol, string currency, string quantity,
+            string account, string valueDate)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, "RFS", "FXTS", "Spot", symbol, "2");
+            subjectBuilder.SetComponent(SubjectComponentName.ValueDate, valueDate);
+            return subjectBuilder.CreateSubject();
+        }
+        
+        // ******************LEVEL 2 NDF******************
+        
+        public static Subject CreateLevelTwoNdfRfsSubject(string symbol, string currency, string quantity,
+            string account, string valueDate, string fixingDate)
+        {
+            var subjectBuilder = new SubjectBuilder();
+            AddBasicComponents(subjectBuilder, account, currency, quantity, "RFS", "FXTS", "Spot", symbol, "2");
+            subjectBuilder.SetComponent(SubjectComponentName.ValueDate, valueDate)
+                .SetComponent(SubjectComponentName.FixingDate, fixingDate);
+            return subjectBuilder.CreateSubject();
         }
 
-        public static void AddBasicComponents(SubjectBuilder subjectBuilder, string symbol, string currency,
-            string quantity, string user, string account, string level, string quoteStyle, string subClass,
-            string source)
+        private static void AddBasicComponents(SubjectBuilder subjectBuilder, string account, string currency,
+            string quantity, string quoteStyle, string source, string subClass, string symbol, string level)
         {
+            if (PriceManager.Username == null)
+                throw new IllegalStateException(
+                    "Unable to call auto-subject-creation methods before creating the price manager.");
             subjectBuilder
                 .SetComponent(SubjectComponentName.Account, account)
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, currency)
-                .SetComponent(SubjectComponentName.QuoteStyle, quoteStyle)
                 .SetComponent(SubjectComponentName.Exchange, "OTC")
+                .SetComponent(SubjectComponentName.Quantity, quantity)
+                .SetComponent(SubjectComponentName.QuoteStyle, quoteStyle)
                 .SetComponent(SubjectComponentName.Source, source)
                 .SetComponent(SubjectComponentName.SubClass, subClass)
-                .SetComponent(SubjectComponentName.Level, level)
                 .SetComponent(SubjectComponentName.Symbol, symbol)
-                .SetComponent(SubjectComponentName.Quantity, quantity)
-                .SetComponent(SubjectComponentName.User, user);
+                .SetComponent(SubjectComponentName.Level, level)
+                .SetComponent(SubjectComponentName.User, PriceManager.Username);
         }
     }
 }

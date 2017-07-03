@@ -16,12 +16,11 @@ namespace BidFX.Public.API
         {
             if (_priceManager == null)
             {
-                _priceManager = new PriceManager
+                _priceManager = new PriceManager(Username)
                 {
                     Host = Host,
                     Port = Port,
                     Tunnel = Tunnel,
-                    Username = Username,
                     Password = Password
                 };
                 _priceManager.Start();
