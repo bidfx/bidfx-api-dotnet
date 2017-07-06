@@ -15,58 +15,93 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private const int StateRefresh = 3;
         private const int StateToggle = 4;
 
+        internal class GridHeader
+        {
+            public FieldDef[] FieldDefs { get; set; }
+        }
+
+        internal class SubjectState
+        {
+            private readonly GridHeader _gridHeader = new GridHeader();
+            public int State { get; set; }
+
+            public SubjectState(int state)
+            {
+                State = state;
+            }
+
+            public GridHeader GridHeader
+            {
+                get { return _gridHeader; }
+            }
+        }
+
+        private class EditionData : IGridHeaderRegistry
+        {
+            private readonly List<Subject.Subject> _subjects;
+            private readonly List<GridHeader> _subjectGridHeaders;
+
+            public EditionData(List<Subject.Subject> subjects, List<GridHeader> subjectGridHeaders)
+            {
+                _subjects = subjects;
+                _subjectGridHeaders = subjectGridHeaders;
+            }
+
+            public List<Subject.Subject> Subjects
+            {
+                get { return _subjects; }
+            }
+            
+            public void SetGridHeader(int sid, FieldDef[] headerDefs)
+            {
+                _subjectGridHeaders[sid].FieldDefs = headerDefs;
+            }
+
+            public FieldDef[] GetGridHeader(int sid)
+            {
+                return _subjectGridHeaders[sid].FieldDefs;
+            }
+        }
+
         private readonly object _lock = new object();
 
-        private readonly SortedDictionary<int, List<Subject.Subject>> _subjectSetCache =
-            new SortedDictionary<int, List<Subject.Subject>>() {{0, new List<Subject.Subject>()}};
+        private readonly SortedDictionary<int, EditionData> _subjectSetCache =
+            new SortedDictionary<int, EditionData>() {{0, new EditionData(new List<Subject.Subject>(), new List<GridHeader>())}};
 
-        private readonly Dictionary<Subject.Subject, int> _subjectState = new Dictionary<Subject.Subject, int>();
-
-        private readonly Dictionary<Subject.Subject, FieldDef[]> _subjectGridHeaders =
-            new Dictionary<Subject.Subject, FieldDef[]>();
+        private readonly Dictionary<Subject.Subject, SubjectState> _subjectState = new Dictionary<Subject.Subject, SubjectState>();
 
         private bool _modified = false;
-
-        public Dictionary<Subject.Subject, int> SubjectState
-        {
-            get { return _subjectState; }
-        }
-
-        public Dictionary<Subject.Subject, FieldDef[]> SubjectGridHeaders
-        {
-            get { return _subjectGridHeaders; }
-        }
 
         public void Register(Subject.Subject subject, bool refresh)
         {
             lock (_lock)
             {
-                int state;
+                SubjectState state;
                 var exists = _subjectState.TryGetValue(subject, out state);
                 if (!exists)
                 {
                     _modified = true;
-                    _subjectState[subject] = StateNewlySubscribed;
+                    _subjectState[subject] = new SubjectState(StateNewlySubscribed);
                 }
                 else
                 {
-                    if (state == StateUnsubscribed)
+                    if (state.State == StateUnsubscribed)
                     {
                         if ("RFQ".Equals(subject.LookupValue("QuoteStyle")))
                         {
                             _modified = true;
-                            _subjectState[subject] = StateToggle;
+                            state.State = StateToggle;
                         }
                         else
                         {
                             _modified = true;
-                            _subjectState[subject] = refresh ? StateRefresh : StateSubscribed;
+                            state.State = refresh ? StateRefresh : StateSubscribed;
                         }
                     }
-                    else if (refresh && state == StateSubscribed)
+                    else if (refresh && state.State == StateSubscribed)
                     {
                         _modified = true;
-                        _subjectState[subject] = StateRefresh;
+                        state.State = StateRefresh;
                     }
                 }
             }
@@ -77,43 +112,39 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             lock (_lock)
             {
                 _modified = true;
-                int currentState;
-                var exists = _subjectState.TryGetValue(subject, out currentState);
-                if (!exists) return;
-                if (currentState == StateNewlySubscribed)
+                SubjectState state;
+                var exists = _subjectState.TryGetValue(subject, out state);
+                if (!exists || state.State == StateNewlySubscribed)
                 {
-                    _subjectState.Remove(subject);
+                    ClearSubjectState(subject);
                 }
                 else
                 {
-                    ClearSubjectState(subject);
-                    ClearHeaders(subject);
+                    state.State = StateUnsubscribed;
                 }
             }
         }
 
-        public IGridHeaderRegistry GetGridHeaderRegistryByEdition(List<Subject.Subject> subjectSetByEdition)
+        public IGridHeaderRegistry GetGridHeaderRegistryByEdition(int edition)
         {
-            return new GridHeaderRegistry(_subjectGridHeaders, subjectSetByEdition);
+            lock (_lock)
+            {
+                return _subjectSetCache[edition];
+            }
         }
 
         private void ClearSubjectState(Subject.Subject subject)
         {
-            _subjectState[subject] = StateUnsubscribed;
-        }
-
-        private void ClearHeaders(Subject.Subject subject)
-        {
-            _subjectGridHeaders.Remove(subject);
+            _subjectState.Remove(subject);
         }
 
         public bool IsCurrentlySubscribed(Subject.Subject subject)
         {
             lock (_lock)
             {
-                int currentState;
+                SubjectState currentState;
                 var exists = _subjectState.TryGetValue(subject, out currentState);
-                return exists & currentState != StateUnsubscribed;
+                return !(!exists || currentState.State == StateUnsubscribed);
             }
         }
 
@@ -137,7 +168,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                         _subjectSetCache.Remove(subjectSet);
                     }
                 }
-                return _subjectSetCache[edition];
+                EditionData editionData;
+                var exists = _subjectSetCache.TryGetValue(edition, out editionData);
+                return !exists ? null : editionData.Subjects;
             }
         }
 
@@ -148,8 +181,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 if (!_modified) return null;
                 _modified = false;
                 var subjectSet = CurrentSubjectSetSorted();
+                var subjectGridHeaders = CurrentGridHeaders(subjectSet);
                 var edition = _subjectSetCache.Count == 0 ? 0 : _subjectSetCache.Keys.Last();
-                if (_subjectSetCache.ContainsKey(edition) && subjectSet.SequenceEqual(_subjectSetCache[edition]))
+                EditionData editionData;
+                var exists = _subjectSetCache.TryGetValue(edition, out editionData);
+                if (exists && subjectSet.SequenceEqual(editionData.Subjects))
                 {
                     var subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
                     if (!subscriptionSync.HasControls()) return null; //unchanged with no controls so send nothing
@@ -158,7 +194,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 }
                 else
                 {
-                    _subjectSetCache[++edition] = subjectSet;
+                    _subjectSetCache[++edition] = new EditionData(subjectSet, subjectGridHeaders);
                     var subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
                     CleanUnsubscribeState();
                     return subscriptionSync;
@@ -166,15 +202,24 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
         }
 
+        private List<GridHeader> CurrentGridHeaders(List<Subject.Subject> subjectSet)
+        {
+            var gridHeaders = new List<GridHeader>(subjectSet.Count);
+            foreach (var subject in subjectSet)
+            {
+                gridHeaders.Add(_subjectState[subject].GridHeader);
+            }
+            return gridHeaders;
+        }
+
         private void CleanUnsubscribeState()
         {
             var toRemove = (from subjectState in _subjectState
-                where subjectState.Value == StateUnsubscribed
+                where subjectState.Value.State == StateUnsubscribed
                 select subjectState.Key).ToList();
             foreach (var subject in toRemove)
             {
                 _subjectState.Remove(subject);
-                ClearHeaders(subject);
             }
         }
 
@@ -183,7 +228,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             var subjectSet = new List<Subject.Subject>();
             foreach (var subjectState in _subjectState)
             {
-                if (subjectState.Value != StateUnsubscribed)
+                if (subjectState.Value.State != StateUnsubscribed)
                 {
                     subjectSet.Add(subjectState.Key);
                 }
@@ -204,20 +249,26 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             var sid = 0;
             foreach (var subject in subscriptionSync.Subjects)
             {
-                int currentState;
+                SubjectState currentState;
                 var exists = _subjectState.TryGetValue(subject, out currentState);
                 if (!exists) break;
-                _subjectState[subject] = StateSubscribed;
-                if (currentState == StateRefresh)
+                if (currentState.State == StateRefresh)
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Refresh);
                 }
-                else if (currentState == StateToggle)
+                else if (currentState.State == StateToggle)
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Toggle);
                 }
+                _subjectState[subject].State = StateSubscribed;
                 sid++;
             }
+        }
+    
+        //only for test
+        internal Dictionary<Subject.Subject, SubjectState> GetSubjectState()
+        {
+            return _subjectState;
         }
     }
 

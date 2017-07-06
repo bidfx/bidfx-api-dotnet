@@ -338,15 +338,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.NextSubscriptionSync();
             _register.Register(Subject1, false);
             _register.NextSubscriptionSync();
-            List<Subject.Subject> subjectSet2 = _register.SubjectSetByEdition(2);
-            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(subjectSet2);
+            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
             headerRegisterEd2.SetGridHeader(1, FieldDefs);
             _register.Unregister(Subject0);
             _register.NextSubscriptionSync();
-            List<Subject.Subject> subjectSet3 = _register.SubjectSetByEdition(3);
-            var headerRegisterEd3 = _register.GetGridHeaderRegistryByEdition(subjectSet3);
-            Assert.AreEqual(FieldDefs, headerRegisterEd3.GetGridHeader(0));
-            Assert.AreEqual(FieldDefs, _register.SubjectGridHeaders[Subject1]);
+            Assert.IsNull(_register.GetGridHeaderRegistryByEdition(1).GetGridHeader(0));
+            Assert.AreEqual(FieldDefs, _register.GetGridHeaderRegistryByEdition(2).GetGridHeader(1));
+            Assert.AreEqual(FieldDefs, _register.GetGridHeaderRegistryByEdition(3).GetGridHeader(0));
         }
 
         [Test]
@@ -356,14 +354,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.NextSubscriptionSync();
             _register.Register(Subject1, false);
             _register.NextSubscriptionSync();
-            List<Subject.Subject> subjectSet2 = _register.SubjectSetByEdition(2);
-            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(subjectSet2);
+            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
             headerRegisterEd2.SetGridHeader(0, FieldDefs);
             _register.Unregister(Subject0);
             _register.NextSubscriptionSync();
             List<Subject.Subject> subjectSet3 = _register.SubjectSetByEdition(3);
             Assert.IsFalse(subjectSet3.Contains(Subject0));
-            var headerRegisterEd3 = _register.GetGridHeaderRegistryByEdition(subjectSet3);
+            var headerRegisterEd3 = _register.GetGridHeaderRegistryByEdition(3);
             for (int i = 0; i < subjectSet3.Count; i++)
             {
                 Assert.IsNull(headerRegisterEd3.GetGridHeader(i));
@@ -420,9 +417,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             Assert.IsNull(_register.NextSubscriptionSync());
 
-            Assert.IsFalse(_register.SubjectState.ContainsKey(Subject0));
-            Assert.IsFalse(_register.SubjectState.ContainsKey(Subject1));
-            Assert.IsFalse(_register.SubjectState.ContainsKey(Subject2));
+            Assert.IsFalse(_register.GetSubjectState().ContainsKey(Subject0));
+            Assert.IsFalse(_register.GetSubjectState().ContainsKey(Subject1));
+            Assert.IsFalse(_register.GetSubjectState().ContainsKey(Subject2));
         }
 
         [Test]
@@ -782,7 +779,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             Assert.AreEqual(
                 new Dictionary<int, ControlOperation> {{0, ControlOperation.Refresh}, {2, ControlOperation.Toggle}},
                 subscriptionSync.Controls);
-            Assert.IsFalse(_register.SubjectState.ContainsKey(Subject0));
+            Assert.IsFalse(_register.GetSubjectState().ContainsKey(Subject0));
         }
 
         [Test]

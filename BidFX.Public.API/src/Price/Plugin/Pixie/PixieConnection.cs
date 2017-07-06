@@ -126,7 +126,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                                                     " but it's not in the SubjectSetRegister.");
                 }
                 var visitor = new PriceSyncVisitor(subjectSet, this);
-                var gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(subjectSet);
+                var gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(edition);
                 priceSync.Visit(_dataDictionary, gridHeaderRegistryByEdition, visitor);
             }
             catch (Exception e)
