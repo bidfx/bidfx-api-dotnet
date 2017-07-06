@@ -263,7 +263,7 @@ namespace BidFX.Public.API.Price.Subject
 
         public static Subject CreateLevelOneNdsRfqSubject(string source, string symbol, string currency,
             string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate,
-            string valueDate2, bool autoRefresh = false = false)
+            string valueDate2, bool autoRefresh = false)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(source, symbol, currency, quantity, account,
                 fixingDate, fixingDate2,
@@ -306,6 +306,19 @@ namespace BidFX.Public.API.Price.Subject
             return subjectBuilder.CreateSubject();
         }
 
+        /// <summary>
+        /// Adds the basic components to a subject builder that are needed to form any Highway subject
+        /// </summary>
+        /// <param name="subjectBuilder">The subject builder to add the components to</param>
+        /// <param name="account">The value for the Account component</param>
+        /// <param name="currency">The value for the Currency component</param>
+        /// <param name="quantity">The value for the Quantity component</param>
+        /// <param name="quoteStyle">The value for the QuoteStyle component</param>
+        /// <param name="source">The value for the Source component</param>
+        /// <param name="subClass">The value for the SubClass component</param>
+        /// <param name="symbol">The value for the Symbol component</param>
+        /// <param name="level">The value for the Level component</param>
+        /// <exception cref="IllegalStateException"></exception>
         private static void AddBasicComponents(SubjectBuilder subjectBuilder, string account, string currency,
             string quantity, string quoteStyle, string source, string subClass, string symbol, string level)
         {
