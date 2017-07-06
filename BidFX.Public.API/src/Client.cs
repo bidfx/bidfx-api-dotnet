@@ -1,4 +1,5 @@
 using BidFX.Public.API.Price;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API
 {
@@ -12,6 +13,10 @@ namespace BidFX.Public.API
 
         private PriceManager _priceManager;
 
+        /// <summary>
+        /// Creates and initiates a pricing session, in which you can subscribe to and recieve updates from subscriptions
+        /// </summary>
+        /// <returns>The pricing manager</returns>
         public PriceManager GetPriceManager()
         {
             if (_priceManager == null)

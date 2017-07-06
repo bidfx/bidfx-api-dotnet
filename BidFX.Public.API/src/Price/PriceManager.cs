@@ -12,7 +12,7 @@ using log4net;
 namespace BidFX.Public.API.Price
 {
     /// <summary>
-    /// A master NAPIClient session that provides access to market data from many provider plugin compoenets.
+    /// A pricing manager that provides access to market data from many provider plugin compoenets.
     /// </summary>
     public class PriceManager : ISession, IBulkSubscriber
     {
@@ -42,7 +42,7 @@ namespace BidFX.Public.API.Price
             Username = username;
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderStatusEventHandler += OnProviderStatus;
-            _inapiEventHandler = new INAPIEventDispatcher(this);
+            _inapiEventHandler = new ApiEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
             {
                 Name = "subscription-refresh",
@@ -52,7 +52,7 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
-//            AddPublicPuffinProvider();
+            AddPublicPuffinProvider();
             AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
@@ -302,11 +302,11 @@ namespace BidFX.Public.API.Price
             }
         }
 
-        private class INAPIEventDispatcher : IApiEventHandler
+        private class ApiEventDispatcher : IApiEventHandler
         {
             private readonly PriceManager _session;
 
-            public INAPIEventDispatcher(PriceManager session)
+            public ApiEventDispatcher(PriceManager session)
             {
                 _session = session;
             }

@@ -44,7 +44,7 @@ namespace BidFX.Public.API.Price.Tools
             return dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
         }
 
-        public static int DayToGregorianDate(int dayNumber)
+        private static int DayToGregorianDate(int dayNumber)
         {
             var year = (int) ((10000L * dayNumber + 14780) / 3652425);
             var ddd = dayNumber - (365 * year + year / 4 - year / 100 + year / 400);
@@ -60,11 +60,21 @@ namespace BidFX.Public.API.Price.Tools
             return 10000 * year + 100 * month + day;
         }
 
+        /// <summary>
+        /// Converts a Java time to an ISO formatted date, in the form 'yyyMMdd', based on the Gregorian calendar and the UTC time zone.
+        /// </summary>
+        /// <param name="millis">time in milliseconds since 1 January 1970</param>
+        /// <returns>the ISO date for the Gregorian calendar in UTC expressed as an int</returns>
         public static int ToIsoDate(long millis)
         {
             return DayToGregorianDate((int) (millis / Day) + DaysToEpoch);
         }
 
+        /// <summary>
+        /// Converts a Java time to an ISO formatted date-time, in the form 'yyyMMddHHmmssSSS', based on the Gregorian calendar and the UTC time zone.
+        /// </summary>
+        /// <param name="millis">time in milliseconds since 1 January 1970</param>
+        /// <returns>the ISO date-time for the Gregorian calendar in UTC expressed as a long</returns>
         public static long ToIsoTime(long millis)
         {
             long date = ToIsoDate(millis);
