@@ -60,7 +60,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             else
             {
-                _pixieConnection.Subscribe(subject);
+                _pixieConnection.Subscribe(subject, refresh);
             }
         }
 
