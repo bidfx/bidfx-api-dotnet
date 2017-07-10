@@ -127,5 +127,28 @@ namespace BidFX.Public.API.Price.Subject
                 oldVersion.ToString());
             Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
+        
+        [Test]
+        public void TestSpotRfsLevel2Mutator()
+        {
+            var subjectBuilder = new SubjectBuilder();
+            subjectBuilder
+                .SetComponent(SubjectComponentName.BuySideAccount, "FX_ACCT")
+                .SetComponent(SubjectComponentName.AssetClass, "Fx")
+                .SetComponent(SubjectComponentName.Currency, "EUR")
+                .SetComponent(SubjectComponentName.Exchange, "OTC")
+                .SetComponent(SubjectComponentName.Quantity, "1000000.00")
+                .SetComponent(SubjectComponentName.QuoteStyle, "RFS")
+                .SetComponent(SubjectComponentName.LiquidityProvider, "RBCFX")
+                .SetComponent(SubjectComponentName.DealType, "Spot")
+                .SetComponent(SubjectComponentName.Symbol, "EURUSD")
+                .SetComponent(SubjectComponentName.Level, "2")
+                .SetComponent(SubjectComponentName.User, "pmacdona");
+            var oldVersion = SubjectMutator.ToOldVersion(subjectBuilder.CreateSubject());
+            Assert.AreEqual(
+                "Account=FX_ACCT,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=2,Quantity=1000000.00,QuoteStyle=RFS,Source=RBCFX,SubClass=Spot,Symbol=EURUSD,User=pmacdona",
+                oldVersion.ToString());
+            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
+        }
     }
 }

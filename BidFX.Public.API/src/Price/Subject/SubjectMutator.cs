@@ -89,7 +89,7 @@ namespace BidFX.Public.API.Price.Subject
             }
             else if (!buySideAccount.Equals("") && level == 2)
             {
-                subjectBuilder.SetComponent("Accout", buySideAccount);
+                subjectBuilder.SetComponent("Account", buySideAccount);
             }
             subjectBuilder.SetComponent("Customer", "0001");
             return subjectBuilder.CreateSubject();
