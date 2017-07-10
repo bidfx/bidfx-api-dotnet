@@ -11,7 +11,7 @@ namespace BidFX.Public.API.Price.Subject
             try
             {
                 SubjectValidator.ValidatePart("a", part);
-                SubjectValidator.ValidatePart("Source", part);
+                SubjectValidator.ValidatePart("LiquidityProvider", part);
                 SubjectValidator.ValidatePart("AssetClass", part);
                 SubjectValidator.ValidatePart("a12", part);
                 SubjectValidator.ValidatePart("underscore_is_allowed", part);

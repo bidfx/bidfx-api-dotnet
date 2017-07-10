@@ -11,28 +11,28 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     public class SubjectSetRegisterTest
     {
         private static readonly Subject.Subject Eurchr2Mm = new Subject.Subject(
-            "Account=DYMON,AllocAccount=DYMONCITI,AllocQty=2000000,AssetClass=Fx,Currency=EUR" +
+            "Account=DYMON,AllocAccount=DYMONCITI,AllocQuantity=2000000,AssetClass=Fx,Currency=EUR" +
             ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
             ",Symbol=EURCHF,Quantity=2000000.00" +
-            ",QuoteStyle=RFS,Source=JEFFX,SubClass=Spot,Tenor=Spot,User=cheechungli,ValueDate=20141114");
+            ",QuoteStyle=RFS,LiquidityProvider=JEFFX,DealType=Spot,Tenor=Spot,User=cheechungli,ValueDate=20141114");
 
         private static readonly Subject.Subject Eurgbp1Mm = new Subject.Subject(
-            "Account=CIC,AllocAccount=CIC,AllocQty=1000000,AssetClass=Fx,Currency=EUR" +
+            "Account=CIC,AllocAccount=CIC,AllocQuantity=1000000,AssetClass=Fx,Currency=EUR" +
             ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
             ",Symbol=EURGBP,Quantity=1000000.00" +
-            ",QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Tenor=Spot,User=brucelee,ValueDate=20141109");
+            ",QuoteStyle=RFS,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=brucelee,ValueDate=20141109");
 
         private static readonly Subject.Subject Eurgbp5Mm = new Subject.Subject(
-            "Account=CIC,AllocAccount=CIC,AllocQty=5000000,AssetClass=Fx,Currency=EUR" +
+            "Account=CIC,AllocAccount=CIC,AllocQuantity=5000000,AssetClass=Fx,Currency=EUR" +
             ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
             ",Symbol=EURGBP,Quantity=5000000.00" +
-            ",QuoteStyle=RFS,Source=MSFX,SubClass=Spot,Tenor=Spot,User=brucelee,ValueDate=20141107");
+            ",QuoteStyle=RFS,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=brucelee,ValueDate=20141107");
 
         private static readonly Subject.Subject Gbpusd1Mm = new Subject.Subject(
-            "Account=AAA,AllocAccount=AAA,AllocQty=1000000,AssetClass=Fx,Currency=USD" +
+            "Account=AAA,AllocAccount=AAA,AllocQuantity=1000000,AssetClass=Fx,Currency=USD" +
             ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
             ",Symbol=GBPUSD,Quantity=1000000.00" +
-            ",QuoteStyle=RFQ,Source=MSFX,SubClass=Spot,Tenor=Spot,User=wchurchill,ValueDate=20141105");
+            ",QuoteStyle=RFQ,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=wchurchill,ValueDate=20141105");
 
         private static readonly Subject.Subject Subject0 = Eurchr2Mm;
         private static readonly Subject.Subject Subject1 = Eurgbp1Mm;

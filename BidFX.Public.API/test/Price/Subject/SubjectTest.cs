@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Price.Subject
         public void TestLookupValue()
         {
             Assert.AreEqual("2", mSubject.LookupValue("Level"));
-            Assert.AreEqual("ComStock", mSubject.LookupValue("Source"));
+            Assert.AreEqual("ComStock", mSubject.LookupValue("LiquidityProvider"));
             Assert.AreEqual("Equity", mSubject.LookupValue("AssetClass"));
             Assert.AreEqual("NYS", mSubject.LookupValue("Exchange"));
             Assert.AreEqual("IBM.N", mSubject.LookupValue("Symbol"));
@@ -69,7 +69,7 @@ namespace BidFX.Public.API.Price.Subject
                 .Callback(() => Assert.AreEqual(2, callOrder++));
             mockHandler.Setup(x => x.SubjectComponent("Level", "2"))
                 .Callback(() => Assert.AreEqual(3, callOrder++));
-            mockHandler.Setup(x => x.SubjectComponent("Source", "ComStock"))
+            mockHandler.Setup(x => x.SubjectComponent("LiquidityProvider", "ComStock"))
                 .Callback(() => Assert.AreEqual(4, callOrder++));
             mockHandler.Setup(x => x.SubjectComponent("Symbol", "IBM.N"))
                 .Callback(() => Assert.AreEqual(5, callOrder++));
@@ -161,7 +161,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             Assert.IsFalse(mSubject.GetHashCode() == new Subject("Symbol=IBM").GetHashCode());
             Assert.IsFalse(mSubject.GetHashCode() == new Subject(
-                                   "AssetClass=Equity,Exchange=NYS,Level=1,Source=ComStock,Symbol=IBM&#44;N")
+                                   "AssetClass=Equity,Exchange=NYS,Level=1,LiquidityProvider=ComStock,Symbol=IBM&#44;N")
                                .GetHashCode());
         }
 

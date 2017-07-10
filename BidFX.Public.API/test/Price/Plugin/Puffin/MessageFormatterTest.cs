@@ -53,13 +53,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public void nested_sub_elements()
         {
             Assert.AreEqual(
-                "<Update Subject=\"AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32\">" +
+                "<Update Subject=\"AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32\">" +
                 "<Price Ask=\"12.5\" AskSize=\"1230\" BidSize=\"12400\"/>" +
                 "</Update>",
                 MessageFormatter.FormatToString(
                     new PuffinElement("Update")
                         .AddAttribute("Subject",
-                            "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                            "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                         .AddElement(new PuffinElement("Price")
                             .AddAttribute("Ask", 12.5)
                             .AddAttribute("AskSize", 1230)

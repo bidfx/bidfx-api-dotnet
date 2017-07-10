@@ -57,8 +57,8 @@ namespace BidFX.Public.API.Price.Tools
 //            {
 //                mNumericCharacterEntity.EncodeString("");
 //                mNumericCharacterEntity.EncodeString("not a lot here");
-//                mNumericCharacterEntity.EncodeString("Source=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC");
-//                mNumericCharacterEntity.EncodeString("Source=ICE,AssetClass=Future,Exchange=ICE,Symbol=ABC DEF");
+//                mNumericCharacterEntity.EncodeString("LiquidityProvider=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC");
+//                mNumericCharacterEntity.EncodeString("LiquidityProvider=ICE,AssetClass=Future,Exchange=ICE,Symbol=ABC DEF");
 //                mNumericCharacterEntity.EncodeString("not sure why w\u02FF would do this");
 //                mNumericCharacterEntity.EncodeString("testing testing\n1 2 3\n");
 //                mNumericCharacterEntity.EncodeString(string);
@@ -71,9 +71,9 @@ namespace BidFX.Public.API.Price.Tools
 //            {
 //                mNumericCharacterEntity.decodestring("");
 //                mNumericCharacterEntity.decodestring("not a lot here");
-//                mNumericCharacterEntity.decodestring("Source=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC");
+//                mNumericCharacterEntity.decodestring("LiquidityProvider=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC");
 //                mNumericCharacterEntity.decodestring(
-//                    "Source=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC&#32;DEF");
+//                    "LiquidityProvider=Reuters,AssetClass=Equity,Exchange=LSE,Symbol=ABC&#32;DEF");
 //                mNumericCharacterEntity.decodestring("not&#32;sure&#32;why&#32;w\u02FF&#32;would&#32;do&#32;this");
 //                mNumericCharacterEntity.decodestring("testing&#32;testing&#10;1&#32;2&#32;3&#10;");
 //                mNumericCharacterEntity.decodestring(encoded);

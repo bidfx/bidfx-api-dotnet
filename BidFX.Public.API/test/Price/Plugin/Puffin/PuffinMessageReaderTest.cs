@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public virtual void level_one_price()
         {
             var data =
-                "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32" +
+                "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name" +
                 "\bVodafone plc\u0004AskSize\u00053000\u0001\u0000";
             var stream = new MemoryStream(ToLatinBytes(data));
@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(
                 new PuffinElement("Update")
                     .AddAttribute("Subject",
-                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
                         .AddAttribute("Ask", 102.5)
                         .AddAttribute("Bid", 100.5)
@@ -34,7 +34,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public virtual void repeat_level_one_price()
         {
             var data =
-                "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32" +
+                "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name\bVodafone plc" +
                 "\u0004AskSize\u00053000\u0001\u0000" +
                 "\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008A\u008B\u008C\u008D\u0001\u0000";
@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(
                 new PuffinElement("Update")
                     .AddAttribute("Subject",
-                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
                         .AddAttribute("Ask", 102.5)
                         .AddAttribute("Bid", 100.5)
@@ -58,7 +58,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.AreEqual(
                 new PuffinElement("Update")
                     .AddAttribute("Subject",
-                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                        "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                     .AddElement(new PuffinElement("Price")
                         .AddAttribute("Ask", 102.5)
                         .AddAttribute("Bid", 100.5)
@@ -77,7 +77,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public virtual void depth_price()
         {
             var data =
-                "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStoc" +
+                "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStoc" +
                 "k,Symbol=E:VOD\u0002Price\u0004Name\u0008Vodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006" +
                 "201\u0004BidSize1\u0005999\u0004AskSize1\u00051001\u0004Bid2\u0006198\u0004Ask2\u0006" +
                 "202\u0004BidSize2\u0005998\u0004AskSize2\u00051002\u0004Bid3\u0006197\u0004Ask3\u0006" +
@@ -101,7 +101,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             var element = new PuffinElement("Set")
                 .AddAttribute("Subject",
-                    "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD")
+                    "AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStock,Symbol=E:VOD")
                 .AddElement(price);
             Assert.AreEqual(element, tokenizer.ReadMessage());
         }
@@ -110,7 +110,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public virtual void repeat_depth_price()
         {
             var data =
-                "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStoc" +
+                "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStoc" +
                 "k,Symbol=E:VOD\u0002Price\u0004Name\u0008Vodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006" +
                 "201\u0004BidSize1\u0005999\u0004AskSize1\u00051001\u0004Bid2\u0006198\u0004Ask2\u0006" +
                 "202\u0004BidSize2\u0005998\u0004AskSize2\u00051002\u0004Bid3\u0006197\u0004Ask3\u0006" +
@@ -190,7 +190,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     .AddAttribute("BidSize" + i, 1000 - i)
                     .AddAttribute("AskSize" + i, 1000 + i);
             }
-            var subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,Source=ComStock,Symbol=E:VOD";
+            var subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStock,Symbol=E:VOD";
             Assert.AreEqual(new PuffinElement("Set")
                 .AddAttribute("Subject", subject).AddElement(price), tokenizer.ReadMessage());
             Assert.AreEqual(new PuffinElement("Update")

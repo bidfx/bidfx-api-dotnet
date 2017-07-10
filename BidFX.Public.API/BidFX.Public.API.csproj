@@ -96,6 +96,7 @@
     <Compile Include="src\Price\Subject\SubjectFormatter.cs" />
     <Compile Include="src\Price\Subject\SubjectIterator.cs" />
     <Compile Include="src\Price\Subject\SubjectLobotomy.cs" />
+    <Compile Include="src\Price\Subject\SubjectMutator.cs" />
     <Compile Include="src\Price\Subject\SubjectPart.cs" />
     <Compile Include="src\Price\Subject\SubjectUtils.cs" />
     <Compile Include="src\Price\Subject\SubjectValidator.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />
     <Compile Include="test\Price\Subject\SubjectFormatterTest.cs" />
     <Compile Include="test\Price\Subject\SubjectIteratorTest.cs" />
+    <Compile Include="test\Price\Subject\SubjectMutatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
     <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
     <Compile Include="test\Price\Tools\BitSetterTest.cs" />

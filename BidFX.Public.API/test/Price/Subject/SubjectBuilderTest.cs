@@ -52,17 +52,17 @@ namespace BidFX.Public.API.Price.Subject
             var subject = _subjectBuilder
                 .SetComponent("Level", "1")
                 .SetComponent("Symbol", "VOD.L")
-                .SetComponent("Source", "Reuters")
+                .SetComponent("LiquidityProvider", "Reuters")
                 .SetComponent("AssetClass", "Equity")
                 .SetComponent("Exchange", "LSE")
                 .CreateSubject();
 
             Assert.AreEqual("1", subject.LookupValue("Level"));
-            Assert.AreEqual("Reuters", subject.LookupValue("Source"));
+            Assert.AreEqual("Reuters", subject.LookupValue("LiquidityProvider"));
             Assert.AreEqual("Equity", subject.LookupValue("AssetClass"));
             Assert.AreEqual("LSE", subject.LookupValue("Exchange"));
             Assert.AreEqual("VOD.L", subject.LookupValue("Symbol"));
-            Assert.AreEqual("AssetClass=Equity,Exchange=LSE,Level=1,Source=Reuters,Symbol=VOD.L", subject.ToString());
+            Assert.AreEqual("AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=VOD.L", subject.ToString());
         }
 
         [Test]
@@ -74,10 +74,10 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void OneComponentSubject()
         {
-            _subjectBuilder.SetComponent("Source", "Reuters");
+            _subjectBuilder.SetComponent("LiquidityProvider", "Reuters");
             Assert.That(new string[]
             {
-                "Source", "Reuters"
+                "LiquidityProvider", "Reuters"
             }, Is.EquivalentTo(_subjectBuilder.GetComponents()));
         }
 
@@ -149,13 +149,13 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void CantSetNullValues()
         {
-            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("Source", null));
+            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("LiquidityProvider", null));
         }
 
         [Test]
         public void CantSetEmptyValues()
         {
-            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("Source", ""));
+            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("LiquidityProvider", ""));
         }
 
         [Test]
@@ -170,8 +170,8 @@ namespace BidFX.Public.API.Price.Subject
             _subjectBuilder
                 .SetComponent("Level", "1")
                 .SetComponent("Symbol", "VOD.L")
-                .SetComponent("Source", "Reuters");
-            Assert.AreEqual("Level=1,Source=Reuters,Symbol=VOD.L", _subjectBuilder.ToString());
+                .SetComponent("LiquidityProvider", "Reuters");
+            Assert.AreEqual("Level=1,LiquidityProvider=Reuters,Symbol=VOD.L", _subjectBuilder.ToString());
         }
     }
 }

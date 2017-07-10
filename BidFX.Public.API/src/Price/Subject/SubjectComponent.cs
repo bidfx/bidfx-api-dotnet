@@ -4,27 +4,33 @@ namespace BidFX.Public.API.Price.Subject
 {
     public class SubjectComponent
     {
-        public string Key { get; set; }
-        public string Value { get; set; }
-
-        public SubjectComponent()
-        {
-        }
+        private readonly string _key;
+        private readonly string _value;
 
         public SubjectComponent(string key, string value)
         {
-            Key = key;
-            Value = value;
+            _key = key;
+            _value = value;
         }
 
+        public string Key
+        {
+            get { return _key; }
+        }
+
+        public string Value
+        {
+            get { return _value; }
+        }
+        
         public override string ToString()
         {
-            return new StringBuilder().Append(Key).Append('=').Append(Value).ToString();
+            return new StringBuilder().Append(_key).Append('=').Append(_value).ToString();
         }
 
         protected bool Equals(SubjectComponent other)
         {
-            return string.Equals(Key, other.Key) && string.Equals(Value, other.Value);
+            return string.Equals(_key, other._key) && string.Equals(_value, other._value);
         }
 
         public override bool Equals(object obj)
@@ -39,7 +45,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             unchecked
             {
-                return ((Key != null ? Key.GetHashCode() : 0) * 397) ^ (Value != null ? Value.GetHashCode() : 0);
+                return ((_key != null ? _key.GetHashCode() : 0) * 397) ^ (_value != null ? _value.GetHashCode() : 0);
             }
         }
     }

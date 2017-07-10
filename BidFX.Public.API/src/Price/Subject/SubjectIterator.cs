@@ -36,11 +36,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private SubjectComponent GetCurrent()
         {
-            return new SubjectComponent()
-            {
-                Key = _components[2 * _position],
-                Value = _components[(2 * _position) + 1]
-            };
+            return new SubjectComponent(_components[2 * _position], _components[(2 * _position) + 1]);
         }
 
         public SubjectComponent Current

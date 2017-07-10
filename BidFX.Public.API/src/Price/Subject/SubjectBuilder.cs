@@ -125,8 +125,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
-            return subjectBuilder
-                .SetComponent("Customer", "0001");
+            return subjectBuilder;
         }
 
         public static Subject CreateLevelOneSpotRfsSubject(string source, string symbol, string currency,
@@ -151,8 +150,7 @@ namespace BidFX.Public.API.Price.Subject
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
             return subjectBuilder
-                .SetComponent(SubjectComponentName.ValueDate, valueDate)
-                .SetComponent("Customer", "0001");
+                .SetComponent(SubjectComponentName.SettlementDate, valueDate);
         }
 
         public static Subject CreateLevelOneForwardRfsSubject(string source, string symbol, string currency,
@@ -179,9 +177,8 @@ namespace BidFX.Public.API.Price.Subject
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
             return subjectBuilder
-                .SetComponent(SubjectComponentName.ValueDate, valueDate)
-                .SetComponent(SubjectComponentName.FixingDate, fixingDate)
-                .SetComponent("Customer", "0001");
+                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
+                .SetComponent(SubjectComponentName.FixingDate, fixingDate);
         }
 
         public static Subject CreateLevelOneNdfRfsSubject(string source, string symbol, string currency,
@@ -211,9 +208,8 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.LegCount, "2")
                 .SetComponent(SubjectComponentName.Currency2, currency)
                 .SetComponent(SubjectComponentName.Quantity2, quantity2)
-                .SetComponent(SubjectComponentName.ValueDate, valueDate)
-                .SetComponent(SubjectComponentName.ValueDate2, valueDate2)
-                .SetComponent("Customer", "0001");
+                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
+                .SetComponent(SubjectComponentName.SettlementDate2, valueDate2);
         }
 
         public static Subject CreateLevelOneSwapRfsSubject(string source, string symbol, string currency,
@@ -247,9 +243,8 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.LegCount, "2")
                 .SetComponent(SubjectComponentName.Currency2, currency)
                 .SetComponent(SubjectComponentName.Quantity2, quantity2)
-                .SetComponent(SubjectComponentName.ValueDate, valueDate)
-                .SetComponent(SubjectComponentName.ValueDate2, valueDate2)
-                .SetComponent("Customer", "0001");
+                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
+                .SetComponent(SubjectComponentName.SettlementDate2, valueDate2);
         }
 
         public static Subject CreateLevelOneNdsRfsSubject(string source, string symbol, string currency,
@@ -290,7 +285,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, "RFS", "FXTS", "Spot", symbol, "2");
-            subjectBuilder.SetComponent(SubjectComponentName.ValueDate, valueDate);
+            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate);
             return subjectBuilder.CreateSubject();
         }
 
@@ -301,7 +296,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, "RFS", "FXTS", "Spot", symbol, "2");
-            subjectBuilder.SetComponent(SubjectComponentName.ValueDate, valueDate)
+            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate)
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate);
             return subjectBuilder.CreateSubject();
         }
@@ -314,8 +309,8 @@ namespace BidFX.Public.API.Price.Subject
         /// <param name="currency">The value for the Currency component</param>
         /// <param name="quantity">The value for the Quantity component</param>
         /// <param name="quoteStyle">The value for the QuoteStyle component</param>
-        /// <param name="source">The value for the Source component</param>
-        /// <param name="subClass">The value for the SubClass component</param>
+        /// <param name="source">The value for the LiquidityProvider component</param>
+        /// <param name="subClass">The value for the DealType component</param>
         /// <param name="symbol">The value for the Symbol component</param>
         /// <param name="level">The value for the Level component</param>
         /// <exception cref="IllegalStateException"></exception>
@@ -326,14 +321,14 @@ namespace BidFX.Public.API.Price.Subject
                 throw new IllegalStateException(
                     "Unable to call auto-subject-creation methods before creating the price manager.");
             subjectBuilder
-                .SetComponent(SubjectComponentName.Account, account)
+                .SetComponent(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, currency)
                 .SetComponent(SubjectComponentName.Exchange, "OTC")
                 .SetComponent(SubjectComponentName.Quantity, quantity)
                 .SetComponent(SubjectComponentName.QuoteStyle, quoteStyle)
-                .SetComponent(SubjectComponentName.Source, source)
-                .SetComponent(SubjectComponentName.SubClass, subClass)
+                .SetComponent(SubjectComponentName.LiquidityProvider, source)
+                .SetComponent(SubjectComponentName.DealType, subClass)
                 .SetComponent(SubjectComponentName.Symbol, symbol)
                 .SetComponent(SubjectComponentName.Level, level)
                 .SetComponent(SubjectComponentName.User, PriceManager.Username);

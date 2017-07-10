@@ -184,7 +184,7 @@ namespace BidFX.Public.API.Price.Subject
             if (quantity != null)
             {
                 subjectBuilder.SetComponent("Quantity", quantity);
-                subjectBuilder.SetComponent("AllocQty", quantity.Replace("\\.\\d+", ""));
+                subjectBuilder.SetComponent("AllocQuantity", quantity.Replace("\\.\\d+", ""));
             }
             if (symbol != null)
             {
@@ -203,8 +203,8 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent("Exchange", "OTC")
                 .SetComponent("Level", "1")
                 .SetComponent("QuoteStyle", "RFS")
-                .SetComponent("Source", "GSFX")
-                .SetComponent("SubClass", "Spot")
+                .SetComponent("LiquidityProvider", "GSFX")
+                .SetComponent("DealType", "Spot")
                 .SetComponent("Tenor", "Spot")
                 .SetComponent("User", "psweeny")
                 .SetComponent("ValueDate", "21050129");

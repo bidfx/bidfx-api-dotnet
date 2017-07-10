@@ -75,7 +75,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             var element = new PuffinElement("Update")
                 .AddAttribute("Subject",
-                    "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                    "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                 .AddElement(new PuffinElement("Price")
                     .AddAttribute("Ask", 12.5)
                     .AddAttribute("AskSize", 1230)
@@ -86,7 +86,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Assert.True(element.Equals(element));
             Assert.True(element.Equals(new PuffinElement("Update")
                 .AddAttribute("Subject",
-                    "AssetClass=FixedIncome,Exchange=SGC,Level=1,Source=Lynx,Symbol=DE000A14KK32")
+                    "AssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32")
                 .AddElement(new PuffinElement("Price")
                     .AddAttribute("Ask", 12.5)
                     .AddAttribute("AskSize", 1230)

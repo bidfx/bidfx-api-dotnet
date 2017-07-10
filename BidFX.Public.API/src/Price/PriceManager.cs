@@ -98,7 +98,7 @@ namespace BidFX.Public.API.Price
                 Thread.Sleep(SubscriptionRefreshInterval);
                 foreach (var subject in _subscriptions.StaleSubjects())
                 {
-                    RefreshSubscription(subject);
+                    RefreshSubscription(subject, true);
                 }
             }
         }

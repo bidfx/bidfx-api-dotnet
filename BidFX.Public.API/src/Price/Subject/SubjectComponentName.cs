@@ -5,27 +5,27 @@
         /// <summary>
         /// Account code component field name.
         /// </summary>
-        public const string Account = "Account";
+        public const string BuySideAccount = "BuySideAccount";
 
         /// <summary>
         /// Allocation account component field name.
         /// </summary>
-        public const string AllocAccount = "AllocAccount";
+        public const string AllocBuySideAccount = "AllocBuySideAccount";
 
         /// <summary>
         /// Allocation end quantity component field name.
         /// </summary>
-        public const string AllocEndQty = "AllocEndQty";
+        public const string AllocEndQuantity = "AllocEndQuantity";
         
         /// <summary>
         /// Allocation quantity component field name.
         /// </summary>
-        public const string AllocQty = "AllocQty";
+        public const string AllocQuantity = "AllocQuantity";
         
         /// <summary>
         /// Alternate user name component field name used for receiving pricing for another user.
         /// </summary>
-        public const string AltUserName = "AltUserName";
+        public const string OnBehalfOf = "OnBehalfOf";
 
         /// <summary>
         /// Asset class component field name.
@@ -90,12 +90,12 @@
         /// <summary>
         /// Price source component field name.
         /// </summary>
-        public const string Source = "Source";
+        public const string LiquidityProvider = "LiquidityProvider";
 
         /// <summary>
         /// Used to sub-categorise an asset class.
         /// </summary>
-        public const string SubClass = "SubClass";
+        public const string DealType = "DealType";
 
         /// <summary>
         /// Symbol component field name.
@@ -120,11 +120,11 @@
         /// <summary>
         /// Value date component field name
         /// </summary>
-        public const string ValueDate = "ValueDate";
+        public const string SettlementDate = "SettlementDate";
 
         /// <summary>
         /// Value date 2 component field name used for FX Swaps
         /// </summary>
-        public const string ValueDate2 = "ValueDate2";
+        public const string SettlementDate2 = "SettlementDate2";
     }
 }
