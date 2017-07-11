@@ -334,7 +334,7 @@ namespace BidFX.Public.API.Price
                 var subscription = _session._subscriptions.GetSubscription(subject);
                 if (subscription == null) return;
                 subscription.SubscriptionStatus = status;
-                subscription.AllPriceFields.Clear();
+//                subscription.AllPriceFields.Clear(); TODO when refreshing a subscription that is running fine this can cause issues
                 if (_session.SubscriptionStatusEventHandler != null)
                 {
                     _session.SubscriptionStatusEventHandler(this, new SubscriptionStatusEvent
