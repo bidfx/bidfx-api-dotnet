@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -227,7 +228,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         // TODO implement subject check
         public bool IsSubjectCompatible(Subject.Subject subject)
         {
-            return true;
+            return subject.LookupValue("Source") == null;
         }
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
