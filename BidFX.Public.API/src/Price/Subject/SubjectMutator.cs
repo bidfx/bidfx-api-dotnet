@@ -33,8 +33,6 @@ namespace BidFX.Public.API.Price.Subject
             {SubjectComponentName.SettlementDate2, ValueDate2}
         };
 
-        private static readonly Dictionary<string, string> OldComponentNameMap = ComponentNameMap.Reverse();
-
         private static readonly Dictionary<string, string> SourceToSellSideAccountMap = new Dictionary<string, string>
         {
             {"BNPFX", "TSCREENTEST"},
@@ -93,36 +91,6 @@ namespace BidFX.Public.API.Price.Subject
             }
             subjectBuilder.SetComponent("Customer", "0001");
             return subjectBuilder.CreateSubject();
-        }
-
-        public static Subject ToNewVersion(Subject subject)
-        {
-            var subjectBuilder = new SubjectBuilder {AutoRefresh = subject.AutoRefresh};
-            foreach (var component in subject)
-            {
-                if(component.Key.Equals("Customer")) continue;
-                if (OldComponentNameMap.ContainsKey(component.Key))
-                {
-                    subjectBuilder.SetComponent(OldComponentNameMap[component.Key], component.Value);
-                }
-                else
-                {
-                    subjectBuilder.SetComponent(component.Key, component.Value);
-                }
-            }
-            subjectBuilder.SetComponent(SubjectComponentName.BuySideAccount, "FX_ACCT");
-            return subjectBuilder.CreateSubject();
-        }
-        
-
-        public static Dictionary<TValue, TKey> Reverse<TKey, TValue>(this Dictionary<TKey, TValue> toReverse)
-        {
-            var dictionary = new Dictionary<TValue, TKey>();
-            foreach (var entry in toReverse)
-            {
-                dictionary[entry.Value] = entry.Key;
-            }
-            return dictionary;
         }
     }
 }

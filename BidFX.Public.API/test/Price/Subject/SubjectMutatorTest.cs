@@ -24,7 +24,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=TRADINGSCREEN,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=RBCFX,SubClass=Spot,Symbol=EURUSD,User=pmacdona",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
         
         [Test]
@@ -48,7 +47,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=Forward,Symbol=EURUSD,User=pmacdona,ValueDate=20170909",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
         
         [Test]
@@ -73,7 +71,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=NDF,Symbol=EURUSD,User=pmacdona,ValueDate=20170909",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
         
         [Test]
@@ -98,7 +95,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=Swap,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
         
         [Test]
@@ -125,7 +121,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,FixingDate2=20170911,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=NDS,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
         
         [Test]
@@ -148,7 +143,6 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual(
                 "Account=FX_ACCT,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=2,Quantity=1000000.00,QuoteStyle=RFS,Source=RBCFX,SubClass=Spot,Symbol=EURUSD,User=pmacdona",
                 oldVersion.ToString());
-            Assert.AreEqual(subjectBuilder.CreateSubject(), SubjectMutator.ToNewVersion(oldVersion));
         }
     }
 }
