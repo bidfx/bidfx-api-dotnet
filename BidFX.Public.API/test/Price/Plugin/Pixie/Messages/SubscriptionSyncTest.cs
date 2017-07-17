@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -62,7 +63,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestEncodingWithCompressionResultsInASmallerMessageSize()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, RealSubscriptionsExample.SortedSubjects.ToList());
             subscriptionSync.SetCompressed(false);
             long uncompressedSize = subscriptionSync.Encode(PixieVersion.CurrentVersion).Position;
             subscriptionSync.SetCompressed(true);

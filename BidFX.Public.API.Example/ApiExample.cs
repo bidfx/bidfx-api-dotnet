@@ -41,7 +41,7 @@ namespace BidFX.Public.API.Example
             if (_priceManager.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendLevel1RfsSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX", "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendLevel1RfsSubscriptions("RBCFX");//, "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX", "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevel2RfsSubscriptions();
                 SendLevel1RfqSubscriptions("SSFX");
             }
@@ -60,30 +60,31 @@ namespace BidFX.Public.API.Example
         {
             foreach (var source in sources)
             {
+                var levelOneSpotRfsSubject = SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURUSD", "EUR", "1000000.00",
+                    "FX_ACCT");
                 _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURUSD", "EUR", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURGBP", "EUR", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDJPY", "JPY", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "GBPUSD", "GBP", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURNOK", "EUR", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "CHFJPY", "CHF", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "NZDUSD", "USD", "1000000.00",
-                        "FX_ACCT"));
-                _priceManager.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDSEK", "USD", "1000000.00",
-                        "FX_ACCT"));
+                    levelOneSpotRfsSubject);
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURGBP", "EUR", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDJPY", "JPY", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "GBPUSD", "GBP", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURNOK", "EUR", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "CHFJPY", "CHF", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "NZDUSD", "USD", "1000000.00",
+//                        "FX_ACCT"));
+//                _priceManager.Subscribe(
+//                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDSEK", "USD", "1000000.00",
+//                        "FX_ACCT"));
             }
         }
 

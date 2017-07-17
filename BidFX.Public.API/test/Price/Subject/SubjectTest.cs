@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Price.Subject
         public void TestLookupValue()
         {
             Assert.AreEqual("2", mSubject.LookupValue("Level"));
-            Assert.AreEqual("ComStock", mSubject.LookupValue("LiquidityProvider"));
+            Assert.AreEqual("ComStock", mSubject.LookupValue("Source"));
             Assert.AreEqual("Equity", mSubject.LookupValue("AssetClass"));
             Assert.AreEqual("NYS", mSubject.LookupValue("Exchange"));
             Assert.AreEqual("IBM.N", mSubject.LookupValue("Symbol"));

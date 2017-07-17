@@ -205,11 +205,10 @@ namespace BidFX.Public.API.Price.Subject
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
             return subjectBuilder
-                .SetComponent(SubjectComponentName.LegCount, "2")
-                .SetComponent(SubjectComponentName.Currency2, currency)
-                .SetComponent(SubjectComponentName.Quantity2, quantity2)
+                .SetComponent(SubjectComponentName.FarCurrency, currency)
+                .SetComponent(SubjectComponentName.FarQuantity, quantity2)
                 .SetComponent(SubjectComponentName.SettlementDate, valueDate)
-                .SetComponent(SubjectComponentName.SettlementDate2, valueDate2);
+                .SetComponent(SubjectComponentName.FarSettlementDate, valueDate2);
         }
 
         public static Subject CreateLevelOneSwapRfsSubject(string source, string symbol, string currency,
@@ -240,12 +239,11 @@ namespace BidFX.Public.API.Price.Subject
             AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate)
-                .SetComponent(SubjectComponentName.FixingDate2, fixingDate2)
-                .SetComponent(SubjectComponentName.LegCount, "2")
-                .SetComponent(SubjectComponentName.Currency2, currency)
-                .SetComponent(SubjectComponentName.Quantity2, quantity2)
+                .SetComponent(SubjectComponentName.FarFixingDate, fixingDate2)
+                .SetComponent(SubjectComponentName.FarCurrency, currency)
+                .SetComponent(SubjectComponentName.FarQuantity, quantity2)
                 .SetComponent(SubjectComponentName.SettlementDate, valueDate)
-                .SetComponent(SubjectComponentName.SettlementDate2, valueDate2);
+                .SetComponent(SubjectComponentName.FarSettlementDate, valueDate2);
         }
 
         public static Subject CreateLevelOneNdsRfsSubject(string source, string symbol, string currency,
@@ -314,32 +312,25 @@ namespace BidFX.Public.API.Price.Subject
         /// <param name="subClass">The value for the DealType component</param>
         /// <param name="symbol">The value for the Symbol component</param>
         /// <param name="level">The value for the Level component</param>
-        /// <exception cref="IllegalStateException"></exception>
         private static void AddBasicComponents(SubjectBuilder subjectBuilder, string account, string currency,
             string quantity, string quoteStyle, string source, string subClass, string symbol, string level)
         {
-            if (PriceManager.Username == null)
-                throw new IllegalStateException(
-                    "Unable to call auto-subject-creation methods before creating the price manager.");
             subjectBuilder
                 .SetComponent(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, currency)
-                .SetComponent(SubjectComponentName.Exchange, "OTC")
                 .SetComponent(SubjectComponentName.Quantity, quantity)
-                .SetComponent(SubjectComponentName.QuoteStyle, quoteStyle)
+                .SetComponent(SubjectComponentName.RequestFor, quoteStyle)
                 .SetComponent(SubjectComponentName.LiquidityProvider, source)
                 .SetComponent(SubjectComponentName.DealType, subClass)
                 .SetComponent(SubjectComponentName.Symbol, symbol)
-                .SetComponent(SubjectComponentName.Level, level)
-                .SetComponent(SubjectComponentName.User, PriceManager.Username);
+                .SetComponent(SubjectComponentName.Level, level);
         }
 
         public static Subject CreateIndicativePriceSubject(string ccyPair)
         {
             return new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
-                .SetComponent(SubjectComponentName.Exchange, "OTC")
                 .SetComponent(SubjectComponentName.Level, "1")
                 .SetComponent("Source", "Indi")
                 .SetComponent(SubjectComponentName.Symbol, ccyPair)
@@ -350,7 +341,6 @@ namespace BidFX.Public.API.Price.Subject
         {
             var subject = new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
-                .SetComponent(SubjectComponentName.Exchange, "OTC")
                 .SetComponent(SubjectComponentName.Level, tiered ? "Tiered" : "1")
                 .SetComponent("Source", "PremiumFX")
                 .SetComponent(SubjectComponentName.Symbol, ccyPair);

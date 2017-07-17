@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Price
         private readonly object _readyLock = new object();
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
-        public static string Username { get; internal set; }
+        public static string Username { get; internal set; } //Only static and set in constructor while SubjectMutator is in use - not for production.
         public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }

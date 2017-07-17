@@ -19,18 +19,30 @@ namespace BidFX.Public.API.Price.Subject
         private const string SubClass = "SubClass";
         private const string ValueDate = "ValueDate";
         private const string ValueDate2 = "ValueDate2";
+        private const string FixingDate2 = "FixingDate2";
+        private const string Quantity2 = "Quantity2";
+        private const string QuoteStyle = "QuoteStyle";
+        private const string Tenor2 = "Tenor2";
+        private const string Currency2 = "Currency2";
+        private const string Customer = "Customer";
 
         private static readonly Dictionary<string, string> ComponentNameMap = new Dictionary<string, string>
         {
             {SubjectComponentName.BuySideAccount, Account},
-            {SubjectComponentName.AllocBuySideAccount, AllocAccount},
+            {SubjectComponentName.BuySideAllocAccount, AllocAccount},
             {SubjectComponentName.AllocQuantity, AllocQty},
-            {SubjectComponentName.AllocEndQuantity, AllocEndQty},
+            {SubjectComponentName.FarAllocQuantity, AllocEndQty},
             {SubjectComponentName.OnBehalfOf, AltUserName},
             {SubjectComponentName.LiquidityProvider, Source},
             {SubjectComponentName.DealType, SubClass},
             {SubjectComponentName.SettlementDate, ValueDate},
-            {SubjectComponentName.SettlementDate2, ValueDate2}
+            {SubjectComponentName.FarSettlementDate, ValueDate2},
+            {SubjectComponentName.RequestFor, QuoteStyle},
+            {SubjectComponentName.FarFixingDate, FixingDate2},
+            {SubjectComponentName.FarQuantity, Quantity2},
+            {SubjectComponentName.FarTenor, Tenor2},
+            {SubjectComponentName.FarCurrency, Currency2},
+            {SubjectComponentName.BuySideId, Customer},
         };
 
         private static readonly Dictionary<string, string> SourceToSellSideAccountMap = new Dictionary<string, string>
@@ -81,6 +93,15 @@ namespace BidFX.Public.API.Price.Subject
                     subjectBuilder.SetComponent(component.Key, component.Value);
                 }
             }
+            if ("Swap".Equals(subject.LookupValue(SubjectComponentName.DealType)) ||
+                "NDS".Equals(subject.LookupValue(SubjectComponentName.DealType)))
+            {
+                subjectBuilder.SetComponent("LegCount", "2");
+            }
+            if (subject.LookupValue(SubjectComponentName.User) == null)
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.User, PriceManager.Username);
+            }
             if (!buySideAccount.Equals("") && level == 1 && !source.Equals(""))
             {
                 subjectBuilder.SetComponent("Account", SourceToSellSideAccountMap[source]);
@@ -90,6 +111,7 @@ namespace BidFX.Public.API.Price.Subject
                 subjectBuilder.SetComponent("Account", buySideAccount);
             }
             subjectBuilder.SetComponent("Customer", "0001");
+            subjectBuilder.SetComponent("Exchange", "OTC");
             return subjectBuilder.CreateSubject();
         }
     }

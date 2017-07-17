@@ -10,18 +10,18 @@
         /// <summary>
         /// Allocation account component field name.
         /// </summary>
-        public const string AllocBuySideAccount = "AllocBuySideAccount";
+        public const string BuySideAllocAccount = "BuySideAllocAccount";
 
-        /// <summary>
-        /// Allocation end quantity component field name.
-        /// </summary>
-        public const string AllocEndQuantity = "AllocEndQuantity";
-        
         /// <summary>
         /// Allocation quantity component field name.
         /// </summary>
         public const string AllocQuantity = "AllocQuantity";
-        
+
+        /// <summary>
+        /// Far allocation quantity component field name.
+        /// </summary>
+        public const string FarAllocQuantity = "FarAllocQuantity";
+
         /// <summary>
         /// Alternate user name component field name used for receiving pricing for another user.
         /// </summary>
@@ -40,12 +40,12 @@
         /// <summary>
         /// Currency 2 component field name used for FX Swaps.
         /// </summary>
-        public const string Currency2 = "Currency2";
-
+        public const string FarCurrency = "FarCurrency";
+        
         /// <summary>
-        /// Exchange code component field name.
+        /// Buy side ID compoenent field name.
         /// </summary>
-        public const string Exchange = "Exchange";
+        public const string BuySideId = "BuySideID";
 
         /// <summary>
         /// Fixing date needed for FX NDF subscriptions.
@@ -55,12 +55,7 @@
         /// <summary>
         /// Fixing date needed for FX NDF subscriptions.
         /// </summary>
-        public const string FixingDate2 = "FixingDate2";
-
-        /// <summary>
-        /// Leg Count component field name.
-        /// </summary>
-        public const string LegCount = "LegCount";
+        public const string FarFixingDate = "FarFixingDate";
 
         /// <summary>
         /// Price level component field name.
@@ -80,12 +75,7 @@
         /// <summary>
         /// Quantity 2 component field name used for FX Swaps.
         /// </summary>
-        public const string Quantity2 = "Quantity2";
-
-        /// <summary>
-        /// Quote style component field name: for distinguising requests for quote versus request for stream.
-        /// </summary>
-        public const string QuoteStyle = "QuoteStyle";
+        public const string FarQuantity = "FarQuantity";
 
         /// <summary>
         /// Price source component field name.
@@ -110,7 +100,12 @@
         /// <summary>
         /// FX Tenor 2 name component field name used for FX Swaps.
         /// </summary>
-        public const string Tenor2 = "Tenor2";
+        public const string FarTenor = "FarTenor";
+
+        /// <summary>
+        /// Quote style component field name: for distinguising requests for quote versus request for stream.
+        /// </summary>
+        public const string RequestFor = "RequestFor";
 
         /// <summary>
         /// User name component field name.
@@ -125,6 +120,6 @@
         /// <summary>
         /// Value date 2 component field name used for FX Swaps
         /// </summary>
-        public const string SettlementDate2 = "SettlementDate2";
+        public const string FarSettlementDate = "FarSettlementDate";
     }
 }
