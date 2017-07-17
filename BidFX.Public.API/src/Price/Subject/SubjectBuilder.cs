@@ -220,7 +220,8 @@ namespace BidFX.Public.API.Price.Subject
         }
 
         public static Subject CreateLevelOneSwapRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string quantity2, string valueDate, string valueDate2, bool autoRefresh = false)
+            string quantity, string account, string quantity2, string valueDate, string valueDate2,
+            bool autoRefresh = false)
         {
             var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(source, symbol, currency, quantity, account,
                 quantity2, valueDate,
@@ -332,6 +333,32 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.Symbol, symbol)
                 .SetComponent(SubjectComponentName.Level, level)
                 .SetComponent(SubjectComponentName.User, PriceManager.Username);
+        }
+
+        public static Subject CreateIndicativePriceSubject(string ccyPair)
+        {
+            return new SubjectBuilder()
+                .SetComponent(SubjectComponentName.AssetClass, "Fx")
+                .SetComponent(SubjectComponentName.Exchange, "OTC")
+                .SetComponent(SubjectComponentName.Level, "1")
+                .SetComponent("Source", "Indi")
+                .SetComponent(SubjectComponentName.Symbol, ccyPair)
+                .CreateSubject();
+        }
+
+        public static Subject CreatePremiumFxSubject(string ccyPair, bool tiered, bool crossCurrencyRates)
+        {
+            var subject = new SubjectBuilder()
+                .SetComponent(SubjectComponentName.AssetClass, "Fx")
+                .SetComponent(SubjectComponentName.Exchange, "OTC")
+                .SetComponent(SubjectComponentName.Level, tiered ? "Tiered" : "1")
+                .SetComponent("Source", "PremiumFX")
+                .SetComponent(SubjectComponentName.Symbol, ccyPair);
+            if (crossCurrencyRates)
+            {
+                subject.SetComponent("SubClass", "Cross");
+            }
+            return subject.CreateSubject();
         }
     }
 }
