@@ -11,28 +11,20 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     public class SubjectSetRegisterTest
     {
         private static readonly Subject.Subject Eurchr2Mm = new Subject.Subject(
-            "Account=DYMON,AllocAccount=DYMONCITI,AllocQuantity=2000000,AssetClass=Fx,Currency=EUR" +
-            ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
-            ",Symbol=EURCHF,Quantity=2000000.00" +
-            ",QuoteStyle=RFS,LiquidityProvider=JEFFX,DealType=Spot,Tenor=Spot,User=cheechungli,ValueDate=20141114");
+            "BuySideAccount=DYMON,AllocBuySideAccount=DYMONCITI,AllocQuantity=2000000,AssetClass=Fx,Currency=EUR,Level=1" +
+            ",Symbol=EURCHF,Quantity=2000000.00,RequestFor=Stream,LiquidityProvider=JEFFX,DealType=Spot,Tenor=Spot");
 
         private static readonly Subject.Subject Eurgbp1Mm = new Subject.Subject(
-            "Account=CIC,AllocAccount=CIC,AllocQuantity=1000000,AssetClass=Fx,Currency=EUR" +
-            ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
-            ",Symbol=EURGBP,Quantity=1000000.00" +
-            ",QuoteStyle=RFS,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=brucelee,ValueDate=20141109");
+            "BuySideAccount=CIC,AllocBuySideAccount=CIC,AllocQuantity=1000000,AssetClass=Fx,Currency=EUR,Level=1" +
+            ",Symbol=EURGBP,Quantity=1000000.00,RequestFor=Stream,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot");
 
         private static readonly Subject.Subject Eurgbp5Mm = new Subject.Subject(
-            "Account=CIC,AllocAccount=CIC,AllocQuantity=5000000,AssetClass=Fx,Currency=EUR" +
-            ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
-            ",Symbol=EURGBP,Quantity=5000000.00" +
-            ",QuoteStyle=RFS,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=brucelee,ValueDate=20141107");
+            "BuySideAccount=CIC,AllocBuySideAccount=CIC,AllocQuantity=5000000,AssetClass=Fx,Currency=EUR,Level=1" +
+            ",Symbol=EURGBP,Quantity=5000000.00,RequestFor=Stream,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot");
 
         private static readonly Subject.Subject Gbpusd1Mm = new Subject.Subject(
-            "Account=AAA,AllocAccount=AAA,AllocQuantity=1000000,AssetClass=Fx,Currency=USD" +
-            ",Customer=1A78668,Dealer=1B56446,Exchange=OTC,Level=1,NumAllocs=1" +
-            ",Symbol=GBPUSD,Quantity=1000000.00" +
-            ",QuoteStyle=RFQ,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot,User=wchurchill,ValueDate=20141105");
+            "BuySideAccount=AAA,AllocAccount=AAA,AllocQuantity=1000000,AssetClass=Fx,Currency=USD,Level=1" +
+            ",Symbol=GBPUSD,Quantity=1000000.00,RequestFor=Quote,LiquidityProvider=MSFX,DealType=Spot,Tenor=Spot");
 
         private static readonly Subject.Subject Subject0 = Eurchr2Mm;
         private static readonly Subject.Subject Subject1 = Eurgbp1Mm;
@@ -600,13 +592,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         [Test]
         public void TestRfsSubjectIsConfiguredRight()
         {
-            Assert.AreEqual("RFS", RfsSubject1.LookupValue("QuoteStyle"));
+            Assert.AreEqual("Stream", RfsSubject1.LookupValue("RequestFor"));
         }
 
         [Test]
         public void TestRfqSubjectIsConfiguredRight()
         {
-            Assert.AreEqual("RFQ", RfqSubject3.LookupValue("QuoteStyle"));
+            Assert.AreEqual("Quote", RfqSubject3.LookupValue("RequestFor"));
         }
 
         [Test]

@@ -7,6 +7,9 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// This class describes a Pixie data dictionary message.
+    /// </summary>
     public class DataDictionaryMessage
     {
         private readonly uint _options;

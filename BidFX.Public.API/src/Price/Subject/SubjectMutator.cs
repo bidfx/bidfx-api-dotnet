@@ -85,7 +85,14 @@ namespace BidFX.Public.API.Price.Subject
                     }
                     else
                     {
-                        subjectBuilder.SetComponent(ComponentNameMap[component.Key], component.Value);
+                        if (component.Key.Equals(SubjectComponentName.RequestFor))
+                        {
+                            subjectBuilder.SetComponent(ComponentNameMap[component.Key], component.Value.Equals("Stream") ? "RFS" : "RFQ");
+                        }
+                        else
+                        {
+                            subjectBuilder.SetComponent(ComponentNameMap[component.Key], component.Value);
+                        }
                     }
                 }
                 else

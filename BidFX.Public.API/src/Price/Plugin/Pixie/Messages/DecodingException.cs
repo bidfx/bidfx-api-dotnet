@@ -4,6 +4,10 @@ using System.IO;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// This class of exception is thrown when we have a protocol decoding error. It provides information that helps
+    /// us diagnose the problem.
+    /// </summary>
     public class DecodingException : Exception
     {
         public Stream MemoryStream { get; internal set; }

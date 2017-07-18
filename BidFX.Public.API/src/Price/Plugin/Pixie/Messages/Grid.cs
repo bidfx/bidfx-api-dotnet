@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// Represents a grid, which is kept up to date by Pixie protocol messages.
+    /// </summary>
     public class Grid : ISyncable
     {
         private const int ColumnSizeOnLog = 18;

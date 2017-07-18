@@ -3,11 +3,18 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// The grant message is used once by a server to respond to a login message.
+    /// </summary>
     public class GrantMessage
     {
         public bool Granted { get; set; }
         public string Reason { get; set; }
 
+        /// <summary>
+        /// Creates an instance by decoding the data from a buffer.
+        /// </summary>
+        /// <param name="stream"></param>
         public GrantMessage(Stream stream)
         {
             Granted = 't' == stream.ReadByte();

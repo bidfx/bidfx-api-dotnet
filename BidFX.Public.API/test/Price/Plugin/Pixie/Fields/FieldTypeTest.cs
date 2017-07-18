@@ -20,12 +20,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         }
 
         [Test]
-        public void TestValueOfDiscardCodeReturnsUnrecognised()
-        {
-            Assert.AreEqual(FieldType.Unrecognised, FieldTypeMethods.ValueOf((int) FieldType.Discard));
-        }
-
-        [Test]
         public void TestValueOfInvalidCodeReturnsUnrecognised()
         {
             Assert.AreEqual(FieldType.Unrecognised, FieldTypeMethods.ValueOf('x'));

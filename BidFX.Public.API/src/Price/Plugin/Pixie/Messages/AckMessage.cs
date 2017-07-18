@@ -3,6 +3,9 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// An Ack message is used by a client to acknowledge the receipt of a PriceSync message.
+    /// </summary>
     public class AckMessage : IOutgoingPixieMessage
     {
         public ulong Revision { get; set; }

@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Stream")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "RBCFX")
                 .SetComponent(SubjectComponentName.DealType, "Spot")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")
@@ -34,7 +34,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Stream")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "BNPFX")
                 .SetComponent(SubjectComponentName.DealType, "Forward")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")
@@ -56,7 +56,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Stream")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "BNPFX")
                 .SetComponent(SubjectComponentName.DealType, "NDF")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")
@@ -79,7 +79,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Stream")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "BNPFX")
                 .SetComponent(SubjectComponentName.DealType, "Swap")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")
@@ -102,7 +102,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Quote")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "BNPFX")
                 .SetComponent(SubjectComponentName.DealType, "NDS")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")
@@ -114,7 +114,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.FarFixingDate, "20170911");
             var oldVersion = SubjectMutator.ToOldVersion(subjectBuilder.CreateSubject());
             Assert.AreEqual(
-                "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,FixingDate2=20170911,LegCount=2,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=NDS,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
+                "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,FixingDate2=20170911,LegCount=2,Level=1,Quantity=1000000.00,QuoteStyle=RFQ,Source=BNPFX,SubClass=NDS,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
                 oldVersion.ToString());
         }
         
@@ -127,7 +127,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, "EUR")
                 .SetComponent(SubjectComponentName.Quantity, "1000000.00")
-                .SetComponent(SubjectComponentName.RequestFor, "RFS")
+                .SetComponent(SubjectComponentName.RequestFor, "Stream")
                 .SetComponent(SubjectComponentName.LiquidityProvider, "RBCFX")
                 .SetComponent(SubjectComponentName.DealType, "Spot")
                 .SetComponent(SubjectComponentName.Symbol, "EURUSD")

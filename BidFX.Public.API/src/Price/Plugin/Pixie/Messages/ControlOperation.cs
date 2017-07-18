@@ -2,9 +2,21 @@ using System;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// Subscription control operations enumeration.
+    /// </summary>
     public enum ControlOperation
     {
+        /// <summary>
+        /// Refreshes an existing subscription by sending a subscribe message to its feed. This control is used to
+        /// implement Pisa subscription refresh for example to recove from previous subscription errors.
+        /// </summary>
         Refresh,
+
+        /// <summary>
+        /// Toggles an existing subscription by sending an unsubscribe message then a subscribe message to its feed.
+        /// This control is used to force RFQs to be refreshed by the broker.
+        /// </summary>
         Toggle
     }
 

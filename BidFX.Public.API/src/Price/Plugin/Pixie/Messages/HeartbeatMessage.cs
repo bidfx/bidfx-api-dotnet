@@ -2,6 +2,9 @@ using System.IO;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
+    /// <summary>
+    /// A heartbeat is used to keep alive connections with little or no traffic.
+    /// </summary>
     public class HeartbeatMessage : IOutgoingPixieMessage
     {
         private static readonly byte[] RawBytes = {PixieMessageType.Heartbeat};
