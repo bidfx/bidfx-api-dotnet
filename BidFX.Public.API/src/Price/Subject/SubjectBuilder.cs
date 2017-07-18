@@ -281,7 +281,7 @@ namespace BidFX.Public.API.Price.Subject
 
         // ******************LEVEL 2 FORWARD******************
 
-        public static Subject CreateLevelTwoOutrightRfsSubject(string symbol, string currency, string quantity,
+        public static Subject CreateLevelTwoForwardRfsSubject(string symbol, string currency, string quantity,
             string account, string valueDate)
         {
             var subjectBuilder = new SubjectBuilder();
