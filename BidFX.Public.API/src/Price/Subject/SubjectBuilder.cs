@@ -149,7 +149,7 @@ namespace BidFX.Public.API.Price.Subject
             string quantity, string account, string valueDate, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Outright", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.SettlementDate, valueDate);
         }
@@ -161,7 +161,7 @@ namespace BidFX.Public.API.Price.Subject
                 .CreateSubject();
         }
 
-        public static Subject CreateLevelOneForwardRfqSubject(string source, string symbol, string currency,
+        public static Subject CreateLevelOneOutrightRfqSubject(string source, string symbol, string currency,
             string quantity, string account, string valueDate, bool autoRefresh = false)
         {
             var levelOneForwardRfqSubject =
@@ -176,7 +176,7 @@ namespace BidFX.Public.API.Price.Subject
             string quantity, string account, string valueDate, string fixingDate, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "NDF", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.SettlementDate, valueDate)
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate);
@@ -205,7 +205,7 @@ namespace BidFX.Public.API.Price.Subject
             string quantity, string account, string quantity2, string valueDate, string valueDate2, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Swap", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
                 .SetComponent(SubjectComponentName.FarQuantity, quantity2)
@@ -238,7 +238,7 @@ namespace BidFX.Public.API.Price.Subject
             string valueDate2, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "NDS", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate)
                 .SetComponent(SubjectComponentName.FarFixingDate, fixingDate2)
@@ -281,11 +281,11 @@ namespace BidFX.Public.API.Price.Subject
 
         // ******************LEVEL 2 FORWARD******************
 
-        public static Subject CreateLevelTwoForwardRfsSubject(string symbol, string currency, string quantity,
+        public static Subject CreateLevelTwoOutrightRfsSubject(string symbol, string currency, string quantity,
             string account, string valueDate)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "Spot", symbol, "2");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "Outright", symbol, "2");
             subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate);
             return subjectBuilder.CreateSubject();
         }
@@ -296,7 +296,7 @@ namespace BidFX.Public.API.Price.Subject
             string account, string valueDate, string fixingDate)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "Spot", symbol, "2");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "NDF", symbol, "2");
             subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate)
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate);
             return subjectBuilder.CreateSubject();
