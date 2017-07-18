@@ -161,7 +161,7 @@ namespace BidFX.Public.API.Price.Subject
                 .CreateSubject();
         }
 
-        public static Subject CreateLevelOneOutrightRfqSubject(string source, string symbol, string currency,
+        public static Subject CreateLevelOneForwardRfqSubject(string source, string symbol, string currency,
             string quantity, string account, string valueDate, bool autoRefresh = false)
         {
             var levelOneForwardRfqSubject =
