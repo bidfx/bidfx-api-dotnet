@@ -89,11 +89,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                Log.Error("unexpected error reading from Puffin: " + e.Message);
+                Log.Error("unexpected error reading from Pixie: " + e.Message);
             }
             finally
             {
-                Close("the input stream from Puffin terminated");
+                Close("the input stream from Pixie terminated");
             }
         }
 
