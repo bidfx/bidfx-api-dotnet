@@ -4,23 +4,78 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
+    /// <summary>
+    /// This enumeration defines the different types of field encoding that are used by the Pixie protocol. When a
+    /// client encountered a field type that it can not recognise due to protocol upgrades then it can use the field
+    /// encoding to attempt to at least skip over the field on the incoming message. Although we may add new field
+    /// types in the future we attempt to cover all possible field encodings in version 1 of the protocol.
+    /// </summary>
     public enum FieldEncoding
     {
+        /// <summary>
+        /// Zero sized field encoding so no operation required as no field is encoded.
+        /// </summary>
         Noop = '0',
+
+        /// <summary>
+        /// Fixed size one byte field encoding.
+        /// </summary>
         Fixed1 = '1',
+
+        /// <summary>
+        /// Fixed size two bytes field encoding.
+        /// </summary>
         Fixed2 = '2',
+
+        /// <summary>
+        /// Fixed size three bytes field encoding.
+        /// </summary>
         Fixed3 = '3',
+
+        /// <summary>
+        /// Fixed size four bytes field encoding.
+        /// </summary>
         Fixed4 = '4',
+
+        /// <summary>
+        /// Fixed size eight bytes field encoding.
+        /// </summary>
         Fixed8 = '8',
+
+        /// <summary>
+        /// Fixed size sixteen bytes field encoding.
+        /// </summary>
         Fixed16 = '@',
+
+        /// <summary>
+        /// Varint-sized byte stream encoding type.
+        /// </summary>
         ByteArray = 'B',
+
+        /// <summary>
+        /// Varint number encoding. Good for unsigned int or long values.
+        /// </summary>
         Varint = 'V',
+
+        /// <summary>
+        /// Varint-string encoding type.
+        /// </summary>
         VarintString = 'S',
+
+        /// <summary>
+        /// Zigzag number encdoing. Good for signed int or long values.
+        /// </summary>
         ZigZag = 'Z'
     }
 
     static class FieldEncodingMethods
     {
+        /// <summary>
+        /// Attempts to skip over the value part of a field of known encoding type. The different implementations of this method "skip" a specific amount of bytes.
+        /// </summary>
+        /// <param name="fieldEncoding">the field encoding which defines how many bytes to skip</param>
+        /// <param name="stream">the stream from which to skip bytes</param>
+        /// <exception cref="ArgumentException">When field encoding is not recognised</exception>
         public static void SkipFieldValue(this FieldEncoding fieldEncoding, Stream stream)
         {
             switch (fieldEncoding)
@@ -70,6 +125,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
             }
         }
 
+        /// <summary>
+        /// Gets the enum based on it's code used in the Pixie wire format.
+        /// </summary>
+        /// <param name="code">the code letter of the type</param>
+        /// <returns>the enum</returns>
+        /// <exception cref="ArgumentException"></exception>
         public static FieldEncoding ValueOf(int code)
         {
             switch (code)

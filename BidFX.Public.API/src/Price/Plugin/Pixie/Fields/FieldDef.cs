@@ -2,6 +2,10 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
+    /// <summary>
+    /// This interface provides a field definition that binds a field ID (FID) to a field name and type.
+    /// It is used as an entry within a data dictionary.
+    /// </summary>
     public class FieldDef
     {
         public const int ReferecingFid = int.MaxValue;
@@ -9,21 +13,38 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         private int _fid = -1;
         private string _name;
         private FieldType _type;
+        
+        /// <summary>
+        /// The encoding used to skip over the value part of an unrecognised field.
+        /// </summary>
         public FieldEncoding Encoding { get; set; }
+        
+        /// <summary>
+        /// The decimal scale factor to apply to the field when using double values with varint or zigzag encoding.
+        /// </summary>
         public int Scale { get; set; }
 
+        /// <summary>
+        /// The field ID.
+        /// </summary>
         public int Fid
         {
             get { return _fid; }
             set { _fid = Params.NotNegative(value); }
         }
 
+        /// <summary>
+        /// The type to decode the field value.
+        /// </summary>
         public FieldType Type
         {
             get { return _type; }
             set { _type = Params.NotNull(value); }
         }
 
+        /// <summary>
+        /// The field name.
+        /// </summary>
         public string Name
         {
             get { return _name; }

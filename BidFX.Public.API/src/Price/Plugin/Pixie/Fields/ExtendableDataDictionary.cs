@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
+    /// <summary>
+    /// This class provides a data dictionary of field definitions that can be extended safely with new definitions.
+    /// </summary>
     public class ExtendableDataDictionary : IDataDictionary
     {
         private readonly Dictionary<string, FieldDef> _fieldDefByName = new Dictionary<string, FieldDef>();

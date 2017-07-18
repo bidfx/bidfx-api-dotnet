@@ -2,16 +2,36 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
     public enum FieldType
     {
+        /// <summary>
+        /// An unrecognised field type used by a client when the client cannot recognise the field type sent to it from
+        /// the server, perhaps due to a protocol version mismatch.
+        /// </summary>
         Unrecognised = ' ',
+        /// <summary>
+        /// A double field type.
+        /// </summary>
         Double = 'D',
+        /// <summary>
+        /// A integer field type.
+        /// </summary>
         Integer = 'I',
+        /// <summary>
+        /// A long field type.
+        /// </summary>
         Long = 'L',
-        String = 'S',
-        Discard = ' '
+        /// <summary>
+        /// A string field type.
+        /// </summary>
+        String = 'S'
     }
 
     static class FieldTypeMethods
     {
+        /// <summary>
+        /// Gets the enum based on its code used in the Pixie wire format.
+        /// </summary>
+        /// <param name="code">the code letter of the type</param>
+        /// <returns>the enum</returns>
         public static FieldType ValueOf(int code)
         {
             switch (code)
