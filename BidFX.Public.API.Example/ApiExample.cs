@@ -62,8 +62,7 @@ namespace BidFX.Public.API.Example
             {
                 var levelOneSpotRfsSubject = SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURUSD", "EUR", "1000000.00",
                     "FX_ACCT");
-                _priceManager.Subscribe(
-                    levelOneSpotRfsSubject);
+                _priceManager.Subscribe(levelOneSpotRfsSubject);
 //                _priceManager.Subscribe(
 //                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURGBP", "EUR", "1000000.00",
 //                        "FX_ACCT"));
