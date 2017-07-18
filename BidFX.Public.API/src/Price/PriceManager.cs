@@ -27,7 +27,8 @@ namespace BidFX.Public.API.Price
         private readonly object _readyLock = new object();
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
-        public static string Username { get; internal set; } //Only static and set in constructor while SubjectMutator is in use - not for production.
+        public static string Username { get; internal set; } //Delete when SubjectMutator is removed
+//        public string Username { get; set; } //Uncomment when SubjectMutator is removed
         public string Password { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
@@ -37,9 +38,9 @@ namespace BidFX.Public.API.Price
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
         public event EventHandler<ProviderStatusEvent> ProviderStatusEventHandler;
 
-        public PriceManager(string username)
+        public PriceManager(string username) // remove this param when SubjectMutator is removed
         {
-            Username = username;
+            Username = username; // remove this when SubjectMutator is removed
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new ApiEventDispatcher(this);

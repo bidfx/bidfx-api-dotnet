@@ -21,12 +21,13 @@ namespace BidFX.Public.API
         {
             if (_priceManager == null)
             {
-                _priceManager = new PriceManager(Username)
+                _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
                 {
                     Host = Host,
                     Port = Port,
                     Tunnel = Tunnel,
-                    Password = Password
+                    Password = Password,
+//                    Username = Username // uncomment when SubjectMutator is removed
                 };
                 _priceManager.Start();
             }
