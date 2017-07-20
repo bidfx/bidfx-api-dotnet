@@ -41,19 +41,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public int Heartbeat
         {
             get { return _heartbeat; }
-            set
-            {
-                _heartbeat = Params.InRange(value, 1, 90);
-            }
+            set { _heartbeat = Params.InRange(value, 1, 90); }
         }
 
         public int Idle
         {
             get { return _idle; }
-            set
-            {
-                _idle = Params.InRange(value, 5, 600);
-            }
+            set { _idle = Params.InRange(value, 5, 600); }
         }
 
         public int Minti

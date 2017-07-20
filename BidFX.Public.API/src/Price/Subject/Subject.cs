@@ -12,7 +12,8 @@ namespace BidFX.Public.API.Price.Subject
         private int _hash;
         public bool AutoRefresh { get; internal set; }
 
-        public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject), autoRefresh)
+        public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject),
+            autoRefresh)
         {
         }
 

@@ -62,7 +62,8 @@ namespace BidFX.Public.API.Price.Subject
             Assert.AreEqual("Equity", subject.LookupValue("AssetClass"));
             Assert.AreEqual("LSE", subject.LookupValue("Exchange"));
             Assert.AreEqual("VOD.L", subject.LookupValue("Symbol"));
-            Assert.AreEqual("AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=VOD.L", subject.ToString());
+            Assert.AreEqual("AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=VOD.L",
+                subject.ToString());
         }
 
         [Test]

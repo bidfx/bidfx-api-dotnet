@@ -51,7 +51,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 get { return _subjects; }
             }
-            
+
             public void SetGridHeader(int sid, FieldDef[] headerDefs)
             {
                 _subjectGridHeaders[sid].FieldDefs = headerDefs;
@@ -66,9 +66,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly object _lock = new object();
 
         private readonly SortedDictionary<int, EditionData> _subjectSetCache =
-            new SortedDictionary<int, EditionData>() {{0, new EditionData(new List<Subject.Subject>(), new List<GridHeader>())}};
+            new SortedDictionary<int, EditionData>()
+            {
+                {0, new EditionData(new List<Subject.Subject>(), new List<GridHeader>())}
+            };
 
-        private readonly Dictionary<Subject.Subject, SubjectState> _subjectState = new Dictionary<Subject.Subject, SubjectState>();
+        private readonly Dictionary<Subject.Subject, SubjectState> _subjectState =
+            new Dictionary<Subject.Subject, SubjectState>();
 
         private bool _modified = false;
 
@@ -264,7 +268,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 sid++;
             }
         }
-    
+
         //only for test
         internal Dictionary<Subject.Subject, SubjectState> GetSubjectState()
         {

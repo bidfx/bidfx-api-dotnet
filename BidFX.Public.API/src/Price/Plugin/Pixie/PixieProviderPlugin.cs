@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
-using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 

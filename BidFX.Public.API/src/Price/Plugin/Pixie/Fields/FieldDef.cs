@@ -13,12 +13,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         private int _fid = -1;
         private string _name;
         private FieldType _type;
-        
+
         /// <summary>
         /// The encoding used to skip over the value part of an unrecognised field.
         /// </summary>
         public FieldEncoding Encoding { get; set; }
-        
+
         /// <summary>
         /// The decimal scale factor to apply to the field when using double values with varint or zigzag encoding.
         /// </summary>

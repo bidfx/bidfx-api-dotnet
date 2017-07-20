@@ -24,7 +24,7 @@ namespace BidFX.Public.API.Price.Subject
                 "Account=TRADINGSCREEN,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=RBCFX,SubClass=Spot,Symbol=EURUSD,User=pmacdona",
                 oldVersion.ToString());
         }
-        
+
         [Test]
         public void TestForwardRfsLevel1Mutator()
         {
@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Price.Subject
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=Forward,Symbol=EURUSD,User=pmacdona,ValueDate=20170909",
                 oldVersion.ToString());
         }
-        
+
         [Test]
         public void TestNdfRfsLevel1Mutator()
         {
@@ -69,7 +69,7 @@ namespace BidFX.Public.API.Price.Subject
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=NDF,Symbol=EURUSD,User=pmacdona,ValueDate=20170909",
                 oldVersion.ToString());
         }
-        
+
         [Test]
         public void TestSwapRfsLevel1Mutator()
         {
@@ -92,7 +92,7 @@ namespace BidFX.Public.API.Price.Subject
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,LegCount=2,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=Swap,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
                 oldVersion.ToString());
         }
-        
+
         [Test]
         public void TestNdsRfsLevel1Mutator()
         {
@@ -117,7 +117,7 @@ namespace BidFX.Public.API.Price.Subject
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,FixingDate2=20170911,LegCount=2,Level=1,Quantity=1000000.00,QuoteStyle=RFQ,Source=BNPFX,SubClass=NDS,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
                 oldVersion.ToString());
         }
-        
+
         [Test]
         public void TestSpotRfsLevel2Mutator()
         {

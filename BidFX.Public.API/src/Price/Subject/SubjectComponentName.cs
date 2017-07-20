@@ -36,12 +36,12 @@
         /// Currency component field name.
         /// </summary>
         public const string Currency = "Currency";
-        
+
         /// <summary>
         /// Currency 2 component field name used for FX Swaps.
         /// </summary>
         public const string FarCurrency = "FarCurrency";
-        
+
         /// <summary>
         /// Buy side ID compoenent field name.
         /// </summary>
@@ -51,7 +51,7 @@
         /// Fixing date needed for FX NDF subscriptions.
         /// </summary>
         public const string FixingDate = "FixingDate";
-        
+
         /// <summary>
         /// Fixing date needed for FX NDF subscriptions.
         /// </summary>

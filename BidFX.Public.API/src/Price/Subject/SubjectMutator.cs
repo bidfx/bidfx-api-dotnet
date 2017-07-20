@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price.Subject
 {
@@ -87,7 +85,8 @@ namespace BidFX.Public.API.Price.Subject
                     {
                         if (component.Key.Equals(SubjectComponentName.RequestFor))
                         {
-                            subjectBuilder.SetComponent(ComponentNameMap[component.Key], component.Value.Equals("Stream") ? "RFS" : "RFQ");
+                            subjectBuilder.SetComponent(ComponentNameMap[component.Key],
+                                component.Value.Equals("Stream") ? "RFS" : "RFQ");
                         }
                         else
                         {

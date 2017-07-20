@@ -63,7 +63,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestEncodingWithCompressionResultsInASmallerMessageSize()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, RealSubscriptionsExample.SortedSubjects.ToList());
+            SubscriptionSync subscriptionSync =
+                new SubscriptionSync(Edition, RealSubscriptionsExample.SortedSubjects.ToList());
             subscriptionSync.SetCompressed(false);
             long uncompressedSize = subscriptionSync.Encode(PixieVersion.CurrentVersion).Position;
             subscriptionSync.SetCompressed(true);

@@ -7,18 +7,22 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         /// the server, perhaps due to a protocol version mismatch.
         /// </summary>
         Unrecognised = ' ',
+
         /// <summary>
         /// A double field type.
         /// </summary>
         Double = 'D',
+
         /// <summary>
         /// A integer field type.
         /// </summary>
         Integer = 'I',
+
         /// <summary>
         /// A long field type.
         /// </summary>
         Long = 'L',
+
         /// <summary>
         /// A string field type.
         /// </summary>

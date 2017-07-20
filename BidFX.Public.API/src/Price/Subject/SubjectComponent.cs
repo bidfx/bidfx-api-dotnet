@@ -22,7 +22,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             get { return _value; }
         }
-        
+
         public override string ToString()
         {
             return new StringBuilder().Append(_key).Append('=').Append(_value).ToString();

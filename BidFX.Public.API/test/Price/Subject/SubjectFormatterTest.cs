@@ -36,7 +36,8 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void AllSubjectComponentsAreParsedInTurn()
         {
-            _subjectFormatter.ParseSubject("AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=ABC",
+            _subjectFormatter.ParseSubject(
+                "AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=ABC",
                 Handler);
             _mockHandler.Verify(handler => handler.SubjectComponent("AssetClass", "Equity"));
             _mockHandler.Verify(handler => handler.SubjectComponent("Exchange", "LSE"));
@@ -82,7 +83,8 @@ namespace BidFX.Public.API.Price.Subject
         public void UseSpaceAsSeparatorForSubjectFilter()
         {
             var formatter = new SubjectFormatter(' ', '=');
-            formatter.ParseSubject("LiquidityProvider=Reuters|ComStock Exchange=[A-Z]{3} AssetClass=Future|Option", Handler);
+            formatter.ParseSubject("LiquidityProvider=Reuters|ComStock Exchange=[A-Z]{3} AssetClass=Future|Option",
+                Handler);
             _mockHandler.Verify(handler => handler.SubjectComponent("AssetClass", "Future|Option"));
             _mockHandler.Verify(handler => handler.SubjectComponent("Exchange", "[A-Z]{3}"));
             _mockHandler.Verify(handler => handler.SubjectComponent("LiquidityProvider", "Reuters|ComStock"));

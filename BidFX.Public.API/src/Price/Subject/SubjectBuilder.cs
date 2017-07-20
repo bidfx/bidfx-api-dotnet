@@ -149,7 +149,8 @@ namespace BidFX.Public.API.Price.Subject
             string quantity, string account, string valueDate, string quoteStyle)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Outright", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Outright", symbol,
+                "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.SettlementDate, valueDate);
         }

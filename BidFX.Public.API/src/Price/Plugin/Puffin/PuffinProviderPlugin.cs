@@ -104,7 +104,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public bool IsSubjectCompatible(Subject.Subject subject)
         {
             // TODO use a subject filter to route between plugins
-            return subject.LookupValue("Source") != null;;
+            return subject.LookupValue("Source") != null;
+            ;
         }
 
         public void Start()
