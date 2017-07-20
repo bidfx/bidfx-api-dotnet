@@ -44,10 +44,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";
-            Port = 443;
             Service = "static://highway";
-            Tunnel = true;
-            ReconnectInterval = TimeSpan.FromSeconds(10);
             _outputThread = new Thread(RunningLoop) {Name = name};
         }
 

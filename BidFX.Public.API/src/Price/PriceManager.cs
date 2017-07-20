@@ -14,7 +14,7 @@ namespace BidFX.Public.API.Price
     /// <summary>
     /// A pricing manager that provides access to market data from many provider plugin compoenets.
     /// </summary>
-    public class PriceManager : ISession, IBulkSubscriber
+    internal class PriceManager : ISession, IBulkSubscriber
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,6 +33,8 @@ namespace BidFX.Public.API.Price
         public string Host { get; set; }
         public int Port { get; set; }
         public bool Tunnel { get; set; }
+        public bool DisableHostnameSslChecks { get; set; }
+        public TimeSpan ReconnectInterval { get; set; }
 
         public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
@@ -41,7 +43,6 @@ namespace BidFX.Public.API.Price
         public PriceManager(string username) // remove this param when SubjectMutator is removed
         {
             Username = username; // remove this when SubjectMutator is removed
-            SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new ApiEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
@@ -75,7 +76,9 @@ namespace BidFX.Public.API.Price
                 Username = Username,
                 Port = Port,
                 Tunnel = Tunnel,
-                Service = "static://puffin"
+                Service = "static://puffin",
+                DisableHostnameSslChecks = DisableHostnameSslChecks,
+                ReconnectInterval = ReconnectInterval
             });
         }
 
@@ -88,7 +91,9 @@ namespace BidFX.Public.API.Price
                 Username = Username,
                 Port = Port,
                 Tunnel = Tunnel,
-                Service = "static://highway"
+                Service = "static://highway",
+                DisableHostnameSslChecks = DisableHostnameSslChecks,
+                ReconnectInterval = ReconnectInterval
             });
         }
 

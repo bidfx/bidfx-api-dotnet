@@ -54,10 +54,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";
-            Port = 443;
             Service = "static://puffin";
-            Tunnel = true;
-            ReconnectInterval = TimeSpan.FromSeconds(10);
             _outputThread = new Thread(RunningLoop) {Name = name};
         }
 
