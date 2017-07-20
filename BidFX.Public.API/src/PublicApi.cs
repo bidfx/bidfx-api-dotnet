@@ -10,7 +10,7 @@ namespace BidFX.Public.API
         /// <summary>
         /// The API implementation name.
         /// </summary>
-        public const string Name = "Public API .Net";
+        public static readonly string Name = "Public API .Net";
 
         /// <summary>
         /// The assemble reference.
