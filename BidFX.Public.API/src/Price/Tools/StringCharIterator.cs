@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class StringCharIterator
+    internal class StringCharIterator
     {
         private string _string;
         private int _position;

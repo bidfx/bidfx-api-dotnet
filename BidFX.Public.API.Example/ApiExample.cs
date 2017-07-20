@@ -53,45 +53,45 @@ namespace BidFX.Public.API.Example
         {
             foreach (var source in sources)
             {
-                DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURUSD", "EUR", "1000000.00",
+                DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "EURUSD", "EUR", "1000000.00",
                     "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURGBP", "EUR", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "EURGBP", "EUR", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDJPY", "JPY", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "USDJPY", "JPY", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "GBPUSD", "GBP", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "GBPUSD", "GBP", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "EURNOK", "EUR", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "EURNOK", "EUR", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "CHFJPY", "CHF", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "CHFJPY", "CHF", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "NZDUSD", "USD", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "NZDUSD", "USD", "1000000.00",
                         "FX_ACCT"));
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    SubjectBuilder.CreateLevelOneSpotRfsSubject(source, "USDSEK", "USD", "1000000.00",
+                    SubjectBuilder.CreateLevelOneSpotStreamingSubject(source, "USDSEK", "USD", "1000000.00",
                         "FX_ACCT"));
             }
         }
 
         private void SendLevel2RfsSubscriptions()
         {
-            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotRfsSubject("EURUSD", "EUR", "1000000.00", "FX_ACCT"));
-            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotRfsSubject("EURGBP", "EUR", "1000000.00", "FX_ACCT"));
-            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotRfsSubject("USDJPY", "USD", "1000000.00", "FX_ACCT"));
-            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotRfsSubject("EURNOK", "NOK", "1000000.00", "FX_ACCT"));
+            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotStreamingSubject("EURUSD", "EUR", "1000000.00", "FX_ACCT"));
+            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotStreamingSubject("EURGBP", "EUR", "1000000.00", "FX_ACCT"));
+            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotStreamingSubject("USDJPY", "USD", "1000000.00", "FX_ACCT"));
+            DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelTwoSpotStreamingSubject("EURNOK", "NOK", "1000000.00", "FX_ACCT"));
         }
 
         private void SendLevel1RfqSubscriptions(params string[] sources)
         {
             foreach (var source in sources)
             {
-                DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelOneSpotRfqSubject(source, "EURUSD", "EUR",
+                DefaultClient.Client.PriceSubscriber.Subscribe(SubjectBuilder.CreateLevelOneSpotQuoteSubject(source, "EURUSD", "EUR",
                     "1000000.00", "FX_ACCT", true));
             }
         }

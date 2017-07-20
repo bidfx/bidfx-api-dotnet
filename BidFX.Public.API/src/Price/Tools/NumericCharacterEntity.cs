@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class NumericCharacterEntity
+    internal class NumericCharacterEntity
     {
         private static readonly ThreadLocal<StringBuilder> ThreadLocalBuilder =
             new ThreadLocal<StringBuilder>(() => new StringBuilder());

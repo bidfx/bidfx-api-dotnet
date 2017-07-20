@@ -32,13 +32,14 @@ namespace BidFX.Public.API
         public bool DisableHostnameSslChecks { get; set; }
 
         /// <summary>
-        /// How often the API should attempt to resubscribe to failed subscriptions.
+        /// The time interval to wait between attempts to recover bad subscriptions.
         /// The default is set to five minutes.
         /// </summary>
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
         /// <summary>
         /// The time interval to wait between attempts to reconnect to a provider after a connection drop.
+        /// The default is set to 10 seconds.
         /// </summary>
         public TimeSpan ReconnectInterval { get; set; }
 
@@ -86,7 +87,6 @@ namespace BidFX.Public.API
             {
                 Host = Host,
                 Port = 443,
-                Tunnel = true,
                 Password = Password,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,

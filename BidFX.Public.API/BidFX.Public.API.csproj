@@ -89,6 +89,7 @@
     <Compile Include="src\Price\Plugin\Pixie\SubjectSetRegister.cs" />
     <Compile Include="src\Price\Subject\CommonComponents.cs" />
     <Compile Include="src\Price\Subject\IComponentHandler.cs" />
+    <Compile Include="src\Price\Subject\IllegalSubjectException.cs" />
     <Compile Include="src\Price\Subject\RequestSubjectComparator.cs" />
     <Compile Include="src\Price\Subject\Subject.cs" />
     <Compile Include="src\Price\Subject\SubjectBuilder.cs" />
@@ -112,7 +113,6 @@
     <Compile Include="src\Price\IBackground.cs" />
     <Compile Include="src\Price\IBulkSubscriber.cs" />
     <Compile Include="src\Price\IllegalStateException.cs" />
-    <Compile Include="src\Price\IllegalSubjectException.cs" />
     <Compile Include="src\Price\IApiEventHandler.cs" />
     <Compile Include="src\Price\IPriceField.cs" />
     <Compile Include="src\Price\IPriceMap.cs" />

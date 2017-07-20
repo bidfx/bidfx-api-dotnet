@@ -25,17 +25,14 @@ namespace BidFX.Public.API.Price
         private readonly IApiEventHandler _inapiEventHandler;
         private readonly Thread _subscriptionRefreshThread;
         private readonly object _readyLock = new object();
-
-        public TimeSpan SubscriptionRefreshInterval { get; set; }
+        private const bool Tunnel = true; //Set to false if connecting to a local instance of a provider for testing.
 
         public static string Username { get; internal set; } //Delete when SubjectMutator is removed
-
+        public TimeSpan SubscriptionRefreshInterval { get; set; }
 //        public string Username { get; set; } //Uncomment when SubjectMutator is removed
         public string Password { get; set; }
-
         public string Host { get; set; }
         public int Port { get; set; }
-        public bool Tunnel { get; set; }
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
 

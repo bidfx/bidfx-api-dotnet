@@ -5,7 +5,7 @@ using System.Security.Principal;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class ServiceProperties
+    internal class ServiceProperties
     {
         public static string Environment(string host)
         {

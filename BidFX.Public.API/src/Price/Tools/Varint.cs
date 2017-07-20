@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class Varint
+    internal class Varint
     {
         private const int BitsPerByte = 7;
         private const int ContinuationBit = 1 << BitsPerByte;

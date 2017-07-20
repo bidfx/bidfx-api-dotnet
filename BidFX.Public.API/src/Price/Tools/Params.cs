@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public static class Params
+    internal static class Params
     {
         /// <summary>
         /// Checks to ensure that the given parameter is not null
