@@ -1,4 +1,4 @@
 #############INTRODUCTION#############
 /*! \mainpage Introduction
-NAPI is a public API used to connect .NET client applications to TradingScreen's services. 
+Public API is used to connect .NET applications to BidFX's services.
  */
