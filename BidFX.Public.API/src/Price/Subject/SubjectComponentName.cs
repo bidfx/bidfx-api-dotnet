@@ -91,6 +91,11 @@
         public const string DealType = "DealType";
 
         /// <summary>
+        /// Source component field name.
+        /// </summary>
+        public const string Source = "Source";
+
+        /// <summary>
         /// Symbol component field name.
         /// </summary>
         public const string Symbol = "Symbol";
