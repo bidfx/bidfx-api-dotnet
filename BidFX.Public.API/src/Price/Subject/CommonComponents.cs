@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BidFX.Public.API.Price.Subject
 {
-    public class CommonComponents
+    internal class CommonComponents
     {
         static readonly string[] CommonKeys =
         {

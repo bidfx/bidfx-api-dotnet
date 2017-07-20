@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for components that can handle NAPIClient events.
     /// </summary>
-    public interface IApiEventHandler
+    internal interface IApiEventHandler
     {
         /// <summary>
         /// Handled a price update event from one of the connected price feeds.

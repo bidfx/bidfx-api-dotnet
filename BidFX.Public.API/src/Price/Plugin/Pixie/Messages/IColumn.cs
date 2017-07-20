@@ -3,7 +3,7 @@
     /// <summary>
     /// Allows to access data from a grid column received by the Pixie connection
     /// </summary>
-    public interface IColumn
+    internal interface IColumn
     {
         int Size();
 

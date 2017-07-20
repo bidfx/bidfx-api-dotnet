@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// Represents a column of a grid, updated by Pixie messages.
     /// </summary>
-    public class GridColumn : IColumn
+    internal class GridColumn : IColumn
     {
         private object[] _overflow = new object[128];
         private object[] _values = { };

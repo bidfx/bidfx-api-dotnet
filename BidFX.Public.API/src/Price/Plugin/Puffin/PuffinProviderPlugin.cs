@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// </remarks>
     /// <author>Paul Sweeny</author>
     /// <author>Paul MacDonald</author>
-    public class PuffinProviderPlugin : IProviderPlugin
+    internal class PuffinProviderPlugin : IProviderPlugin
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

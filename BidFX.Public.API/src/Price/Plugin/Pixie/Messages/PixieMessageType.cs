@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public static class PixieMessageType
+    internal static class PixieMessageType
     {
         public const byte Ack = (byte) 'A';
         public const byte DataDictionary = (byte) 'D';

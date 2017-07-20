@@ -5,7 +5,7 @@ using log4net;
 
 namespace BidFX.Public.API.Price
 {
-    public class ValueParser
+    internal class ValueParser
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

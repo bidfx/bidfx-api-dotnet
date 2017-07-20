@@ -4,7 +4,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
-    public class AckData
+    internal class AckData
     {
         public ulong Revision { get; set; }
         public ulong RevisionTime { get; set; }

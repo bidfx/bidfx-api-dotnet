@@ -7,7 +7,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// It is required by the Pixie decoder to be able to correlate the CID (column id) with a specific data
     /// dictionary entry, in order to know how to parse received values.
     /// </summary>
-    public interface IGridHeaderRegistry
+    internal interface IGridHeaderRegistry
     {
         void SetGridHeader(int sid, FieldDef[] headerDefs);
 

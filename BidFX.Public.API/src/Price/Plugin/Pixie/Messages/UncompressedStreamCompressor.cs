@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class UncompressedStreamCompressor : IStreamCompressor
+    internal class UncompressedStreamCompressor : IStreamCompressor
     {
         private readonly MemoryStream _stream = new MemoryStream();
 

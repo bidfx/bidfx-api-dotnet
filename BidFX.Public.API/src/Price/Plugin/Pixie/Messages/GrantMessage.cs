@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// The grant message is used once by a server to respond to a login message.
     /// </summary>
-    public class GrantMessage
+    internal class GrantMessage
     {
         public bool Granted { get; set; }
         public string Reason { get; set; }

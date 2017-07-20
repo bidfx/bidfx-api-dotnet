@@ -7,7 +7,7 @@ using BidFX.Public.API.Price.Subject;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
-    public class SubjectSetRegister
+    internal class SubjectSetRegister
     {
         private const int StateUnsubscribed = 0;
         private const int StateNewlySubscribed = 1;

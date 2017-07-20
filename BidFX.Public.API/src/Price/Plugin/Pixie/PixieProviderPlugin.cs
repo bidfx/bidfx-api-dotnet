@@ -11,7 +11,7 @@ using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
-    public class PixieProviderPlugin : IProviderPlugin
+    internal class PixieProviderPlugin : IProviderPlugin
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

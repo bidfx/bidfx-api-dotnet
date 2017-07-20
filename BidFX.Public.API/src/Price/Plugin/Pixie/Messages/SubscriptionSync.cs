@@ -6,7 +6,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class SubscriptionSync : IOutgoingPixieMessage
+    internal class SubscriptionSync : IOutgoingPixieMessage
     {
         private const int CompressionLevel = 6;
 

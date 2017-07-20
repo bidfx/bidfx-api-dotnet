@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// This class of exception is thrown when we have a protocol decoding error. It provides information that helps
     /// us diagnose the problem.
     /// </summary>
-    public class DecodingException : Exception
+    internal class DecodingException : Exception
     {
         public Stream MemoryStream { get; internal set; }
         public Dictionary<string, object> ResultSoFar { get; internal set; }

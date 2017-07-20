@@ -203,7 +203,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             return values;
         }
 
-        public static void assertColumnEquals(Object[] expectedValues, IColumn column)
+        private static void assertColumnEquals(Object[] expectedValues, IColumn column)
         {
             Assert.AreEqual(expectedValues.Length, column.Size());
             for (int i = 0; i < expectedValues.Length; i++)

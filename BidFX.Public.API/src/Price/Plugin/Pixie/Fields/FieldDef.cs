@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
     /// This interface provides a field definition that binds a field ID (FID) to a field name and type.
     /// It is used as an entry within a data dictionary.
     /// </summary>
-    public class FieldDef
+    internal class FieldDef
     {
         public const int ReferecingFid = int.MaxValue;
 

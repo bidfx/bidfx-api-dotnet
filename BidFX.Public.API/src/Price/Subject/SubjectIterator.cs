@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price.Subject
 {
-    public class SubjectIterator : IEnumerator<SubjectComponent>
+    internal class SubjectIterator : IEnumerator<SubjectComponent>
     {
         private readonly string[] _components;
         private int _position = -1;

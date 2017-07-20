@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
     /// <summary>
     /// This class provides utilities for dealing with data dictionaries.
     /// </summary>
-    public class DataDictionaryUtils
+    internal class DataDictionaryUtils
     {
         /// <summary>
         /// Checks if a field definition is valid with all of its parts present.

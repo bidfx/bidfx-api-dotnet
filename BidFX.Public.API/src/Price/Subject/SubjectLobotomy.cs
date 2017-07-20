@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Price.Subject
 {
-    public class SubjectLobotomy
+    internal class SubjectLobotomy
     {
         public static Subject CreateUnsafeSubject(string[] components)
         {

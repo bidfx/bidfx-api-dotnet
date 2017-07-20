@@ -6,7 +6,7 @@
     /// <remarks>
     /// It is used to access information regarding the readiness of each provider in a session.
     /// </remarks>
-    public class ProviderProperties : IProviderProperties
+    internal class ProviderProperties : IProviderProperties
     {
         public string Name { get; internal set; }
 

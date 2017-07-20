@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// Interface to sync the state of prices between peer components by sending updates.
     /// </summary>
-    public interface ISyncable
+    internal interface ISyncable
     {
         /// <summary>
         /// Encodes a full price image for a single subscription.

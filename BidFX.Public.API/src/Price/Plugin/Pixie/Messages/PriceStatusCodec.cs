@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class PriceStatusCodec
+    internal class PriceStatusCodec
     {
         public static SubscriptionStatus DecodeStatus(int encoding)
         {

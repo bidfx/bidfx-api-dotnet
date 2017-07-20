@@ -3,7 +3,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class LoginMessage : IOutgoingPixieMessage
+    internal class LoginMessage : IOutgoingPixieMessage
     {
         public string Username { get; internal set; }
         public string Password { get; internal set; }

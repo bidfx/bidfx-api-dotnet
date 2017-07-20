@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class PriceSyncDecoder
+    internal class PriceSyncDecoder
     {
         private readonly IStreamInflator _streamInflator = new ZlibStreamInflator();
 

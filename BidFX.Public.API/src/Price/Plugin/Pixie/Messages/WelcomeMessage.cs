@@ -4,7 +4,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class WelcomeMessage
+    internal class WelcomeMessage
     {
         public uint Options { get; set; }
         public uint Version { get; set; }

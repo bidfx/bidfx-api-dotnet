@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Price.Subject
 {
-    public enum SubjectPart
+    internal enum SubjectPart
     {
         Key = 0,
         Encoded = 1,

@@ -3,7 +3,7 @@ using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
-    public class GridCache
+    internal class GridCache
     {
         private readonly Dictionary<Subject.Subject, Grid> _grids = new Dictionary<Subject.Subject, Grid>();
 

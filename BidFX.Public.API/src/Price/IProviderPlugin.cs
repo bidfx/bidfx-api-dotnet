@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for market data provider plugin components that can access and normalise sources of price data.
     /// </summary>
-    public interface IProviderPlugin : IProviderProperties, ISubscriber, IBackground
+    internal interface IProviderPlugin : IProviderProperties, ISubscriber, IBackground
     {
         /// <summary>
         /// The event handler used for propagating events to the users of the NAPIClient API.

@@ -6,7 +6,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Subject
 {
-    public class SubjectFormatter
+    internal class SubjectFormatter
     {
         private const char DefaultComponentSeperator = ',';
         private const char DefaultKeyValueSeperator = '=';

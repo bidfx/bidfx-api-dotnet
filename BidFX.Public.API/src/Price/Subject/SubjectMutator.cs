@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Subject
     /// Takes a new FX Subject and converts it into an old FX Subject.
     /// Temporary class until Highway is updated to accept new subjects.
     /// </summary>
-    public static class SubjectMutator
+    internal static class SubjectMutator
     {
         private const string Account = "Account";
         private const string AllocAccount = "AllocAccount";

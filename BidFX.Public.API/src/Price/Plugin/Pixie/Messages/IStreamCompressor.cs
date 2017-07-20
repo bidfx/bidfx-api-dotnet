@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// Used to compress data. The data can be compressed a chunk at a time.
     /// </summary>
-    public interface IStreamCompressor
+    internal interface IStreamCompressor
     {
         /// <summary>
         /// Compress a stream fragment to the end of the compressed stream. The fragment is then cleared ready for reused/

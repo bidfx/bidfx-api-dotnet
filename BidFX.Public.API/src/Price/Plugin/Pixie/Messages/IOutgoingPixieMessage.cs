@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// This interfaces defines a basic message in the Pixie protocol that can be sent from the client to the server.
     /// </summary>
-    public interface IOutgoingPixieMessage
+    internal interface IOutgoingPixieMessage
     {
         /// <summary>
         /// Encodes this message and returns it as a memory stream.

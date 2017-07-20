@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price.Subject
 {
-    public class RequestSubjectComparator : IComparer<Subject>
+    internal class RequestSubjectComparator : IComparer<Subject>
     {
         private const int BothNonNull = 2;
 

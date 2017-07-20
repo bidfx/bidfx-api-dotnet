@@ -1,6 +1,6 @@
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 {
-    public enum FieldType
+    internal enum FieldType
     {
         /// <summary>
         /// An unrecognised field type used by a client when the client cannot recognise the field type sent to it from

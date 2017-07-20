@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Price.Subject
 {
-    public class SubjectValidator : IComponentHandler
+    internal class SubjectValidator : IComponentHandler
     {
         private static readonly int[] ValidChars =
         {

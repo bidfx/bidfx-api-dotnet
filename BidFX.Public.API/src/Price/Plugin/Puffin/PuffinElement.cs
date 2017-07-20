@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// This class represents a Puffin XML element.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public class PuffinElement
+    internal class PuffinElement
     {
         private readonly string _tag;
 

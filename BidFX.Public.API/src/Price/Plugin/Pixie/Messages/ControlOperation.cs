@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     /// <summary>
     /// Subscription control operations enumeration.
     /// </summary>
-    public enum ControlOperation
+    internal enum ControlOperation
     {
         /// <summary>
         /// Refreshes an existing subscription by sending a subscribe message to its feed. This control is used to

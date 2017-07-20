@@ -8,7 +8,7 @@ using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class PriceUpdateDecoder
+    internal class PriceUpdateDecoder
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

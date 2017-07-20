@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Subject
 {
-    public class SubjectUtils
+    internal class SubjectUtils
     {
         public static int BinarySearch(string[] components, int size, string key)
         {

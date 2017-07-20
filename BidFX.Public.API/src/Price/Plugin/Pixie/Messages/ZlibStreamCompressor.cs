@@ -5,7 +5,7 @@ using Ionic.Zlib;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
-    public class ZlibStreamCompressor : IStreamCompressor
+    internal class ZlibStreamCompressor : IStreamCompressor
     {
         private readonly MemoryStream _stream = new MemoryStream();
         private readonly DeflateStream _compressor;

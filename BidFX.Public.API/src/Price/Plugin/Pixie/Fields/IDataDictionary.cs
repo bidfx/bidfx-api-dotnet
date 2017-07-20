@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
     /// <summary>
     /// This interface provides a data dictionary that defines the fields that can be used within price updates and provides a mapping from FIDs to field names and their type.
     /// </summary>
-    public interface IDataDictionary
+    internal interface IDataDictionary
     {
         /// <summary>
         /// Looks up a field definition by its field ID.

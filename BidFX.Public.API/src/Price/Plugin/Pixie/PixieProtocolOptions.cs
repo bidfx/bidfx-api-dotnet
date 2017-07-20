@@ -4,7 +4,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
-    public class PixieProtocolOptions
+    internal class PixieProtocolOptions
     {
         private int _version = PixieVersion.CurrentVersion;
         private int _heartbeat = 15;

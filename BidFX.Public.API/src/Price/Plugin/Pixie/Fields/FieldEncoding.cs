@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
     /// encoding to attempt to at least skip over the field on the incoming message. Although we may add new field
     /// types in the future we attempt to cover all possible field encodings in version 1 of the protocol.
     /// </summary>
-    public enum FieldEncoding
+    internal enum FieldEncoding
     {
         /// <summary>
         /// Zero sized field encoding so no operation required as no field is encoded.
