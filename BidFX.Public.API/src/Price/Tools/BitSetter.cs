@@ -3,7 +3,7 @@ namespace BidFX.Public.API.Price.Tools
     /// <summary>
     /// This class provides basic bit manipulation functions
     /// </summary>
-    public class BitSetter
+    internal class BitSetter
     {
         /// <summary>
         /// Changes a bit in a bit-set

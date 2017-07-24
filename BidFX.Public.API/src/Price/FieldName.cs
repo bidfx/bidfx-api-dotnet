@@ -6,14 +6,14 @@ namespace BidFX.Public.API.Price
     /// This class provides a list of price field name constants.
     /// </summary>
     /// <remarks>
-    /// Field name constants for typical fields that may be published through the NAPIClient price API.
-    /// No provider ever publishes more than a small subset of there fields.
+    /// Field name constants for typical fields that may be published through the price API.
+    /// No provider ever publishes more than a small subset of these fields.
     /// </remarks>
     ///
     public class FieldName
     {
         /// <summary>
-        /// The accrued interest. Type is decimal.
+        /// Auct
         /// </summary>
         public const string AccruedInterest = "AccruedInterest";
 

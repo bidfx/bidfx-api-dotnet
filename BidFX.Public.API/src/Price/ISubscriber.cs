@@ -1,7 +1,7 @@
 ﻿namespace BidFX.Public.API.Price
 {
     /// <summary>
-    /// Interface used by components that can subscribe to pricing using NAPI subjects.
+    /// Interface used by components that can subscribe to pricing using subjects.
     /// </summary>
     public interface ISubscriber
     {

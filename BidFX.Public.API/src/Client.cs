@@ -5,13 +5,42 @@ namespace BidFX.Public.API
 {
     public class Client
     {
+        /// <summary>
+        /// The username to authenticate with.
+        /// </summary>
         public string Username { get; set; }
+
+        /// <summary>
+        /// The password associated for the given username.
+        /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// The host name of the BidFX point of presence you wish to connect to.
+        /// </summary>
         public string Host { get; set; }
+
+        /// <summary>
+        /// The port number on which to connect.
+        /// The default is set to 443, which is used when tunneling to BidFX.
+        /// </summary>
         public int Port { get; set; }
-        public bool Tunnel { get; set; }
+
+        /// <summary>
+        /// A flag indicating wether the hostname should be checked on the SSL certificates.
+        /// </summary>
         public bool DisableHostnameSslChecks { get; set; }
+
+        /// <summary>
+        /// The time interval to wait between attempts to recover bad subscriptions.
+        /// The default is set to five minutes.
+        /// </summary>
         public TimeSpan SubscriptionRefreshInterval { get; set; }
+
+        /// <summary>
+        /// The time interval to wait between attempts to reconnect to a provider after a connection drop.
+        /// The default is set to 10 seconds.
+        /// </summary>
         public TimeSpan ReconnectInterval { get; set; }
 
         private PriceManager _priceManager;
@@ -21,8 +50,6 @@ namespace BidFX.Public.API
         /// </summary>
         public Client()
         {
-            Port = 443;
-            Tunnel = true;
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
@@ -59,8 +86,7 @@ namespace BidFX.Public.API
             _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
             {
                 Host = Host,
-                Port = Port,
-                Tunnel = Tunnel,
+                Port = 443,
                 Password = Password,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,

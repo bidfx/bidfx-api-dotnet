@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public static class StreamReaderHelper
+    internal static class StreamReaderHelper
     {
         public static int ReadInt4(Stream stream)
         {

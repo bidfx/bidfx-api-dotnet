@@ -9,7 +9,7 @@ using log4net;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public static class ConnectionTools
+    internal class ConnectionTools
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class ByteBuffer
+    internal class ByteBuffer
     {
         private const byte CarriageReturn = (byte) '\r';
         private const byte NewLine = (byte) '\n';

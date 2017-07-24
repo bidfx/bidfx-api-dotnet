@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Price.Tools
     /// <summary>
     /// Provides non-blocking, thread-safe access to a boolean value.
     /// </summary>
-    public class AtomicBoolean
+    internal class AtomicBoolean
     {
         private const int VALUE_TRUE = 1;
         private const int VALUE_FALSE = 0;

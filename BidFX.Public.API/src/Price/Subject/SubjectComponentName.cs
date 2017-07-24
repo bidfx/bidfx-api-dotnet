@@ -1,5 +1,8 @@
 ﻿namespace BidFX.Public.API.Price.Subject
 {
+    /// <summary>
+    /// This class defines constants for the common subject component names.
+    /// </summary>
     public class SubjectComponentName
     {
         /// <summary>
@@ -38,7 +41,7 @@
         public const string Currency = "Currency";
 
         /// <summary>
-        /// Currency 2 component field name used for FX Swaps.
+        /// Far currency component field name used for FX Swaps.
         /// </summary>
         public const string FarCurrency = "FarCurrency";
 
@@ -73,7 +76,7 @@
         public const string Quantity = "Quantity";
 
         /// <summary>
-        /// Quantity 2 component field name used for FX Swaps.
+        /// Far quantity component field name used for FX Swaps.
         /// </summary>
         public const string FarQuantity = "FarQuantity";
 
@@ -88,17 +91,22 @@
         public const string DealType = "DealType";
 
         /// <summary>
+        /// Source component field name.
+        /// </summary>
+        public const string Source = "Source";
+
+        /// <summary>
         /// Symbol component field name.
         /// </summary>
         public const string Symbol = "Symbol";
 
         /// <summary>
-        /// FX Tenor name component field name.
+        /// Tenor name component field name.
         /// </summary>
         public const string Tenor = "Tenor";
 
         /// <summary>
-        /// FX Tenor 2 name component field name used for FX Swaps.
+        /// Far tenor name component field name used for FX Swaps.
         /// </summary>
         public const string FarTenor = "FarTenor";
 
@@ -113,12 +121,12 @@
         public const string User = "User";
 
         /// <summary>
-        /// Value date component field name
+        /// Settlement date component field name
         /// </summary>
         public const string SettlementDate = "SettlementDate";
 
         /// <summary>
-        /// Value date 2 component field name used for FX Swaps
+        /// Far settlement date component field name used for FX Swaps
         /// </summary>
         public const string FarSettlementDate = "FarSettlementDate";
     }

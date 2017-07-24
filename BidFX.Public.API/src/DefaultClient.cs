@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// This class provides a holder for the default Client.
-    /// Most applications will share a single Client session and ghet access to it from here.
+    /// Most applications will share a single Client session and get access to it from here.
     /// </summary>
     public class DefaultClient
     {

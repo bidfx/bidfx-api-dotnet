@@ -2,22 +2,36 @@
 
 namespace BidFX.Public.API.Price.Subject
 {
+    /// <summary>
+    /// A component part of a subject.
+    /// </summary>
     public class SubjectComponent
     {
         private readonly string _key;
         private readonly string _value;
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="key">the subject components key</param>
+        /// <param name="value">the subject components value</param>
         public SubjectComponent(string key, string value)
         {
             _key = key;
             _value = value;
         }
 
+        /// <summary>
+        /// The key name of the component
+        /// </summary>
         public string Key
         {
             get { return _key; }
         }
 
+        /// <summary>
+        /// The value of the component
+        /// </summary>
         public string Value
         {
             get { return _value; }

@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Tools
     /// incrementing integer count to a name prefix.
     /// </summary>
     /// <author>Paul Sweeny</author>
-    public sealed class NameCache
+    internal sealed class NameCache
     {
         private static readonly NameCache DefaultNameCache = new NameCache();
         private readonly IDictionary<string, int> _cache = new Dictionary<string, int>();

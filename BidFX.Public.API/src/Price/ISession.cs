@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace BidFX.Public.API.Price
 {
     /// <summary>
-    /// Interface for a NAPIClient session container that provides normalised access for one or more sources
+    /// Interface for an API pricing session container that provides normalised access for one or more sources
     /// of realtime market data via a set of provider plugin components.
     /// </summary>
     public interface ISession : IBackground

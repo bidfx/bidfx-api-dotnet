@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price
 {
-    public class IllegalStateException : Exception
+    internal class IllegalStateException : Exception
     {
         public IllegalStateException(string message) : base(message)
         {

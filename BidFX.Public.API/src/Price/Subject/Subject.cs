@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace BidFX.Public.API.Price.Subject
 {
+    /// <summary>
+    /// A subject is used to identify information that may be queried or subscribed to.
+    /// </summary>
     public class Subject : IEnumerable<SubjectComponent>
     {
         private static readonly SubjectFormatter Formatter = new SubjectFormatter();
@@ -12,12 +15,22 @@ namespace BidFX.Public.API.Price.Subject
         private int _hash;
         public bool AutoRefresh { get; internal set; }
 
+        /// <summary>
+        /// Creates a new subject.
+        /// </summary>
+        /// <param name="formattedSubject">a formatted subject string</param>
+        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
         public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject),
             autoRefresh)
         {
         }
 
-        public Subject(string[] components, bool autoRefresh = false)
+        /// <summary>
+        /// Creates a subject from an array of components. A dangerous constructor that should only be called by a subject builder to ensure the subject is valid.
+        /// </summary>
+        /// <param name="components">the components</param>
+        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
+        internal Subject(string[] components, bool autoRefresh = false)
         {
             _components = components;
             AutoRefresh = autoRefresh;
@@ -30,23 +43,36 @@ namespace BidFX.Public.API.Price.Subject
             return builder.GetComponents();
         }
 
+        /// <summary>
+        /// Looks up the value of a variable.
+        /// </summary>
+        /// <param name="key">the name of the variable to look up</param>
+        /// <returns>the variable value or null if the variable is undefiened</returns>
         public string LookupValue(string key)
         {
             var index = SubjectUtils.BinarySearch(_components, _components.Length, key);
             return index >= 0 ? _components[index + 1] : null;
         }
 
+        /// <summary>
+        /// Tests if this subject is empty - has no components.
+        /// </summary>
+        /// <returns>true if empty, false otherwise</returns>
         public bool IsEmpty()
         {
             return _components.Length == 0;
         }
 
+        /// <summary>
+        /// Gets the size of the subject in terms of its number of component pairs.
+        /// </summary>
+        /// <returns>the size of the subject</returns>
         public int Size()
         {
             return _components.Length >> 1;
         }
 
-        public string[] InternalComponents()
+        internal string[] InternalComponents()
         {
             return _components;
         }

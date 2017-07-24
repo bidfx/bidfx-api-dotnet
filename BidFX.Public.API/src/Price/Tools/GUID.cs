@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price.Tools
     /// distributed system.
     /// </remarks>
     /// <author>Paul Sweeny</author>
-    public sealed class GUID
+    internal sealed class GUID
     {
         private readonly byte[] _guid;
 

@@ -4,17 +4,34 @@ using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price.Subject
 {
+    /// <summary>
+    /// This class provides a mutable subject builder.
+    /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
         private string[] _components = new string[16];
         private int _size = 0;
+        
+        /// <summary>
+        /// Whether the subscription should refresh if it can expire
+        /// </summary>
         public bool AutoRefresh { get; set; }
 
+        /// <summary>
+        /// Creates a new subject from the components that have been set.
+        /// </summary>
+        /// <returns></returns>
         public Subject CreateSubject()
         {
             return new Subject(GetComponents(), AutoRefresh);
         }
 
+        /// <summary>
+        /// Sets a component of the subject.
+        /// </summary>
+        /// <param name="key">the components key</param>
+        /// <param name="value">the components value</param>
+        /// <returns>the builder so that calls can be chained</returns>
         public SubjectBuilder SetComponent(string key, string value)
         {
             SubjectComponent(key, value);
@@ -84,13 +101,18 @@ namespace BidFX.Public.API.Price.Subject
             return value;
         }
 
-        public string[] GetComponents()
+        internal string[] GetComponents()
         {
             var components = new string[_size];
             Array.Copy(_components, 0, components, 0, _size);
             return components;
         }
 
+        /// <summary>
+        /// Looks up the value of a variable.
+        /// </summary>
+        /// <param name="key">the name of the variable to look up</param>
+        /// <returns>the variable value of null if the variable is undefined</returns>
         public string LookupValue(string key)
         {
             var index = SubjectUtils.BinarySearch(_components, _size, key);
@@ -119,82 +141,81 @@ namespace BidFX.Public.API.Price.Subject
 
         // ******************LEVEL 1 SPOT******************
 
-        private static SubjectBuilder CreateLevelOneSpotSubject(string source, string symbol, string currency,
-            string quantity,
-            string account, string quoteStyle)
+        private static SubjectBuilder CreateLevelOneSpotSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Spot", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, requestFor, liquidityProvider, "Spot", symbol, "1");
             return subjectBuilder;
         }
 
-        public static Subject CreateLevelOneSpotRfsSubject(string source, string symbol, string currency,
+        public static Subject CreateLevelOneSpotStreamingSubject(string liquidityProvider, string symbol, string currency,
             string quantity, string account)
         {
-            return CreateLevelOneSpotSubject(source, symbol, currency, quantity, account, "Stream").CreateSubject();
+            return CreateLevelOneSpotSubject(liquidityProvider, symbol, currency, quantity, account, "Stream").CreateSubject();
         }
 
-        public static Subject CreateLevelOneSpotRfqSubject(string source, string symbol, string currency,
+        public static Subject CreateLevelOneSpotQuoteSubject(string liquidityProvider, string symbol, string currency,
             string quantity, string account, bool autoRefresh = false)
         {
             var levelOneSpotRfqSubject =
-                CreateLevelOneSpotSubject(source, symbol, currency, quantity, account, "Quote");
+                CreateLevelOneSpotSubject(liquidityProvider, symbol, currency, quantity, account, "Quote");
             levelOneSpotRfqSubject.AutoRefresh = autoRefresh;
             return levelOneSpotRfqSubject.CreateSubject();
         }
 
         // ******************LEVEL 1 FORWARD******************
 
-        private static SubjectBuilder CreateLevelOneForwardSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, string quoteStyle)
+        private static SubjectBuilder CreateLevelOneForwardSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Outright", symbol,
+            AddBasicComponents(subjectBuilder, account, currency, quantity, requestFor, liquidityProvider, "Outright", symbol,
                 "1");
             return subjectBuilder
-                .SetComponent(SubjectComponentName.SettlementDate, valueDate);
+                .SetComponent(SubjectComponentName.SettlementDate, settlementDate);
         }
 
-        public static Subject CreateLevelOneForwardRfsSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate)
+        public static Subject CreateLevelOneForwardStreamingSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate)
         {
-            return CreateLevelOneForwardSubject(source, symbol, currency, quantity, account, valueDate, "Stream")
+            return CreateLevelOneForwardSubject(liquidityProvider, symbol, currency, quantity, account, settlementDate, "Stream")
                 .CreateSubject();
         }
 
-        public static Subject CreateLevelOneForwardRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, bool autoRefresh = false)
+        public static Subject CreateLevelOneForwardQuoteSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate, bool autoRefresh = false)
         {
             var levelOneForwardRfqSubject =
-                CreateLevelOneForwardSubject(source, symbol, currency, quantity, account, valueDate, "Quote");
+                CreateLevelOneForwardSubject(liquidityProvider, symbol, currency, quantity, account, settlementDate, "Quote");
             levelOneForwardRfqSubject.AutoRefresh = autoRefresh;
             return levelOneForwardRfqSubject.CreateSubject();
         }
 
         // ******************LEVEL 1 NDF******************
 
-        private static SubjectBuilder CreateLevelOneNdfSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, string fixingDate, string quoteStyle)
+        private static SubjectBuilder CreateLevelOneNdfSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate, string fixingDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "NDF", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, requestFor, liquidityProvider, "NDF", symbol, "1");
             return subjectBuilder
-                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
+                .SetComponent(SubjectComponentName.SettlementDate, settlementDate)
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate);
         }
 
-        public static Subject CreateLevelOneNdfRfsSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, string fixingDate)
+        public static Subject CreateLevelOneNdfStreamingSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate, string fixingDate)
         {
-            return CreateLevelOneNdfSubject(source, symbol, currency, quantity, account, valueDate, fixingDate,
+            return CreateLevelOneNdfSubject(liquidityProvider, symbol, currency, quantity, account, settlementDate, fixingDate,
                     "Stream")
                 .CreateSubject();
         }
 
-        public static Subject CreateLevelOneNdfRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string valueDate, string fixingDate, bool autoRefresh = false)
+        public static Subject CreateLevelOneNdfQuoteSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string settlementDate, string fixingDate, bool autoRefresh = false)
         {
-            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(source, symbol, currency, quantity, account, valueDate,
+            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(liquidityProvider, symbol, currency, quantity, account, settlementDate,
                 fixingDate, "Quote");
             levelOneNdfRfqSubject.AutoRefresh = autoRefresh;
             return levelOneNdfRfqSubject.CreateSubject();
@@ -202,77 +223,77 @@ namespace BidFX.Public.API.Price.Subject
 
         // ******************LEVEL 1 SWAP******************
 
-        private static SubjectBuilder CreateLevelOneSwapSubject(string source, string symbol, string currency,
-            string quantity, string account, string quantity2, string valueDate, string valueDate2, string quoteStyle)
+        private static SubjectBuilder CreateLevelOneSwapSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string farQuantity, string settlementDate, string farSettlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "Swap", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, requestFor, liquidityProvider, "Swap", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
-                .SetComponent(SubjectComponentName.FarQuantity, quantity2)
-                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
-                .SetComponent(SubjectComponentName.FarSettlementDate, valueDate2);
+                .SetComponent(SubjectComponentName.FarQuantity, farQuantity)
+                .SetComponent(SubjectComponentName.SettlementDate, settlementDate)
+                .SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
         }
 
-        public static Subject CreateLevelOneSwapRfsSubject(string source, string symbol, string currency,
-            string quantity, string account, string quantity2, string valueDate, string valueDate2)
+        public static Subject CreateLevelOneSwapStreamingSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string farQuantity, string settlementDate, string farSettlementDate)
         {
-            return CreateLevelOneSwapSubject(source, symbol, currency, quantity, account, quantity2, valueDate,
-                valueDate2, "Stream").CreateSubject();
+            return CreateLevelOneSwapSubject(liquidityProvider, symbol, currency, quantity, account, farQuantity, settlementDate,
+                farSettlementDate, "Stream").CreateSubject();
         }
 
-        public static Subject CreateLevelOneSwapRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string quantity2, string valueDate, string valueDate2,
+        public static Subject CreateLevelOneSwapQuoteSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string farQuantity, string settlementDate, string farSettlementDate,
             bool autoRefresh = false)
         {
-            var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(source, symbol, currency, quantity, account,
-                quantity2, valueDate,
-                valueDate2, "Quote");
+            var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(liquidityProvider, symbol, currency, quantity, account,
+                farQuantity, settlementDate,
+                farSettlementDate, "Quote");
             levelOneSwapRfqSubject.AutoRefresh = autoRefresh;
             return levelOneSwapRfqSubject.CreateSubject();
         }
 
         // ******************LEVEL 1 NDS******************
 
-        private static SubjectBuilder CreateLevelOneNdsSubject(string source, string symbol, string currency,
-            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate,
-            string valueDate2, string quoteStyle)
+        private static SubjectBuilder CreateLevelOneNdsSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string fixingDate, string farFixingDate, string farQuantity, string settlementDate,
+            string farSettlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
-            AddBasicComponents(subjectBuilder, account, currency, quantity, quoteStyle, source, "NDS", symbol, "1");
+            AddBasicComponents(subjectBuilder, account, currency, quantity, requestFor, liquidityProvider, "NDS", symbol, "1");
             return subjectBuilder
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate)
-                .SetComponent(SubjectComponentName.FarFixingDate, fixingDate2)
+                .SetComponent(SubjectComponentName.FarFixingDate, farFixingDate)
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
-                .SetComponent(SubjectComponentName.FarQuantity, quantity2)
-                .SetComponent(SubjectComponentName.SettlementDate, valueDate)
-                .SetComponent(SubjectComponentName.FarSettlementDate, valueDate2);
+                .SetComponent(SubjectComponentName.FarQuantity, farQuantity)
+                .SetComponent(SubjectComponentName.SettlementDate, settlementDate)
+                .SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
         }
 
-        public static Subject CreateLevelOneNdsRfsSubject(string source, string symbol, string currency,
-            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate,
-            string valueDate2)
+        public static Subject CreateLevelOneNdsStreamingSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string fixingDate, string farFixingDate, string farQuantity, string settlementDate,
+            string farSettlementDate)
         {
-            return CreateLevelOneNdsSubject(source, symbol, currency, quantity, account, fixingDate, fixingDate2,
-                quantity2,
-                valueDate, valueDate2, "Stream").CreateSubject();
+            return CreateLevelOneNdsSubject(liquidityProvider, symbol, currency, quantity, account, fixingDate, farFixingDate,
+                farQuantity,
+                settlementDate, farSettlementDate, "Stream").CreateSubject();
         }
 
-        public static Subject CreateLevelOneNdsRfqSubject(string source, string symbol, string currency,
-            string quantity, string account, string fixingDate, string fixingDate2, string quantity2, string valueDate,
-            string valueDate2, bool autoRefresh = false)
+        public static Subject CreateLevelOneNdsQuoteSubject(string liquidityProvider, string symbol, string currency,
+            string quantity, string account, string fixingDate, string farFixingDate, string farQuantity, string settlementDate,
+            string farSettlementDate, bool autoRefresh = false)
         {
-            var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(source, symbol, currency, quantity, account,
-                fixingDate, fixingDate2,
-                quantity2,
-                valueDate, valueDate2, "Quote");
+            var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(liquidityProvider, symbol, currency, quantity, account,
+                fixingDate, farFixingDate,
+                farQuantity,
+                settlementDate, farSettlementDate, "Quote");
             levelOneNdsRfqSubject.AutoRefresh = autoRefresh;
             return levelOneNdsRfqSubject.CreateSubject();
         }
 
         // ******************LEVEL 2 SPOT******************
 
-        public static Subject CreateLevelTwoSpotRfsSubject(string symbol, string currency, string quantity,
+        public static Subject CreateLevelTwoSpotStreamingSubject(string symbol, string currency, string quantity,
             string account)
         {
             var subjectBuilder = new SubjectBuilder();
@@ -282,60 +303,50 @@ namespace BidFX.Public.API.Price.Subject
 
         // ******************LEVEL 2 FORWARD******************
 
-        public static Subject CreateLevelTwoForwardRfsSubject(string symbol, string currency, string quantity,
-            string account, string valueDate)
+        public static Subject CreateLevelTwoForwardStreamingSubject(string symbol, string currency, string quantity,
+            string account, string settlementDate)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "Outright", symbol, "2");
-            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate);
+            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             return subjectBuilder.CreateSubject();
         }
 
         // ******************LEVEL 2 NDF******************
 
-        public static Subject CreateLevelTwoNdfRfsSubject(string symbol, string currency, string quantity,
-            string account, string valueDate, string fixingDate)
+        public static Subject CreateLevelTwoNdfStreamingSubject(string symbol, string currency, string quantity,
+            string account, string settlementDate, string fixingDate)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, currency, quantity, "Stream", "FXTS", "NDF", symbol, "2");
-            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, valueDate)
+            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate)
                 .SetComponent(SubjectComponentName.FixingDate, fixingDate);
             return subjectBuilder.CreateSubject();
         }
 
-        /// <summary>
-        /// Adds the basic components to a subject builder that are needed to form any Highway subject
-        /// </summary>
-        /// <param name="subjectBuilder">The subject builder to add the components to</param>
-        /// <param name="account">The value for the Account component</param>
-        /// <param name="currency">The value for the Currency component</param>
-        /// <param name="quantity">The value for the Quantity component</param>
-        /// <param name="quoteStyle">The value for the QuoteStyle component</param>
-        /// <param name="source">The value for the LiquidityProvider component</param>
-        /// <param name="subClass">The value for the DealType component</param>
-        /// <param name="symbol">The value for the Symbol component</param>
-        /// <param name="level">The value for the Level component</param>
         private static void AddBasicComponents(SubjectBuilder subjectBuilder, string account, string currency,
-            string quantity, string quoteStyle, string source, string subClass, string symbol, string level)
+            string quantity, string requestFor, string liquidityProvider, string subClass, string symbol, string level)
         {
             subjectBuilder
                 .SetComponent(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Currency, currency)
                 .SetComponent(SubjectComponentName.Quantity, quantity)
-                .SetComponent(SubjectComponentName.RequestFor, quoteStyle)
-                .SetComponent(SubjectComponentName.LiquidityProvider, source)
+                .SetComponent(SubjectComponentName.RequestFor, requestFor)
+                .SetComponent(SubjectComponentName.LiquidityProvider, liquidityProvider)
                 .SetComponent(SubjectComponentName.DealType, subClass)
                 .SetComponent(SubjectComponentName.Symbol, symbol)
                 .SetComponent(SubjectComponentName.Level, level);
         }
-
+        
+        // ******************PUFFIN******************
+        
         public static Subject CreateIndicativePriceSubject(string ccyPair)
         {
             return new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Level, "1")
-                .SetComponent("Source", "Indi")
+                .SetComponent(SubjectComponentName.Source, "Indi")
                 .SetComponent(SubjectComponentName.Symbol, ccyPair)
                 .CreateSubject();
         }
@@ -345,7 +356,7 @@ namespace BidFX.Public.API.Price.Subject
             var subject = new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, "Fx")
                 .SetComponent(SubjectComponentName.Level, tiered ? "Tiered" : "1")
-                .SetComponent("Source", "PremiumFX")
+                .SetComponent(SubjectComponentName.Source, "PremiumFX")
                 .SetComponent(SubjectComponentName.Symbol, ccyPair);
             if (crossCurrencyRates)
             {

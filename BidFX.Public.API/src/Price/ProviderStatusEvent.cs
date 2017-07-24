@@ -3,7 +3,7 @@
 namespace BidFX.Public.API.Price
 {
     /// <summary>
-    /// Describes a change in the status of a NAPIClient provider plugin component.
+    /// Describes a change in the status of a provider connection component.
     /// </summary>
     public class ProviderStatusEvent : EventArgs, IProviderProperties
     {

@@ -2,7 +2,7 @@
 
 namespace BidFX.Public.API.Price.Tools
 {
-    public class JavaTime
+    internal class JavaTime
     {
         private const long Millisecond = 1L;
         private const long Second = 1000 * Millisecond;
