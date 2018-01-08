@@ -99,12 +99,12 @@ namespace BidFX.Public.API.Price.Subject
                     subjectBuilder.SetComponent(component.Key, component.Value);
                 }
             }
-            if ("Swap".Equals(subject.LookupValue(SubjectComponentName.DealType)) ||
-                "NDS".Equals(subject.LookupValue(SubjectComponentName.DealType)))
+            if ("Swap".Equals(subject.GetComponent(SubjectComponentName.DealType)) ||
+                "NDS".Equals(subject.GetComponent(SubjectComponentName.DealType)))
             {
                 subjectBuilder.SetComponent("LegCount", "2");
             }
-            if (subject.LookupValue(SubjectComponentName.User) == null)
+            if (subject.GetComponent(SubjectComponentName.User) == null)
             {
                 subjectBuilder.SetComponent(SubjectComponentName.User, PriceManager.Username);
             }

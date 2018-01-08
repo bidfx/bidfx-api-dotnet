@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Price.Subject
         /// </summary>
         /// <param name="key">the name of the variable to look up</param>
         /// <returns>the variable value or null if the variable is undefiened</returns>
-        public string LookupValue(string key)
+        public string GetComponent(string key)
         {
             var index = SubjectUtils.BinarySearch(_components, _components.Length, key);
             return index >= 0 ? _components[index + 1] : null;

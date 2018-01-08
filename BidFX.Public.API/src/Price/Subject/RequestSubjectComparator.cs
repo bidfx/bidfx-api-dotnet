@@ -11,9 +11,9 @@ namespace BidFX.Public.API.Price.Subject
         {
             var cmp = CompareObjects(x, y);
             if (cmp != BothNonNull) return cmp;
-            cmp = CompareStrings(x.LookupValue("Symbol"), y.LookupValue("Symbol"));
+            cmp = CompareStrings(x.GetComponent("Symbol"), y.GetComponent("Symbol"));
             if (cmp != 0) return cmp;
-            cmp = CompareQuantity(x.LookupValue("Quantity"), y.LookupValue("Quantity"));
+            cmp = CompareQuantity(x.GetComponent("Quantity"), y.GetComponent("Quantity"));
             return cmp == 0 ? string.Compare(x.ToString(), y.ToString(), StringComparison.Ordinal) : cmp;
         }
 

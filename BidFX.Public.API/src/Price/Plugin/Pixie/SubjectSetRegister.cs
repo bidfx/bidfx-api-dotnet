@@ -91,7 +91,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     if (state.State == StateUnsubscribed)
                     {
-                        if ("Quote".Equals(subject.LookupValue(SubjectComponentName.RequestFor)))
+                        if ("Quote".Equals(subject.GetComponent(SubjectComponentName.RequestFor)))
                         {
                             _modified = true;
                             state.State = StateToggle;

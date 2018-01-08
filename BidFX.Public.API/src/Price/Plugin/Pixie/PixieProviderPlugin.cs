@@ -224,7 +224,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         // TODO implement subject check
         public bool IsSubjectCompatible(Subject.Subject subject)
         {
-            return subject.LookupValue("Source") == null;
+            return subject.GetComponent("Source") == null;
         }
 
         private void NotifyStatusChange(ProviderStatus status, string reason)

@@ -592,13 +592,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         [Test]
         public void TestRfsSubjectIsConfiguredRight()
         {
-            Assert.AreEqual("Stream", RfsSubject1.LookupValue("RequestFor"));
+            Assert.AreEqual("Stream", RfsSubject1.GetComponent("RequestFor"));
         }
 
         [Test]
         public void TestRfqSubjectIsConfiguredRight()
         {
-            Assert.AreEqual("Quote", RfqSubject3.LookupValue("RequestFor"));
+            Assert.AreEqual("Quote", RfqSubject3.GetComponent("RequestFor"));
         }
 
         [Test]

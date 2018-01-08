@@ -57,11 +57,11 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent("Exchange", "LSE")
                 .CreateSubject();
 
-            Assert.AreEqual("1", subject.LookupValue("Level"));
-            Assert.AreEqual("Reuters", subject.LookupValue("LiquidityProvider"));
-            Assert.AreEqual("Equity", subject.LookupValue("AssetClass"));
-            Assert.AreEqual("LSE", subject.LookupValue("Exchange"));
-            Assert.AreEqual("VOD.L", subject.LookupValue("Symbol"));
+            Assert.AreEqual("1", subject.GetComponent("Level"));
+            Assert.AreEqual("Reuters", subject.GetComponent("LiquidityProvider"));
+            Assert.AreEqual("Equity", subject.GetComponent("AssetClass"));
+            Assert.AreEqual("LSE", subject.GetComponent("Exchange"));
+            Assert.AreEqual("VOD.L", subject.GetComponent("Symbol"));
             Assert.AreEqual("AssetClass=Equity,Exchange=LSE,Level=1,LiquidityProvider=Reuters,Symbol=VOD.L",
                 subject.ToString());
         }

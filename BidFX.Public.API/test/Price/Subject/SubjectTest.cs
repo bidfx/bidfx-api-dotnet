@@ -38,17 +38,17 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestLookupValue()
         {
-            Assert.AreEqual("2", mSubject.LookupValue("Level"));
-            Assert.AreEqual("ComStock", mSubject.LookupValue("Source"));
-            Assert.AreEqual("Equity", mSubject.LookupValue("AssetClass"));
-            Assert.AreEqual("NYS", mSubject.LookupValue("Exchange"));
-            Assert.AreEqual("IBM.N", mSubject.LookupValue("Symbol"));
+            Assert.AreEqual("2", mSubject.GetComponent("Level"));
+            Assert.AreEqual("ComStock", mSubject.GetComponent("Source"));
+            Assert.AreEqual("Equity", mSubject.GetComponent("AssetClass"));
+            Assert.AreEqual("NYS", mSubject.GetComponent("Exchange"));
+            Assert.AreEqual("IBM.N", mSubject.GetComponent("Symbol"));
         }
 
         [Test]
         public void LookupOfMissingValueReturnsNull()
         {
-            Assert.AreEqual(null, mSubject.LookupValue("UserName"));
+            Assert.AreEqual(null, mSubject.GetComponent("UserName"));
         }
 
         [Test]
