@@ -98,7 +98,6 @@
     <Compile Include="src\Price\Subject\SubjectFormatter.cs" />
     <Compile Include="src\Price\Subject\CommonSubjects.cs" />
     <Compile Include="src\Price\Subject\SubjectIterator.cs" />
-    <Compile Include="src\Price\Subject\SubjectLobotomy.cs" />
     <Compile Include="src\Price\Subject\SubjectMutator.cs" />
     <Compile Include="src\Price\Subject\SubjectPart.cs" />
     <Compile Include="src\Price\Subject\SubjectUtils.cs" />

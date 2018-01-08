@@ -99,7 +99,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 foreach (var subject in Subjects)
                 {
                     Varint.WriteStringArray(subjectBuffer,
-                        SubjectLobotomy.ExtractComponents(SubjectMutator.ToOldVersion(subject)));
+                        SubjectMutator.ToOldVersion(subject).InternalComponents());
                     appender.Compress(subjectBuffer);
                 }
             }
