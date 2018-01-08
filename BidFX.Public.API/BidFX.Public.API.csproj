@@ -96,6 +96,7 @@
     <Compile Include="src\Price\Subject\SubjectComponent.cs" />
     <Compile Include="src\Price\Subject\SubjectComponentName.cs" />
     <Compile Include="src\Price\Subject\SubjectFormatter.cs" />
+    <Compile Include="src\Price\Subject\CommonSubjects.cs" />
     <Compile Include="src\Price\Subject\SubjectIterator.cs" />
     <Compile Include="src\Price\Subject\SubjectLobotomy.cs" />
     <Compile Include="src\Price\Subject\SubjectMutator.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="test\Price\Subject\RequestSubjectComparatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />
     <Compile Include="test\Price\Subject\SubjectFormatterTest.cs" />
+    <Compile Include="test\Price\Subject\CommonSubjectsTest.cs" />
     <Compile Include="test\Price\Subject\SubjectIteratorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectMutatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
