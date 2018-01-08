@@ -64,7 +64,7 @@ namespace BidFX.Public.API.Price.Subject
             var level = 0;
             var buySideAccount = "";
             var source = "";
-            var subjectBuilder = new SubjectBuilder {AutoRefresh = subject.AutoRefresh};
+            var subjectBuilder = new SubjectBuilder();
             foreach (var component in subject)
             {
                 if (component.Key.Equals("Level"))

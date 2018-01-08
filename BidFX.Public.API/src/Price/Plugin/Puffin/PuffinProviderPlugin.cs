@@ -67,7 +67,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             InapiEventHandler.OnProviderStatus(this, previousStatus);
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (!IsPermissionGranted(subject)) //Restriction for AXA

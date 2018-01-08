@@ -84,10 +84,10 @@ namespace BidFX.Public.API.Example
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotQuoteSubject(
-                        "FX_ACCT", source, "EURUSD", "EUR", "1000000.00").CreateSubject());
+                        "FX_ACCT", source, "EURUSD", "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotQuoteSubject(
-                        "FX_ACCT", source, "EURGBP", "EUR", "1000000.00").CreateSubject());
+                        "FX_ACCT", source, "EURGBP", "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneForwardQuoteSubject(
                         "FX_ACCT", source, "EURUSD", "USD", "1000000.00", "20170820").CreateSubject());

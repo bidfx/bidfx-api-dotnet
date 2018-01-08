@@ -13,15 +13,12 @@ namespace BidFX.Public.API.Price.Subject
 
         private readonly string[] _components;
         private int _hash;
-        public bool AutoRefresh { get; internal set; }
 
         /// <summary>
         /// Creates a new subject.
         /// </summary>
         /// <param name="formattedSubject">a formatted subject string</param>
-        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
-        public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject),
-            autoRefresh)
+        public Subject(string formattedSubject) : this(BuildComponents(formattedSubject))
         {
         }
 
@@ -29,11 +26,9 @@ namespace BidFX.Public.API.Price.Subject
         /// Creates a subject from an array of components. A dangerous constructor that should only be called by a subject builder to ensure the subject is valid.
         /// </summary>
         /// <param name="components">the components</param>
-        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
-        internal Subject(string[] components, bool autoRefresh = false)
+        internal Subject(string[] components)
         {
             _components = components;
-            AutoRefresh = autoRefresh;
         }
 
         private static string[] BuildComponents(string formattedSubject)

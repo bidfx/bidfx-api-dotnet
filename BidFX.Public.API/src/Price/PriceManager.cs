@@ -171,20 +171,20 @@ namespace BidFX.Public.API.Price
             _providerPlugins.Add(providerPlugin);
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
             _subscriptions.Add(subject);
-            RefreshSubscription(subject, refresh);
+            RefreshSubscription(subject, autoRefresh, refresh);
         }
 
-        private void RefreshSubscription(Subject.Subject subject, bool refresh = true)
+        private void RefreshSubscription(Subject.Subject subject, bool autoRefresh = false, bool refresh = true)
         {
             foreach (var providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
                 {
-                    providerPlugin.Subscribe(subject, refresh);
+                    providerPlugin.Subscribe(subject, autoRefresh, refresh);
                 }
             }
         }

@@ -9,8 +9,9 @@
         /// Subscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject to subscribe to.</param>
+        /// <param name="autoRefresh">A flag that is set to true when the subscription should refresh automatically.</param>
         /// <param name="refresh">A flag that is set to true when the caller is attempting to refresh an existing subscription.</param>
-        void Subscribe(Subject.Subject subject, bool refresh = false);
+        void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false);
 
         /// <summary>
         /// Unsubscribe to price updates for a given subject.

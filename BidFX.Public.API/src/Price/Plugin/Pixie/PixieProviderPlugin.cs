@@ -47,7 +47,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _outputThread = new Thread(RunningLoop) {Name = name};
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
             if (_pixieConnection == null)
@@ -57,7 +57,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             else
             {
-                _pixieConnection.Subscribe(subject, refresh);
+                _pixieConnection.Subscribe(subject, autoRefresh, refresh);
             }
         }
 

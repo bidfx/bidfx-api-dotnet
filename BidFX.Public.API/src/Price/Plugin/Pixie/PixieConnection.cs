@@ -136,11 +136,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             _gridCache.Add(subject);
             _subjectSetRegister.Register(subject, refresh);
-            if (subject.AutoRefresh && "RFQ".Equals(subject.LookupValue(SubjectComponentName.RequestFor)))
+            if (autoRefresh && "Quote".Equals(subject.LookupValue(SubjectComponentName.RequestFor)))
             {
                 _autoRefreshSubjects.Add(subject);
             }

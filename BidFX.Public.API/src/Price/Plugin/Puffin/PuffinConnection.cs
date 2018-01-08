@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             _publisherThread.Start();
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             QueueMessage(
                 new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject.ToString()).ToString());

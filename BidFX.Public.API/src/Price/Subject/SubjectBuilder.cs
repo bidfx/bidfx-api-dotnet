@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Price.Subject
         /// <returns></returns>
         public Subject CreateSubject()
         {
-            return new Subject(GetComponents(), AutoRefresh);
+            return new Subject(GetComponents());
         }
 
         /// <summary>
