@@ -19,11 +19,10 @@
         }
 
         public static SubjectBuilder CreateLevelOneSpotQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, bool autoRefresh = false)
+            string quantity)
         {
             var levelOneSpotRfqSubject =
                 CreateLevelOneSpotSubject(account, liquidityProvider, symbol, currency, quantity, CommonComponents.Quote);
-            levelOneSpotRfqSubject.AutoRefresh = autoRefresh;
             return levelOneSpotRfqSubject;
         }
 
@@ -46,11 +45,10 @@
         }
 
         public static SubjectBuilder CreateLevelOneForwardQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string settlementDate, bool autoRefresh = false)
+            string quantity, string settlementDate)
         {
             var levelOneForwardRfqSubject =
                 CreateLevelOneForwardSubject(account, liquidityProvider, symbol, currency, quantity, settlementDate, CommonComponents.Quote);
-            levelOneForwardRfqSubject.AutoRefresh = autoRefresh;
             return levelOneForwardRfqSubject;
         }
 
@@ -74,11 +72,10 @@
         }
 
         public static SubjectBuilder CreateLevelOneNdfQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string fixingDate, string settlementDate, bool autoRefresh = false)
+            string quantity, string fixingDate, string settlementDate)
         {
             var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, fixingDate, settlementDate,
                 CommonComponents.Quote);
-            levelOneNdfRfqSubject.AutoRefresh = autoRefresh;
             return levelOneNdfRfqSubject;
         }
 
@@ -104,12 +101,10 @@
         }
 
         public static SubjectBuilder CreateLevelOneSwapQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string farQuantity, string settlementDate, string farSettlementDate,
-            bool autoRefresh = false)
+            string quantity, string farQuantity, string settlementDate, string farSettlementDate)
         {
             var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(account, liquidityProvider, symbol, currency, quantity, 
                 farQuantity, settlementDate, farSettlementDate, CommonComponents.Quote);
-            levelOneSwapRfqSubject.AutoRefresh = autoRefresh;
             return levelOneSwapRfqSubject;
         }
 
@@ -140,11 +135,10 @@
 
         public static SubjectBuilder CreateLevelOneNdsQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
             string quantity, string farQuantity, string fixingDate, string farFixingDate, string settlementDate,
-            string farSettlementDate, bool autoRefresh = false)
+            string farSettlementDate)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity,
                 farQuantity, fixingDate, farFixingDate, settlementDate, farSettlementDate, CommonComponents.Quote);
-            levelOneNdsRfqSubject.AutoRefresh = autoRefresh;
             return levelOneNdsRfqSubject;
         }
 

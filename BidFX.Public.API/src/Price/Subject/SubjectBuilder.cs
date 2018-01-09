@@ -11,11 +11,6 @@ namespace BidFX.Public.API.Price.Subject
     {
         private string[] _components;
         private int _size;
-        
-        /// <summary>
-        /// Whether the subscription should refresh if it can expire
-        /// </summary>
-        public bool AutoRefresh { get; set; }
 
         /// <summary>
         /// Creates a new subject from the components that have been set.
