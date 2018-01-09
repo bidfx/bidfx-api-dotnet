@@ -17,12 +17,120 @@ namespace BidFX.Public.API.Price
         /// </summary>
         public const string AccruedInterest = "AccruedInterest";
 
-
         /// <summary>
         /// The ask price. Type is decimal.
         /// </summary>
         public const string Ask = "Ask";
 
+        /// <summary>
+        /// The top-of-book ask price. Type is decimal.
+        /// </summary>
+        public const string Ask1 = "Ask1";
+        
+        /// <summary>
+        /// The second ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask2 = "Ask2";
+        
+        /// <summary>
+        /// The third ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask3 = "Ask3";
+        
+        /// <summary>
+        /// The fourth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask4 = "Ask4";
+        
+        /// <summary>
+        /// The fifth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask5 = "Ask5";
+        
+        /// <summary>
+        /// The sixth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask6 = "Ask6";
+        
+        /// <summary>
+        /// The seventh ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask7 = "Ask7";
+        
+        /// <summary>
+        /// The eigth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask8 = "Ask8";
+        
+        /// <summary>
+        /// The ninth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask9 = "Ask9";
+        
+        /// <summary>
+        /// The tenth ask price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Ask10 = "Ask10";
+
+        /// <summary>
+        /// The liquidity provider at top of book in a level two quote, corresponding to the price at Ask1.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm1 = "AskFirm1";
+        
+        /// <summary>
+        /// The second liquidity provider in a level two quote, corresponding to the price at Ask2.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm2 = "AskFirm2";
+        
+        /// <summary>
+        /// The third liquidity provider in a level two quote, corresponding to the price at Ask3.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm3 = "AskFirm3";
+        
+        /// <summary>
+        /// The forth liquidity provider in a level two quote, corresponding to the price at Ask4.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm4 = "AskFirm4";
+        
+        /// <summary>
+        /// The fifth liquidity provider in a level two quote, corresponding to the price at Ask5.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm5 = "AskFirm5";
+        
+        /// <summary>
+        /// The sixth liquidity provider in a level two quote, corresponding to the price at Ask6.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm6 = "AskFirm6";
+        
+        /// <summary>
+        /// The seventh liquidity provider in a level two quote, corresponding to the price at Ask7.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm7 = "AskFirm7";
+        
+        /// <summary>
+        /// The eigth liquidity provider in a level two quote, corresponding to the price at Ask8.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm8 = "AskFirm8";
+        
+        /// <summary>
+        /// The ninth liquidity provider in a level two quote, corresponding to the price at Ask9.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm9 = "AskFirm9";
+        
+        /// <summary>
+        /// The tenth liquidity provider in a level two quote, corresponding to the price at Ask10.
+        /// Type is string.
+        /// </summary>
+        public const string AskFirm10 = "AskFirm10";
 
         /// <summary>
         /// The exchange on which the ask price was quoted. Type is string.
@@ -230,6 +338,117 @@ namespace BidFX.Public.API.Price
         /// The bid price. Type is decimal.
         /// </summary>
         public const string Bid = "Bid";
+        
+        
+        /// <summary>
+        /// The top-of-book bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid1 = "Bid1";
+        
+        /// <summary>
+        /// The second bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid2 = "Bid2";
+        
+        /// <summary>
+        /// The third bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid3 = "Bid3";
+        
+        /// <summary>
+        /// The fourth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid4 = "Bid4";
+        
+        /// <summary>
+        /// The fifth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid5 = "Bid5";
+        
+        /// <summary>
+        /// The sixth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid6 = "Bid6";
+        
+        /// <summary>
+        /// The seventh bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid7 = "Bid7";
+        
+        /// <summary>
+        /// The eigth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid8 = "Bid8";
+        
+        /// <summary>
+        /// The ninth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid9 = "Bid9";
+        
+        /// <summary>
+        /// The tenth bid price in a level two quote. Type is decimal.
+        /// </summary>
+        public const string Bid10 = "Bid10";
+
+        /// <summary>
+        /// The liquidity provider at top of book in a level two quote, corresponding to the price at Bid1.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm1 = "BidFirm1";
+        
+        /// <summary>
+        /// The second liquidity provider in a level two quote, corresponding to the price at Bid2.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm2 = "BidFirm2";
+        
+        /// <summary>
+        /// The third liquidity provider in a level two quote, corresponding to the price at Bid3.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm3 = "BidFirm3";
+        
+        /// <summary>
+        /// The forth liquidity provider in a level two quote, corresponding to the price at Bid4.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm4 = "BidFirm4";
+        
+        /// <summary>
+        /// The fifth liquidity provider in a level two quote, corresponding to the price at Bid5.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm5 = "BidFirm5";
+        
+        /// <summary>
+        /// The sixth liquidity provider in a level two quote, corresponding to the price at Bid6.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm6 = "BidFirm6";
+        
+        /// <summary>
+        /// The seventh liquidity provider in a level two quote, corresponding to the price at Bid7.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm7 = "BidFirm7";
+        
+        /// <summary>
+        /// The eigth liquidity provider in a level two quote, corresponding to the price at Bid8.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm8 = "BidFirm8";
+        
+        /// <summary>
+        /// The ninth liquidity provider in a level two quote, corresponding to the price at Bid9.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm9 = "BidFirm9";
+        
+        /// <summary>
+        /// The tenth liquidity provider in a level two quote, corresponding to the price at Bid10.
+        /// Type is string.
+        /// </summary>
+        public const string BidFirm10 = "BidFirm10";
 
         /// <summary>
         /// The exchange on which the bid price was quoted. Type is string.
