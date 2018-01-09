@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Price
     public class FieldName
     {
         /// <summary>
-        /// Auct
+        /// The accrued interest. Type is decimal.
         /// </summary>
         public const string AccruedInterest = "AccruedInterest";
 
