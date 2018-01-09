@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BidFX.Public.API.Price.Plugin.Puffin;
 
 namespace BidFX.Public.API.Price.Subject
 {
-    internal class CommonComponents
+    public class CommonComponents
     {
-        static readonly string[] CommonKeys =
+        public const string Stream = "Stream";
+        public const string Quote = "Quote";
+        public const string Spot = "Spot";
+        public const string Outright = "Outright";
+        public const string Forward = Outright;
+        public const string Swap = "Swap";
+        public const string NDS = "NDS";
+        public const string NDF = "NDF";
+        public const string Fx = "Fx";
+        public const string FXTS = "FXTS";
+        public const string Cross = "Cross";
+        
+        internal static readonly string[] CommonKeys =
         {
             "Access",
             "Account",
@@ -62,7 +75,7 @@ namespace BidFX.Public.API.Price.Subject
             "destination",
         };
 
-        static readonly string[] CommonValues =
+        internal static readonly string[] CommonValues =
         {
             // AssetClasses
             "Bond",
@@ -70,7 +83,7 @@ namespace BidFX.Public.API.Price.Subject
             "Equity",
             "FixedIncome",
             "Future",
-            "Fx",
+            Fx,
             "Index",
             "Option",
             "Options",
@@ -233,6 +246,7 @@ namespace BidFX.Public.API.Price.Subject
             "SWX",
             "SpryWare",
             "TSN",
+            FXTS,
 
             // Symbols (futures and options)
             "ABBN",
@@ -419,6 +433,18 @@ namespace BidFX.Public.API.Price.Subject
 
             "Buy",
             "Sell",
+            
+            Stream,
+            Quote,
+            
+            Spot,
+            Forward,
+            Outright,
+            Swap,
+            NDS,
+            NDF,
+            
+            Cross,
 
             // Tube components
             "lynx",
@@ -433,25 +459,37 @@ namespace BidFX.Public.API.Price.Subject
         private static readonly Dictionary<string, string> ValueMap =
             CommonValues.Distinct().ToDictionary(item => item, item => item);
 
-        public static string CommonKey(string key)
+        internal static string CommonKey(string key)
         {
             try
             {
-                return KeyMap[key];
+                string item;
+                if (key == null || !KeyMap.TryGetValue(key, out item))
+                {
+                    return null;
+                }
+    
+                return item;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
         }
 
-        public static string CommonValue(string value)
+        internal static string CommonValue(string value)
         {
             try
             {
-                return ValueMap[value];
+                string item;
+                if (value == null || !ValueMap.TryGetValue(value, out item))
+                {
+                    return null;
+                }
+    
+                return item;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

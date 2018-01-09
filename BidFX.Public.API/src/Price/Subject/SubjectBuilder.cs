@@ -9,8 +9,8 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-        private string[] _components = new string[16];
-        private int _size = 0;
+        private string[] _components;
+        private int _size;
         
         /// <summary>
         /// Whether the subscription should refresh if it can expire
@@ -24,6 +24,36 @@ namespace BidFX.Public.API.Price.Subject
         public Subject CreateSubject()
         {
             return new Subject(GetComponents());
+        }
+
+        /// <summary>
+        ///  Create an empty SubjectBuilder
+        /// </summary>
+        public SubjectBuilder()
+        {
+            _components = new string[16];
+            _size = 0;
+        }
+
+        /// <summary>
+        /// Create a new SubjectBuilder, pre-populated with components from an existing Subject
+        /// </summary>
+        /// <param name="subject">The Subject to clone data from</param>
+        public SubjectBuilder(Subject subject)
+        {
+            _size = subject.Size() * 2;
+            _components = new string[_size];
+            Array.Copy(subject.InternalComponents(), 0, _components, 0, _size);
+        }
+
+        /// <summary>
+        ///  Create a new SubjectBuilder, pre-populated with components from another SubjectBuilder
+        /// </summary>
+        /// <param name="subjectBuilder">The SubjectBuilder to clone data from</param>
+        public SubjectBuilder(SubjectBuilder subjectBuilder)
+        {
+            _size = subjectBuilder._size;
+            _components = subjectBuilder.GetComponents();
         }
 
         /// <summary>
@@ -95,7 +125,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private static string InternaliseValue(string value)
         {
-            var alt = CommonComponents.CommonKey(value);
+            var alt = CommonComponents.CommonValue(value);
             if (alt != null) return alt;
             SubjectValidator.ValidatePart(value, SubjectPart.Value);
             return value;

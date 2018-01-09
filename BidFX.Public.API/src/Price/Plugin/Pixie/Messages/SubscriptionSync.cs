@@ -100,6 +100,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 {
                     Varint.WriteStringArray(subjectBuffer,
                         SubjectMutator.ToOldVersion(subject).InternalComponents());
+                  //    subject.InternalComponents()); Replace the above line with this once Highway accepts new-style subjects
                     appender.Compress(subjectBuffer);
                 }
             }

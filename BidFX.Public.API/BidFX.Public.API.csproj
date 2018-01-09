@@ -90,6 +90,7 @@
     <Compile Include="src\Price\Subject\CommonComponents.cs" />
     <Compile Include="src\Price\Subject\IComponentHandler.cs" />
     <Compile Include="src\Price\Subject\IllegalSubjectException.cs" />
+    <Compile Include="src\Price\Subject\oldstandard\SubjectMutator.cs" />
     <Compile Include="src\Price\Subject\RequestSubjectComparator.cs" />
     <Compile Include="src\Price\Subject\Subject.cs" />
     <Compile Include="src\Price\Subject\SubjectBuilder.cs" />
@@ -98,7 +99,6 @@
     <Compile Include="src\Price\Subject\SubjectFormatter.cs" />
     <Compile Include="src\Price\Subject\CommonSubjects.cs" />
     <Compile Include="src\Price\Subject\SubjectIterator.cs" />
-    <Compile Include="src\Price\Subject\SubjectMutator.cs" />
     <Compile Include="src\Price\Subject\SubjectPart.cs" />
     <Compile Include="src\Price\Subject\SubjectUtils.cs" />
     <Compile Include="src\Price\Subject\SubjectValidator.cs" />
@@ -129,7 +129,6 @@
     <Compile Include="src\Price\Plugin\Pixie\PixieConnection.cs" />
     <Compile Include="src\Price\Plugin\Pixie\PixieProviderPlugin.cs" />
     <Compile Include="src\Price\Plugin\Puffin\FieldExtractor.cs" />
-    <Compile Include="src\Price\Plugin\Puffin\IPuffinSessionListener.cs" />
     <Compile Include="src\Price\Plugin\Puffin\LoginEncryption.cs" />
     <Compile Include="src\Price\Plugin\Puffin\MessageFormatter.cs" />
     <Compile Include="src\Price\Plugin\Puffin\PriceAdaptor.cs" />
@@ -187,6 +186,7 @@
     <Compile Include="test\Price\Plugin\Puffin\PuffinMessageReaderTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\TokenDictionaryTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\ValueParserTest.cs" />
+    <Compile Include="test\Price\Subject\CommonComponentsTest.cs" />
     <Compile Include="test\Price\Subject\RequestSubjectComparatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />
     <Compile Include="test\Price\Subject\SubjectFormatterTest.cs" />

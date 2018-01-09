@@ -174,5 +174,26 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent("LiquidityProvider", "Reuters");
             Assert.AreEqual("Level=1,LiquidityProvider=Reuters,Symbol=VOD.L", _subjectBuilder.ToString());
         }
+
+        [Test]
+        public void TestCreateFromSubject()
+        {
+            var subject = new Subject("Level=1,LiquidityProvider=Reuters,Symbol=BOD.L");
+            _subjectBuilder = new SubjectBuilder(subject);
+            Assert.AreEqual(subject.ToString(), _subjectBuilder.ToString());
+        }
+
+        [Test]
+        public void TestCreateFromSubjectBuilder()
+        {
+            var subjectBuilder = new SubjectBuilder()
+                .SetComponent("Level", "1")
+                .SetComponent("Symbol", "VOD.L")
+                .SetComponent("LiquidityProvider", "Reuters");
+            _subjectBuilder = new SubjectBuilder(subjectBuilder);
+            Assert.AreEqual(subjectBuilder.ToString(), _subjectBuilder.ToString());
+            _subjectBuilder.SetComponent("Account", "FX_ACCT");
+            Assert.AreNotEqual(subjectBuilder.ToString(), _subjectBuilder.ToString());
+        }
     }
 }
