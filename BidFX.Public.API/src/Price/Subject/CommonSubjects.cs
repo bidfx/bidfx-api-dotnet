@@ -176,22 +176,22 @@
         
         // ******************PUFFIN******************
         
-        public static SubjectBuilder CreateIndicativePriceSubject(string ccyPair)
+        public static SubjectBuilder CreateIndicativePriceSubject(string symbol)
         {
             return new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, CommonComponents.Fx)
                 .SetComponent(SubjectComponentName.Level, "1")
                 .SetComponent(SubjectComponentName.Source, "Indi")
-                .SetComponent(SubjectComponentName.Symbol, ccyPair);
+                .SetComponent(SubjectComponentName.Symbol, symbol);
         }
 
-        public static SubjectBuilder CreatePremiumFxSubject(string ccyPair, bool tiered, bool crossCurrencyRates)
+        public static SubjectBuilder CreatePremiumFxSubject(string symbol, bool tiered, bool crossCurrencyRates)
         {
             var subjectBuilder = new SubjectBuilder()
                 .SetComponent(SubjectComponentName.AssetClass, CommonComponents.Fx)
                 .SetComponent(SubjectComponentName.Level, tiered ? "Tiered" : "1")
                 .SetComponent(SubjectComponentName.Source, "PremiumFX")
-                .SetComponent(SubjectComponentName.Symbol, ccyPair);
+                .SetComponent(SubjectComponentName.Symbol, symbol);
             if (crossCurrencyRates)
             {
                 subjectBuilder.SetComponent("SubClass", CommonComponents.Cross);

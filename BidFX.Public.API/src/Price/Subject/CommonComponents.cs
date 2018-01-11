@@ -18,6 +18,8 @@ namespace BidFX.Public.API.Price.Subject
         public const string Fx = "Fx";
         public const string FXTS = "FXTS";
         public const string Cross = "Cross";
+        public const string Indi = "Indi";
+        public const string PremiumFX = "PremiumFX";
         
         internal static readonly string[] CommonKeys =
         {
