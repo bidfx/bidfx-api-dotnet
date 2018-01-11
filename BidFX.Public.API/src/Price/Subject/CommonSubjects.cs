@@ -55,7 +55,7 @@
         // ******************LEVEL 1 NDF******************
 
         private static SubjectBuilder CreateLevelOneNdfSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string fixingDate, string settlementDate, string requestFor)
+            string quantity, string settlementDate, string fixingDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, CommonComponents.Fx, currency, quantity, requestFor, liquidityProvider, CommonComponents.NDF, symbol, "1");
@@ -65,14 +65,14 @@
         }
 
         public static SubjectBuilder CreateLevelOneNdfStreamingSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string fixingDate, string settlementDate)
+            string quantity, string settlementDate, string fixingDate)
         {
             return CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, fixingDate, settlementDate, 
                     CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdfQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string fixingDate, string settlementDate)
+            string quantity, string settlementDate, string fixingDate)
         {
             var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, fixingDate, settlementDate,
                 CommonComponents.Quote);
@@ -111,8 +111,8 @@
         // ******************LEVEL 1 NDS******************
 
         private static SubjectBuilder CreateLevelOneNdsSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string farQuantity, string fixingDate, string farFixingDate, string settlementDate,
-            string farSettlementDate, string requestFor)
+            string quantity, string farQuantity, string settlementDate,
+            string farSettlementDate, string fixingDate, string farFixingDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, CommonComponents.Fx, currency, quantity, requestFor, liquidityProvider, CommonComponents.NDS, symbol, "1");
@@ -126,16 +126,16 @@
         }
 
         public static SubjectBuilder CreateLevelOneNdsStreamingSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string farQuantity, string fixingDate, string farFixingDate, string settlementDate,
-            string farSettlementDate)
+            string quantity, string farQuantity, string settlementDate,
+            string farSettlementDate, string fixingDate, string farFixingDate)
         {
             return CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity, farQuantity, fixingDate, farFixingDate,
                 settlementDate, farSettlementDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdsQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
-            string quantity, string farQuantity, string fixingDate, string farFixingDate, string settlementDate,
-            string farSettlementDate)
+            string quantity, string farQuantity, string settlementDate,
+            string farSettlementDate, string fixingDate, string farFixingDate)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity,
                 farQuantity, fixingDate, farFixingDate, settlementDate, farSettlementDate, CommonComponents.Quote);
@@ -164,8 +164,8 @@
 
         // ******************LEVEL 2 NDF******************
 
-        public static SubjectBuilder CreateLevelTwoNdfStreamingSubject(string account, string symbol, string currency, string quantity, string fixingDate,
-            string settlementDate)
+        public static SubjectBuilder CreateLevelTwoNdfStreamingSubject(string account, string symbol, string currency, string quantity,
+            string settlementDate, string fixingDate)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, CommonComponents.Fx, currency, quantity, CommonComponents.Stream, CommonComponents.FXTS, CommonComponents.NDF, symbol, "2");

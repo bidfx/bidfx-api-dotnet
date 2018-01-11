@@ -102,6 +102,8 @@
     <Compile Include="src\Price\Subject\SubjectPart.cs" />
     <Compile Include="src\Price\Subject\SubjectUtils.cs" />
     <Compile Include="src\Price\Subject\SubjectValidator.cs" />
+    <Compile Include="src\Price\Subscription.cs" />
+    <Compile Include="src\Price\SubscriptionSet.cs" />
     <Compile Include="src\Price\Tools\BitSetter.cs" />
     <Compile Include="src\Price\Tools\ConnectionTools.cs" />
     <Compile Include="src\Price\Tools\NumericCharacterEntity.cs" />
@@ -193,6 +195,7 @@
     <Compile Include="test\Price\Subject\CommonSubjectsTest.cs" />
     <Compile Include="test\Price\Subject\SubjectIteratorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectMutatorTest.cs" />
+    <Compile Include="test\Price\Subject\SubscriptionSetTest.cs" />
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
     <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
     <Compile Include="test\Price\Tools\BitSetterTest.cs" />

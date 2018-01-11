@@ -101,9 +101,9 @@ namespace BidFX.Public.API.Price
         {
             while (_running.Value)
             {
-                foreach (var subject in _subscriptions.StaleSubjects())
+                foreach (var subscription in _subscriptions.StaleSubscriptions())
                 {
-                    RefreshSubscription(subject, true);
+                    RefreshSubscription(subscription, true);
                 }
                 Thread.Sleep(SubscriptionRefreshInterval);
             }
@@ -174,17 +174,17 @@ namespace BidFX.Public.API.Price
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
-            _subscriptions.Add(subject);
-            RefreshSubscription(subject, autoRefresh, refresh);
+            var subscription = _subscriptions.Add(subject, autoRefresh);
+            RefreshSubscription(subscription, refresh);
         }
 
-        private void RefreshSubscription(Subject.Subject subject, bool autoRefresh = false, bool refresh = true)
+        private void RefreshSubscription(Subscription subscription, bool refresh = true)
         {
             foreach (var providerPlugin in _providerPlugins)
             {
-                if (providerPlugin.IsSubjectCompatible(subject))
+                if (providerPlugin.IsSubjectCompatible(subscription.Subject))
                 {
-                    providerPlugin.Subscribe(subject, autoRefresh, refresh);
+                    providerPlugin.Subscribe(subscription.Subject, subscription.AutoRefresh, refresh);
                 }
             }
         }
@@ -206,11 +206,11 @@ namespace BidFX.Public.API.Price
         {
             foreach (var providerPlugin in _providerPlugins)
             {
-                foreach (var subject in _subscriptions.Clear())
+                foreach (var subscription in _subscriptions.Clear())
                 {
-                    if (providerPlugin.IsSubjectCompatible(subject))
+                    if (providerPlugin.IsSubjectCompatible(subscription.Subject))
                     {
-                        providerPlugin.Unsubscribe(subject);
+                        providerPlugin.Unsubscribe(subscription.Subject);
                     }
                 }
             }
@@ -364,84 +364,6 @@ namespace BidFX.Public.API.Price
                         ProviderStatus = providerPlugin.ProviderStatus,
                         StatusReason = providerPlugin.StatusReason
                     });
-                }
-            }
-        }
-
-        private class SubscriptionSet
-        {
-            private readonly Dictionary<Subject.Subject, Subscription> _map =
-                new Dictionary<Subject.Subject, Subscription>();
-
-            public void Add(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    if (!_map.ContainsKey(subject))
-                    {
-                        _map[subject] = new Subscription();
-                    }
-                }
-            }
-
-            public void Remove(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    if (_map.ContainsKey(subject))
-                    {
-                        _map.Remove(subject);
-                    }
-                }
-            }
-
-            public IEnumerable<Subject.Subject> Clear()
-            {
-                lock (_map)
-                {
-                    var copy = new List<Subject.Subject>(_map.Keys);
-                    _map.Clear();
-                    return copy;
-                }
-            }
-
-            public List<Subject.Subject> Subjects()
-            {
-                lock (_map)
-                {
-                    return new List<Subject.Subject>(_map.Keys);
-                }
-            }
-
-            public IEnumerable<Subject.Subject> StaleSubjects()
-            {
-                lock (_map)
-                {
-                    return (from pair in _map
-                        where SubscriptionStatus.OK != pair.Value.SubscriptionStatus
-                        select pair.Key).ToList();
-                }
-            }
-
-            public Subscription GetSubscription(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    Subscription subscription;
-                    _map.TryGetValue(subject, out subscription);
-                    return subscription;
-                }
-            }
-
-            internal class Subscription
-            {
-                public SubscriptionStatus SubscriptionStatus { get; set; }
-                public PriceMap AllPriceFields { get; private set; }
-
-                public Subscription()
-                {
-                    SubscriptionStatus = SubscriptionStatus.PENDING;
-                    AllPriceFields = new PriceMap();
                 }
             }
         }
