@@ -67,15 +67,15 @@
         public static SubjectBuilder CreateLevelOneNdfStreamingSubject(string account, string liquidityProvider, string symbol, string currency,
             string quantity, string settlementDate, string fixingDate)
         {
-            return CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, fixingDate, settlementDate, 
-                    CommonComponents.Stream);
+            return CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, settlementDate, 
+                fixingDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdfQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
             string quantity, string settlementDate, string fixingDate)
         {
-            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, fixingDate, settlementDate,
-                CommonComponents.Quote);
+            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, liquidityProvider, symbol, currency, quantity, settlementDate,
+                fixingDate, CommonComponents.Quote);
             return levelOneNdfRfqSubject;
         }
 
@@ -129,8 +129,8 @@
             string quantity, string farQuantity, string settlementDate,
             string farSettlementDate, string fixingDate, string farFixingDate)
         {
-            return CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity, farQuantity, fixingDate, farFixingDate,
-                settlementDate, farSettlementDate, CommonComponents.Stream);
+            return CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity, farQuantity,
+                settlementDate, farSettlementDate, fixingDate, farFixingDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdsQuoteSubject(string account, string liquidityProvider, string symbol, string currency,
@@ -138,7 +138,7 @@
             string farSettlementDate, string fixingDate, string farFixingDate)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(account, liquidityProvider, symbol, currency, quantity,
-                farQuantity, fixingDate, farFixingDate, settlementDate, farSettlementDate, CommonComponents.Quote);
+                farQuantity, settlementDate, farSettlementDate, fixingDate, farFixingDate, CommonComponents.Quote);
             return levelOneNdsRfqSubject;
         }
 
