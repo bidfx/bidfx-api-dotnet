@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Price.Subject
             string liquidityProvider, string currency,
             string quantity)
         {
-            return CreateLevelOneSpotSubject(account, liquidityProvider, ccyPair, currency, quantity, CommonComponents.Stream);
+            return CreateLevelOneSpotSubject(account, ccyPair, liquidityProvider, currency, quantity, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneSpotQuoteSubject(string account, string ccyPair,
@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Price.Subject
             string quantity)
         {
             var levelOneSpotRfqSubject =
-                CreateLevelOneSpotSubject(account, liquidityProvider, ccyPair, currency, quantity, CommonComponents.Quote);
+                CreateLevelOneSpotSubject(account, ccyPair, liquidityProvider, currency, quantity, CommonComponents.Quote);
             return levelOneSpotRfqSubject;
         }
 
