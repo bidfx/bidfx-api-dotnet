@@ -64,7 +64,7 @@ namespace BidFX.Public.API.Price.Subject
         /// <returns>the builder so that calls can be chained</returns>
         public SubjectBuilder SetComponent(string key, string value)
         {
-            if (key.Contains("FixingDate"))
+            if (key != null && key.Contains("FixingDate"))
             {
                 Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
                 return this;

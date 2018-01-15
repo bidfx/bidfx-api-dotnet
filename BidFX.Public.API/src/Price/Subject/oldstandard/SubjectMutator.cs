@@ -85,39 +85,39 @@ namespace BidFX.Public.API.Price.Subject
                     {
                         if (component.Key.Equals(SubjectComponentName.RequestFor))
                         {
-                            subjectBuilder.SetComponent(ComponentNameMap[component.Key],
+                            subjectBuilder.SubjectComponent(ComponentNameMap[component.Key],
                                 component.Value.Equals("Stream") ? "RFS" : "RFQ");
                         }
                         else
                         {
-                            subjectBuilder.SetComponent(ComponentNameMap[component.Key], component.Value);
+                            subjectBuilder.SubjectComponent(ComponentNameMap[component.Key], component.Value);
                         }
                     }
                 }
                 else
                 {
-                    subjectBuilder.SetComponent(component.Key, component.Value);
+                    subjectBuilder.SubjectComponent(component.Key, component.Value);
                 }
             }
             if ("Swap".Equals(subject.GetComponent(SubjectComponentName.DealType)) ||
                 "NDS".Equals(subject.GetComponent(SubjectComponentName.DealType)))
             {
-                subjectBuilder.SetComponent("LegCount", "2");
+                subjectBuilder.SubjectComponent("LegCount", "2");
             }
             if (subject.GetComponent(SubjectComponentName.User) == null)
             {
-                subjectBuilder.SetComponent(SubjectComponentName.User, PriceManager.Username);
+                subjectBuilder.SubjectComponent(SubjectComponentName.User, PriceManager.Username);
             }
             if (!buySideAccount.Equals("") && level == 1 && !source.Equals(""))
             {
-                subjectBuilder.SetComponent("Account", SourceToSellSideAccountMap[source]);
+                subjectBuilder.SubjectComponent("Account", SourceToSellSideAccountMap[source]);
             }
             else if (!buySideAccount.Equals("") && level == 2)
             {
-                subjectBuilder.SetComponent("Account", buySideAccount);
+                subjectBuilder.SubjectComponent("Account", buySideAccount);
             }
-            subjectBuilder.SetComponent("Customer", "0001");
-            subjectBuilder.SetComponent("Exchange", "OTC");
+            subjectBuilder.SubjectComponent("Customer", "0001");
+            subjectBuilder.SubjectComponent("Exchange", "OTC");
             return subjectBuilder.CreateSubject();
         }
     }

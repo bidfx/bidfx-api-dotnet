@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
+using NUnit.Framework.Constraints;
 
 namespace BidFX.Public.API.Price.Subject
 {
@@ -35,17 +37,17 @@ namespace BidFX.Public.API.Price.Subject
 
         private static SubjectBuilder CreateLevelOneForwardSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate, string requestFor)
+            string quantity, string tenor, string settlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair,
                 CommonComponents.Forward, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
-
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
@@ -55,17 +57,17 @@ namespace BidFX.Public.API.Price.Subject
 
         public static SubjectBuilder CreateLevelOneForwardStreamingSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate)
+            string quantity, string tenor, string settlementDate)
         {
-            return CreateLevelOneForwardSubject(account, ccyPair, liquidityProvider, currency, quantity, settlementDate, CommonComponents.Stream);
+            return CreateLevelOneForwardSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor, settlementDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneForwardQuoteSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate)
+            string quantity, string tenor, string settlementDate)
         {
             var levelOneForwardRfqSubject =
-                CreateLevelOneForwardSubject(account, ccyPair, liquidityProvider, currency, quantity, settlementDate, CommonComponents.Quote);
+                CreateLevelOneForwardSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor, settlementDate, CommonComponents.Quote);
             return levelOneForwardRfqSubject;
         }
 
@@ -74,16 +76,16 @@ namespace BidFX.Public.API.Price.Subject
         private static SubjectBuilder CreateLevelOneNdfSubject(string account, string ccyPair,
             string liquidityProvider,
             string currency,
-            string quantity, string settlementDate, string requestFor)
+            string quantity, string tenor, string settlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.NDF, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
 
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
@@ -93,17 +95,17 @@ namespace BidFX.Public.API.Price.Subject
         public static SubjectBuilder CreateLevelOneNdfStreamingSubject(string account, string ccyPair,
             string liquidityProvider,
             string currency,
-            string quantity, string settlementDate)
+            string quantity, string tenor, string settlementDate)
         {
-            return CreateLevelOneNdfSubject(account, ccyPair, liquidityProvider, currency, quantity, settlementDate, CommonComponents.Stream);
+            return CreateLevelOneNdfSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor, settlementDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdfQuoteSubject(string account, string ccyPair,
             string liquidityProvider,
             string currency,
-            string quantity, string settlementDate)
+            string quantity, string tenor, string settlementDate)
         {
-            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, ccyPair, liquidityProvider, currency, quantity, settlementDate, CommonComponents.Quote);
+            var levelOneNdfRfqSubject = CreateLevelOneNdfSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor, settlementDate, CommonComponents.Quote);
             return levelOneNdfRfqSubject;
         }
 
@@ -111,7 +113,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private static SubjectBuilder CreateLevelOneSwapSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate, string farQuantity, string farSettlementDate, string requestFor)
+            string quantity, string tenor, string settlementDate, string farQuantity, string farTenor, string farSettlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Swap, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
@@ -119,20 +121,22 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
                 .SetComponent(SubjectComponentName.FarQuantity, farQuantity);
 
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
-
-            if (GivenSettlementDateIsTenor(farSettlementDate))
+            
+            if (!string.IsNullOrWhiteSpace(farTenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farSettlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farTenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(farSettlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
             }
@@ -142,18 +146,18 @@ namespace BidFX.Public.API.Price.Subject
 
         public static SubjectBuilder CreateLevelOneSwapStreamingSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate, string farQuantity, string farSettlementDate)
+            string quantity, string tenor, string settlementDate, string farQuantity, string farTenor, string farSettlementDate)
         {
-            return CreateLevelOneSwapSubject(account, ccyPair, liquidityProvider, currency, quantity, settlementDate,
-                farQuantity, farSettlementDate, CommonComponents.Stream);
+            return CreateLevelOneSwapSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor, settlementDate,
+                farQuantity, farTenor, farSettlementDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneSwapQuoteSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate, string farQuantity, string farSettlementDate)
+            string quantity, string tenor, string settlementDate, string farQuantity, string farTenor, string farSettlementDate)
         {
             var levelOneSwapRfqSubject = CreateLevelOneSwapSubject(account, ccyPair, liquidityProvider, currency, 
-                quantity, settlementDate, farQuantity, farSettlementDate, CommonComponents.Quote);
+                quantity, tenor, settlementDate, farQuantity, farTenor, farSettlementDate, CommonComponents.Quote);
             return levelOneSwapRfqSubject;
         }
 
@@ -161,8 +165,8 @@ namespace BidFX.Public.API.Price.Subject
 
         private static SubjectBuilder CreateLevelOneNdsSubject(string account, string ccyPair, string liquidityProvider,
             string currency,
-            string quantity, string settlementDate,
-            string farQuantity,
+            string quantity, string tenor, string settlementDate,
+            string farQuantity, string farTenor,
             string farSettlementDate, string requestFor)
         {
             var subjectBuilder = new SubjectBuilder();
@@ -170,20 +174,21 @@ namespace BidFX.Public.API.Price.Subject
             subjectBuilder
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
                 .SetComponent(SubjectComponentName.FarQuantity, farQuantity);
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
-
-            if (GivenSettlementDateIsTenor(farSettlementDate))
+            if (!string.IsNullOrWhiteSpace(farTenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farSettlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farTenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(farSettlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
             }
@@ -193,22 +198,22 @@ namespace BidFX.Public.API.Price.Subject
 
         public static SubjectBuilder CreateLevelOneNdsStreamingSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate,
-            string farQuantity,
+            string quantity, string tenor, string settlementDate,
+            string farQuantity, string farTenor,
             string farSettlementDate)
         {
-            return CreateLevelOneNdsSubject(account, ccyPair, liquidityProvider, currency, quantity,
-                settlementDate, farQuantity, farSettlementDate, CommonComponents.Stream);
+            return CreateLevelOneNdsSubject(account, ccyPair, liquidityProvider, currency, quantity, tenor,
+                settlementDate, farQuantity, farTenor, farSettlementDate, CommonComponents.Stream);
         }
 
         public static SubjectBuilder CreateLevelOneNdsQuoteSubject(string account, string ccyPair,
             string liquidityProvider, string currency,
-            string quantity, string settlementDate,
-            string farQuantity,
+            string quantity, string tenor, string settlementDate,
+            string farQuantity, string farTenor,
             string farSettlementDate)
         {
             var levelOneNdsRfqSubject = CreateLevelOneNdsSubject(account, ccyPair, liquidityProvider, currency,
-                quantity, settlementDate, farQuantity, farSettlementDate, CommonComponents.Quote);
+                quantity, tenor, settlementDate, farQuantity, farTenor, farSettlementDate, CommonComponents.Quote);
             return levelOneNdsRfqSubject;
         }
 
@@ -225,16 +230,17 @@ namespace BidFX.Public.API.Price.Subject
         // ******************LEVEL 2 FORWARD******************
 
         public static SubjectBuilder CreateLevelTwoForwardStreamingSubject(string account, string ccyPair,
-            string currency, string quantity,
+            string currency, string quantity, string tenor,
             string settlementDate)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Forward, CommonComponents.FXTS, currency, quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
@@ -245,16 +251,17 @@ namespace BidFX.Public.API.Price.Subject
         // ******************LEVEL 2 NDF******************
 
         public static SubjectBuilder CreateLevelTwoNdfStreamingSubject(string account, string ccyPair, string currency,
-            string quantity,
+            string quantity, string tenor,
             string settlementDate)
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.NDF, CommonComponents.FXTS, currency, quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
-            if (GivenSettlementDateIsTenor(settlementDate))
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
             }
@@ -301,12 +308,6 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.DealType, dealType)
                 .SetComponent(SubjectComponentName.Symbol, ccyPair)
                 .SetComponent(SubjectComponentName.Level, level);
-        }
-
-        private static bool GivenSettlementDateIsTenor(string settlementDate)
-        {
-            var regex = new Regex("^[0-9]{8}$");
-            return !regex.IsMatch(settlementDate);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.Level, "1")
                 .SetComponent(SubjectComponentName.User, "pmacdona")
                 .SetComponent(SubjectComponentName.SettlementDate, "20170909")
-                .SetComponent(SubjectComponentName.FixingDate, "20170910");
+                .SubjectComponent(SubjectComponentName.FixingDate, "20170910");
             var oldVersion = SubjectMutator.ToOldVersion(subjectBuilder.CreateSubject());
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,Level=1,Quantity=1000000.00,QuoteStyle=RFS,Source=BNPFX,SubClass=NDF,Symbol=EURUSD,User=pmacdona,ValueDate=20170909",
@@ -109,9 +109,11 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.Level, "1")
                 .SetComponent(SubjectComponentName.User, "pmacdona")
                 .SetComponent(SubjectComponentName.SettlementDate, "20170909")
-                .SetComponent(SubjectComponentName.FarSettlementDate, "20171009")
-                .SetComponent(SubjectComponentName.FixingDate, "20170910")
-                .SetComponent(SubjectComponentName.FarFixingDate, "20170911");
+                .SetComponent(SubjectComponentName.FarSettlementDate, "20171009");
+            subjectBuilder
+                .SubjectComponent(SubjectComponentName.FixingDate, "20170910");
+             subjectBuilder
+                .SubjectComponent(SubjectComponentName.FarFixingDate, "20170911");
             var oldVersion = SubjectMutator.ToOldVersion(subjectBuilder.CreateSubject());
             Assert.AreEqual(
                 "Account=TSCREENTEST,AssetClass=Fx,Currency=EUR,Customer=0001,Exchange=OTC,FixingDate=20170910,FixingDate2=20170911,LegCount=2,Level=1,Quantity=1000000.00,QuoteStyle=RFQ,Source=BNPFX,SubClass=NDS,Symbol=EURUSD,User=pmacdona,ValueDate=20170909,ValueDate2=20171009",
