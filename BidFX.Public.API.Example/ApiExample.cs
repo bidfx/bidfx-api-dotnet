@@ -59,22 +59,22 @@ namespace BidFX.Public.API.Example
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotStreamingSubject(
-                        "FX_ACCT", source, "EURUSD", "EUR", "1000000.00").CreateSubject());
+                        "FX_ACCT", "EURUSD", source, "EUR", "1000000.00").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotStreamingSubject(
-                        "FX_ACCT", source, "EURGBP", "EUR", "1000000.00").CreateSubject());
+                        "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneForwardStreamingSubject(
-                        "FX_ACCT", source, "EURUSD", "USD", "1000000.00", "20170820").CreateSubject());
+                        "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "20170820").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdfStreamingSubject(
-                        "FX_ACCT", source, "USDKRW", "USD", "1000000.00", "20170818", "20170820").CreateSubject());
+                        "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "20170818").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSwapStreamingSubject(
-                        "FX_ACCT", source, "EURNOK", "EUR", "1000000.00", "1000000.00", "20170820", "20170920").CreateSubject());
+                        "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "20170820", "1000000.00", "20170920").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdsStreamingSubject(
-                        "FX_ACCT", source, "CHFJPY", "CHF", "1000000.00", "1000000.00", "20170818", "20170918", "20170820", "20170920").CreateSubject());
+                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "20170818", "1000000.00", "20170918").CreateSubject());
             }
         }
 
@@ -84,22 +84,22 @@ namespace BidFX.Public.API.Example
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotQuoteSubject(
-                        "FX_ACCT", source, "EURUSD", "EUR", "1000000.00").CreateSubject(), true);
+                        "FX_ACCT", "EURUSD", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotQuoteSubject(
-                        "FX_ACCT", source, "EURGBP", "EUR", "1000000.00").CreateSubject(), true);
+                        "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneForwardQuoteSubject(
-                        "FX_ACCT", source, "EURUSD", "USD", "1000000.00", "20170820").CreateSubject());
+                        "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "20170820").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdfQuoteSubject(
-                        "FX_ACCT", source, "USDKRW", "USD", "1000000.00", "20170818", "20170820").CreateSubject());
+                        "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "20170818").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSwapQuoteSubject(
-                        "FX_ACCT", source, "EURNOK", "EUR", "1000000.00", "1000000.00", "20170820", "20170920").CreateSubject());
+                        "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "20170820", "1000000.00", "20170920").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdsQuoteSubject(
-                        "FX_ACCT", source, "CHFJPY", "CHF", "1000000.00", "1000000.00", "20170818", "20170918", "20170820", "20170920").CreateSubject());
+                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "20170818", "1000000.00", "20170918").CreateSubject());
             }
         }
 
@@ -111,8 +111,7 @@ namespace BidFX.Public.API.Example
                 CommonSubjects.CreateLevelTwoForwardStreamingSubject("FX_ACCT", "EURGBP", "EUR", "1000000.00",
                     "20170820").CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoNdfStreamingSubject("FX_ACCT", "USDJPY", "USD", "1000000.00", "20170818",
-                    "20170820").CreateSubject());
+                CommonSubjects.CreateLevelTwoNdfStreamingSubject("FX_ACCT", "USDJPY", "USD", "1000000.00", "20170818").CreateSubject());
         }
 
         private void SendIndicativeSubscriptions(params string[] ccyPairs)

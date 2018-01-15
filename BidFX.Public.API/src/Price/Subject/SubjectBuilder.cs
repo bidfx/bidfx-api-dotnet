@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using log4net;
 
 namespace BidFX.Public.API.Price.Subject
 {
@@ -9,6 +11,9 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string[] _components;
         private int _size;
 
@@ -70,6 +75,11 @@ namespace BidFX.Public.API.Price.Subject
 
         private void AddComponent(string key, string value)
         {
+            if (key.Contains("FixingDate"))
+            {
+                Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
+                return;
+            }
             if (IsKeyInOrder(key))
             {
                 AddComponentAt(_size, key, value);
