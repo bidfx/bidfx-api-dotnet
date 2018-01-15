@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price.Subject
+﻿using System.Text.RegularExpressions;
+
+namespace BidFX.Public.API.Price.Subject
 {
     public class CommonSubjects
     {
@@ -38,8 +40,17 @@
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair,
                 CommonComponents.Forward, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
-            return subjectBuilder
-                .SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
+
+            return subjectBuilder;
         }
 
         public static SubjectBuilder CreateLevelOneForwardStreamingSubject(string account, string ccyPair,
@@ -67,8 +78,16 @@
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.NDF, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
-            return subjectBuilder
-                .SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
+            return subjectBuilder;
         }
 
         public static SubjectBuilder CreateLevelOneNdfStreamingSubject(string account, string ccyPair,
@@ -96,11 +115,29 @@
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Swap, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
-            return subjectBuilder
+            subjectBuilder
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
-                .SetComponent(SubjectComponentName.FarQuantity, farQuantity)
-                .SetComponent(SubjectComponentName.SettlementDate, settlementDate)
-                .SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
+                .SetComponent(SubjectComponentName.FarQuantity, farQuantity);
+
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
+
+            if (GivenSettlementDateIsTenor(farSettlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farSettlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
+            }
+
+            return subjectBuilder;
         }
 
         public static SubjectBuilder CreateLevelOneSwapStreamingSubject(string account, string ccyPair,
@@ -130,11 +167,28 @@
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.NDS, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
-            return subjectBuilder
+            subjectBuilder
                 .SetComponent(SubjectComponentName.FarCurrency, currency)
-                .SetComponent(SubjectComponentName.FarQuantity, farQuantity)
-                .SetComponent(SubjectComponentName.SettlementDate, settlementDate)
-                .SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
+                .SetComponent(SubjectComponentName.FarQuantity, farQuantity);
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
+
+            if (GivenSettlementDateIsTenor(farSettlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farSettlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.FarSettlementDate, farSettlementDate);
+            }
+
+            return subjectBuilder;
         }
 
         public static SubjectBuilder CreateLevelOneNdsStreamingSubject(string account, string ccyPair,
@@ -176,7 +230,15 @@
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Forward, CommonComponents.FXTS, currency, quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
-            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
+            
             return subjectBuilder;
         }
 
@@ -188,7 +250,14 @@
         {
             var subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.NDF, CommonComponents.FXTS, currency, quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
-            subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            if (GivenSettlementDateIsTenor(settlementDate))
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, settlementDate);
+            }
+            else
+            {
+                subjectBuilder.SetComponent(SubjectComponentName.SettlementDate, settlementDate);
+            }
             return subjectBuilder;
         }
         
@@ -232,6 +301,12 @@
                 .SetComponent(SubjectComponentName.DealType, dealType)
                 .SetComponent(SubjectComponentName.Symbol, ccyPair)
                 .SetComponent(SubjectComponentName.Level, level);
+        }
+
+        private static bool GivenSettlementDateIsTenor(string settlementDate)
+        {
+            var regex = new Regex("^[0-9]{8}$");
+            return !regex.IsMatch(settlementDate);
         }
     }
 }
