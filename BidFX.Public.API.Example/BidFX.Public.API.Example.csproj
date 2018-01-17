@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ApiExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TopOfBookExample.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />

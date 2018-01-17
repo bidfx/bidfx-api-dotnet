@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
@@ -21,8 +21,8 @@ namespace BidFX.Public.API.Example
         private ApiExample()
         {
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.Username = "dtang";
-            DefaultClient.Client.Password = "HelloWorld123";
+            DefaultClient.Client.Username = "USERNAME";
+            DefaultClient.Client.Password = "PASSWORD";
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
@@ -38,9 +38,9 @@ namespace BidFX.Public.API.Example
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-                SendLevelTwoStreamingSubscriptions();
                 SendIndicativeSubscriptions("EURUSD", "GBPUSD");
                 SendPremiumFxSubscriptions();
+                SendLevelTwoStreamingSubscriptions();
             }
             else
             {
