@@ -16,6 +16,11 @@ namespace BidFX.Public.API.Price
         /// The accrued interest. Type is decimal.
         /// </summary>
         public const string AccruedInterest = "AccruedInterest";
+        
+        /// <summary>
+        /// The number of levels on the Bid side of a Depth subscription. Type is integer.
+        /// </summary>
+        public const string AskLevels = "AskLevels";
 
         /// <summary>
         /// The ask price. Type is decimal.
@@ -181,6 +186,56 @@ namespace BidFX.Public.API.Price
         /// The time of last ask price or size tick. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string AskTime = "AskTime";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 1. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime1 = "AskTime1";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 2. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime2 = "AskTime2";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 3. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime3 = "AskTime3";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 4. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime4 = "AskTime4";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 5. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime5 = "AskTime5";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 6. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime6 = "AskTime6";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 7. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime7 = "AskTime7";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 8. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime8 = "AskTime8";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 9. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime9 = "AskTime9";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 10. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string AskTime10 = "AskTime10";
 
         /// <summary>
         /// The ask yield. Type is decimal.
@@ -335,10 +390,14 @@ namespace BidFX.Public.API.Price
         public const string FixedNPV = "FixedNPV";
 
         /// <summary>
+        /// The number of levels on the Bid side of a Depth subscription. Type is integer.
+        /// </summary>
+        public const string BidLevels = "BidLevels";
+
+        /// <summary>
         /// The bid price. Type is decimal.
         /// </summary>
         public const string Bid = "Bid";
-        
         
         /// <summary>
         /// The top-of-book bid price in a level two quote. Type is decimal.
@@ -497,6 +556,56 @@ namespace BidFX.Public.API.Price
         /// The time of last bid price or size tick. Type is <see cref="DateTime"/>.
         /// </summary>
         public const string BidTime = "BidTime";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 1. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime1 = "BidTime1";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 2. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime2 = "BidTime2";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 3. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime3 = "BidTime3";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 4. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime4 = "BidTime4";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 5. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime5 = "BidTime5";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 6. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime6 = "BidTime6";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 7. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime7 = "BidTime7";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 8. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime8 = "BidTime8";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 9. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime9 = "BidTime9";
+        
+        /// <summary>
+        /// The time of the ask price or size tick at depth 10. Type is <see cref="DateTime"/>.
+        /// </summary>
+        public const string BidTime10 = "BidTime10";
 
         /// <summary>
         /// The bid yield. Type is decimal.
@@ -562,6 +671,36 @@ namespace BidFX.Public.API.Price
         /// The broker code. Type is string.
         /// </summary>
         public const string Broker = "Broker";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 1
+        /// </summary>
+        public const string Category1 = "Category1";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 2
+        /// </summary>
+        public const string Category2 = "Category2";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 3
+        /// </summary>
+        public const string Category3 = "Category3";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 4
+        /// </summary>
+        public const string Category4 = "Category4";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 5
+        /// </summary>
+        public const string Category5 = "Category5";
+
+        /// <summary>
+        /// The UpperBound of quantity for a tiered PremiumFX stream at category 6
+        /// </summary>
+        public const string Category6 = "Category6";
 
         /// <summary>
         /// The market close price. Type is decimal.
