@@ -11,8 +11,12 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-        private static readonly ILog Log =
+        #if DEBUG
+private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#else
+private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 
         private string[] _components;
         private int _size;

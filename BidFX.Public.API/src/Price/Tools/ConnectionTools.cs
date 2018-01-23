@@ -11,8 +11,12 @@ namespace BidFX.Public.API.Price.Tools
 {
     internal class ConnectionTools
     {
-        private static readonly ILog Log =
+        #if DEBUG
+private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#else
+private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {

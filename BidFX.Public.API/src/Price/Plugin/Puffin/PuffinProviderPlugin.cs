@@ -20,8 +20,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// <author>Paul MacDonald</author>
     internal class PuffinProviderPlugin : IProviderPlugin
     {
-        private static readonly ILog Log =
+        #if DEBUG
+private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#else
+private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 
         public const int ProtocolVersion = 8;
 

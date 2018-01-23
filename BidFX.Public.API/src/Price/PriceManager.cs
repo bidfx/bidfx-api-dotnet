@@ -16,8 +16,12 @@ namespace BidFX.Public.API.Price
     /// </summary>
     internal class PriceManager : ISession, IBulkSubscriber
     {
-        private static readonly ILog Log =
+        #if DEBUG
+private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#else
+private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();

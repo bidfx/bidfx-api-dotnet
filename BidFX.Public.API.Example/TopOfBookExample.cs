@@ -55,7 +55,7 @@ namespace BidFX.Public.API.Example
                 var stringBuilder = new StringBuilder();
                 var bids = priceEvent.AllPriceFields.IntField("BidLevels") ?? 0;
                 var asks = priceEvent.AllPriceFields.IntField("AskLevels") ?? 0;
-                for (var i = 1; i <= Math.Min(Math.Max(bids, asks),3); i++)
+                for (var i = 1; i <= Math.Min(Math.Max(bids, asks), 3); i++)
                 {
                     var bidfirm = priceEvent.AllPriceFields.StringField("BidFirm" + i) ?? "";
                     var bid = priceEvent.AllPriceFields.DecimalField("Bid" + i) ?? 0;
@@ -64,9 +64,9 @@ namespace BidFX.Public.API.Example
                     stringBuilder.AppendLine();
                     stringBuilder.Append(bidfirm.PadLeft(6));
                     stringBuilder.Append(" ");
-                    stringBuilder.Append(bid.ToString("#,#.00000").PadLeft(8));
+                    stringBuilder.Append(bid.ToString("#.00000").PadLeft(8));
                     stringBuilder.Append("|");
-                    stringBuilder.Append(ask.ToString("#,#.00000").PadRight(8));
+                    stringBuilder.Append(ask.ToString("#.00000").PadRight(8));
                     stringBuilder.Append(" ");
                     stringBuilder.Append(askfirm.PadRight(8));
                 }

@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Client.cs" />
     <Compile Include="src\DefaultClient.cs" />
+    <Compile Include="src\DevLog.cs" />
     <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />

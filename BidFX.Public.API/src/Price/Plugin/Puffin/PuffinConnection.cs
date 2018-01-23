@@ -14,8 +14,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     {
         private const string Subject = "Subject";
 
-        private static readonly ILog Log =
+        #if DEBUG
+private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#else
+private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Thread _publisherThread;
