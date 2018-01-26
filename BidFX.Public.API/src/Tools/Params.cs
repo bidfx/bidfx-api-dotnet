@@ -24,7 +24,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is null or an empty string</exception>
         public static string NotEmpty(string p1)
         {
-            if (NotNull(p1).Equals("")) throw new ArgumentException("method parameter may be an empty string");
+            if (NotNull(p1).Equals("")) throw new ArgumentException("method parameter may not be an empty string");
             return p1;
         }
 
@@ -36,7 +36,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is null or made up of only blank spaces</exception>
         public static string NotBlank(string p1)
         {
-            if (NotNull(p1).Trim().Equals("")) throw new ArgumentException("method parameter may be a blank string");
+            if (NotNull(p1).Trim().Equals("")) throw new ArgumentException("method parameter may not be a blank string");
             return p1;
         }
 
