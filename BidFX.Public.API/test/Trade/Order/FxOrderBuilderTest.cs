@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Trade.Order
         private FxOrderBuilder _orderBuilder;
 
         [SetUp]
-        private void Before()
+        public void Before()
         {
             _orderBuilder = new FxOrderBuilder();
         }
@@ -382,11 +382,11 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingHandlingType() //TODO: Do we restrict to "stream", "quote", and "automatic" only?
         {
-            var fxOrder = _orderBuilder.SetHandlingType("stream").Build();
-            Assert.AreEqual("stream", fxOrder.GetHandlingType());
+            var fxOrder = _orderBuilder.SetHandlingType("Stream").Build();
+            Assert.AreEqual("stream", fxOrder.GetHandlingType()); //TODO: Check case on this
 
-            fxOrder = _orderBuilder.SetHandlingType("  quote ").Build();
-            Assert.AreEqual("quote", fxOrder.GetHandlingType());
+            fxOrder = _orderBuilder.SetHandlingType("  Quote ").Build();
+            Assert.AreEqual("quote", fxOrder.GetHandlingType());  //TODO: Check case on this
         }
 
         [Test]
@@ -444,6 +444,7 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingReferences()
         {
+            //TODO: Check if references have any restrictions applied to them
             var fxOrder = _orderBuilder.SetReference("reference_one", "reference_two").Build();
             Assert.AreEqual("reference_one", fxOrder.GetReference1());
             Assert.AreEqual("reference_two", fxOrder.GetReference2());

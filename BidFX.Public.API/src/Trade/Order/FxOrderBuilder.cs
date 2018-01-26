@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
-        public FxOrderBuilder SetExecutingVenue(string executingVenue)
+        public FxOrderBuilder SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS
         {
             //TODO
             return this;

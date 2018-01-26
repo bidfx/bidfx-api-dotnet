@@ -82,7 +82,7 @@ namespace BidFX.Public.API.Trade.Order
             _tenor = tenor;
         }
 
-        internal void SetExecutingVenue(string executingVenue)
+        internal void SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS
         {
             if(_immutable)
             {
@@ -211,7 +211,7 @@ namespace BidFX.Public.API.Trade.Order
                 _strategyParameters = new Dictionary<string, string>();
             }
             
-            _strategyParameters.Add(name, value);
+            _strategyParameters[name] = value;
         }
         
         /// <summary>
@@ -320,6 +320,10 @@ namespace BidFX.Public.API.Trade.Order
 
         public Dictionary<string, string> GetStrategyParameters()
         {
+            if (_strategyParameters == null)
+            {
+                return null;
+            }
             return new Dictionary<string, string>(_strategyParameters);
         }
     }

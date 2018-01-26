@@ -363,7 +363,7 @@ namespace BidFX.Public.API.Trade.Order
         public void TestOverwritingStrategyParameter()
         {
             _fxOrder.SetStrategyParameter("param_one", "value_one");
-            _fxOrder.SetStrategyParameter("param_two", "value_two");
+            _fxOrder.SetStrategyParameter("param_one", "value_two");
             _fxOrder.Freeze();
             var strategyParams = _fxOrder.GetStrategyParameters();
             Assert.AreEqual(1, strategyParams.Count);
