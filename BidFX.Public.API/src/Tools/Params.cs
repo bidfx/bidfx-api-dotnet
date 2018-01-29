@@ -9,22 +9,10 @@ namespace BidFX.Public.API.Price.Tools
         /// Checks to ensure that the given parameter is not null
         /// </summary>
         /// <param name="p1">the 1st parameter of the calling method</param>
-        /// <returns>the parameter value</returns>
-        /// <exception cref="ArgumentException">if the given parameter is null</exception>
-        public static T NotNull<T>(T p1)
-        {
-            if (p1 == null) throw new ArgumentException("method parameter may not be null");
-            return p1;
-        }
-        
-        /// <summary>
-        /// Checks to ensure that the given parameter is not null
-        /// </summary>
-        /// <param name="p1">the 1st parameter of the calling method</param>
         /// <param name="errorMessage">the message to be supplied to the exception if p1 is null</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">with the supplied error message if the given parameter is null</exception>
-        public static T NotNull<T>(T p1, string errorMessage)
+        public static T NotNull<T>(T p1, string errorMessage = "method parameter may not be null")
         {
             if (p1 == null) throw new ArgumentException(errorMessage);
             return p1;
@@ -36,9 +24,9 @@ namespace BidFX.Public.API.Price.Tools
         /// <param name="p1">the 1st parameter of the calling method</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">if the given parameter is null or an empty string</exception>
-        public static string NotEmpty(string p1)
+        public static string NotEmpty(string p1, string errorMessage = "method parameter may not be a blank sring")
         {
-            if (NotNull(p1).Equals("")) throw new ArgumentException("method parameter may not be an empty string");
+            if (NotNull(p1).Equals("")) throw new ArgumentException(errorMessage);
             return p1;
         }
 
@@ -46,11 +34,12 @@ namespace BidFX.Public.API.Price.Tools
         /// Checks to ensure that the given string parameter is not null or made up of only blank spaces
         /// </summary>
         /// <param name="p1">the 1st parameter of the calling method</param>
+        /// <param name="errorMessage">the message to be supplied to the exception if p1 is blank</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">if the given parameter is null or made up of only blank spaces</exception>
-        public static string NotBlank(string p1)
+        public static string NotBlank(string p1, string errorMessage = "method parameter may not be a blank string")
         {
-            if (NotNull(p1).Trim().Equals("")) throw new ArgumentException("method parameter may not be a blank string");
+            if (NotNull(p1).Trim().Equals("")) throw new ArgumentException(errorMessage);
             return p1;
         }
 
@@ -147,17 +136,6 @@ namespace BidFX.Public.API.Price.Tools
         public static bool IsNumeric(string p)
         {
             return Regex.IsMatch(p, @"^\d+(\.\d+)?$");
-        }
-
-        //TODO Write Tests
-        public static void ValidDealType(string dealType) //TODO
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void ValidTenor(string tenor)
-        {
-            throw new NotImplementedException();
         }
     }
 }

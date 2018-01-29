@@ -7,19 +7,15 @@ namespace BidFX.Public.API.Trade.Order
 {
     public class FxOrderBuilder
     {
-        
-        private static readonly Regex DateRegex = new Regex(@"^(\d\d\d\d)(?:(?:-([0-1]?\d)-([0-3]?\d))|([0-1]?\d)([0-3]?\d))$", RegexOptions.Compiled);
-        
-        
         private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
         
         public FxOrderBuilder SetCurrencyPair(string currencyPair)
         {
-            Params.NotNull(currencyPair, "currency pair must be provided"); //TODO: more informative error message
+            Params.NotNull(currencyPair, "currency pair must not be null");
             currencyPair = currencyPair.Trim();
             if (currencyPair.Length != 6)
             {
-                throw new ArgumentException("currency pair must be provided"); //TODO: more informative error message
+                throw new ArgumentException("currency pair must be in format 'AAABBB'");
             }
             _components[FxOrder.CurrencyPair] = currencyPair;
             return this;
@@ -27,14 +23,14 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetCurrency(string currency)
         {
-            currency = Params.ExactLength(currency, 3, "currency must be provided"); //TODO: more informative error message
+            currency = Params.ExactLength(currency, 3, "Currency must be in format 'AAA'");
             _components[FxOrder.Currency] = currency;
             return this;
         }
 
         public FxOrderBuilder SetSide(string side)
         {
-            Params.NotBlank(side); //TODO: more informative error message
+            Params.NotBlank(side, "Side must not be empty");
             side = Params.Trim(side);
             switch (side.ToLower())
             {
@@ -53,20 +49,20 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetQuantity(string quantity)
         {
-            Params.NotBlank(quantity); //TODO: more informative error message
+            Params.NotBlank(quantity, "Quantity must not be blank");
             quantity = Params.Trim(quantity);
             if (!Params.IsNumeric(quantity))
             {
-                throw new ArgumentException(); //TODO: more informative error message
+                throw new ArgumentException("Quantity is not a number: " + quantity);
             }
 
             _components[FxOrder.Quantity] = quantity;
             return this;
         }
-
+        
         public FxOrderBuilder SetDealType(string dealType)
         {
-            Params.NotBlank(dealType); //TODO: more informative error message
+            Params.NotBlank(dealType, "DealType must not be blank");
             dealType = Params.Trim(dealType);
             switch (dealType.ToLower())
             {
@@ -94,15 +90,15 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetTenor(string tenor)
         {
-            Params.NotBlank(tenor); //TODO: more informative error message
+            Params.NotBlank(tenor, "Tenor must not be blank");
             tenor = Params.Trim(tenor);
             _components[FxOrder.Tenor] = tenor;
             return this;
         }
 
-        public FxOrderBuilder SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS
+        public FxOrderBuilder SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS, should we offer this?
         {
-            Params.NotBlank(executingVenue);
+            Params.NotBlank(executingVenue, "ExecutingVenue must not be blank");
             executingVenue = Params.Trim(executingVenue);
             _components[FxOrder.ExecutingVenue] = executingVenue;
             return this;
@@ -110,7 +106,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetHandlingType(string handlingType)
         {
-            Params.NotBlank(handlingType); //TODO: more informative error message
+            Params.NotBlank(handlingType, "HandlingType must not be blank");
             handlingType = Params.Trim(handlingType);
             switch (handlingType.ToLower())
             {
@@ -124,7 +120,7 @@ namespace BidFX.Public.API.Trade.Order
                     handlingType = "automatic";
                     break;
                 default:
-                    throw new ArgumentException("unsupported handling type: " + handlingType);
+                    throw new ArgumentException("Unsupported handling type: " + handlingType);
             }
             _components[FxOrder.HandlingType] = handlingType;
             return this;
@@ -140,11 +136,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetReference(string reference1, string reference2)
         {
-            Params.NotNull(reference1);
-            Params.NotNull(reference2);
+            Params.NotNull(reference1, "Reference 1 must not be null");
+            Params.NotNull(reference2, "Reference 2 must not be null");
             if (reference1.Contains("|") || reference2.Contains("|"))
             {
-                throw new ArgumentException("references can not contain pipes (|)");
+                throw new ArgumentException("References can not contain pipes (|)");
             }
             _components[FxOrder.Reference1] = reference1;
             _components[FxOrder.Reference2] = reference2;
@@ -153,7 +149,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetSettlementDate(string settlementDate)
         {
-            Params.NotNull(settlementDate); //TODO: more informative error message
+            Params.NotBlank(settlementDate, "SettlementDate must not be blank");
             settlementDate = Params.Trim(settlementDate);
             settlementDate = FormatDates(settlementDate);
             _components[FxOrder.SettlementDate] = settlementDate;
@@ -162,7 +158,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFixingDate(string fixingDate)
         {
-            Params.NotBlank(fixingDate); //TODO: more informative error message
+            Params.NotBlank(fixingDate, "FixingDate must not be blank");
             fixingDate = Params.Trim(fixingDate);
             fixingDate = FormatDates(fixingDate);
             _components[FxOrder.FixingDate] = fixingDate;
@@ -171,7 +167,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarTenor(string farTenor)
         {
-            Params.NotBlank(farTenor); //TODO: more informative error message
+            Params.NotBlank(farTenor, "FarTenor must not be blank");
             farTenor = Params.Trim(farTenor);
             _components[FxOrder.FarTenor] = farTenor;
             return this;
@@ -179,14 +175,14 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarCurrency(string farCurrency)
         {
-            farCurrency = Params.ExactLength(farCurrency, 3, "farCurrency must be supplied"); //TODO: more informative error message
+            farCurrency = Params.ExactLength(farCurrency, 3, "farCurrency must be in format 'AAA'");
             _components[FxOrder.FarCurrency] = farCurrency;
             return this;
         }
 
         public FxOrderBuilder SetFarSettlementDate(string farSettlementDate)
         {
-            Params.NotBlank(farSettlementDate);
+            Params.NotBlank(farSettlementDate, "SettlementDate must not be blank");
             farSettlementDate = Params.Trim(farSettlementDate);
             farSettlementDate = FormatDates(farSettlementDate);
             _components[FxOrder.FarSettlementDate] = farSettlementDate;
@@ -195,7 +191,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarFixingDate(string farFixingDate)
         {
-            Params.NotBlank(farFixingDate);
+            Params.NotBlank(farFixingDate, "FarFixingDate must not be blank");
             farFixingDate = Params.Trim(farFixingDate);
             farFixingDate = FormatDates(farFixingDate);
             _components[FxOrder.FarFixingDate] = farFixingDate;
@@ -204,11 +200,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarQuantity(string farQuantity)
         {
-            Params.NotBlank(farQuantity); //TODO: more informative error message
+            Params.NotBlank(farQuantity, "FarQuantity must not be blank");
             farQuantity = Params.Trim(farQuantity);
             if (!Params.IsNumeric(farQuantity))
             {
-                throw new ArgumentException(); //TODO: more informative error message
+                throw new ArgumentException("FarQuantity was not a number: " + farQuantity);
             }
             _components[FxOrder.FarQuantity] = farQuantity;
             return this;
@@ -216,7 +212,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetAllocationTemplate(string templateName) //TODO: Is this a template name or a set of allocation accounts + quantities?
         {
-            Params.NotBlank(templateName);
+            Params.NotBlank(templateName, "Template name must not be blank");
             templateName = Params.Trim(templateName);
             _components[FxOrder.AllocationTemplate] = templateName;
             return this;
@@ -226,7 +222,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             Params.NotBlank(name);
             Params.NotNull(value);
-            name = Params.Trim(name); //TODO: Checking on names?
+            name = Params.Trim(name); //TODO: Checking on names vs existing properties?
             value = Params.Trim(value);
             _components[name] = value;
             return this;
@@ -244,12 +240,13 @@ namespace BidFX.Public.API.Trade.Order
             return new FxOrder(components);
         }
 
+        private static readonly Regex DateRegex = new Regex(@"^(\d\d\d\d)(?:(?:-([0-1]?\d)-([0-3]?\d))|([0-1]?\d)([0-3]?\d))$", RegexOptions.Compiled);
         private static string FormatDates(string date)
         {
             var match = DateRegex.Match(date);
             if (!match.Success)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Date was not in valid format (YYYYY-MM-DD): " + date);
             }
             var groups = match.Groups;
             var year = groups[1].ToString();
