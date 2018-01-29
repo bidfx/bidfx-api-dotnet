@@ -1,6 +1,4 @@
-﻿using System;
-using BidFX.Public.API.Price;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -12,14 +10,6 @@ namespace BidFX.Public.API.Trade.Order
         public void Before()
         {
             _orderBuilder = new FxOrderBuilder();
-        }
-
-        [Test]
-        [ExpectedException(typeof(IllegalStateException))]
-        public void TestBuiltFxOrderIsImmutable()
-        {
-            var fxOrder = _orderBuilder.Build();
-            fxOrder.SetCurrency("EURUSD");
         }
         
         [Test]
@@ -87,7 +77,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported DealType")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "unsupported deal type: Invalid")]
         public void TestInvalidDealTypeThrowsException()
         {
            var fxOrder = _orderBuilder.SetDealType("Invalid").Build();
@@ -187,21 +177,21 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentExeception")]
+        [ExpectedException("System.ArgumentException")]
         public void TestSettingNullSideThrowsException()
         {
             _orderBuilder.SetSide(null);
         }
         
         [Test]
-        [ExpectedException("System.ArgumentExeception")]
+        [ExpectedException("System.ArgumentException")]
         public void TestSettingEmptySideThrowsException()
         {
             _orderBuilder.SetSide("");
         }
         
         [Test]
-        [ExpectedException("System.ArgumentExeception")]
+        [ExpectedException("System.ArgumentException")]
         public void TestSettingBlankSideThrowsException()
         {
             _orderBuilder.SetSide("     ");
@@ -211,7 +201,7 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingQuantity()
         {
             var fxOrder = _orderBuilder.SetQuantity("1000000.00").Build();
-            Assert.AreEqual("1000000.00", fxOrder);
+            Assert.AreEqual("1000000.00", fxOrder.GetQuantity());
 
             fxOrder = _orderBuilder.SetQuantity("5000000").Build();
             Assert.AreEqual("5000000", fxOrder.GetQuantity());
@@ -282,9 +272,8 @@ namespace BidFX.Public.API.Trade.Order
             var fxOrder = _orderBuilder.SetStrategyParameter("s_param_one", "s_value_one")
                 .SetStrategyParameter("s_param_two", "s_value_two")
                 .Build();
-            var strategyParams = fxOrder.GetStrategyParameters();
-            Assert.AreEqual("s_value_one", strategyParams["s_param_one"]);
-            Assert.AreEqual("s_value_two", strategyParams["s_param_two"]);
+            Assert.AreEqual("s_value_one", fxOrder.GetStrategyParameter("s_param_one"));
+            Assert.AreEqual("s_value_two", fxOrder.GetStrategyParameter("s_param_two"));
         }
 
         [Test]
@@ -315,8 +304,7 @@ namespace BidFX.Public.API.Trade.Order
             var fxOrder = _orderBuilder.SetStrategyParameter("parameter_one", "value_one")
                 .SetStrategyParameter("parameter_one", "value_two")
                 .Build();
-            Assert.AreEqual(1, fxOrder.GetStrategyParameters().Count);
-            Assert.AreEqual("value_two", fxOrder.GetStrategyParameters()["parameter_one"]);
+            Assert.AreEqual("value_two", fxOrder.GetStrategyParameter("parameter_one"));
         }
 
         [Test]
@@ -337,14 +325,14 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingEmptyParameterValueIsAllowed()
         {
             var fxOrder = _orderBuilder.SetStrategyParameter("parameter_one", "").Build();
-            Assert.AreEqual("", fxOrder.GetStrategyParameters()["parameter_one"]);
+            Assert.AreEqual("", fxOrder.GetStrategyParameter("parameter_one"));
         }
 
         [Test]
         public void TestSettingBlankParameterTrimsToEmptyString()
         {
             var fxOrder = _orderBuilder.SetStrategyParameter("parameter_one", "    ").Build();
-            Assert.AreEqual("", fxOrder.GetStrategyParameters()["parameter_one"]);
+            Assert.AreEqual("", fxOrder.GetStrategyParameter("parameter_one"));
         }
 
 
@@ -444,7 +432,6 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingReferences()
         {
-            //TODO: Check if references have any restrictions applied to them
             var fxOrder = _orderBuilder.SetReference("reference_one", "reference_two").Build();
             Assert.AreEqual("reference_one", fxOrder.GetReference1());
             Assert.AreEqual("reference_two", fxOrder.GetReference2());
@@ -475,6 +462,20 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingNullSecondReferenceThrowsException()
         {
             _orderBuilder.SetReference("reference_one", null);
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestReferenceOneWithPipeThrowsException()
+        {
+            _orderBuilder.SetReference("parta|partb", "ref2");
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestReferenceTwoWithPipeThrowsException()
+        {
+            _orderBuilder.SetReference("ref1", "parta|partb");
         }
 
         [Test]
@@ -710,7 +711,7 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingFarQuantity()
         {
             var fxOrder = _orderBuilder.SetFarQuantity("1000000.00").Build();
-            Assert.AreEqual("1000000.00", fxOrder);
+            Assert.AreEqual("1000000.00", fxOrder.GetFarQuantity());
 
             fxOrder = _orderBuilder.SetFarQuantity("5000000").Build();
             Assert.AreEqual("5000000", fxOrder.GetFarQuantity());

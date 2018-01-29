@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace BidFX.Public.API.Price.Tools
 {
@@ -15,11 +16,24 @@ namespace BidFX.Public.API.Price.Tools
             if (p1 == null) throw new ArgumentException("method parameter may not be null");
             return p1;
         }
+        
+        /// <summary>
+        /// Checks to ensure that the given parameter is not null
+        /// </summary>
+        /// <param name="p1">the 1st parameter of the calling method</param>
+        /// <param name="errorMessage">the message to be supplied to the exception if p1 is null</param>
+        /// <returns>the parameter value</returns>
+        /// <exception cref="ArgumentException">with the supplied error message if the given parameter is null</exception>
+        public static T NotNull<T>(T p1, string errorMessage)
+        {
+            if (p1 == null) throw new ArgumentException(errorMessage);
+            return p1;
+        }
 
         /// <summary>
         /// Checks to ensure that the given string parameter is not null or an empty string
         /// </summary>
-        /// <param name="p1">the 1st parameter of the calling method/param>
+        /// <param name="p1">the 1st parameter of the calling method</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">if the given parameter is null or an empty string</exception>
         public static string NotEmpty(string p1)
@@ -96,6 +110,54 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (p < 0) throw new ArgumentException("method parameter may be negative: " + p);
             return p;
+        }
+
+        /// <summary>
+        /// Checks that the supplied string is the exact length when trimmed.
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <returns>p trimmed of whitespace</returns>
+        public static string ExactLength(string p, int length, string errorMessage)
+        {
+            if (p == null) throw new ArgumentException(errorMessage);
+            p = Trim(p);
+            if (p.Length != length) throw new ArgumentException(errorMessage);
+            return p;
+        }
+
+        /// <summary>
+        /// Trim the supplied string, returning quickly the supplied string if no trimming is necessary.
+        /// </summary>
+        /// <param name="p">string to trim</param>
+        /// <returns>p trimmed of whitespace.</returns>
+        public static string Trim(string p)
+        {
+            if (p.Length == 0) return p;
+            if (p[0] == ' ' || p[p.Length - 1] == ' ') return p.Trim();
+
+            return p;
+        }
+
+        /// <summary>
+        ///  Determine is the supplied string represents a valid integer or decimal number.
+        ///  The string is numeric if it contains only digits 0-9 and (optionally) a single period.
+        /// </summary>
+        /// <param name="p">string to check</param>
+        /// <returns>true if p is numeric, false otherwise.</returns>
+        public static bool IsNumeric(string p)
+        {
+            return Regex.IsMatch(p, @"^\d+(\.\d+)?$");
+        }
+
+        //TODO Write Tests
+        public static void ValidDealType(string dealType) //TODO
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void ValidTenor(string tenor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

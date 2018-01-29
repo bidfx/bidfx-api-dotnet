@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BidFX.Public.API.Price.Plugin.Puffin;
 
 namespace BidFX.Public.API.Price.Subject
 {

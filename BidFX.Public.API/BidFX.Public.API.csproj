@@ -161,7 +161,6 @@
     <Compile Include="src\Tools\StringCharIterator.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\Tools\Varint.cs" />
-    <Compile Include="src\Trade\Builder.cs" />
     <Compile Include="src\Trade\OrderQueryCallback.cs" />
     <Compile Include="src\Trade\OrderQueryResponse.cs" />
     <Compile Include="src\Trade\OrderSubmitCallback.cs" />
@@ -209,12 +208,12 @@
     <Compile Include="test\Price\Subject\SubscriptionSetTest.cs" />
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
     <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
-    <Compile Include="test\Price\Tools\BitSetterTest.cs" />
-    <Compile Include="test\Price\Tools\NameCacheTest.cs" />
-    <Compile Include="test\Price\Tools\NumericCharacterEntityTest.cs" />
-    <Compile Include="test\Price\Tools\VarintTest.cs" />
+    <Compile Include="test\Tools\BitSetterTest.cs" />
+    <Compile Include="test\Tools\NameCacheTest.cs" />
+    <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
+    <Compile Include="test\Tools\ParamsTest.cs" />
+    <Compile Include="test\Tools\VarintTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
-    <Compile Include="test\Trade\Order\FxOrderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

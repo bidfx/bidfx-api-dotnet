@@ -1,330 +1,181 @@
 ﻿using System.Collections.Generic;
-using BidFX.Public.API.Price;
 
 namespace BidFX.Public.API.Trade.Order
 {
+    /// <summary>
+    /// An immutable representation of an FXOrder. An FXOrderBuilder should be used to create one.
+    /// </summary>
     public class FxOrder
     {
-        private bool _immutable = false;
-
-        private string _currencyPair;
-        private string _currency;
-        private string _side;
-        private string _quantity;
-        private string _dealType;
-        private string _tenor;
-        private string _executingVenue;
-        private string _handlingType;
-        private string _account;
-        private string _reference1;
-        private string _reference2;
-        private string _settlementDate;
-        private string _fixingDate;
-        private string _farTenor;
-        private string _farCurrency;
-        private string _farSettlementDate;
-        private string _farFixingDate;
-        private string _farQuantity;
-        private string _allocationTemplate;
-        private Dictionary<string, string> _strategyParameters;
-
-        internal void SetCurrencyPair(string currencyPair)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _currencyPair = currencyPair;
-        }
-
-        internal void SetCurrency(string currency)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _currency = currency;
-        }
-
-        internal void SetSide(string side)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _side = side;
-        }
-
-        internal void SetQuantity(string quantity)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _quantity = quantity;
-        }
-
-        internal void SetDealType(string dealType)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _dealType = dealType;
-        }
-
-        internal void SetTenor(string tenor)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _tenor = tenor;
-        }
-
-        internal void SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _executingVenue = executingVenue;
-        }
-
-        internal void SetHandlingType(string handlingType)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _handlingType = handlingType;
-        }
-
-        internal void SetAccount(string executingAccount)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _account = executingAccount;
-        }
-
-        internal void SetReference1(string reference1)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _reference1 = reference1;
-        }
-
-        internal void SetReference2(string reference2)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _reference2 = reference2;
-        }
-
-        internal void SetSettlementDate(string settlementDate)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _settlementDate = settlementDate;
-        }
-
-        internal void SetFixingDate(string fixingDate)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _fixingDate = fixingDate;
-        }
-
-        internal void SetFarTenor(string farTenor)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _farTenor = farTenor;
-        }
-
-        internal void SetFarCurrency(string farCurrency)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _farCurrency = farCurrency;
-        }
-
-        internal void SetFarSettlementDate(string farSettlementDate)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _farSettlementDate = farSettlementDate;
-        }
-
-        internal void SetFarFixingDate(string farFixingDate)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _farFixingDate = farFixingDate;
-        }
-
-        internal void SetFarQuantity(string farQuantity)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _farQuantity = farQuantity;
-        }
-
-        internal void SetAllocationTemplate(string allocationTemplate)
-        {
-            if(_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-            _allocationTemplate = allocationTemplate;
-        }
-
-        internal void SetStrategyParameter(string name, string value)
-        {
-            if (_immutable)
-            {
-                throw new IllegalStateException("FxOrder has been made immutable");
-            }
-
-            if (_strategyParameters == null)
-            {
-                _strategyParameters = new Dictionary<string, string>();
-            }
-            
-            _strategyParameters[name] = value;
-        }
+        public const string CurrencyPair = "ccy_pair";
+        public const string Currency = "dealt_ccy";
+        public const string Side = "side";
+        public const string Quantity = "quantity";
+        public const string DealType = "deal_type";
+        public const string Tenor = "tenor";
+        public const string ExecutingVenue = "executing_venue";
+        public const string HandlingType = "handling_type";
+        public const string Account = "account";
+        public const string SettlementDate = "settlement_date";
+        public const string FixingDate = "fixing_date";
+        public const string Reference1 = "ref1";
+        public const string Reference2 = "ref2";
+        public const string FarTenor = "far_tenor";
+        public const string FarCurrency = "far_dealt_ccy";
+        public const string FarSettlementDate = "far_settlement_date";
+        public const string FarFixingDate = "far_fixing_date";
+        public const string FarQuantity = "far_quantity";
+        public const string AllocationTemplate = "allocation_template";
         
-        /// <summary>
-        /// Make the FxOrder immutable
-        /// </summary>
-        public void Freeze()
+        private readonly string[] _components;
+        private Dictionary<string, string> _componentDictionary;
+
+        internal FxOrder(string[] components)
         {
-            _immutable = true;
+            _components = components;
+        }
+
+        /// <summary>
+        /// Dangerous method: returns the internal components. Should only be used for marshalling.
+        /// </summary>
+        internal string[] getInternalComponents()
+        {
+            return _components;
+        }
+
+        private void GenerateComponentDictionary()
+        {
+            if (_componentDictionary == null)
+            {
+                _componentDictionary = new Dictionary<string, string>();
+                var i = 0;
+                while (i < _components.Length)
+                {
+                    var key = _components[i++];
+                    var value = _components[i++];
+                    _componentDictionary[key] = value;
+                }
+            }
         }
         
         public string GetCurrencyPair()
-
         {
-            return _currencyPair;
+            GenerateComponentDictionary();
+            return _componentDictionary[CurrencyPair];
         }
 
         public string GetCurrency()
         {
-            return _currency;
+            GenerateComponentDictionary();
+            return _componentDictionary[Currency];
         }
 
         public string GetSide()
         {
-            return _side;
+            GenerateComponentDictionary();
+            return _componentDictionary[Side];
         }
 
         public string GetQuantity()
         {
-            return _quantity;
+            GenerateComponentDictionary();
+            return _componentDictionary[Quantity];
         }
 
         public string GetDealType()
         {
-            return _dealType;
+            GenerateComponentDictionary();
+            return _componentDictionary[DealType];
         }
 
         public string GetTenor()
         {
-            return _tenor;
+            GenerateComponentDictionary();
+            return _componentDictionary[Tenor];
         }
 
         public string GetExecutingVenue()
         {
-            return _executingVenue;
+            GenerateComponentDictionary();
+            return _componentDictionary[ExecutingVenue];
         }
 
         public string GetHandlingType()
         {
-            return _handlingType;
+            GenerateComponentDictionary();
+            return _componentDictionary[HandlingType];
         }
 
         public string GetAccount()
         {
-            return _account;
+            GenerateComponentDictionary();
+            return _componentDictionary[Account];
         }
 
         public string GetReference1()
         {
-            return _reference1;
+            GenerateComponentDictionary();
+            return _componentDictionary[Reference1];
         }
 
         public string GetReference2()
         {
-            return _reference2;
+            GenerateComponentDictionary();
+            return _componentDictionary[Reference2];
         }
 
         public string GetSettlementDate()
         {
-            return _settlementDate;
+            GenerateComponentDictionary();
+            return _componentDictionary[SettlementDate];
         }
 
         public string GetFixingDate()
         {
-            return _fixingDate;
+            GenerateComponentDictionary();
+            return _componentDictionary[FixingDate];
         }
 
         public string GetFarTenor()
         {
-            return _farTenor;
+            GenerateComponentDictionary();
+            return _componentDictionary[FarTenor];
         }
 
         public string GetFarCurrency()
         {
-            return _farCurrency;
+            GenerateComponentDictionary();
+            return _componentDictionary[FarCurrency];
         }
 
         public string GetFarSettlementDate()
         {
-            return _farSettlementDate;
+            GenerateComponentDictionary();
+            return _componentDictionary[FarSettlementDate];
         }
 
         public string GetFarFixingDate()
         {
-            return _farFixingDate;
+            GenerateComponentDictionary();
+            return _componentDictionary[FarFixingDate];
         }
 
         public string GetFarQuantity()
         {
-            return _farQuantity;
+            GenerateComponentDictionary();
+            return _componentDictionary[FarQuantity];
         }
 
         public string GetAllocationTemplate()
         {
-            return _allocationTemplate;
+            GenerateComponentDictionary();
+            return _componentDictionary[AllocationTemplate];
         }
 
-        public Dictionary<string, string> GetStrategyParameters()
+        public string GetStrategyParameter(string parameter_name)
         {
-            if (_strategyParameters == null)
-            {
-                return null;
-            }
-            return new Dictionary<string, string>(_strategyParameters);
+            GenerateComponentDictionary();
+            return _componentDictionary[parameter_name];
         }
     }
 }

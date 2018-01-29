@@ -1,135 +1,275 @@
 using System;
-using BidFX.Public.API.Price;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
-    public class FxOrderBuilder : Builder<FxOrder>
+    public class FxOrderBuilder
     {
-        private FxOrder _fxOrder = new FxOrder();
+        
+        private static readonly Regex DateRegex = new Regex(@"^(\d\d\d\d)(?:(?:-([0-1]?\d)-([0-3]?\d))|([0-1]?\d)([0-3]?\d))$", RegexOptions.Compiled);
+        
+        
+        private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
         
         public FxOrderBuilder SetCurrencyPair(string currencyPair)
         {
-            //TODO
+            Params.NotNull(currencyPair, "currency pair must be provided"); //TODO: more informative error message
+            currencyPair = currencyPair.Trim();
+            if (currencyPair.Length != 6)
+            {
+                throw new ArgumentException("currency pair must be provided"); //TODO: more informative error message
+            }
+            _components[FxOrder.CurrencyPair] = currencyPair;
             return this;
         }
 
         public FxOrderBuilder SetCurrency(string currency)
         {
-            //TODO
+            currency = Params.ExactLength(currency, 3, "currency must be provided"); //TODO: more informative error message
+            _components[FxOrder.Currency] = currency;
             return this;
         }
 
         public FxOrderBuilder SetSide(string side)
         {
-            //TODO
+            Params.NotBlank(side); //TODO: more informative error message
+            side = Params.Trim(side);
+            switch (side.ToLower())
+            {
+                case "buy":
+                    side = "Buy";
+                    break;
+                case "sell":
+                    side = "Sell";
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+            _components[FxOrder.Side] = side;
             return this;
         }
 
         public FxOrderBuilder SetQuantity(string quantity)
         {
-            //TODO
+            Params.NotBlank(quantity); //TODO: more informative error message
+            quantity = Params.Trim(quantity);
+            if (!Params.IsNumeric(quantity))
+            {
+                throw new ArgumentException(); //TODO: more informative error message
+            }
+
+            _components[FxOrder.Quantity] = quantity;
             return this;
         }
 
         public FxOrderBuilder SetDealType(string dealType)
         {
-            //TODO
+            Params.NotBlank(dealType); //TODO: more informative error message
+            dealType = Params.Trim(dealType);
+            switch (dealType.ToLower())
+            {
+                    case "spot":
+                        dealType = "Spot";
+                        break;
+                    case "forward":
+                        dealType = "Forward";
+                        break;
+                    case "ndf":
+                        dealType = "NDF";
+                        break;
+                    case "swap":
+                        dealType = "Swap";
+                        break;
+                    case "nds":
+                        dealType = "NDS";
+                        break;
+                    default:
+                        throw new ArgumentException("unsupported deal type: " + dealType);
+            }
+            _components[FxOrder.DealType] = dealType;
             return this;
         }
 
         public FxOrderBuilder SetTenor(string tenor)
         {
-            //TODO
+            Params.NotBlank(tenor); //TODO: more informative error message
+            tenor = Params.Trim(tenor);
+            _components[FxOrder.Tenor] = tenor;
             return this;
         }
 
         public FxOrderBuilder SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS
         {
-            //TODO
+            Params.NotBlank(executingVenue);
+            executingVenue = Params.Trim(executingVenue);
+            _components[FxOrder.ExecutingVenue] = executingVenue;
             return this;
         }
 
         public FxOrderBuilder SetHandlingType(string handlingType)
         {
-            //TODO
+            Params.NotBlank(handlingType); //TODO: more informative error message
+            handlingType = Params.Trim(handlingType);
+            switch (handlingType.ToLower())
+            {
+                case "stream":
+                    handlingType = "stream";
+                    break;
+                case "quote":
+                    handlingType = "quote";
+                    break;
+                case "automatic":
+                    handlingType = "automatic";
+                    break;
+                default:
+                    throw new ArgumentException("unsupported handling type: " + handlingType);
+            }
+            _components[FxOrder.HandlingType] = handlingType;
             return this;
         }
 
         public FxOrderBuilder SetAccount(string account)
         {
-            //TODO
+            Params.NotBlank(account);
+            account = Params.Trim(account);
+            _components[FxOrder.Account] = account;
             return this;
         }
 
         public FxOrderBuilder SetReference(string reference1, string reference2)
         {
-            //TODO
+            Params.NotNull(reference1);
+            Params.NotNull(reference2);
+            if (reference1.Contains("|") || reference2.Contains("|"))
+            {
+                throw new ArgumentException("references can not contain pipes (|)");
+            }
+            _components[FxOrder.Reference1] = reference1;
+            _components[FxOrder.Reference2] = reference2;
             return this;
         }
 
         public FxOrderBuilder SetSettlementDate(string settlementDate)
         {
-            //TODO
+            Params.NotNull(settlementDate); //TODO: more informative error message
+            settlementDate = Params.Trim(settlementDate);
+            settlementDate = FormatDates(settlementDate);
+            _components[FxOrder.SettlementDate] = settlementDate;
             return this;
         }
 
         public FxOrderBuilder SetFixingDate(string fixingDate)
         {
-            //TODO
+            Params.NotBlank(fixingDate); //TODO: more informative error message
+            fixingDate = Params.Trim(fixingDate);
+            fixingDate = FormatDates(fixingDate);
+            _components[FxOrder.FixingDate] = fixingDate;
             return this;
         }
 
         public FxOrderBuilder SetFarTenor(string farTenor)
         {
-            //TODO
+            Params.NotBlank(farTenor); //TODO: more informative error message
+            farTenor = Params.Trim(farTenor);
+            _components[FxOrder.FarTenor] = farTenor;
             return this;
         }
 
         public FxOrderBuilder SetFarCurrency(string farCurrency)
         {
-            //TODO
+            farCurrency = Params.ExactLength(farCurrency, 3, "farCurrency must be supplied"); //TODO: more informative error message
+            _components[FxOrder.FarCurrency] = farCurrency;
             return this;
         }
 
         public FxOrderBuilder SetFarSettlementDate(string farSettlementDate)
         {
-            //TODO
+            Params.NotBlank(farSettlementDate);
+            farSettlementDate = Params.Trim(farSettlementDate);
+            farSettlementDate = FormatDates(farSettlementDate);
+            _components[FxOrder.FarSettlementDate] = farSettlementDate;
             return this;
         }
 
         public FxOrderBuilder SetFarFixingDate(string farFixingDate)
         {
-            //TODO
+            Params.NotBlank(farFixingDate);
+            farFixingDate = Params.Trim(farFixingDate);
+            farFixingDate = FormatDates(farFixingDate);
+            _components[FxOrder.FarFixingDate] = farFixingDate;
             return this;
         }
 
         public FxOrderBuilder SetFarQuantity(string farQuantity)
         {
-            //TODO
+            Params.NotBlank(farQuantity); //TODO: more informative error message
+            farQuantity = Params.Trim(farQuantity);
+            if (!Params.IsNumeric(farQuantity))
+            {
+                throw new ArgumentException(); //TODO: more informative error message
+            }
+            _components[FxOrder.FarQuantity] = farQuantity;
             return this;
         }
 
-        public FxOrderBuilder SetAllocationTemplate(string templateName)
+        public FxOrderBuilder SetAllocationTemplate(string templateName) //TODO: Is this a template name or a set of allocation accounts + quantities?
         {
-            //TODO
+            Params.NotBlank(templateName);
+            templateName = Params.Trim(templateName);
+            _components[FxOrder.AllocationTemplate] = templateName;
             return this;
         }
 
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
-            //TODO
+            Params.NotBlank(name);
+            Params.NotNull(value);
+            name = Params.Trim(name); //TODO: Checking on names?
+            value = Params.Trim(value);
+            _components[name] = value;
             return this;
         }
         
         public FxOrder Build()
         {
-            //TODO
-            return null;
+            var components = new string[_components.Count * 2];
+            var i = 0;
+            foreach (var component in _components)
+            {
+                components[i++] = component.Key;
+                components[i++] = component.Value;
+            }
+            return new FxOrder(components);
         }
 
-        private bool IsNullOrEmpty(string p)
+        private static string FormatDates(string date)
         {
-            return p == null || p.Trim().Length == 0;
+            var match = DateRegex.Match(date);
+            if (!match.Success)
+            {
+                throw new ArgumentException();
+            }
+            var groups = match.Groups;
+            var year = groups[1].ToString();
+            
+            var month = groups[2].ToString();
+            if (month == "")
+            {
+                month = groups[4].ToString();
+            }
+
+            var day = groups[3].ToString();
+            if (day == "")
+            {
+                day = groups[5].ToString();
+            }
+            
+            return year + "-" 
+                        + (month.Length == 2 ? month : "0" + month)
+                        + "-"
+                        + (day.Length == 2 ? day : "0" + day);
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using NUnit.Framework.Constraints;
-
-namespace BidFX.Public.API.Price.Subject
+﻿namespace BidFX.Public.API.Price.Subject
 {
     public class CommonSubjects
     {
