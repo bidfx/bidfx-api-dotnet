@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
+using BidFX.Public.API.Trade;
+using BidFX.Public.API.Trade.Order;
 using log4net;
 
 namespace BidFX.Public.API.Example
@@ -12,7 +14,7 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main2(string[] args)
+        public static void Main(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
@@ -20,17 +22,21 @@ namespace BidFX.Public.API.Example
 
         private ApiExample()
         {
-            DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.Username = "USERNAME";
-            DefaultClient.Client.Password = "PASSWORD";
+            DefaultClient.Client.Host = "ny-tunnel.uatdev.tradingscreen.com";
+            DefaultClient.Client.Username = "lasman";
+            DefaultClient.Client.Password = "HelloWorld123";
+            /*
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
             session.ProviderStatusEventHandler += OnProviderStatus;
+            */
         }
 
         private void RunTest()
         {
+            /*
+            //Pricing
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
@@ -51,6 +57,15 @@ namespace BidFX.Public.API.Example
                 }
                 DefaultClient.Client.PriceSession.Stop();
             }
+            */
+            //Send a trade
+            DefaultClient.Client.TradeManager.OrderSubmitEventHandler += OnOrderSubmitResponse;
+            SendSpotEURGBPTrade();
+            Thread.Sleep(TimeSpan.FromMilliseconds(200));
+            SendSpotEURGBPTrade();
+            Thread.Sleep(TimeSpan.FromMilliseconds(400));
+            SendSpotEURGBPTrade();
+            Thread.Sleep(TimeSpan.FromMilliseconds(2000));
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -152,6 +167,28 @@ namespace BidFX.Public.API.Example
                      providerStatusEvent.PreviousProviderStatus
                      + " to " + providerStatusEvent.ProviderStatus
                      + " because: " + providerStatusEvent.StatusReason);
+        }
+
+        private void SendSpotEURGBPTrade()
+        {
+            var fxOrder = new FxOrderBuilder()
+                .SetAccount("FX_ACCT")
+                .SetCurrencyPair("EURGBP")
+                .SetCurrency("GBP")
+                .SetDealType("Spot")
+                .SetHandlingType("quote")
+                .SetPriceType("Market")
+                .SetQuantity("2000000")
+                .SetSide("Sell")
+                .SetTenor("Spot")
+                .Build();
+            var messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
+            Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
+        }
+
+        private static void OnOrderSubmitResponse(object sender, OrderResponse orderResponse)
+        {
+            Log.InfoFormat("Order Response {0}", orderResponse);
         }
     }
 }

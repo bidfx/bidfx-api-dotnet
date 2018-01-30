@@ -27,6 +27,7 @@ namespace BidFX.Public.API.Trade.Order
         public const string FarQuantity = "far_quantity";
         public const string AllocationTemplate = "allocation_template";
         public const string Price = "price";
+        public const string PriceType = "price_type";
         
         private readonly string[] _components;
         private Dictionary<string, string> _componentDictionary;

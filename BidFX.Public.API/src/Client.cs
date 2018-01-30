@@ -45,6 +45,7 @@ namespace BidFX.Public.API
         public TimeSpan ReconnectInterval { get; set; }
 
         private PriceManager _priceManager;
+        private TradeManager _tradeManager;
 
         /// <summary>
         /// Creates a new Client that has yet to be configured.
@@ -81,13 +82,25 @@ namespace BidFX.Public.API
             }
         }
 
+        /// <summary>
+        /// The trading manager used to submit prices
+        /// </summary>
+        public TradeManager TradeManager
+        {
+            get
+            {
+                CreateTradeManager();
+                return _tradeManager;
+            }
+        }
+
         private void CreatePriceManager()
         {
             if (_priceManager != null) return;
             _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
             {
                 Host = Host,
-                Port = 443,
+                Port = Port == 0 ? 443 : Port,
                 Password = Password,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -95,6 +108,19 @@ namespace BidFX.Public.API
 //                    Username = Username // uncomment when SubjectMutator is removed
             };
             _priceManager.Start();
+        }
+
+        private void CreateTradeManager()
+        {
+            if (_tradeManager != null) return;
+            _tradeManager = new TradeManager
+            {
+                Host = Host,
+                Port = Port == 0 ? 443 : Port,
+                Username = Username,
+                Password = Password
+            };
+            _tradeManager.Start();
         }
     }
 }

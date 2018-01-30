@@ -1,22 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Trade.Order;
 using BidFX.Public.API.Trade.REST;
+using log4net;
 
 namespace BidFX.Public.API.Trade
 {
     public class TradeManager
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public event EventHandler<OrderResponse> OrderQueryEventHandler;
         public event EventHandler<OrderResponse> OrderSubmitEventHandler;
-        private readonly RESTClient _restClient;
+        private RESTClient _restClient;
         private static readonly Random Random = new Random();
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
 
-        public TradeManager(string username, string password)
+        public void Start()
         {
-            _restClient = new RESTClient("http://uatdev.tradingscreen.com:443", username, password); //TODO; Set REST endpoint variably.
+            var address = "https://" + Host + ":" + Port;
+            _restClient = new RESTClient(address, Username, Password);
+            Log.InfoFormat("TradeManager connecting to {0}", address);
         }
         
         public long SubmitOrder(FxOrder fxOrder)
@@ -46,8 +55,10 @@ namespace BidFX.Public.API.Trade
 
         private void SendOrderViaREST(long messageId, string json)
         {
-            var response = _restClient.SendJSON("POST", "/api/v1/fx/submit", json);
-            var orderResponse = new OrderResponse(response) {ClientId = messageId};
+            Log.InfoFormat("Submmiting order, messageId {0}", messageId);
+            Log.DebugFormat("MessageId: {0}, Json: {1}", messageId, json);
+            var response = _restClient.SendJSON("POST", "", json);
+            var orderResponse = new OrderResponse(response) {MessageId = messageId};
 //            _clientIdToOrderId[ClientID] = orderSubmitResponse.GetOrderId();
             if (OrderSubmitEventHandler != null)
             {
@@ -57,8 +68,9 @@ namespace BidFX.Public.API.Trade
 
         private void SendQueryViaREST(long messageId, string orderId)
         {
-            var response = _restClient.SendMessage("GET", "/api/v1/fx/query?order_ts_id=" + orderId);
-            var orderResponse = new OrderResponse(response) {ClientId = messageId};
+            Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
+            var response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId);
+            var orderResponse = new OrderResponse(response) {MessageId = messageId};
             if (OrderQueryEventHandler != null)
             {
                 OrderQueryEventHandler(this, orderResponse);
@@ -70,8 +82,9 @@ namespace BidFX.Public.API.Trade
             long nextLong;
             lock (Random)
             {
-                nextLong = Random.Next(int.MinValue, int.MaxValue) << 32 | Random.Next(int.MinValue, int.MaxValue);
+                nextLong = Random.Next() << 32 | Random.Next(int.MinValue, int.MaxValue);
             }
+            if (nextLong < 0) nextLong ^= -1;
             return nextLong;
         }
     }

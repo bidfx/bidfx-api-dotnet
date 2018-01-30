@@ -6,6 +6,7 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
+    //TODO: Setting null should remove from the dictionary
     public class FxOrderBuilder
     {
         private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
@@ -281,6 +282,13 @@ namespace BidFX.Public.API.Trade.Order
                         + (month.Length == 2 ? month : "0" + month)
                         + "-"
                         + (day.Length == 2 ? day : "0" + day);
+        }
+
+        public FxOrderBuilder SetPriceType(string priceType)
+        {
+            //TODO
+            _components[FxOrder.PriceType] = priceType;
+            return this;
         }
     }
 }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
-using System.Xml.Schema;
+using log4net;
 
 namespace BidFX.Public.API.Trade.REST
 {
     public class RESTClient
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string ApiPath = "/api/om/v2beta/fx"; //TODO: set to not-beta
         private readonly string _authHeader;
         private readonly string _baseAddress;
@@ -35,11 +37,13 @@ namespace BidFX.Public.API.Trade.REST
             {
                 path = "/" + path;
             }
+            Log.DebugFormat("Sending REST message to {0}{1}", _baseAddress, path);
             var req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
 
             req.ContentType = "application/json";
+            
             return (HttpWebResponse) req.GetResponse();
         }
 
@@ -49,6 +53,7 @@ namespace BidFX.Public.API.Trade.REST
             {
                 path = "/" + path;
             }
+            Log.DebugFormat("Sending REST message with JSON to {0}{1}", _baseAddress, path);
             var req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;

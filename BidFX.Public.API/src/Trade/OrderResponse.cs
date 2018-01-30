@@ -5,7 +5,7 @@ namespace BidFX.Public.API.Trade
 {
     public class OrderResponse : AbstractRESTResponse
     {
-        public long ClientId { get; set; }
+        public long MessageId { get; set; }
 
         public OrderResponse(HttpWebResponse webResponse) : base(webResponse)
         {
@@ -13,7 +13,17 @@ namespace BidFX.Public.API.Trade
         
         public string GetOrderId()
         {
-            return GetField("order_ts_id");
+            if (_statusCode == HttpStatusCode.OK)
+            {
+                return _statusCode.ToString();
+            }
+
+            return null;
+        }
+
+        public override string ToString()
+        {
+            return "MessageId => " + MessageId + " " + base.ToString();
         }
     }
 }

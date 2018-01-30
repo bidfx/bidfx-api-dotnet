@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using BidFX.Public.API.Price.Tools;
 using Newtonsoft.Json;
@@ -10,7 +9,7 @@ namespace BidFX.Public.API.Trade.REST
 {
     public abstract class AbstractRESTResponse : EventArgs
     {
-        private readonly HttpStatusCode _statusCode;
+        protected readonly HttpStatusCode _statusCode;
         private readonly List<Dictionary<string, string>> _responses = new List<Dictionary<string, string>>();
         
         protected AbstractRESTResponse(HttpWebResponse webResponse)
@@ -50,6 +49,11 @@ namespace BidFX.Public.API.Trade.REST
         protected HttpStatusCode GetStatusCode()
         {
             return _statusCode;
+        }
+
+        public override string ToString()
+        {
+            return "{[" + string.Join("], [", _responses) + "]}";
         }
     }
 }
