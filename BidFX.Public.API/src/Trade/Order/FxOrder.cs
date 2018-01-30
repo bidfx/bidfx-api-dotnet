@@ -18,14 +18,15 @@ namespace BidFX.Public.API.Trade.Order
         public const string Account = "account";
         public const string SettlementDate = "settlement_date";
         public const string FixingDate = "fixing_date";
-        public const string Reference1 = "ref1";
-        public const string Reference2 = "ref2";
+        public const string Reference1 = "reference";
+        public const string Reference2 = "reference2";
         public const string FarTenor = "far_tenor";
         public const string FarCurrency = "far_dealt_ccy";
         public const string FarSettlementDate = "far_settlement_date";
         public const string FarFixingDate = "far_fixing_date";
         public const string FarQuantity = "far_quantity";
         public const string AllocationTemplate = "allocation_template";
+        public const string Price = "price";
         
         private readonly string[] _components;
         private Dictionary<string, string> _componentDictionary;
@@ -164,6 +165,12 @@ namespace BidFX.Public.API.Trade.Order
         {
             GenerateComponentDictionary();
             return _componentDictionary[FarQuantity];
+        }
+
+        public string GetPrice()
+        {
+            GenerateComponentDictionary();
+            return _componentDictionary[Price];
         }
 
         public string GetAllocationTemplate()

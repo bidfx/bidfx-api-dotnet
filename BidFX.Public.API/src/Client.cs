@@ -1,5 +1,6 @@
 using System;
 using BidFX.Public.API.Price;
+using BidFX.Public.API.Trade;
 
 namespace BidFX.Public.API
 {

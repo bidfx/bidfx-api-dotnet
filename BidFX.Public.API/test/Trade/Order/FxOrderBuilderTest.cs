@@ -775,5 +775,43 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAllocationTemplate("    ");
         }
+        
+        [Test]
+        public void TestSettingPrice()
+        {
+            var fxOrder = _orderBuilder.SetPrice("1000000.00").Build();
+            Assert.AreEqual("1000000.00", fxOrder.GetPrice());
+
+            fxOrder = _orderBuilder.SetPrice("5000000").Build();
+            Assert.AreEqual("5000000", fxOrder.GetPrice());
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestNonNumericOrPeridPriceThrowsException()
+        {
+            _orderBuilder.SetPrice("27281P.00").Build();
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestNullPriceThrowsException()
+        {
+            _orderBuilder.SetPrice(null);
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestEmptyPriceThrowsException()
+        {
+            _orderBuilder.SetPrice("");
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestBlankPriceThrowsException()
+        {
+            _orderBuilder.SetPrice("     ");
+        }
     }
 }

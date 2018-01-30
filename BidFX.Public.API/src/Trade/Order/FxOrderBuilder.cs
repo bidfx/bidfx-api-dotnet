@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using BidFX.Public.API.Price.Tools;
 
@@ -218,6 +219,18 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
+        public FxOrderBuilder SetPrice(string price)
+        {
+            Params.NotBlank(price, "Price must not be blank");
+            price = Params.Trim(price);
+            if (!Params.IsNumeric(price))
+            {
+                throw new ArgumentException("Price is not a number: " + price);
+            }
+            _components[FxOrder.Price] = price;
+            return this;
+        }
+
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
             Params.NotBlank(name);
@@ -230,14 +243,15 @@ namespace BidFX.Public.API.Trade.Order
         
         public FxOrder Build()
         {
-            var components = new string[_components.Count * 2];
+            var internalComponents = new string[_components.Count * 2];
             var i = 0;
-            foreach (var component in _components)
+            var components = _components.OrderBy(kvp => kvp.Key);
+            foreach (var component in components)
             {
-                components[i++] = component.Key;
-                components[i++] = component.Value;
+                internalComponents[i++] = component.Key;
+                internalComponents[i++] = component.Value;
             }
-            return new FxOrder(components);
+            return new FxOrder(internalComponents);
         }
 
         private static readonly Regex DateRegex = new Regex(@"^(\d\d\d\d)(?:(?:-([0-1]?\d)-([0-3]?\d))|([0-1]?\d)([0-3]?\d))$", RegexOptions.Compiled);

@@ -43,6 +43,9 @@
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920">
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -183,8 +186,7 @@
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\Tools\Varint.cs" />
     <Compile Include="src\Trade\JsonMarshaller.cs" />
-    <Compile Include="src\Trade\OrderQueryResponse.cs" />
-    <Compile Include="src\Trade\OrderSubmitResponse.cs" />
+    <Compile Include="src\Trade\OrderResponse.cs" />
     <Compile Include="src\Trade\Order\FxOrder.cs" />
     <Compile Include="src\Trade\Order\FxOrderBuilder.cs" />
     <Compile Include="src\Trade\REST\AbstractRESTResponse.cs" />
@@ -234,6 +236,7 @@
     <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
     <Compile Include="test\Tools\ParamsTest.cs" />
     <Compile Include="test\Tools\VarintTest.cs" />
+    <Compile Include="test\Trade\JsonMarshallerTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
   </ItemGroup>
   <ItemGroup>
