@@ -813,5 +813,36 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetPrice("     ");
         }
+        
+        [Test]
+        public void TestSettingPriceType()
+        {
+            var fxOrder = _orderBuilder.SetPriceType("Limit").Build();
+            Assert.AreEqual("Limit", fxOrder.GetPriceType());
+            
+            fxOrder = _orderBuilder.SetPriceType(" Market  ").Build();
+            Assert.AreEqual("Market", fxOrder.GetPriceType());
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestNullPriceTypeThrowsException()
+        {
+            _orderBuilder.SetPriceType(null);
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestEmptyPriceTypeThrowsException()
+        {
+            _orderBuilder.SetPriceType("");
+        }
+
+        [Test]
+        [ExpectedException("System.ArgumentException")]
+        public void TestBlankPriceTypeThrowsException()
+        {
+            _orderBuilder.SetPriceType("     ");
+        }
     }
 }

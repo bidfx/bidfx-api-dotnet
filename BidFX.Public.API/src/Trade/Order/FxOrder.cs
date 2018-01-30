@@ -185,5 +185,11 @@ namespace BidFX.Public.API.Trade.Order
             GenerateComponentDictionary();
             return _componentDictionary[parameter_name];
         }
+
+        public string GetPriceType()
+        {
+            GenerateComponentDictionary();
+            return _componentDictionary[PriceType];
+        }
     }
 }

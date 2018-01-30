@@ -232,6 +232,14 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
+        public FxOrderBuilder SetPriceType(string priceType)
+        {
+            Params.NotBlank(priceType);
+            priceType = Params.Trim(priceType);
+            _components[FxOrder.PriceType] = priceType;
+            return this;
+        }
+
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
             Params.NotBlank(name);
@@ -282,13 +290,6 @@ namespace BidFX.Public.API.Trade.Order
                         + (month.Length == 2 ? month : "0" + month)
                         + "-"
                         + (day.Length == 2 ? day : "0" + day);
-        }
-
-        public FxOrderBuilder SetPriceType(string priceType)
-        {
-            //TODO
-            _components[FxOrder.PriceType] = priceType;
-            return this;
         }
     }
 }
