@@ -321,14 +321,14 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(referenceTwo))
             {
-                _components.Remove(FxOrder.Reference1);
+                _components.Remove(FxOrder.Reference2);
                 return this;
             }
             if (referenceTwo.Contains("|"))
             {
                 throw new ArgumentException("References can not contain pipes (|)");
             }
-            _components[FxOrder.Reference1] = referenceTwo;
+            _components[FxOrder.Reference2] = referenceTwo;
             return this;
         }
 
