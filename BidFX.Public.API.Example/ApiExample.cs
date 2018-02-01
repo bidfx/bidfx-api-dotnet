@@ -60,10 +60,10 @@ namespace BidFX.Public.API.Example
             */
             //Send a trade
             DefaultClient.Client.TradeManager.OrderSubmitEventHandler += OnOrderSubmitResponse;
-            SendSpotEURGBPTrade();
+/*            SendSpotEURGBPTrade();
             Thread.Sleep(TimeSpan.FromMilliseconds(200));
             SendSpotEURGBPTrade();
-            Thread.Sleep(TimeSpan.FromMilliseconds(400));
+            Thread.Sleep(TimeSpan.FromMilliseconds(400));*/
             SendSpotEURGBPTrade();
             Thread.Sleep(TimeSpan.FromMilliseconds(2000));
         }
@@ -176,11 +176,13 @@ namespace BidFX.Public.API.Example
                 .SetCurrencyPair("EURGBP")
                 .SetCurrency("GBP")
                 .SetDealType("Spot")
-                .SetHandlingType("quote")
-                .SetPriceType("Market")
+                .SetHandlingType("stream")
+                .SetPriceType("Limit")
+                .SetPrice("1.180000")
                 .SetQuantity("2000000")
                 .SetSide("Sell")
-                .SetTenor("Spot")
+                .SetSettlementDate("2018-02-07")
+                .SetReference(".NET API Example", "")
                 .Build();
             var messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
@@ -188,7 +190,8 @@ namespace BidFX.Public.API.Example
 
         private static void OnOrderSubmitResponse(object sender, OrderResponse orderResponse)
         {
-            Log.InfoFormat("Order Response {0}", orderResponse);
+            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", orderResponse.MessageId,
+                orderResponse.GetOrderId(), orderResponse.GetState());
         }
     }
 }

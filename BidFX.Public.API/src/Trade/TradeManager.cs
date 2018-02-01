@@ -56,7 +56,7 @@ namespace BidFX.Public.API.Trade
         private void SendOrderViaREST(long messageId, string json)
         {
             Log.InfoFormat("Submmiting order, messageId {0}", messageId);
-            Log.DebugFormat("MessageId: {0}, Json: {1}", messageId, json);
+            Log.DebugFormat("Submitting order, messageId: {0}, Json: {1}", messageId, json);
             var response = _restClient.SendJSON("POST", "", json);
             var orderResponse = new OrderResponse(response) {MessageId = messageId};
 //            _clientIdToOrderId[ClientID] = orderSubmitResponse.GetOrderId();

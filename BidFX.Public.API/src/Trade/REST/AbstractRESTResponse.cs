@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using BidFX.Public.API.Price.Tools;
 using Newtonsoft.Json;
@@ -9,13 +10,13 @@ namespace BidFX.Public.API.Trade.REST
 {
     public abstract class AbstractRESTResponse : EventArgs
     {
-        protected readonly HttpStatusCode _statusCode;
-        private readonly List<Dictionary<string, string>> _responses = new List<Dictionary<string, string>>();
+        protected readonly HttpStatusCode StatusCode;
+        private List<Dictionary<string, object>> _responses;
         
         protected AbstractRESTResponse(HttpWebResponse webResponse)
         {
             Params.NotNull(webResponse);
-            _statusCode = webResponse.StatusCode;
+            StatusCode = webResponse.StatusCode;
             var responseStream = webResponse.GetResponseStream();
             if (responseStream == null)
             {
@@ -33,27 +34,54 @@ namespace BidFX.Public.API.Trade.REST
 
         private void ParseJsonResponse(string jsonString)
         {
-            var list = JsonConvert.DeserializeObject<List<string>>(jsonString);
-            foreach (var item in list)
-            {
-                _responses.Add(JsonConvert.DeserializeObject<Dictionary<string, string>>(item));
-            }
+            _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
         }
         
         protected string GetField(string fieldname)
         {
-            string retval;
-            return _responses[0].TryGetValue(fieldname, out retval) ? retval : null;
+            object retval;
+            return _responses[0].TryGetValue(fieldname, out retval) ? retval.ToString() : null;
         }
 
         protected HttpStatusCode GetStatusCode()
         {
-            return _statusCode;
+            return StatusCode;
         }
 
         public override string ToString()
         {
-            return "{[" + string.Join("], [", _responses) + "]}";
+            var formattedOrders = _responses.Select(
+                order => string.Join(", ", 
+                    order.Select(
+                        kv => "\"" + 
+                              kv.Key + 
+                              "\": " + 
+                              (IsNumericType(kv.Value) ? kv.Value : "\"" + kv.Value + "\"")
+                    )
+                )
+            );
+            return "[{" + string.Join("}, {", formattedOrders) + "}]";
+        }
+        
+        private static bool IsNumericType(object o)
+        {   
+            switch (Type.GetTypeCode(o.GetType()))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

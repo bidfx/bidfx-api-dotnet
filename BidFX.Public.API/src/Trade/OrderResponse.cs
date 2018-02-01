@@ -13,17 +13,17 @@ namespace BidFX.Public.API.Trade
         
         public string GetOrderId()
         {
-            if (_statusCode == HttpStatusCode.OK)
-            {
-                return _statusCode.ToString();
-            }
-
-            return null;
+            return StatusCode == HttpStatusCode.OK ? GetField("order_ts_id") : null;
         }
 
         public override string ToString()
         {
-            return "MessageId => " + MessageId + " " + base.ToString();
+            return "MessageId => " + MessageId + ", Body => " + base.ToString();
+        }
+
+        public object GetState()
+        {
+            return StatusCode == HttpStatusCode.OK ? GetField("state") : null;
         }
     }
 }
