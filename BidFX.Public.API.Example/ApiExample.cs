@@ -182,7 +182,7 @@ namespace BidFX.Public.API.Example
                 .SetQuantity("2000000")
                 .SetSide("Sell")
                 .SetSettlementDate("2018-02-07")
-                .SetReference(".NET API Example", "")
+                .SetReferenceOne(".NET API Example")
                 .Build();
             var messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);

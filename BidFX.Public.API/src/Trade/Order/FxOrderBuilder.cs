@@ -10,21 +10,26 @@ namespace BidFX.Public.API.Trade.Order
     public class FxOrderBuilder
     {
         private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
-        
+
         public FxOrderBuilder SetCurrencyPair(string currencyPair)
         {
-            Params.NotNull(currencyPair, "currency pair must not be null");
-            currencyPair = currencyPair.Trim();
-            if (currencyPair.Length != 6)
+            if (Params.IsNullOrEmpty(currencyPair))
             {
-                throw new ArgumentException("currency pair must be in format 'AAABBB'");
+                _components.Remove(FxOrder.CurrencyPair);
+                return this;
             }
+            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'AAABBB'");
             _components[FxOrder.CurrencyPair] = currencyPair;
             return this;
         }
 
         public FxOrderBuilder SetCurrency(string currency)
         {
+            if (Params.IsNullOrEmpty(currency))
+            {
+                _components.Remove(FxOrder.Currency);
+                return this;
+            }
             currency = Params.ExactLength(currency, 3, "Currency must be in format 'AAA'");
             _components[FxOrder.Currency] = currency;
             return this;
@@ -32,7 +37,12 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetSide(string side)
         {
-            Params.NotBlank(side, "Side must not be empty");
+            if (Params.IsNullOrEmpty(side))
+            {
+                _components.Remove(FxOrder.Side);
+                return this;
+            }
+
             side = Params.Trim(side);
             switch (side.ToLower())
             {
@@ -45,46 +55,54 @@ namespace BidFX.Public.API.Trade.Order
                 default:
                     throw new ArgumentException();
             }
+
             _components[FxOrder.Side] = side;
             return this;
         }
 
         public FxOrderBuilder SetQuantity(string quantity)
         {
-            Params.NotBlank(quantity, "Quantity must not be blank");
+            if (Params.IsNullOrEmpty(quantity))
+            {
+                _components.Remove(FxOrder.Quantity);
+                return this;
+            }
             quantity = Params.Trim(quantity);
             if (!Params.IsNumeric(quantity))
             {
                 throw new ArgumentException("Quantity is not a number: " + quantity);
             }
-
             _components[FxOrder.Quantity] = quantity;
             return this;
         }
         
         public FxOrderBuilder SetDealType(string dealType)
         {
-            Params.NotBlank(dealType, "DealType must not be blank");
+            if (Params.IsNullOrEmpty(dealType))
+            {
+                _components.Remove(FxOrder.DealType);
+                return this;
+            }
             dealType = Params.Trim(dealType);
             switch (dealType.ToLower())
             {
-                    case "spot":
-                        dealType = "Spot";
-                        break;
-                    case "forward":
-                        dealType = "Forward";
-                        break;
-                    case "ndf":
-                        dealType = "NDF";
-                        break;
-                    case "swap":
-                        dealType = "Swap";
-                        break;
-                    case "nds":
-                        dealType = "NDS";
-                        break;
-                    default:
-                        throw new ArgumentException("unsupported deal type: " + dealType);
+                case "spot":
+                    dealType = "Spot";
+                    break;
+                case "forward":
+                    dealType = "Forward";
+                    break;
+                case "ndf":
+                    dealType = "NDF";
+                    break;
+                case "swap":
+                    dealType = "Swap";
+                    break;
+                case "nds":
+                    dealType = "NDS";
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported deal type: " + dealType);
             }
             _components[FxOrder.DealType] = dealType;
             return this;
@@ -92,7 +110,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetTenor(string tenor)
         {
-            Params.NotBlank(tenor, "Tenor must not be blank");
+            if (Params.IsNullOrEmpty(tenor))
+            {
+                _components.Remove(FxOrder.Tenor);
+                return this;
+            }
             tenor = Params.Trim(tenor);
             _components[FxOrder.Tenor] = tenor;
             return this;
@@ -100,7 +122,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS, should we offer this?
         {
-            Params.NotBlank(executingVenue, "ExecutingVenue must not be blank");
+            if (Params.IsNullOrEmpty(executingVenue))
+            {
+                _components.Remove(FxOrder.ExecutingVenue);
+                return this;
+            }
             executingVenue = Params.Trim(executingVenue);
             _components[FxOrder.ExecutingVenue] = executingVenue;
             return this;
@@ -108,7 +134,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetHandlingType(string handlingType)
         {
-            Params.NotBlank(handlingType, "HandlingType must not be blank");
+            if (Params.IsNullOrEmpty(handlingType))
+            {
+                _components.Remove(FxOrder.HandlingType);
+                return this;
+            }
             handlingType = Params.Trim(handlingType);
             switch (handlingType.ToLower())
             {
@@ -130,28 +160,23 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetAccount(string account)
         {
-            Params.NotBlank(account);
+            if (Params.IsNullOrEmpty(account))
+            {
+                _components.Remove(FxOrder.Account);
+                return this;
+            }
             account = Params.Trim(account);
             _components[FxOrder.Account] = account;
             return this;
         }
 
-        public FxOrderBuilder SetReference(string reference1, string reference2)
-        {
-            Params.NotNull(reference1, "Reference 1 must not be null");
-            Params.NotNull(reference2, "Reference 2 must not be null");
-            if (reference1.Contains("|") || reference2.Contains("|"))
-            {
-                throw new ArgumentException("References can not contain pipes (|)");
-            }
-            _components[FxOrder.Reference1] = reference1;
-            _components[FxOrder.Reference2] = reference2;
-            return this;
-        }
-
         public FxOrderBuilder SetSettlementDate(string settlementDate)
         {
-            Params.NotBlank(settlementDate, "SettlementDate must not be blank");
+            if (Params.IsNullOrEmpty(settlementDate))
+            {
+                _components.Remove(FxOrder.SettlementDate);
+                return this;
+            }
             settlementDate = Params.Trim(settlementDate);
             settlementDate = FormatDates(settlementDate);
             _components[FxOrder.SettlementDate] = settlementDate;
@@ -160,7 +185,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFixingDate(string fixingDate)
         {
-            Params.NotBlank(fixingDate, "FixingDate must not be blank");
+            if (Params.IsNullOrEmpty(fixingDate))
+            {
+                _components.Remove(FxOrder.FixingDate);
+                return this;
+            }
             fixingDate = Params.Trim(fixingDate);
             fixingDate = FormatDates(fixingDate);
             _components[FxOrder.FixingDate] = fixingDate;
@@ -169,7 +198,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarTenor(string farTenor)
         {
-            Params.NotBlank(farTenor, "FarTenor must not be blank");
+            if(Params.IsNullOrEmpty(farTenor))
+            {
+                _components.Remove(FxOrder.FarTenor);
+                return this;
+            }
             farTenor = Params.Trim(farTenor);
             _components[FxOrder.FarTenor] = farTenor;
             return this;
@@ -177,6 +210,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarCurrency(string farCurrency)
         {
+            if (Params.IsNullOrEmpty(farCurrency))
+            {
+                _components.Remove(FxOrder.FarCurrency);
+                return this;
+            }
             farCurrency = Params.ExactLength(farCurrency, 3, "farCurrency must be in format 'AAA'");
             _components[FxOrder.FarCurrency] = farCurrency;
             return this;
@@ -184,7 +222,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarSettlementDate(string farSettlementDate)
         {
-            Params.NotBlank(farSettlementDate, "SettlementDate must not be blank");
+            if (Params.IsNullOrEmpty(farSettlementDate))
+            {
+                _components.Remove(FxOrder.FarSettlementDate);
+                return this;
+            }
             farSettlementDate = Params.Trim(farSettlementDate);
             farSettlementDate = FormatDates(farSettlementDate);
             _components[FxOrder.FarSettlementDate] = farSettlementDate;
@@ -193,7 +235,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarFixingDate(string farFixingDate)
         {
-            Params.NotBlank(farFixingDate, "FarFixingDate must not be blank");
+            if (Params.IsNullOrEmpty(farFixingDate))
+            {
+                _components.Remove(FxOrder.FarFixingDate);
+                return this;
+            }
             farFixingDate = Params.Trim(farFixingDate);
             farFixingDate = FormatDates(farFixingDate);
             _components[FxOrder.FarFixingDate] = farFixingDate;
@@ -202,7 +248,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetFarQuantity(string farQuantity)
         {
-            Params.NotBlank(farQuantity, "FarQuantity must not be blank");
+            if (Params.IsNullOrEmpty(farQuantity))
+            {
+                _components.Remove(FxOrder.FarQuantity);
+                return this;
+            }
             farQuantity = Params.Trim(farQuantity);
             if (!Params.IsNumeric(farQuantity))
             {
@@ -214,7 +264,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetAllocationTemplate(string templateName) //TODO: Is this a template name or a set of allocation accounts + quantities?
         {
-            Params.NotBlank(templateName, "Template name must not be blank");
+            if (Params.IsNullOrEmpty(templateName))
+            {
+                _components.Remove(FxOrder.AllocationTemplate);
+                return this;
+            }
             templateName = Params.Trim(templateName);
             _components[FxOrder.AllocationTemplate] = templateName;
             return this;
@@ -222,7 +276,11 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetPrice(string price)
         {
-            Params.NotBlank(price, "Price must not be blank");
+            if (Params.IsNullOrEmpty(price))
+            {
+                _components.Remove(FxOrder.Price);
+                return this;
+            }
             price = Params.Trim(price);
             if (!Params.IsNumeric(price))
             {
@@ -234,17 +292,55 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder SetPriceType(string priceType)
         {
-            Params.NotBlank(priceType);
+            if (Params.IsNullOrEmpty(priceType))
+            {
+                _components.Remove(FxOrder.PriceType);
+                return this;
+            }
             priceType = Params.Trim(priceType);
             _components[FxOrder.PriceType] = priceType;
+            return this;
+        }
+        
+        public FxOrderBuilder SetReferenceOne(string referenceOne)
+        {
+            if (Params.IsNullOrEmpty(referenceOne))
+            {
+                _components.Remove(FxOrder.Reference1);
+                return this;
+            }
+            if (referenceOne.Contains("|"))
+            {
+                throw new ArgumentException("References can not contain pipes (|)");
+            }
+            _components[FxOrder.Reference1] = referenceOne;
+            return this;
+        }
+
+        public FxOrderBuilder SetReferenceTwo(string referenceTwo)
+        {
+            if (Params.IsNullOrEmpty(referenceTwo))
+            {
+                _components.Remove(FxOrder.Reference1);
+                return this;
+            }
+            if (referenceTwo.Contains("|"))
+            {
+                throw new ArgumentException("References can not contain pipes (|)");
+            }
+            _components[FxOrder.Reference1] = referenceTwo;
             return this;
         }
 
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
             Params.NotBlank(name);
-            Params.NotNull(value);
             name = Params.Trim(name); //TODO: Checking on names vs existing properties?
+            if (Params.IsNullOrEmpty(value))
+            {
+                _components.Remove(name);
+                return this;
+            }
             value = Params.Trim(value);
             _components[name] = value;
             return this;

@@ -138,4 +138,38 @@ namespace BidFX.Public.API.Price.Tools
             Assert.IsFalse(Params.IsNumeric("123.456.7890"));
         }
     }
+
+    [TestFixture]
+    public class IsNullOrEmptyTest
+    {
+        [Test]
+        public void TestNullReturnsTrue()
+        {
+            Assert.IsTrue(Params.IsNullOrEmpty(null));
+        }
+        
+        [Test]
+        public void TestEmptyReturnsTrue()
+        {
+            Assert.IsTrue(Params.IsNullOrEmpty(""));
+        }
+        
+        [Test]
+        public void TestLargeBlankReturnsTrue()
+        {
+            Assert.IsTrue(Params.IsNullOrEmpty("          "));
+        }
+        
+        [Test]
+        public void TestBlankReturnsTrue()
+        {
+            Assert.IsTrue(Params.IsNullOrEmpty(" "));
+        }
+        
+        [Test]
+        public void TestNotEmptyReturnsTrue()
+        {
+            Assert.IsFalse(Params.IsNullOrEmpty("SomeVariable"));
+        }
+    }
 }

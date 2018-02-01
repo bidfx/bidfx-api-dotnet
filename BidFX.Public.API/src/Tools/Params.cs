@@ -137,5 +137,15 @@ namespace BidFX.Public.API.Price.Tools
         {
             return Regex.IsMatch(p, @"^\d+(\.\d+)?$");
         }
+
+        /// <summary>
+        ///  Determine if the supplied string represents a null, empty or blank string.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns>True if the string is null or empty, false otherwise.</returns>
+        public static bool IsNullOrEmpty(string p)
+        {
+            return p == null || Trim(p).Length == 0;
+        }
     }
 }

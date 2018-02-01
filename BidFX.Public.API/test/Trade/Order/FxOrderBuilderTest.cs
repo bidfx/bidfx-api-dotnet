@@ -104,7 +104,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "unsupported deal type: Invalid")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported deal type: Invalid")]
         public void TestInvalidDealTypeThrowsException()
         {
            var fxOrder = _orderBuilder.SetDealType("Invalid").Build();
@@ -140,7 +140,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestBlankCurrencyThrowsException()
+        public void TestBlankCurrencyClearsCurrency()
         {
             _orderBuilder.SetCurrency("EUR");
             _orderBuilder.SetCurrency("   ");
@@ -184,7 +184,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestBlankAccountThrowsException()
+        public void TestBlankAccountClearsAccount()
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("   ");
@@ -269,7 +269,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestEmptyQuantityThrowsException()
+        public void TestEmptyQuantityClearsQuantity()
         {
             _orderBuilder.SetQuantity("30000000");
             _orderBuilder.SetQuantity("");
@@ -278,7 +278,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestBlankQuantityThrowsException()
+        public void TestBlankQuantityClearsQuantity()
         {
             _orderBuilder.SetQuantity("10000000.00");
             _orderBuilder.SetQuantity("     ");
@@ -503,68 +503,93 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestSettingReferences()
+        public void TestSettingReferenceOne()
         {
-            var fxOrder = _orderBuilder.SetReference("reference_one", "reference_two").Build();
+            var fxOrder = _orderBuilder.SetReferenceOne("reference_one").Build();
             Assert.AreEqual("reference_one", fxOrder.GetReference1());
-            Assert.AreEqual("reference_two", fxOrder.GetReference2());
-
-            //TODO: Check if references will maintain leading and trailing whitespace
-            fxOrder = _orderBuilder.SetReference("  reference_three ", " reference_four ").Build();
-            Assert.AreEqual("  reference_three ", fxOrder.GetReference1());
-            Assert.AreEqual(" reference_four ", fxOrder.GetReference2());
-
-            fxOrder = _orderBuilder.SetReference("reference_five", "").Build();
-            Assert.AreEqual("reference_five", fxOrder.GetReference1());
-            Assert.AreEqual("", fxOrder.GetReference2());
             
-            fxOrder = _orderBuilder.SetReference("", "reference_eight").Build();
-            Assert.AreEqual("", fxOrder.GetReference1());
-            Assert.AreEqual("reference_eight", fxOrder.GetReference2());
+            fxOrder = _orderBuilder.SetReferenceOne("  reference_one_with_whitespace ").Build();
+            Assert.AreEqual("  reference_one_with_whitespace ", fxOrder.GetReference1());
+            
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingNullFirstReferenceClearsFirstReferenceToEmptyStringAndUpdatesSecondReference()
+        public void TestSettingNullReferenceOneClearsReferenceOne()
         {
-            _orderBuilder.SetReference("reference_one", "referecne_two");
-            _orderBuilder.SetReference(null, "reference_four");
+            _orderBuilder.SetReferenceOne("reference_one");
+            _orderBuilder.SetReferenceOne(null);
             var fxOrder = _orderBuilder.Build();
-            Assert.AreEqual("", fxOrder.GetReference1());
-            Assert.AreEqual("reference_four", fxOrder.GetReference2());
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
         [Test]
-        public void TestSettingNullSecondReferenceClearsSecondReferenceToEmptyStringAndUpdatesFirstReference()
+        public void TestSettingEmptyReferenceOneClearsReferenceOne()
         {
-            _orderBuilder.SetReference("reference_one", "reference_two");
-            _orderBuilder.SetReference("reference_three", null);
+            _orderBuilder.SetReferenceOne("reference_one");
+            _orderBuilder.SetReferenceOne("");
             var fxOrder = _orderBuilder.Build();
-            Assert.AreEqual("reference_three", fxOrder.GetReference1());
-            Assert.AreEqual("", fxOrder.GetReference2());
-            Assert.AreEqual(2, fxOrder.getInternalComponents());
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
         [Test]
-        public void TestSettingNullReferencesClearsReferences()
+        public void TestSettingBlankReferenceOneClearsReferenceOne()
         {
-            _orderBuilder.SetReference("reference_one", "reference_two");
+            _orderBuilder.SetReferenceOne("reference_one");
+            _orderBuilder.SetReferenceOne("   ");
             var fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         [ExpectedException("System.ArgumentException")]
-        public void TestReferenceOneWithPipeThrowsException()
+        public void TestSettingReferenceOneWithPipe()
         {
-            _orderBuilder.SetReference("parta|partb", "ref2");
+            _orderBuilder.SetReferenceOne("PartA|PartB");
+        }
+        
+        [Test]
+        public void TestSettingReferenceTwo()
+        {
+            var fxOrder = _orderBuilder.SetReferenceTwo("reference_two").Build();
+            Assert.AreEqual("reference_two", fxOrder.GetReference1());
+            
+            fxOrder = _orderBuilder.SetReferenceTwo("  reference_two_with_whitespace ").Build();
+            Assert.AreEqual("  reference_two_with_whitespace ", fxOrder.GetReference1());
+            
+        }
+
+        [Test]
+        public void TestSettingNullReferenceTwoClearsReferenceTwo()
+        {
+            _orderBuilder.SetReferenceTwo("reference_one");
+            _orderBuilder.SetReferenceTwo(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingEmptyReferenceTwoClearsReferenceTwo()
+        {
+            _orderBuilder.SetReferenceTwo("reference_one");
+            _orderBuilder.SetReferenceTwo("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingBlankReferenceTwoClearsReferenceTwo()
+        {
+            _orderBuilder.SetReferenceTwo("reference_one");
+            _orderBuilder.SetReferenceTwo("   ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         [ExpectedException("System.ArgumentException")]
-        public void TestReferenceTwoWithPipeThrowsException()
+        public void TestSettingReferenceTwoWithPipe()
         {
-            _orderBuilder.SetReference("ref1", "parta|partb");
+            _orderBuilder.SetReferenceTwo("PartA|PartB");
         }
 
         [Test]
@@ -647,10 +672,30 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingNullFixingDateThrowsException()
+        public void TestSettingNullFixingDateClearsFixingDate()
         {
+            _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingEmptyFixingDateClearsFixingDate()
+        {
+            _orderBuilder.SetFixingDate("2018-12-12");
+            _orderBuilder.SetFixingDate("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingBlankFixingDateClearsFixingDate()
+        {
+            _orderBuilder.SetFixingDate("2018-12-12");
+            _orderBuilder.SetFixingDate("  ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
@@ -685,14 +730,34 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarSettlementDate("2018-1-5").Build();
             Assert.AreEqual("2018-01-05", fxOrder.GetFarSettlementDate());
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingNullFarSettlementDateThrowsException()
+        public void TestSettingNullFarSettlementDateClearsFarSettlementDate()
         {
+            _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
+        [Test]
+        public void TestSettingEmptyFarSettlementDateClearsFarSettlementDate()
+        {
+            _orderBuilder.SetFarSettlementDate("2018-12-12");
+            _orderBuilder.SetFarSettlementDate("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingBlankFarSettlementDateClearsFarSettlementDate()
+        {
+            _orderBuilder.SetFarSettlementDate("2018-12-12");
+            _orderBuilder.SetFarSettlementDate("   ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
         [Test]
         [ExpectedException("System.ArgumentException")]
         public void TestSettingInvalidFarSettlementDateThrowsException()
@@ -725,12 +790,32 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarFixingDate("2018-1-5").Build();
             Assert.AreEqual("2018-01-05", fxOrder.GetFarFixingDate());
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingNullFarFixingDateThrowsException()
+        public void TestSettingNullFarFixingDateClearsFarFixingDate()
         {
+            _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingEmptyFarFixingDateClearsFarFixingDate()
+        {
+            _orderBuilder.SetFarFixingDate("2018-12-12");
+            _orderBuilder.SetFarFixingDate("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
+        }
+        
+        [Test]
+        public void TestSettingBlankFarFixingDateClearsFarFixingDate()
+        {
+            _orderBuilder.SetFarFixingDate("2018-12-12");
+            _orderBuilder.SetFarFixingDate("   ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
@@ -756,26 +841,31 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarTenor(" 1Y  ").Build();
             Assert.AreEqual("1Y", fxOrder.GetFarTenor());
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestNullFarTenorThrowsException()
+        public void TestSettingNullFarTenorClearsFarTenor()
         {
+            _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestEmptyFarTenorThrowsException()
+        public void TestSettingEmptyFarTenorClearsFarTenor()
         {
+            _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestBlankFarTenorThrowsException()
+        public void TestSettingBlankFarTenorClearsFarTenor()
         {
-            _orderBuilder.SetFarTenor("     ");
+            _orderBuilder.SetFarTenor("1M");
+            _orderBuilder.SetFarTenor("  ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
         
         [Test]
@@ -787,26 +877,32 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarCurrency("  EUR ").Build();
             Assert.AreEqual("EUR", fxOrder.GetFarCurrency());
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestNullFarCurrencyThrowsException()
+        public void TestSettingNullFarCurrencyClearsFarCurrency()
         {
+            _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestEmptyFarCurrencyThrowsException()
+        public void TestSettingEmptyFarCurrencyClearsFarCurrency()
         {
+            _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestBlankFarCurrencyThrowsException()
+        public void TestSettingBlankFarCurrencyClearsFarCurrency()
         {
-            _orderBuilder.SetFarCurrency("   ");
+            _orderBuilder.SetFarCurrency("GBP");
+            _orderBuilder.SetFarCurrency("    ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
@@ -832,26 +928,32 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarQuantity("27281P.00").Build();
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestNullFarQuantityThrowsException()
+        public void TestSettingNullFarQuantityClearsFarQuantity()
         {
+            _orderBuilder.SetFarQuantity("1000000.00");
             _orderBuilder.SetFarQuantity(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestEmptyFarQuantityThrowsException()
+        public void TestSettingEmptyFarQuantityClearsFarQuantity()
         {
+            _orderBuilder.SetFarQuantity("1000000.00");
             _orderBuilder.SetFarQuantity("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestBlankFarQuantityThrowsException()
+        public void TestSettingBlankFarQuantityClearsFarQuantity()
         {
-            _orderBuilder.SetFarQuantity("     ");
+            _orderBuilder.SetFarQuantity("1000000.00");
+            _orderBuilder.SetFarQuantity("    ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
@@ -865,24 +967,29 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingNullAllocationTemplateThrowsException()
+        public void TestSettingNullAllocationTemplateClearsAllocationTemplate()
         {
+            _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingEmptyAllocationTemplateThrowsException()
+        public void TestSettingEmptyAllocationTemplateClearsAllocationTemplate()
         {
+            _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
-        [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingBlankAllocationTemplateThrowsException()
+        [Test] public void TestSettingBlankAllocationTemplateClearsAllocationTemplate()
         {
-            _orderBuilder.SetAllocationTemplate("    ");
+            _orderBuilder.SetAllocationTemplate("alloc_template");
+            _orderBuilder.SetAllocationTemplate("   ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
         
         [Test]
@@ -903,24 +1010,30 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestNullPriceThrowsException()
+        public void TestSettingNullPriceClearsPrice()
         {
+            _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestEmptyPriceThrowsException()
+        public void TestSettingEmptyPriceClearsPrice()
         {
+            _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-
+        
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestBlankPriceThrowsException()
+        public void TestSettingBlankPriceClearsPrice()
         {
+            _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice("     ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
         
         [Test]
@@ -934,24 +1047,30 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestNullPriceTypeThrowsException()
+        public void TestSettingNullPriceTypeClearsPriceType()
         {
+            _orderBuilder.SetPriceType("Limit");
             _orderBuilder.SetPriceType(null);
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestEmptyPriceTypeThrowsException()
+        public void TestSettingEmptyPriceTypeClearsPriceType()
         {
+            _orderBuilder.SetPriceType("Limit");
             _orderBuilder.SetPriceType("");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestBlankPriceTypeThrowsException()
+        public void TestSettingBlankPriceTypeClearsPriceType()
         {
-            _orderBuilder.SetPriceType("     ");
+            _orderBuilder.SetPriceType("Limit");
+            _orderBuilder.SetPriceType("  ");
+            var fxOrder = _orderBuilder.Build();
+            Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
     }
 }
