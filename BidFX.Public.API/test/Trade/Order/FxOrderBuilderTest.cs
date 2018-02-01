@@ -65,9 +65,13 @@ namespace BidFX.Public.API.Trade.Order
 
             fxOrder = _orderBuilder.SetDealType("ndf").Build();
             Assert.AreEqual("NDF", fxOrder.GetDealType()); //TODO: Check this is the correct case
+            
+            
+            fxOrder = _orderBuilder.SetDealType("outright").Build();
+            Assert.AreEqual("Outright", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
 
             fxOrder = _orderBuilder.SetDealType("forward").Build();
-            Assert.AreEqual("Forward", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
+            Assert.AreEqual("Outright", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
 
             fxOrder = _orderBuilder.SetDealType("swap").Build();
             Assert.AreEqual("Swap", fxOrder.GetDealType()); //TODO: Check this is the correct case

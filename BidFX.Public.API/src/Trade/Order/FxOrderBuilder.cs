@@ -89,8 +89,9 @@ namespace BidFX.Public.API.Trade.Order
                 case "spot":
                     dealType = "Spot";
                     break;
+                case "outright":
                 case "forward":
-                    dealType = "Forward";
+                    dealType = "Outright";
                     break;
                 case "ndf":
                     dealType = "NDF";
