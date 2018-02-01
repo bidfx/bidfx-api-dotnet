@@ -551,10 +551,10 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingReferenceTwo()
         {
             var fxOrder = _orderBuilder.SetReferenceTwo("reference_two").Build();
-            Assert.AreEqual("reference_two", fxOrder.GetReference1());
+            Assert.AreEqual("reference_two", fxOrder.GetReference2());
             
             fxOrder = _orderBuilder.SetReferenceTwo("  reference_two_with_whitespace ").Build();
-            Assert.AreEqual("  reference_two_with_whitespace ", fxOrder.GetReference1());
+            Assert.AreEqual("  reference_two_with_whitespace ", fxOrder.GetReference2());
             
         }
 
