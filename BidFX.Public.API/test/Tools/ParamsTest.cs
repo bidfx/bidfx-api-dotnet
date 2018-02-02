@@ -45,7 +45,7 @@ namespace BidFX.Public.API.Price.Tools
             Assert.AreEqual("STRING", Params.ExactLength("     STRING", 6, "\"     STRING\" 6 Threw Exception"));
             Params.ExactLength("     STRING", 3, "Expected Exception.");
         }
-        
+
         [Test]
         [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestStringLengthBothEndsWhitespaceLengthSize()
@@ -53,7 +53,7 @@ namespace BidFX.Public.API.Price.Tools
             Assert.AreEqual("STRING", Params.ExactLength("     STRING   ", 6, "\"     STRING   \" 6 Threw Exception"));
             Params.ExactLength("     STRING   ", 2, "Expected Exception.");
         }
-        
+
         [Test]
         [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestNullThrowsException()
@@ -68,7 +68,7 @@ namespace BidFX.Public.API.Price.Tools
         [Test]
         public void TestEmptyStringReturnsSameObject()
         {
-            var expected = "";
+            string expected = "";
             Assert.AreSame(expected, Params.Trim(expected));
         }
 
@@ -77,18 +77,18 @@ namespace BidFX.Public.API.Price.Tools
         {
             Assert.AreEqual("", Params.Trim("   "));
         }
-        
+
         [Test]
         public void TestStringWithNoWhitespaceReturnsSameObject()
         {
-            var expected = "AString";
+            string expected = "AString";
             Assert.AreSame(expected, Params.Trim(expected));
         }
 
         [Test]
         public void TestStringWithWhitespaceInMiddleReturnsSameObject()
         {
-            var expected = "Another String";
+            string expected = "Another String";
             Assert.AreSame(expected, Params.Trim(expected));
         }
 
@@ -131,7 +131,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             Assert.IsFalse(Params.IsNumeric("Hello, World!"));
         }
-        
+
         [Test]
         public void TestNumbersWithMultiplePeriodsReturnsFalse()
         {
@@ -147,25 +147,25 @@ namespace BidFX.Public.API.Price.Tools
         {
             Assert.IsTrue(Params.IsNullOrEmpty(null));
         }
-        
+
         [Test]
         public void TestEmptyReturnsTrue()
         {
             Assert.IsTrue(Params.IsNullOrEmpty(""));
         }
-        
+
         [Test]
         public void TestLargeBlankReturnsTrue()
         {
             Assert.IsTrue(Params.IsNullOrEmpty("          "));
         }
-        
+
         [Test]
         public void TestBlankReturnsTrue()
         {
             Assert.IsTrue(Params.IsNullOrEmpty(" "));
         }
-        
+
         [Test]
         public void TestNotEmptyReturnsTrue()
         {

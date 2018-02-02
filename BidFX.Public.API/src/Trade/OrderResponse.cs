@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Trade
         public OrderResponse(HttpWebResponse webResponse) : base(webResponse)
         {
         }
-        
+
         public string GetOrderId()
         {
             return StatusCode == HttpStatusCode.OK && GetSize() > 0 ? GetField("order_ts_id") : "";

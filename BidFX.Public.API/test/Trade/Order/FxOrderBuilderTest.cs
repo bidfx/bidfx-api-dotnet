@@ -11,13 +11,13 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder = new FxOrderBuilder();
         }
-        
+
         [Test]
         public void TestSettingCurrencyPair()
         {
-            var fxOrder = _orderBuilder.SetCurrencyPair("GBPUSD").Build();
+            FxOrder fxOrder = _orderBuilder.SetCurrencyPair("GBPUSD").Build();
             Assert.AreEqual("GBPUSD", fxOrder.GetCurrencyPair());
-            
+
             fxOrder = _orderBuilder.SetCurrencyPair("  EURAUD ").Build();
             Assert.AreEqual("EURAUD", fxOrder.GetCurrencyPair());
         }
@@ -34,17 +34,16 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetCurrencyPair("USDJPY");
             _orderBuilder.SetCurrencyPair("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
-            
         }
-        
+
         [Test]
         public void TestBlankCurrencyPairClearsCurrencyPair()
         {
             _orderBuilder.SetCurrencyPair("USDJPY");
             _orderBuilder.SetCurrencyPair("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -53,20 +52,20 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetCurrencyPair("EURUSD");
             _orderBuilder.SetCurrencyPair(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestValidDealTypeSetsDealType()
         {
-            var fxOrder = _orderBuilder.SetDealType("spot").Build();
+            FxOrder fxOrder = _orderBuilder.SetDealType("spot").Build();
             Assert.AreEqual("Spot", fxOrder.GetDealType()); //TODO: Check this is the correct case
 
             fxOrder = _orderBuilder.SetDealType("ndf").Build();
             Assert.AreEqual("NDF", fxOrder.GetDealType()); //TODO: Check this is the correct case
-            
-            
+
+
             fxOrder = _orderBuilder.SetDealType("outright").Build();
             Assert.AreEqual("Outright", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
 
@@ -85,7 +84,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetDealType("Swap");
             _orderBuilder.SetDealType(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -94,7 +93,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetDealType("NDS");
             _orderBuilder.SetDealType("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -103,7 +102,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetDealType("Spot");
             _orderBuilder.SetDealType("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -111,14 +110,14 @@ namespace BidFX.Public.API.Trade.Order
         [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported deal type: Invalid")]
         public void TestInvalidDealTypeThrowsException()
         {
-           var fxOrder = _orderBuilder.SetDealType("Invalid").Build();
-           Assert.Null(fxOrder.GetDealType());
+            FxOrder fxOrder = _orderBuilder.SetDealType("Invalid").Build();
+            Assert.Null(fxOrder.GetDealType());
         }
 
         [Test]
         public void TestSettingCurrency()
         {
-            var fxOrder = _orderBuilder.SetCurrency("GBP").Build();
+            FxOrder fxOrder = _orderBuilder.SetCurrency("GBP").Build();
             Assert.AreEqual("GBP", fxOrder.GetCurrency());
 
             fxOrder = _orderBuilder.SetCurrency("  EUR ").Build();
@@ -130,7 +129,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetCurrency("GBP");
             _orderBuilder.SetCurrency(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -139,7 +138,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetCurrency("USD");
             _orderBuilder.SetCurrency("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -148,7 +147,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetCurrency("EUR");
             _orderBuilder.SetCurrency("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -162,7 +161,7 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingExecutingAccount()
         {
-            var fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
+            FxOrder fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
             Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
 
             fxOrder = _orderBuilder.SetAccount("  AN_ACCOUNT ").Build();
@@ -174,7 +173,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -183,7 +182,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -192,22 +191,22 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingSide()
         {
-            var fxOrder = _orderBuilder.SetSide("buy").Build();
+            FxOrder fxOrder = _orderBuilder.SetSide("buy").Build();
             Assert.AreEqual("Buy", fxOrder.GetSide()); //TODO: Check this is the correct case
-            
+
             fxOrder = _orderBuilder.SetSide("sell").Build();
             Assert.AreEqual("Sell", fxOrder.GetSide());
 
             fxOrder = _orderBuilder.SetSide("  buy").Build();
             Assert.AreEqual("Buy", fxOrder.GetSide());
-            
+
             fxOrder = _orderBuilder.SetSide(" sell  ").Build();
             Assert.AreEqual("Sell", fxOrder.GetSide());
         }
@@ -224,32 +223,32 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetSide("Buy");
             _orderBuilder.SetSide(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptySideClearsSide()
         {
             _orderBuilder.SetSide("Sell");
             _orderBuilder.SetSide("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankSideClearsSide()
         {
             _orderBuilder.SetSide("Sell");
             _orderBuilder.SetSide("     ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingQuantity()
         {
-            var fxOrder = _orderBuilder.SetQuantity("1000000.00").Build();
+            FxOrder fxOrder = _orderBuilder.SetQuantity("1000000.00").Build();
             Assert.AreEqual("1000000.00", fxOrder.GetQuantity());
 
             fxOrder = _orderBuilder.SetQuantity("5000000").Build();
@@ -268,7 +267,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetQuantity("2000000");
             _orderBuilder.SetQuantity(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -277,7 +276,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetQuantity("30000000");
             _orderBuilder.SetQuantity("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -286,16 +285,16 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetQuantity("10000000.00");
             _orderBuilder.SetQuantity("     ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingTenor()
         {
-            var fxOrder = _orderBuilder.SetTenor("2M").Build();
+            FxOrder fxOrder = _orderBuilder.SetTenor("2M").Build();
             Assert.AreEqual("2M", fxOrder.GetTenor());
-            
+
             fxOrder = _orderBuilder.SetTenor(" 1Y  ").Build();
             Assert.AreEqual("1Y", fxOrder.GetTenor());
         }
@@ -305,7 +304,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetTenor("6M");
             _orderBuilder.SetTenor(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -314,7 +313,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetTenor("4M");
             _orderBuilder.SetTenor("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -323,14 +322,14 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetTenor("BD");
             _orderBuilder.SetTenor("     ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingStrategyParameters()
         {
-            var fxOrder = _orderBuilder.SetStrategyParameter("s_param_one", "s_value_one")
+            FxOrder fxOrder = _orderBuilder.SetStrategyParameter("s_param_one", "s_value_one")
                 .SetStrategyParameter("s_param_two", "s_value_two")
                 .Build();
             Assert.AreEqual("s_value_one", fxOrder.GetStrategyParameter("s_param_one"));
@@ -343,20 +342,20 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetStrategyParameter(null, "not_null");
         }
-        
+
         [Test]
         public void TestSettingNullStrategyParameterValueClearsParameter()
         {
             _orderBuilder.SetStrategyParameter("not_null", "not_null_either");
             _orderBuilder.SetStrategyParameter("not_null", null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingSameStrategyParameterOverwritesOld()
         {
-            var fxOrder = _orderBuilder.SetStrategyParameter("parameter_one", "value_one")
+            FxOrder fxOrder = _orderBuilder.SetStrategyParameter("parameter_one", "value_one")
                 .SetStrategyParameter("parameter_one", "value_two")
                 .Build();
             Assert.AreEqual("value_two", fxOrder.GetStrategyParameter("parameter_one"));
@@ -381,7 +380,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetStrategyParameter("parameter_one", "not_empty");
             _orderBuilder.SetStrategyParameter("parameter_one", "");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -390,7 +389,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetStrategyParameter("parameter_one", "not_empty");
             _orderBuilder.SetStrategyParameter("parameter_one", "   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -398,7 +397,7 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingExecutingVenue()
         {
-            var fxOrder = _orderBuilder.SetExecutingVenue("executing_venue_abc").Build();
+            FxOrder fxOrder = _orderBuilder.SetExecutingVenue("executing_venue_abc").Build();
             Assert.AreEqual("executing_venue_abc", fxOrder.GetExecutingVenue());
 
             fxOrder = _orderBuilder.SetExecutingVenue("   executing_venue_def ").Build();
@@ -410,7 +409,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetExecutingVenue("TS-SS");
             _orderBuilder.SetExecutingVenue(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -419,7 +418,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetExecutingVenue("TS-SS");
             _orderBuilder.SetExecutingVenue("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -428,18 +427,18 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetExecutingVenue("TS-SS");
             _orderBuilder.SetExecutingVenue("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingHandlingType() //TODO: Do we restrict to "stream", "quote", and "automatic" only?
         {
-            var fxOrder = _orderBuilder.SetHandlingType("Stream").Build();
+            FxOrder fxOrder = _orderBuilder.SetHandlingType("Stream").Build();
             Assert.AreEqual("stream", fxOrder.GetHandlingType()); //TODO: Check case on this
 
             fxOrder = _orderBuilder.SetHandlingType("  Quote ").Build();
-            Assert.AreEqual("quote", fxOrder.GetHandlingType());  //TODO: Check case on this
+            Assert.AreEqual("quote", fxOrder.GetHandlingType()); //TODO: Check case on this
         }
 
         [Test]
@@ -447,16 +446,16 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetHandlingType("automatic");
             _orderBuilder.SetHandlingType(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyHandlingTypeClearsHandlingType()
         {
             _orderBuilder.SetHandlingType("stream");
             _orderBuilder.SetHandlingType("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -465,14 +464,14 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetHandlingType("quote");
             _orderBuilder.SetHandlingType("    ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingAccount()
         {
-            var fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
+            FxOrder fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
             Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
 
             fxOrder = _orderBuilder.SetAccount("  ANOTHER_ACCOUNT ").Build();
@@ -484,7 +483,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -493,7 +492,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -502,19 +501,18 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingReferenceOne()
         {
-            var fxOrder = _orderBuilder.SetReferenceOne("reference_one").Build();
+            FxOrder fxOrder = _orderBuilder.SetReferenceOne("reference_one").Build();
             Assert.AreEqual("reference_one", fxOrder.GetReference1());
-            
+
             fxOrder = _orderBuilder.SetReferenceOne("  reference_one_with_whitespace ").Build();
             Assert.AreEqual("  reference_one_with_whitespace ", fxOrder.GetReference1());
-            
         }
 
         [Test]
@@ -522,25 +520,25 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyReferenceOneClearsReferenceOne()
         {
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankReferenceOneClearsReferenceOne()
         {
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -550,16 +548,15 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetReferenceOne("PartA|PartB");
         }
-        
+
         [Test]
         public void TestSettingReferenceTwo()
         {
-            var fxOrder = _orderBuilder.SetReferenceTwo("reference_two").Build();
+            FxOrder fxOrder = _orderBuilder.SetReferenceTwo("reference_two").Build();
             Assert.AreEqual("reference_two", fxOrder.GetReference2());
-            
+
             fxOrder = _orderBuilder.SetReferenceTwo("  reference_two_with_whitespace ").Build();
             Assert.AreEqual("  reference_two_with_whitespace ", fxOrder.GetReference2());
-            
         }
 
         [Test]
@@ -567,25 +564,25 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyReferenceTwoClearsReferenceTwo()
         {
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankReferenceTwoClearsReferenceTwo()
         {
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -599,7 +596,7 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingSettlementDate()
         {
-            var fxOrder = _orderBuilder.SetSettlementDate("20180207").Build();
+            FxOrder fxOrder = _orderBuilder.SetSettlementDate("20180207").Build();
             Assert.AreEqual("2018-02-07", fxOrder.GetSettlementDate());
 
             fxOrder = _orderBuilder.SetSettlementDate(" 2018-05-21  ").Build();
@@ -620,7 +617,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -629,7 +626,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -638,7 +635,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -655,11 +652,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetSettlementDate("yyyy-mm-dd");
         }
-        
+
         [Test]
         public void TestSettingFixingDate()
         {
-            var fxOrder = _orderBuilder.SetFixingDate("20180207").Build();
+            FxOrder fxOrder = _orderBuilder.SetFixingDate("20180207").Build();
             Assert.AreEqual("2018-02-07", fxOrder.GetFixingDate());
 
             fxOrder = _orderBuilder.SetFixingDate(" 2018-05-21  ").Build();
@@ -680,25 +677,25 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyFixingDateClearsFixingDate()
         {
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankFixingDateClearsFixingDate()
         {
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate("  ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -715,11 +712,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFixingDate("yyyy-mm-dd");
         }
-        
+
         [Test]
         public void TestSettingFarSettlementDate()
         {
-            var fxOrder = _orderBuilder.SetFarSettlementDate("20180207").Build();
+            FxOrder fxOrder = _orderBuilder.SetFarSettlementDate("20180207").Build();
             Assert.AreEqual("2018-02-07", fxOrder.GetFarSettlementDate());
 
             fxOrder = _orderBuilder.SetFarSettlementDate(" 2018-05-21  ").Build();
@@ -734,34 +731,34 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarSettlementDate("2018-1-5").Build();
             Assert.AreEqual("2018-01-05", fxOrder.GetFarSettlementDate());
         }
-        
+
         [Test]
         public void TestSettingNullFarSettlementDateClearsFarSettlementDate()
         {
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyFarSettlementDateClearsFarSettlementDate()
         {
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankFarSettlementDateClearsFarSettlementDate()
         {
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         [ExpectedException("System.ArgumentException")]
         public void TestSettingInvalidFarSettlementDateThrowsException()
@@ -775,11 +772,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarSettlementDate("yyyy-mm-dd");
         }
-        
+
         [Test]
         public void TestSettingFarFixingDate()
         {
-            var fxOrder = _orderBuilder.SetFarFixingDate("20180207").Build();
+            FxOrder fxOrder = _orderBuilder.SetFarFixingDate("20180207").Build();
             Assert.AreEqual("2018-02-07", fxOrder.GetFarFixingDate());
 
             fxOrder = _orderBuilder.SetFarFixingDate(" 2018-05-21  ").Build();
@@ -794,31 +791,31 @@ namespace BidFX.Public.API.Trade.Order
             fxOrder = _orderBuilder.SetFarFixingDate("2018-1-5").Build();
             Assert.AreEqual("2018-01-05", fxOrder.GetFarFixingDate());
         }
-        
+
         [Test]
         public void TestSettingNullFarFixingDateClearsFarFixingDate()
         {
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyFarFixingDateClearsFarFixingDate()
         {
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankFarFixingDateClearsFarFixingDate()
         {
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -835,59 +832,60 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarFixingDate("yyyy-mm-dd");
         }
-        
+
         [Test]
         public void TestSettingFarTenor()
         {
-            var fxOrder = _orderBuilder.SetFarTenor("2M").Build();
+            FxOrder fxOrder = _orderBuilder.SetFarTenor("2M").Build();
             Assert.AreEqual("2M", fxOrder.GetFarTenor());
-            
+
             fxOrder = _orderBuilder.SetFarTenor(" 1Y  ").Build();
             Assert.AreEqual("1Y", fxOrder.GetFarTenor());
         }
-        
+
         [Test]
         public void TestSettingNullFarTenorClearsFarTenor()
         {
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyFarTenorClearsFarTenor()
         {
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
+
         [Test]
         public void TestSettingBlankFarTenorClearsFarTenor()
         {
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor("  ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingFarCurrency()
         {
-            var fxOrder = _orderBuilder.SetFarCurrency("GBP").Build();
+            FxOrder fxOrder = _orderBuilder.SetFarCurrency("GBP").Build();
             Assert.AreEqual("GBP", fxOrder.GetFarCurrency());
 
             fxOrder = _orderBuilder.SetFarCurrency("  EUR ").Build();
             Assert.AreEqual("EUR", fxOrder.GetFarCurrency());
         }
-        
+
         [Test]
         public void TestSettingNullFarCurrencyClearsFarCurrency()
         {
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -896,7 +894,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -905,7 +903,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency("    ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -915,11 +913,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarCurrency("GBPD");
         }
-        
+
         [Test]
         public void TestSettingFarQuantity()
         {
-            var fxOrder = _orderBuilder.SetFarQuantity("1000000.00").Build();
+            FxOrder fxOrder = _orderBuilder.SetFarQuantity("1000000.00").Build();
             Assert.AreEqual("1000000.00", fxOrder.GetFarQuantity());
 
             fxOrder = _orderBuilder.SetFarQuantity("5000000").Build();
@@ -932,13 +930,13 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarQuantity("27281P.00").Build();
         }
-        
+
         [Test]
         public void TestSettingNullFarQuantityClearsFarQuantity()
         {
             _orderBuilder.SetFarQuantity("1000000.00");
             _orderBuilder.SetFarQuantity(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -947,7 +945,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarQuantity("1000000.00");
             _orderBuilder.SetFarQuantity("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -956,16 +954,16 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetFarQuantity("1000000.00");
             _orderBuilder.SetFarQuantity("    ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
         [Test]
         public void TestSettingAllocationTemplate()
         {
-            var fxOrder = _orderBuilder.SetAllocationTemplate("alloc_template").Build();
+            FxOrder fxOrder = _orderBuilder.SetAllocationTemplate("alloc_template").Build();
             Assert.AreEqual("alloc_template", fxOrder.GetAllocationTemplate());
-            
+
             fxOrder = _orderBuilder.SetAllocationTemplate(" alloc_template_2  ").Build();
             Assert.AreEqual("alloc_template_2", fxOrder.GetAllocationTemplate());
         }
@@ -975,7 +973,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -984,22 +982,23 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
-        [Test] public void TestSettingBlankAllocationTemplateClearsAllocationTemplate()
+        [Test]
+        public void TestSettingBlankAllocationTemplateClearsAllocationTemplate()
         {
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate("   ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingPrice()
         {
-            var fxOrder = _orderBuilder.SetPrice("1000000.00").Build();
+            FxOrder fxOrder = _orderBuilder.SetPrice("1000000.00").Build();
             Assert.AreEqual("1000000.00", fxOrder.GetPrice());
 
             fxOrder = _orderBuilder.SetPrice("5000000").Build();
@@ -1018,34 +1017,34 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingEmptyPriceClearsPrice()
         {
             _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingBlankPriceClearsPrice()
         {
             _orderBuilder.SetPrice("1.345");
             _orderBuilder.SetPrice("     ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
-        
+
         [Test]
         public void TestSettingPriceType()
         {
-            var fxOrder = _orderBuilder.SetPriceType("Limit").Build();
+            FxOrder fxOrder = _orderBuilder.SetPriceType("Limit").Build();
             Assert.AreEqual("Limit", fxOrder.GetPriceType());
-            
+
             fxOrder = _orderBuilder.SetPriceType(" Market  ").Build();
             Assert.AreEqual("Market", fxOrder.GetPriceType());
         }
@@ -1055,7 +1054,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetPriceType("Limit");
             _orderBuilder.SetPriceType(null);
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -1064,7 +1063,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetPriceType("Limit");
             _orderBuilder.SetPriceType("");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
 
@@ -1073,7 +1072,7 @@ namespace BidFX.Public.API.Trade.Order
         {
             _orderBuilder.SetPriceType("Limit");
             _orderBuilder.SetPriceType("  ");
-            var fxOrder = _orderBuilder.Build();
+            FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.getInternalComponents().Length);
         }
     }

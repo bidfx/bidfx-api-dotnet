@@ -11,12 +11,32 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (host != null)
             {
-                if (host.Contains(".prod.")) return "PROD";
-                if (host.Contains(".uatprod.")) return "UATPROD";
-                if (host.Contains(".uatdev.")) return "UATDEV";
-                if (host.Contains(".qaprod.")) return "QAPROD";
-                if (host.Contains(".qadev.")) return "QADEV";
+                if (host.Contains(".prod."))
+                {
+                    return "PROD";
+                }
+
+                if (host.Contains(".uatprod."))
+                {
+                    return "UATPROD";
+                }
+
+                if (host.Contains(".uatdev."))
+                {
+                    return "UATDEV";
+                }
+
+                if (host.Contains(".qaprod."))
+                {
+                    return "QAPROD";
+                }
+
+                if (host.Contains(".qadev."))
+                {
+                    return "QADEV";
+                }
             }
+
             return "DEV";
         }
 
@@ -48,8 +68,8 @@ namespace BidFX.Public.API.Price.Tools
         {
             try
             {
-                var timeZone = TimeZoneInfo.Local.DisplayName;
-                var split = timeZone.IndexOf('/');
+                string timeZone = TimeZoneInfo.Local.DisplayName;
+                int split = timeZone.IndexOf('/');
                 return split == -1 ? timeZone : timeZone.Substring(++split);
             }
             catch (Exception)

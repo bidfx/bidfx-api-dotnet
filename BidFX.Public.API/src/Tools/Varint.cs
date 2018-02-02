@@ -12,34 +12,44 @@ namespace BidFX.Public.API.Price.Tools
         public static uint ReadU32(Stream stream)
         {
             uint result = 0;
-            for (var offset = 0; offset < 32; offset += BitsPerByte)
+            for (int offset = 0; offset < 32; offset += BitsPerByte)
             {
-                var nextByte = stream.ReadByte();
+                int nextByte = stream.ReadByte();
                 if (nextByte == -1)
                 {
                     throw new EndOfStreamException("stream ended while reading varint");
                 }
-                var b = (byte) nextByte;
+
+                byte b = (byte) nextByte;
                 result |= (uint) (b & 0x7f) << offset;
-                if (IsFinalByte(b)) break;
+                if (IsFinalByte(b))
+                {
+                    break;
+                }
             }
+
             return result;
         }
 
         public static ulong ReadU64(Stream stream)
         {
             ulong result = 0L;
-            for (var offset = 0; offset < 64; offset += BitsPerByte)
+            for (int offset = 0; offset < 64; offset += BitsPerByte)
             {
-                var nextByte = stream.ReadByte();
+                int nextByte = stream.ReadByte();
                 if (nextByte == -1)
                 {
                     throw new EndOfStreamException("stream ended while reading varint");
                 }
-                var b = (byte) nextByte;
+
+                byte b = (byte) nextByte;
                 result |= (ulong) (b & MaskLow7Bits) << offset;
-                if (IsFinalByte(b)) break;
+                if (IsFinalByte(b))
+                {
+                    break;
+                }
             }
+
             return result;
         }
 
@@ -52,9 +62,10 @@ namespace BidFX.Public.API.Price.Tools
         {
             while ((value & ~MaskLow7Bits) != 0)
             {
-                stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
+                stream.WriteByte((byte) ((value & MaskLow7Bits) | ContinuationBit));
                 value = value >> BitsPerByte;
             }
+
             stream.WriteByte((byte) value);
         }
 
@@ -67,9 +78,10 @@ namespace BidFX.Public.API.Price.Tools
         {
             while ((value & ~MaskLow7Bits) != 0)
             {
-                stream.WriteByte((byte) (value & MaskLow7Bits | ContinuationBit));
+                stream.WriteByte((byte) ((value & MaskLow7Bits) | ContinuationBit));
                 value = value >> BitsPerByte;
             }
+
             stream.WriteByte((byte) value);
         }
 
@@ -80,18 +92,24 @@ namespace BidFX.Public.API.Price.Tools
 
         public static string ReadString(Stream stream)
         {
-            var s = "";
-            var length = ReadU32(stream);
-            if (length == 0) return null;
-            for (var x = 0; x < length - 1; x++)
+            string s = "";
+            uint length = ReadU32(stream);
+            if (length == 0)
             {
-                var nextByte = stream.ReadByte();
+                return null;
+            }
+
+            for (int x = 0; x < length - 1; x++)
+            {
+                int nextByte = stream.ReadByte();
                 if (nextByte == -1)
                 {
                     throw new EndOfStreamException("stream ended while reading string");
                 }
+
                 s += (char) nextByte;
             }
+
             return s;
         }
 
@@ -103,7 +121,7 @@ namespace BidFX.Public.API.Price.Tools
             }
             else
             {
-                var bytes = Encoding.ASCII.GetBytes(s);
+                byte[] bytes = Encoding.ASCII.GetBytes(s);
                 WriteU32(stream, bytes.Length + 1);
                 stream.Write(bytes, 0, bytes.Length);
             }
@@ -112,7 +130,7 @@ namespace BidFX.Public.API.Price.Tools
         public static void WriteStringArray(Stream stream, string[] array)
         {
             WriteU32(stream, array.Length);
-            foreach (var s in array)
+            foreach (string s in array)
             {
                 WriteString(stream, s);
             }

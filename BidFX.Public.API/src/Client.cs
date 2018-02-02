@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Trade;
@@ -98,7 +99,11 @@ namespace BidFX.Public.API
 
         private void CreatePriceManager()
         {
-            if (_priceManager != null) return;
+            if (_priceManager != null)
+            {
+                return;
+            }
+
             _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
             {
                 Host = Host,
@@ -114,7 +119,11 @@ namespace BidFX.Public.API
 
         private void CreateTradeManager()
         {
-            if (_tradeManager != null) return;
+            if (_tradeManager != null)
+            {
+                return;
+            }
+
             _tradeManager = new TradeManager
             {
                 Host = Host,
@@ -129,13 +138,13 @@ namespace BidFX.Public.API
         {
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
-                var resourceName = new AssemblyName(assemblyName).Name + ".dll";
-                var resource = Array.Find(GetType().Assembly.GetManifestResourceNames(),
+                string resourceName = new AssemblyName(assemblyName).Name + ".dll";
+                string resource = Array.Find(GetType().Assembly.GetManifestResourceNames(),
                     element => element.EndsWith(resourceName));
 
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
                 {
-                    var assemblyData = new byte[stream.Length];
+                    byte[] assemblyData = new byte[stream.Length];
                     stream.Read(assemblyData, 0, assemblyData.Length);
                     return Assembly.Load(assemblyData);
                 }

@@ -11,23 +11,26 @@ namespace BidFX.Public.API.Price.Tools
 {
     internal class ConnectionTools
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {
-            var sslStream = disableHostnameSslChecks
+            SslStream sslStream = disableHostnameSslChecks
                 ? new SslStream(stream, false, AllowCertsFromTs)
                 : new SslStream(stream, false);
             sslStream.AuthenticateAsClient(host);
             if (sslStream.IsAuthenticated)
             {
                 stream = sslStream;
-                if (Log.IsDebugEnabled) Log.Debug("Upgraded stream to SSL");
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("Upgraded stream to SSL");
+                }
             }
             else
             {
@@ -43,7 +46,7 @@ private static readonly ILog Log =
 
         public static string CreateTunnelHeader(string username, string password, string service, GUID guid)
         {
-            var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ':' + password));
+            string auth = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ':' + password));
             return "CONNECT " + service + " HTTP/1.1\r\nAuthorization: Basic " + auth + "\r\n" +
                    "GUID: " + guid + "\r\n\r\n";
         }
@@ -54,18 +57,20 @@ private static readonly ILog Log =
             {
                 Log.Debug("sending: " + message);
             }
+
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             stream.Flush();
         }
 
         public static void ReadTunnelResponse(Stream stream)
         {
-            var buffer = new ByteBuffer();
-            var response = buffer.ReadLineFromStream(stream);
+            ByteBuffer buffer = new ByteBuffer();
+            string response = buffer.ReadLineFromStream(stream);
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("received: " + response);
             }
+
             if (!"HTTP/1.1 200 OK".Equals(response) || buffer.ReadLineFromStream(stream).Length != 0)
             {
                 const string prefix = "HTTP/1.1 ";
@@ -73,6 +78,7 @@ private static readonly ILog Log =
                 {
                     response = response.Substring(prefix.Length, response.Length - prefix.Length);
                 }
+
                 throw new TunnelException("tunnel rejected with response: " + response);
             }
         }

@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         /// <param name="fieldDefs">the list of new field definitions to add</param>
         public static void AddAllFields(IDataDictionary dataDictionary, IEnumerable<FieldDef> fieldDefs)
         {
-            foreach (var fieldDef in fieldDefs)
+            foreach (FieldDef fieldDef in fieldDefs)
             {
                 dataDictionary.AddFieldDef(fieldDef);
             }

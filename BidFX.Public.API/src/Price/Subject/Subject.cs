@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private static string[] BuildComponents(string formattedSubject)
         {
-            var builder = new SubjectBuilder();
+            SubjectBuilder builder = new SubjectBuilder();
             Formatter.ParseSubject(formattedSubject, builder);
             return builder.GetComponents();
         }
@@ -45,7 +45,7 @@ namespace BidFX.Public.API.Price.Subject
         /// <returns>the variable value or null if the variable is undefiened</returns>
         public string GetComponent(string key)
         {
-            var index = SubjectUtils.BinarySearch(_components, _components.Length, key);
+            int index = SubjectUtils.BinarySearch(_components, _components.Length, key);
             return index >= 0 ? _components[index + 1] : null;
         }
 
@@ -94,8 +94,16 @@ namespace BidFX.Public.API.Price.Subject
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
             return obj.GetType() == GetType() && Equals((Subject) obj);
         }
 

@@ -7,10 +7,10 @@ namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -25,7 +25,11 @@ private static readonly ILog Log =
             }
             catch (Exception)
             {
-                if (Log.IsDebugEnabled) Log.Debug("cannot convert \"" + s + "\" to decimal");
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("cannot convert \"" + s + "\" to decimal");
+                }
+
                 return defaultValue;
             }
         }
@@ -38,7 +42,11 @@ private static readonly ILog Log =
             }
             catch (Exception)
             {
-                if (Log.IsDebugEnabled) Log.Debug("cannot convert \"" + s + "\" to long");
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("cannot convert \"" + s + "\" to long");
+                }
+
                 return defaultValue;
             }
         }
@@ -51,7 +59,11 @@ private static readonly ILog Log =
             }
             catch (Exception)
             {
-                if (Log.IsDebugEnabled) Log.Debug("cannot convert \"" + s + "\" to int");
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("cannot convert \"" + s + "\" to int");
+                }
+
                 return defaultValue;
             }
         }
@@ -60,26 +72,32 @@ private static readonly ILog Log =
         {
             try
             {
-                var slash = fraction.IndexOf('/');
+                int slash = fraction.IndexOf('/');
                 if (slash == -1)
                 {
                     return decimal.Parse(fraction, DecimalStyle, CultureInfo.InvariantCulture);
                 }
-                var s = fraction.Substring(slash + 1);
-                var denominator = int.Parse(s);
-                var space = fraction.IndexOf(' ');
+
+                string s = fraction.Substring(slash + 1);
+                int denominator = int.Parse(s);
+                int space = fraction.IndexOf(' ');
                 if (space == -1)
                 {
                     return (decimal) int.Parse(fraction.Substring(0, slash)) / denominator;
                 }
-                var whole = Math.Abs(int.Parse(fraction.Substring(0, space)));
-                var numerator = int.Parse(fraction.Substring(space + 1, slash - (space + 1)));
-                var abs = whole + (decimal) numerator / denominator;
+
+                int whole = Math.Abs(int.Parse(fraction.Substring(0, space)));
+                int numerator = int.Parse(fraction.Substring(space + 1, slash - (space + 1)));
+                decimal abs = whole + (decimal) numerator / denominator;
                 return fraction[0] == '-' ? -abs : abs;
             }
             catch (Exception)
             {
-                if (Log.IsDebugEnabled) Log.Debug("cannot convert fraction \"" + fraction + "\" to decimal");
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("cannot convert fraction \"" + fraction + "\" to decimal");
+                }
+
                 return 0m;
             }
         }

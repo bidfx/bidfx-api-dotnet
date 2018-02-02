@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Example
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         private const string USERNAME = "dtang";
         private const string PASSWORD = "HelloWorld123";
         private const string ACCOUNT = "FX_ACCT";
@@ -25,7 +25,7 @@ namespace BidFX.Public.API.Example
 
         private void Run()
         {
-            var _client = DefaultClient.Client;
+            Client _client = DefaultClient.Client;
             _client.Host = "ny-tunnel.uatdev.tradingscreen.com";
             _client.Username = USERNAME;
             _client.Password = PASSWORD;
@@ -33,16 +33,18 @@ namespace BidFX.Public.API.Example
 
             if (_client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
-                var depthSubject = CommonSubjects.CreateLevelTwoSpotStreamingSubject(ACCOUNT, "GBPUSD", "GBP", "1000000.00").CreateSubject();
+                Subject depthSubject = CommonSubjects
+                    .CreateLevelTwoSpotStreamingSubject(ACCOUNT, "GBPUSD", "GBP", "1000000.00").CreateSubject();
                 _client.PriceSubscriber.Subscribe(depthSubject);
             }
             else
             {
                 Log.Warn("Timed out waiting for session to be ready.");
-                foreach (var providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
+                foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
                     Log.Info(providerProperties.ToString());
                 }
+
                 DefaultClient.Client.PriceSession.Stop();
             }
         }
@@ -52,15 +54,15 @@ namespace BidFX.Public.API.Example
             if (priceEvent.AllPriceFields.FieldNames.Contains("BidLevels") &&
                 priceEvent.AllPriceFields.FieldNames.Contains("AskLevels"))
             {
-                var stringBuilder = new StringBuilder();
-                var bids = priceEvent.AllPriceFields.IntField("BidLevels") ?? 0;
-                var asks = priceEvent.AllPriceFields.IntField("AskLevels") ?? 0;
-                for (var i = 1; i <= Math.Min(Math.Max(bids, asks), 3); i++)
+                StringBuilder stringBuilder = new StringBuilder();
+                int bids = priceEvent.AllPriceFields.IntField("BidLevels") ?? 0;
+                int asks = priceEvent.AllPriceFields.IntField("AskLevels") ?? 0;
+                for (int i = 1; i <= Math.Min(Math.Max(bids, asks), 3); i++)
                 {
-                    var bidfirm = priceEvent.AllPriceFields.StringField("BidFirm" + i) ?? "";
-                    var bid = priceEvent.AllPriceFields.DecimalField("Bid" + i) ?? 0;
-                    var ask = priceEvent.AllPriceFields.DecimalField("Ask" + i) ?? 0;
-                    var askfirm = priceEvent.AllPriceFields.StringField("AskFirm" + i) ?? "";
+                    string bidfirm = priceEvent.AllPriceFields.StringField("BidFirm" + i) ?? "";
+                    decimal bid = priceEvent.AllPriceFields.DecimalField("Bid" + i) ?? 0;
+                    decimal ask = priceEvent.AllPriceFields.DecimalField("Ask" + i) ?? 0;
+                    string askfirm = priceEvent.AllPriceFields.StringField("AskFirm" + i) ?? "";
                     stringBuilder.AppendLine();
                     stringBuilder.Append(bidfirm.PadLeft(6));
                     stringBuilder.Append(" ");
@@ -70,9 +72,9 @@ namespace BidFX.Public.API.Example
                     stringBuilder.Append(" ");
                     stringBuilder.Append(askfirm.PadRight(8));
                 }
+
                 Log.Info(stringBuilder.ToString());
             }
-            
         }
     }
 }

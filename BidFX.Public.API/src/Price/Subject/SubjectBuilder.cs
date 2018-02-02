@@ -11,10 +11,10 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -73,6 +73,7 @@ private static readonly ILog Log =
                 Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
                 return this;
             }
+
             SubjectComponent(key, value);
             return this;
         }
@@ -90,7 +91,7 @@ private static readonly ILog Log =
             }
             else
             {
-                var index = SubjectUtils.BinarySearch(_components, _size, key);
+                int index = SubjectUtils.BinarySearch(_components, _size, key);
                 if (index < 0)
                 {
                     AddComponentAt(-1 - index, key, value);
@@ -104,7 +105,11 @@ private static readonly ILog Log =
 
         private void AddComponentAt(int index, string key, string value)
         {
-            if (_size == _components.Length) ExtendCapacity();
+            if (_size == _components.Length)
+            {
+                ExtendCapacity();
+            }
+
             Array.Copy(_components, index, _components, index + 2, _size - index);
             _components[index] = key;
             _components[index + 1] = value;
@@ -113,8 +118,8 @@ private static readonly ILog Log =
 
         private void ExtendCapacity()
         {
-            var newCapacity = _components.Length << 1;
-            var oldComponents = _components;
+            int newCapacity = _components.Length << 1;
+            string[] oldComponents = _components;
             _components = new string[newCapacity];
             Array.Copy(oldComponents, 0, _components, 0, _size);
         }
@@ -126,23 +131,31 @@ private static readonly ILog Log =
 
         private static string InternaliseKey(string key)
         {
-            var alt = CommonComponents.CommonKey(key);
-            if (alt != null) return alt;
+            string alt = CommonComponents.CommonKey(key);
+            if (alt != null)
+            {
+                return alt;
+            }
+
             SubjectValidator.ValidatePart(key, SubjectPart.Key);
             return key;
         }
 
         private static string InternaliseValue(string value)
         {
-            var alt = CommonComponents.CommonValue(value);
-            if (alt != null) return alt;
+            string alt = CommonComponents.CommonValue(value);
+            if (alt != null)
+            {
+                return alt;
+            }
+
             SubjectValidator.ValidatePart(value, SubjectPart.Value);
             return value;
         }
 
         internal string[] GetComponents()
         {
-            var components = new string[_size];
+            string[] components = new string[_size];
             Array.Copy(_components, 0, components, 0, _size);
             return components;
         }
@@ -154,7 +167,7 @@ private static readonly ILog Log =
         /// <returns>the variable value of null if the variable is undefined</returns>
         public string LookupValue(string key)
         {
-            var index = SubjectUtils.BinarySearch(_components, _size, key);
+            int index = SubjectUtils.BinarySearch(_components, _size, key);
             return index >= 0 ? _components[index + 1] : null;
         }
 
@@ -177,7 +190,5 @@ private static readonly ILog Log =
         {
             return new SubjectFormatter().FormatToString(this);
         }
-
-        
     }
 }

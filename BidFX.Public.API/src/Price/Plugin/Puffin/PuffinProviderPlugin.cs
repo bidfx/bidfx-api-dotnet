@@ -20,10 +20,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// <author>Paul MacDonald</author>
     internal class PuffinProviderPlugin : IProviderPlugin
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -53,7 +53,7 @@ private static readonly ILog Log =
 
         public PuffinProviderPlugin()
         {
-            var name =
+            string name =
                 NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
@@ -64,8 +64,12 @@ private static readonly ILog Log =
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
-            var previousStatus = ProviderStatus;
-            if (previousStatus == status && string.Equals(StatusReason, reason)) return;
+            ProviderStatus previousStatus = ProviderStatus;
+            if (previousStatus == status && string.Equals(StatusReason, reason))
+            {
+                return;
+            }
+
             ProviderStatus = status;
             StatusReason = reason;
             InapiEventHandler.OnProviderStatus(this, previousStatus);
@@ -73,7 +77,11 @@ private static readonly ILog Log =
 
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("subscribing to " + subject);
+            }
+
             if (!IsPermissionGranted(subject)) //Restriction for AXA
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.PROHIBITED,
@@ -98,7 +106,11 @@ private static readonly ILog Log =
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("unsubscribing from " + subject);
+            }
+
             if (_puffinConnection != null)
             {
                 _puffinConnection.Unsubscribe(subject);
@@ -114,7 +126,11 @@ private static readonly ILog Log =
 
         public void Start()
         {
-            if (InapiEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
+            if (InapiEventHandler == null)
+            {
+                throw new IllegalStateException("set event handler before starting plugin");
+            }
+
             if (_running.CompareAndSet(false, true))
             {
                 _startTime = JavaTime.CurrentTimeMillis();
@@ -130,6 +146,7 @@ private static readonly ILog Log =
                 {
                     _puffinConnection.Close(Name + " stopped");
                 }
+
                 NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
             }
         }
@@ -160,6 +177,7 @@ private static readonly ILog Log =
                     }
                 }
             }
+
             Log.Info("thread stopped");
         }
 
@@ -170,16 +188,19 @@ private static readonly ILog Log =
                 NotifyStatusChange(ProviderStatus.Invalid, "Host property has not been set");
                 return false;
             }
+
             if (Username == null)
             {
                 NotifyStatusChange(ProviderStatus.Invalid, "Username property has not been set");
                 return false;
             }
+
             if (Password == null)
             {
                 NotifyStatusChange(ProviderStatus.Invalid, "Password property has not been set");
                 return false;
             }
+
             return true;
         }
 
@@ -187,7 +208,7 @@ private static readonly ILog Log =
         {
             try
             {
-                var heartbeatInterval = HandshakeWithServer();
+                TimeSpan heartbeatInterval = HandshakeWithServer();
                 _puffinConnection = new PuffinConnection(_stream, this, heartbeatInterval);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin price server");
                 _puffinConnection.ProcessIncommingMessages();
@@ -195,7 +216,10 @@ private static readonly ILog Log =
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled) Log.Debug("connection terminated by " + e.Message);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("connection terminated by " + e.Message);
+                }
             }
         }
 
@@ -204,12 +228,12 @@ private static readonly ILog Log =
             try
             {
                 Log.Info("opening socket to " + Host + ':' + Port);
-                var client = new TcpClient(Host, Port);
+                TcpClient client = new TcpClient(Host, Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
                     ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
-                    var tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     SendPuffinUrl();
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -218,9 +242,10 @@ private static readonly ILog Log =
                 {
                     SendPuffinUrl();
                 }
-                var welcome = ReadMessage();
-                var publicKey = FieldExtractor.Extract(welcome, "PublicKey");
-                var encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
+
+                string welcome = ReadMessage();
+                string publicKey = FieldExtractor.Extract(welcome, "PublicKey");
+                string encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
                 ConnectionTools.SendMessage(_stream, new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
                     .AddAttribute("Name", Username)
@@ -228,12 +253,13 @@ private static readonly ILog Log =
                     .AddAttribute("Description", PublicApi.Name)
                     .AddAttribute("Version", ProtocolVersion)
                     .ToString());
-                var grant = ReadMessage();
+                string grant = ReadMessage();
                 if (!Convert.ToBoolean(FieldExtractor.Extract(grant, "Access")))
                 {
                     throw new AuthenticationException("Access was not granted: "
                                                       + FieldExtractor.Extract(grant, "Text"));
                 }
+
                 ReadMessage(); //Service description
                 ConnectionTools.SendMessage(_stream, new PuffinElement(PuffinTagName.ServiceDescription)
                     .AddAttribute("GUID", _guid.ToString())
@@ -270,11 +296,12 @@ private static readonly ILog Log =
 
         private string ReadMessage()
         {
-            var message = _buffer.ReadXmlFromStream(_stream);
+            string message = _buffer.ReadXmlFromStream(_stream);
             if (Log.IsDebugEnabled)
             {
                 Log.Debug(Name + " received: " + message);
             }
+
             return message;
         }
     }

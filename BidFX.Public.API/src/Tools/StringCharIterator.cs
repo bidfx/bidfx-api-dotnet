@@ -47,10 +47,18 @@ namespace BidFX.Public.API.Price.Tools
 
         public string Next()
         {
-            if (!HasNext()) throw new InvalidOperationException();
-            var next = _string.IndexOf(_mDelimiter, _position);
-            if (next == -1) next = _end;
-            var token = _string.Substring(_position, next - _position);
+            if (!HasNext())
+            {
+                throw new InvalidOperationException();
+            }
+
+            int next = _string.IndexOf(_mDelimiter, _position);
+            if (next == -1)
+            {
+                next = _end;
+            }
+
+            string token = _string.Substring(_position, next - _position);
             _position = ++next;
             return token;
         }

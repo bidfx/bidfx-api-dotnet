@@ -82,7 +82,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void UseSpaceAsSeparatorForSubjectFilter()
         {
-            var formatter = new SubjectFormatter(' ', '=');
+            SubjectFormatter formatter = new SubjectFormatter(' ', '=');
             formatter.ParseSubject("LiquidityProvider=Reuters|ComStock Exchange=[A-Z]{3} AssetClass=Future|Option",
                 Handler);
             _mockHandler.Verify(handler => handler.SubjectComponent("AssetClass", "Future|Option"));

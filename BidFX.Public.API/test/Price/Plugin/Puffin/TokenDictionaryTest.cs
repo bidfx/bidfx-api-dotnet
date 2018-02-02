@@ -52,7 +52,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_set_are_tokens()
         {
-            for (var i = 128; i < 256; ++i)
+            for (int i = 128; i < 256; ++i)
             {
                 Assert.True(TokenDictionary.IsFirstByteOfToken((byte) i));
             }
@@ -61,7 +61,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_unset_are_not_tokens()
         {
-            for (var i = 0; i < 128; ++i)
+            for (int i = 0; i < 128; ++i)
             {
                 Assert.False(TokenDictionary.IsFirstByteOfToken((byte) i));
             }
@@ -128,7 +128,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             Assert.False(TokenDictionary.IsPlainText(128));
             Assert.False(TokenDictionary.IsPlainText(129));
-            for (var i = 128; i < 256; ++i)
+            for (int i = 128; i < 256; ++i)
             {
                 Assert.False(TokenDictionary.IsPlainText((byte) i));
             }
@@ -137,7 +137,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_unset_are_plain_text()
         {
-            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
+            for (int i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.True(TokenDictionary.IsPlainText((byte) i));
             }
@@ -202,7 +202,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_set_are_not_token()
         {
-            for (var i = 128; i < 256; ++i)
+            for (int i = 128; i < 256; ++i)
             {
                 Assert.False(TokenDictionary.IsSecondByteOfToken((byte) i));
             }
@@ -211,7 +211,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void bytes_with_bit_7_unset_are_token()
         {
-            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
+            for (int i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.True(TokenDictionary.IsSecondByteOfToken((byte) i));
             }
@@ -238,7 +238,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void other_ascii_bytes_with_bit_7_unset_are_not_token()
         {
-            for (var i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
+            for (int i = Enum.GetNames(typeof(TokenType)).Length; i < 128; ++i)
             {
                 Assert.False(TokenDictionary.IsTokenType((byte) i));
             }
@@ -277,15 +277,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void all_two_byte_token_codes_increase_in_sequence()
         {
-            var expected = 0;
+            int expected = 0;
             // first bytes between 0x80 and 0xff
             // seconds bytes between 0x09 and 0x7f
-            for (var second = 0x09; second <= 0x7f; ++second)
+            for (int second = 0x09; second <= 0x7f; ++second)
+            for (int first = 0x80; first <= 0xff; ++first)
             {
-                for (var first = 0x80; first <= 0xff; ++first)
-                {
-                    Assert.AreEqual(expected++, TokenDictionary.TwoByteCode((byte) first, (byte) second));
-                }
+                Assert.AreEqual(expected++, TokenDictionary.TwoByteCode((byte) first, (byte) second));
             }
         }
     }
@@ -296,11 +294,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void each_insert_increases_the_code()
         {
-            var dictionary = new TokenDictionary();
+            TokenDictionary dictionary = new TokenDictionary();
             const int maxTokens = 15232;
-            for (var i = 0; i < maxTokens; ++i)
+            for (int i = 0; i < maxTokens; ++i)
             {
-                var tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
+                XmlTokenCode tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
                 Assert.AreEqual(i, tokenCode.Code);
                 Assert.AreEqual(TokenType.IntegerValue, tokenCode.Token.TokenType);
                 Assert.AreEqual(i.ToString(), tokenCode.Token.Text);
@@ -310,10 +308,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void once_inserted_a_token_can_be_fetched()
         {
-            var dictionary = new TokenDictionary();
-            for (var i = 0; i < 5; ++i)
+            TokenDictionary dictionary = new TokenDictionary();
+            for (int i = 0; i < 5; ++i)
             {
-                var tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
+                XmlTokenCode tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(i));
                 Assert.AreEqual(tokenCode.Token, dictionary.LookupToken(tokenCode.Code));
             }
         }
@@ -321,12 +319,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void each_time_a_token_is_used_its_useage_count_increases()
         {
-            var dictionary = new TokenDictionary();
-            var tokenCode = dictionary.InsertToken(PuffinToken.StringValue("sweeno"));
+            TokenDictionary dictionary = new TokenDictionary();
+            XmlTokenCode tokenCode = dictionary.InsertToken(PuffinToken.StringValue("sweeno"));
             Assert.AreEqual(0, tokenCode.Count);
-            for (var i = 1; i < 10; ++i)
+            for (int i = 1; i < 10; ++i)
             {
-                var token = dictionary.LookupToken(tokenCode.Code);
+                PuffinToken token = dictionary.LookupToken(tokenCode.Code);
                 Assert.AreEqual(i, tokenCode.Count);
                 Assert.AreEqual("sweeno", token.Text);
             }
@@ -335,11 +333,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void fetching_a_token_before_insertion_throws_and_exception()
         {
-            var dictionary = new TokenDictionary();
-            for (var i = 0; i < 5; ++i)
+            TokenDictionary dictionary = new TokenDictionary();
+            for (int i = 0; i < 5; ++i)
             {
                 dictionary.InsertToken(PuffinToken.IntegerValue(i));
             }
+
             try
             {
                 dictionary.LookupToken(6);
@@ -353,27 +352,28 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void most_frequently_used_tokens_bubble_up_to_one_byte_tokens()
         {
-            var dictionary = new TokenDictionary();
+            TokenDictionary dictionary = new TokenDictionary();
             // overfill the directory in reverse
-            for (var value = 20000; value-- > 0;)
+            for (int value = 20000; value-- > 0;)
             {
-                var tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(value));
+                XmlTokenCode tokenCode = dictionary.InsertToken(PuffinToken.IntegerValue(value));
                 // access the lower value tokens the most to make them bubble up to the top.
-                var usage = value < 128 ? 128 - value : 0;
-                for (var i = 0; i < usage; ++i)
+                int usage = value < 128 ? 128 - value : 0;
+                for (int i = 0; i < usage; ++i)
                 {
                     dictionary.LookupToken(tokenCode.Code);
                 }
             }
 
-            var oneByteTokens = new HashSet<string>();
-            for (var code = 0; code < 128; ++code)
+            HashSet<string> oneByteTokens = new HashSet<string>();
+            for (int code = 0; code < 128; ++code)
             {
                 oneByteTokens.Add(dictionary.LookupToken(code).Text);
             }
-            for (var code = 0; code < 128; ++code)
+
+            for (int code = 0; code < 128; ++code)
             {
-                var text = code.ToString();
+                string text = code.ToString();
                 Assert.True(oneByteTokens.Contains(text), "one byte tokens contains: " + text);
             }
         }

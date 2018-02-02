@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Price.Subject
         public const string Cross = "Cross";
         public const string Indi = "Indi";
         public const string PremiumFX = "PremiumFX";
-        
+
         internal static readonly string[] CommonKeys =
         {
             "Access",
@@ -434,17 +434,17 @@ namespace BidFX.Public.API.Price.Subject
 
             "Buy",
             "Sell",
-            
+
             Stream,
             Quote,
-            
+
             Spot,
             Forward,
             Outright,
             Swap,
             NDS,
             NDF,
-            
+
             Cross,
 
             // Tube components
@@ -469,7 +469,7 @@ namespace BidFX.Public.API.Price.Subject
                 {
                     return null;
                 }
-    
+
                 return item;
             }
             catch (Exception)
@@ -487,7 +487,7 @@ namespace BidFX.Public.API.Price.Subject
                 {
                     return null;
                 }
-    
+
                 return item;
             }
             catch (Exception)

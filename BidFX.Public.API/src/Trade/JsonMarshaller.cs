@@ -7,13 +7,13 @@ namespace BidFX.Public.API.Trade
     {
         public static string ToJSON(FxOrder order)
         {
-            var stringBuilder = new StringBuilder();
-            var components = order.getInternalComponents();
+            StringBuilder stringBuilder = new StringBuilder();
+            string[] components = order.getInternalComponents();
             stringBuilder.Append("{");
-            for (var i = 0; i < components.Length;)
+            for (int i = 0; i < components.Length;)
             {
-                var key = components[i++];
-                var value = components[i++];
+                string key = components[i++];
+                string value = components[i++];
                 stringBuilder.Append("\"");
                 stringBuilder.Append(key);
                 stringBuilder.Append("\":");
@@ -38,6 +38,7 @@ namespace BidFX.Public.API.Trade
                     stringBuilder.Append(",");
                 }
             }
+
             stringBuilder.Append("}");
             return stringBuilder.ToString();
         }

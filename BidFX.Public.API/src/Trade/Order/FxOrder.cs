@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Trade.Order
         public const string AllocationTemplate = "allocation_template";
         public const string Price = "price";
         public const string PriceType = "price_type";
-        
+
         private readonly string[] _components;
         private Dictionary<string, string> _componentDictionary;
 
@@ -50,16 +50,16 @@ namespace BidFX.Public.API.Trade.Order
             if (_componentDictionary == null)
             {
                 _componentDictionary = new Dictionary<string, string>();
-                var i = 0;
+                int i = 0;
                 while (i < _components.Length)
                 {
-                    var key = _components[i++];
-                    var value = _components[i++];
+                    string key = _components[i++];
+                    string value = _components[i++];
                     _componentDictionary[key] = value;
                 }
             }
         }
-        
+
         public string GetCurrencyPair()
         {
             GenerateComponentDictionary();

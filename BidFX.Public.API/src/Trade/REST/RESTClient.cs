@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Trade.REST
             {
                 baseAddress = baseAddress.Substring(0, baseAddress.Length - 1);
             }
-            
+
             _baseAddress = baseAddress + ApiPath;
             _authHeader = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(username + ":" + password));
         }
@@ -37,18 +37,20 @@ namespace BidFX.Public.API.Trade.REST
             {
                 path = "/" + path;
             }
+
             Log.DebugFormat("Sending REST message to {0}{1}", _baseAddress, path);
-            var req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
 
             req.ContentType = "application/json";
-            
-            var response = (HttpWebResponse) req.GetResponse();
+
+            HttpWebResponse response = (HttpWebResponse) req.GetResponse();
             if (Log.IsDebugEnabled)
             {
                 Log.DebugFormat("Response Received, status {0}", response.StatusCode);
             }
+
             return response;
         }
 
@@ -58,21 +60,23 @@ namespace BidFX.Public.API.Trade.REST
             {
                 path = "/" + path;
             }
+
             Log.DebugFormat("Sending REST message with JSON to {0}{1}", _baseAddress, path);
-            var req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
-                
+
             req.ContentType = "application/json";
-            var streamWriter = new StreamWriter(req.GetRequestStream());
+            StreamWriter streamWriter = new StreamWriter(req.GetRequestStream());
             streamWriter.Write(json);
             streamWriter.Flush();
             streamWriter.Close();
-            var response = (HttpWebResponse) req.GetResponse();
+            HttpWebResponse response = (HttpWebResponse) req.GetResponse();
             if (Log.IsDebugEnabled)
             {
                 Log.DebugFormat("Response Received, status {0}", response.StatusCode);
             }
+
             return response;
         }
     }

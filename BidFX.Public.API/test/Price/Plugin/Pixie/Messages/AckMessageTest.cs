@@ -66,7 +66,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestEqualsSimilar()
         {
-            var ackMessage = new AckMessage
+            AckMessage ackMessage = new AckMessage
             {
                 Revision = 1234567L,
                 RevisionTime = 1415120801000L,

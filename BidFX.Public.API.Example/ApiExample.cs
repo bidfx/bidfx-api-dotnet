@@ -70,7 +70,7 @@ namespace BidFX.Public.API.Example
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
         {
-            foreach (var source in sources)
+            foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotStreamingSubject(
@@ -86,16 +86,18 @@ namespace BidFX.Public.API.Example
                         "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSwapStreamingSubject(
-                        "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "").CreateSubject());
+                            "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
+                        .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdsStreamingSubject(
-                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "BD", "20180818", "1000000.00", "BD", "20180918").CreateSubject());
+                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "BD", "20180818", "1000000.00", "BD",
+                        "20180918").CreateSubject());
             }
         }
 
         private void SendLevelOneQuoteSubscriptions(params string[] sources)
         {
-            foreach (var source in sources)
+            foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotQuoteSubject(
@@ -111,27 +113,31 @@ namespace BidFX.Public.API.Example
                         "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1Y", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSwapQuoteSubject(
-                        "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1Y", "", "1000000.00", "2Y", "").CreateSubject());
+                            "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1Y", "", "1000000.00", "2Y", "")
+                        .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneNdsQuoteSubject(
-                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "6M", "", "1000000.00", "1Y", "").CreateSubject());
+                            "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "6M", "", "1000000.00", "1Y", "")
+                        .CreateSubject());
             }
         }
 
         private void SendLevelTwoStreamingSubscriptions()
         {
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoSpotStreamingSubject("FX_ACCT", "EURUSD", "EUR", "1000000.00").CreateSubject());
+                CommonSubjects.CreateLevelTwoSpotStreamingSubject("FX_ACCT", "EURUSD", "EUR", "1000000.00")
+                    .CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
                 CommonSubjects.CreateLevelTwoForwardStreamingSubject("FX_ACCT", "EURGBP", "EUR", "1000000.00",
                     "BD", "20181220").CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoNdfStreamingSubject("FX_ACCT", "USDJPY", "USD", "1000000.00", "4M", "").CreateSubject());
+                CommonSubjects.CreateLevelTwoNdfStreamingSubject("FX_ACCT", "USDJPY", "USD", "1000000.00", "4M", "")
+                    .CreateSubject());
         }
 
         private void SendIndicativeSubscriptions(params string[] ccyPairs)
         {
-            foreach (var ccyPair in ccyPairs)
+            foreach (string ccyPair in ccyPairs)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateIndicativePriceSubject(ccyPair).CreateSubject());
@@ -171,7 +177,7 @@ namespace BidFX.Public.API.Example
 
         private void SendSpotEURGBPTrade()
         {
-            var fxOrder = new FxOrderBuilder()
+            FxOrder fxOrder = new FxOrderBuilder()
                 .SetAccount("FX_ACCT")
                 .SetCurrencyPair("EURGBP")
                 .SetCurrency("GBP")
@@ -184,7 +190,7 @@ namespace BidFX.Public.API.Example
                 .SetSettlementDate("2018-02-07")
                 .SetReferenceOne(".NET API Example")
                 .Build();
-            var messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
+            long messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
         }
 

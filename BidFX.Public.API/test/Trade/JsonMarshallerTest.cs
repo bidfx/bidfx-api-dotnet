@@ -10,15 +10,15 @@ namespace BidFX.Public.API.Trade
         [Test]
         public void TestEmptyFxOrderReturnsEmptyDictionary()
         {
-            var order = new FxOrderBuilder().Build();
-            var expected = "{}";
+            FxOrder order = new FxOrderBuilder().Build();
+            string expected = "{}";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
 
         [Test]
         public void TestStringFieldsReturnsQuotedValues()
         {
-            var order = new FxOrderBuilder().SetAccount("FX_ACCT")
+            FxOrder order = new FxOrderBuilder().SetAccount("FX_ACCT")
                 .SetCurrencyPair("GBPUSD")
                 .SetDealType("NDS")
                 .SetCurrency("GBP")
@@ -36,7 +36,7 @@ namespace BidFX.Public.API.Trade
                 .SetAllocationTemplate("AllocationName")
                 .SetStrategyParameter("strat_name", "strat_value")
                 .Build();
-            var expected = "{" +
+            string expected = "{" +
                            "\"account\":\"FX_ACCT\"," +
                            "\"allocation_template\":\"AllocationName\"," +
                            "\"ccy_pair\":\"GBPUSD\"," +
@@ -61,12 +61,12 @@ namespace BidFX.Public.API.Trade
         [Test]
         public void TestSettingDecimalFieldsReturnsNonQuotedValues()
         {
-            var order = new FxOrderBuilder()
+            FxOrder order = new FxOrderBuilder()
                 .SetQuantity("1000000.00")
                 .SetFarQuantity("2000000")
                 .SetPrice("345.32123")
                 .Build();
-            var expected = "{" +
+            string expected = "{" +
                            "\"far_quantity\":2000000," +
                            "\"price\":345.32123," +
                            "\"quantity\":1000000.00" +

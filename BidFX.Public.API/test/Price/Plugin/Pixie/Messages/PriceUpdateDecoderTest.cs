@@ -44,14 +44,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_double_field()
         {
-            var value = 34892343.2132;
-            var bytes = BitConverter.GetBytes(value);
+            double value = 34892343.2132;
+            byte[] bytes = BitConverter.GetBytes(value);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
             }
-            var memoryStream = new MemoryStream(bytes);
-            var decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
+
+            MemoryStream memoryStream = new MemoryStream(bytes);
+            object decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
                 _double);
             Assert.AreEqual(value,
                 decodeField);
@@ -60,14 +61,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_long_field()
         {
-            var value = 483948038L;
-            var bytes = BitConverter.GetBytes(value);
+            long value = 483948038L;
+            byte[] bytes = BitConverter.GetBytes(value);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
             }
-            var memoryStream = new MemoryStream(bytes);
-            var decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
+
+            MemoryStream memoryStream = new MemoryStream(bytes);
+            object decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
                 _long);
             Assert.AreEqual(value,
                 decodeField);
@@ -76,14 +78,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_int_field()
         {
-            var value = 483948038;
-            var bytes = BitConverter.GetBytes(value);
+            int value = 483948038;
+            byte[] bytes = BitConverter.GetBytes(value);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
             }
-            var memoryStream = new MemoryStream(bytes);
-            var decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
+
+            MemoryStream memoryStream = new MemoryStream(bytes);
+            object decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
                 _int);
             Assert.AreEqual(value,
                 decodeField);
@@ -92,11 +95,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_string_field()
         {
-            var s = "this is certainly a string";
-            var memoryStream = new MemoryStream();
+            string s = "this is certainly a string";
+            MemoryStream memoryStream = new MemoryStream();
             Varint.WriteString(memoryStream, s);
             memoryStream.Position = 0;
-            var decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
+            object decodeField = PriceUpdateDecoder.DecodeField(memoryStream,
                 _string);
             Assert.AreEqual(s,
                 decodeField);
@@ -105,11 +108,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void skip_bytes_in_case_type_is_unknown()
         {
-            var s = "ciao";
+            string s = "ciao";
             byte[] unknown = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
             double price = 9876.543;
 
-            var memoryStream = new MemoryStream();
+            MemoryStream memoryStream = new MemoryStream();
 
             // STRING
             Varint.WriteString(memoryStream, s);
@@ -147,9 +150,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_price_field()
         {
-            var memoryStream = new MemoryStream();
-            var price = 43.45664;
-            var priceTimesMillion = 43456640L;
+            MemoryStream memoryStream = new MemoryStream();
+            double price = 43.45664;
+            long priceTimesMillion = 43456640L;
             Varint.WriteU64(memoryStream, priceTimesMillion);
 
             memoryStream.Position = 0;
@@ -168,8 +171,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_size_field()
         {
-            var memoryStream = new MemoryStream();
-            var size = 3823908209333543L;
+            MemoryStream memoryStream = new MemoryStream();
+            long size = 3823908209333543L;
             Varint.WriteU64(memoryStream, size);
 
             memoryStream.Position = 0;
@@ -181,9 +184,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_size_quantity()
         {
-            var memoryStream = new MemoryStream();
-            var quantity = 15000000.55;
-            var quantityTimesHundred = 1500000055L;
+            MemoryStream memoryStream = new MemoryStream();
+            double quantity = 15000000.55;
+            long quantityTimesHundred = 1500000055L;
             Varint.WriteU64(memoryStream, quantityTimesHundred);
 
             memoryStream.Position = 0;
@@ -202,10 +205,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void test_decode_of_unknown_status()
         {
-            var memoryStream = VarintTest.HexStream("73010b01");
+            MemoryStream memoryStream = VarintTest.HexStream("73010b01");
 
 
-            var mockSyncable = new Mock<ISyncable>();
+            Mock<ISyncable> mockSyncable = new Mock<ISyncable>();
             PriceUpdateDecoder.Visit(memoryStream, 1, null, null, mockSyncable.Object);
             mockSyncable.Verify(x => x.PriceStatus(1, SubscriptionStatus.PENDING, ""));
         }

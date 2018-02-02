@@ -14,7 +14,11 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">with the supplied error message if the given parameter is null</exception>
         public static T NotNull<T>(T p1, string errorMessage = "method parameter may not be null")
         {
-            if (p1 == null) throw new ArgumentException(errorMessage);
+            if (p1 == null)
+            {
+                throw new ArgumentException(errorMessage);
+            }
+
             return p1;
         }
 
@@ -26,7 +30,11 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is null or an empty string</exception>
         public static string NotEmpty(string p1, string errorMessage = "method parameter may not be a blank sring")
         {
-            if (NotNull(p1).Equals("")) throw new ArgumentException(errorMessage);
+            if (NotNull(p1).Equals(""))
+            {
+                throw new ArgumentException(errorMessage);
+            }
+
             return p1;
         }
 
@@ -39,7 +47,11 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is null or made up of only blank spaces</exception>
         public static string NotBlank(string p1, string errorMessage = "method parameter may not be a blank string")
         {
-            if (NotNull(p1).Trim().Equals("")) throw new ArgumentException(errorMessage);
+            if (NotNull(p1).Trim().Equals(""))
+            {
+                throw new ArgumentException(errorMessage);
+            }
+
             return p1;
         }
 
@@ -57,6 +69,7 @@ namespace BidFX.Public.API.Price.Tools
             {
                 throw new ArgumentException("method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
             }
+
             return p;
         }
 
@@ -74,6 +87,7 @@ namespace BidFX.Public.API.Price.Tools
             {
                 throw new ArgumentException("method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
             }
+
             return p;
         }
 
@@ -85,7 +99,11 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is negative</exception>
         public static int NotNegative(int p)
         {
-            if (p < 0) throw new ArgumentException("method parameter may be negative: " + p);
+            if (p < 0)
+            {
+                throw new ArgumentException("method parameter may be negative: " + p);
+            }
+
             return p;
         }
 
@@ -97,7 +115,11 @@ namespace BidFX.Public.API.Price.Tools
         /// <exception cref="ArgumentException">if the given parameter is negative</exception>
         public static long NotNegative(long p)
         {
-            if (p < 0) throw new ArgumentException("method parameter may be negative: " + p);
+            if (p < 0)
+            {
+                throw new ArgumentException("method parameter may be negative: " + p);
+            }
+
             return p;
         }
 
@@ -108,9 +130,17 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>p trimmed of whitespace</returns>
         public static string ExactLength(string p, int length, string errorMessage)
         {
-            if (p == null) throw new ArgumentException(errorMessage);
+            if (p == null)
+            {
+                throw new ArgumentException(errorMessage);
+            }
+
             p = Trim(p);
-            if (p.Length != length) throw new ArgumentException(errorMessage);
+            if (p.Length != length)
+            {
+                throw new ArgumentException(errorMessage);
+            }
+
             return p;
         }
 
@@ -121,8 +151,15 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>p trimmed of whitespace.</returns>
         public static string Trim(string p)
         {
-            if (p.Length == 0) return p;
-            if (p[0] == ' ' || p[p.Length - 1] == ' ') return p.Trim();
+            if (p.Length == 0)
+            {
+                return p;
+            }
+
+            if (p[0] == ' ' || p[p.Length - 1] == ' ')
+            {
+                return p.Trim();
+            }
 
             return p;
         }

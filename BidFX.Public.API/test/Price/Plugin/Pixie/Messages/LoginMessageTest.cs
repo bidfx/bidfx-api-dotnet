@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -95,21 +96,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void EncodeVersion1()
         {
-            var memoryStream = _message.Encode(1);
+            MemoryStream memoryStream = _message.Encode(1);
             Assert.AreEqual(EncodedV1, memoryStream.ToArray());
         }
 
         [Test]
         public void EncodeVersion2()
         {
-            var memoryStream = _message.Encode(2);
+            MemoryStream memoryStream = _message.Encode(2);
             Assert.AreEqual(EncodedV2, memoryStream.ToArray());
         }
 
         [Test]
         public void EncodeVersion3()
         {
-            var memoryStream = _message.Encode(3);
+            MemoryStream memoryStream = _message.Encode(3);
             Assert.AreEqual(EncodedV2, memoryStream.ToArray());
         }
     }

@@ -81,7 +81,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             lock (_lock)
             {
                 SubjectState state;
-                var exists = _subjectState.TryGetValue(subject, out state);
+                bool exists = _subjectState.TryGetValue(subject, out state);
                 if (!exists)
                 {
                     _modified = true;
@@ -117,7 +117,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 _modified = true;
                 SubjectState state;
-                var exists = _subjectState.TryGetValue(subject, out state);
+                bool exists = _subjectState.TryGetValue(subject, out state);
                 if (!exists || state.State == StateNewlySubscribed)
                 {
                     ClearSubjectState(subject);
@@ -147,7 +147,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             lock (_lock)
             {
                 SubjectState currentState;
-                var exists = _subjectState.TryGetValue(subject, out currentState);
+                bool exists = _subjectState.TryGetValue(subject, out currentState);
                 return !(!exists || currentState.State == StateUnsubscribed);
             }
         }
@@ -158,22 +158,25 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 throw new ArgumentException("Edition cannot be negative.");
             }
+
             if (!_subjectSetCache.ContainsKey(edition))
             {
                 throw new ArgumentException("Edition not found in the cache.");
             }
+
             lock (_lock)
             {
-                var keyCollection = _subjectSetCache.Keys.ToList();
-                foreach (var subjectSet in keyCollection)
+                List<int> keyCollection = _subjectSetCache.Keys.ToList();
+                foreach (int subjectSet in keyCollection)
                 {
                     if (subjectSet < edition)
                     {
                         _subjectSetCache.Remove(subjectSet);
                     }
                 }
+
                 EditionData editionData;
-                var exists = _subjectSetCache.TryGetValue(edition, out editionData);
+                bool exists = _subjectSetCache.TryGetValue(edition, out editionData);
                 return !exists ? null : editionData.Subjects;
             }
         }
@@ -182,24 +185,32 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             lock (_lock)
             {
-                if (!_modified) return null;
+                if (!_modified)
+                {
+                    return null;
+                }
+
                 _modified = false;
-                var subjectSet = CurrentSubjectSetSorted();
-                var subjectGridHeaders = CurrentGridHeaders(subjectSet);
-                var edition = _subjectSetCache.Count == 0 ? 0 : _subjectSetCache.Keys.Last();
+                List<Subject.Subject> subjectSet = CurrentSubjectSetSorted();
+                List<GridHeader> subjectGridHeaders = CurrentGridHeaders(subjectSet);
+                int edition = _subjectSetCache.Count == 0 ? 0 : _subjectSetCache.Keys.Last();
                 EditionData editionData;
-                var exists = _subjectSetCache.TryGetValue(edition, out editionData);
+                bool exists = _subjectSetCache.TryGetValue(edition, out editionData);
                 if (exists && subjectSet.SequenceEqual(editionData.Subjects))
                 {
-                    var subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
-                    if (!subscriptionSync.HasControls()) return null; //unchanged with no controls so send nothing
+                    SubscriptionSync subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
+                    if (!subscriptionSync.HasControls())
+                    {
+                        return null; //unchanged with no controls so send nothing
+                    }
+
                     subscriptionSync.SetChangedEdition(false);
                     return subscriptionSync;
                 }
                 else
                 {
                     _subjectSetCache[++edition] = new EditionData(subjectSet, subjectGridHeaders);
-                    var subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
+                    SubscriptionSync subscriptionSync = CreateSubscriptionSync(edition, subjectSet);
                     CleanUnsubscribeState();
                     return subscriptionSync;
                 }
@@ -208,20 +219,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private List<GridHeader> CurrentGridHeaders(List<Subject.Subject> subjectSet)
         {
-            var gridHeaders = new List<GridHeader>(subjectSet.Count);
-            foreach (var subject in subjectSet)
+            List<GridHeader> gridHeaders = new List<GridHeader>(subjectSet.Count);
+            foreach (Subject.Subject subject in subjectSet)
             {
                 gridHeaders.Add(_subjectState[subject].GridHeader);
             }
+
             return gridHeaders;
         }
 
         private void CleanUnsubscribeState()
         {
-            var toRemove = (from subjectState in _subjectState
+            List<Subject.Subject> toRemove = (from subjectState in _subjectState
                 where subjectState.Value.State == StateUnsubscribed
                 select subjectState.Key).ToList();
-            foreach (var subject in toRemove)
+            foreach (Subject.Subject subject in toRemove)
             {
                 _subjectState.Remove(subject);
             }
@@ -229,14 +241,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private List<Subject.Subject> CurrentSubjectSetSorted()
         {
-            var subjectSet = new List<Subject.Subject>();
-            foreach (var subjectState in _subjectState)
+            List<Subject.Subject> subjectSet = new List<Subject.Subject>();
+            foreach (KeyValuePair<Subject.Subject, SubjectState> subjectState in _subjectState)
             {
                 if (subjectState.Value.State != StateUnsubscribed)
                 {
                     subjectSet.Add(subjectState.Key);
                 }
             }
+
             subjectSet.Sort(new RequestSubjectComparator());
             return subjectSet;
         }
@@ -250,12 +263,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void AddSubscriptionControls(SubscriptionSync subscriptionSync)
         {
-            var sid = 0;
-            foreach (var subject in subscriptionSync.Subjects)
+            int sid = 0;
+            foreach (Subject.Subject subject in subscriptionSync.Subjects)
             {
                 SubjectState currentState;
-                var exists = _subjectState.TryGetValue(subject, out currentState);
-                if (!exists) break;
+                bool exists = _subjectState.TryGetValue(subject, out currentState);
+                if (!exists)
+                {
+                    break;
+                }
+
                 if (currentState.State == StateRefresh)
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Refresh);
@@ -264,6 +281,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     subscriptionSync.AddControl(sid, ControlOperation.Toggle);
                 }
+
                 _subjectState[subject].State = StateSubscribed;
                 sid++;
             }
@@ -296,7 +314,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public FieldDef[] GetGridHeader(int sid)
         {
             FieldDef[] gridHeader;
-            var tryGetValue = _subjectGridHeaders.TryGetValue(_subjectSetByEdition[sid], out gridHeader);
+            bool tryGetValue = _subjectGridHeaders.TryGetValue(_subjectSetByEdition[sid], out gridHeader);
             return tryGetValue ? gridHeader : null;
         }
     }

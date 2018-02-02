@@ -12,19 +12,20 @@ namespace BidFX.Public.API.Trade.REST
     {
         protected readonly HttpStatusCode StatusCode;
         private List<Dictionary<string, object>> _responses;
-        
+
         protected AbstractRESTResponse(HttpWebResponse webResponse)
         {
             Params.NotNull(webResponse);
             StatusCode = webResponse.StatusCode;
-            var responseStream = webResponse.GetResponseStream();
+            Stream responseStream = webResponse.GetResponseStream();
             if (responseStream == null)
             {
                 throw new IOException("No Response Stream from webResponse");
             }
-            var responseReader = new StreamReader(responseStream);
-            var jsonString = responseReader.ReadToEnd();
-           ParseJsonResponse(jsonString);
+
+            StreamReader responseReader = new StreamReader(responseStream);
+            string jsonString = responseReader.ReadToEnd();
+            ParseJsonResponse(jsonString);
         }
 
         internal AbstractRESTResponse(string jsonString)
@@ -36,7 +37,7 @@ namespace BidFX.Public.API.Trade.REST
         {
             _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
         }
-        
+
         protected string GetField(string fieldname)
         {
             object retval;
@@ -47,7 +48,7 @@ namespace BidFX.Public.API.Trade.REST
         {
             return _responses.Count;
         }
-        
+
         protected HttpStatusCode GetStatusCode()
         {
             return StatusCode;
@@ -55,21 +56,21 @@ namespace BidFX.Public.API.Trade.REST
 
         public override string ToString()
         {
-            var formattedOrders = _responses.Select(
-                order => string.Join(", ", 
+            IEnumerable<string> formattedOrders = _responses.Select(
+                order => string.Join(", ",
                     order.Select(
-                        kv => "\"" + 
-                              kv.Key + 
-                              "\": " + 
+                        kv => "\"" +
+                              kv.Key +
+                              "\": " +
                               (IsNumericType(kv.Value) ? kv.Value : "\"" + kv.Value + "\"")
                     )
                 )
             );
             return "[{" + string.Join("}, {", formattedOrders) + "}]";
         }
-        
+
         private static bool IsNumericType(object o)
-        {   
+        {
             switch (Type.GetTypeCode(o.GetType()))
             {
                 case TypeCode.Byte:

@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public static string HexId(int id)
         {
-            var hex = id.ToString("X");
+            string hex = id.ToString("X");
             return new StringBuilder()
                 .Append("0x")
                 .Append(hex).ToString();
@@ -42,9 +42,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((WelcomeMessage) obj);
         }
 
@@ -52,7 +64,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             unchecked
             {
-                var hashCode = (int) Options;
+                int hashCode = (int) Options;
                 hashCode = (hashCode * 397) ^ (int) Version;
                 hashCode = (hashCode * 397) ^ ClientId;
                 hashCode = (hashCode * 397) ^ ServerId;

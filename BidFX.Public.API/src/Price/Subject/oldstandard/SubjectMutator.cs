@@ -61,20 +61,22 @@ namespace BidFX.Public.API.Price.Subject
 
         public static Subject ToOldVersion(Subject subject)
         {
-            var level = 0;
-            var buySideAccount = "";
-            var source = "";
-            var subjectBuilder = new SubjectBuilder();
-            foreach (var component in subject)
+            int level = 0;
+            string buySideAccount = "";
+            string source = "";
+            SubjectBuilder subjectBuilder = new SubjectBuilder();
+            foreach (SubjectComponent component in subject)
             {
                 if (component.Key.Equals("Level"))
                 {
                     level = int.Parse(component.Value);
                 }
+
                 if (component.Key.Equals("LiquidityProvider"))
                 {
                     source = component.Value;
                 }
+
                 if (ComponentNameMap.ContainsKey(component.Key))
                 {
                     if (component.Key.Equals("BuySideAccount"))
@@ -99,15 +101,18 @@ namespace BidFX.Public.API.Price.Subject
                     subjectBuilder.SubjectComponent(component.Key, component.Value);
                 }
             }
+
             if ("Swap".Equals(subject.GetComponent(SubjectComponentName.DealType)) ||
                 "NDS".Equals(subject.GetComponent(SubjectComponentName.DealType)))
             {
                 subjectBuilder.SubjectComponent("LegCount", "2");
             }
+
             if (subject.GetComponent(SubjectComponentName.User) == null)
             {
                 subjectBuilder.SubjectComponent(SubjectComponentName.User, PriceManager.Username);
             }
+
             if (!buySideAccount.Equals("") && level == 1 && !source.Equals(""))
             {
                 subjectBuilder.SubjectComponent("Account", SourceToSellSideAccountMap[source]);
@@ -116,6 +121,7 @@ namespace BidFX.Public.API.Price.Subject
             {
                 subjectBuilder.SubjectComponent("Account", buySideAccount);
             }
+
             subjectBuilder.SubjectComponent("Customer", "0001");
             subjectBuilder.SubjectComponent("Exchange", "OTC");
             return subjectBuilder.CreateSubject();

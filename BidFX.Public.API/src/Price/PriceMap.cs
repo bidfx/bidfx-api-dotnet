@@ -25,66 +25,84 @@ namespace BidFX.Public.API.Price
 
         public IPriceField Field(string name)
         {
-            foreach (var pair in _priceFields)
+            foreach (KeyValuePair<string, IPriceField> pair in _priceFields)
             {
                 if (name.Equals(pair.Key))
                 {
                     return pair.Value;
                 }
             }
+
             return null;
         }
 
         public decimal? DecimalField(string name)
         {
-            var priceField = Field(name);
-            if (priceField == null) return null;
+            IPriceField priceField = Field(name);
+            if (priceField == null)
+            {
+                return null;
+            }
+
             return priceField.Value as decimal? ?? ValueParser.ParseDecimal(priceField.Text, null);
         }
 
         public long? LongField(string name)
         {
-            var priceField = Field(name);
-            if (priceField == null) return null;
+            IPriceField priceField = Field(name);
+            if (priceField == null)
+            {
+                return null;
+            }
+
             return priceField.Value as long? ?? ValueParser.ParseLong(priceField.Text, null);
         }
 
         public int? IntField(string name)
         {
-            var priceField = Field(name);
-            if (priceField == null) return null;
+            IPriceField priceField = Field(name);
+            if (priceField == null)
+            {
+                return null;
+            }
+
             return priceField.Value as int? ?? ValueParser.ParseInt(priceField.Text, null);
         }
 
         public string StringField(string name)
         {
-            var priceField = Field(name);
+            IPriceField priceField = Field(name);
             return priceField == null ? null : priceField.Text;
         }
 
         public DateTime? DateTimeField(string name)
         {
-            var priceField = Field(name);
+            IPriceField priceField = Field(name);
             return priceField == null ? null : priceField.Value as DateTime?;
         }
 
         public Tick? TickField(string name)
         {
-            var priceField = Field(name);
+            IPriceField priceField = Field(name);
             return priceField == null ? null : priceField.Value as Tick?;
         }
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            foreach (var pair in _priceFields)
+            StringBuilder sb = new StringBuilder();
+            foreach (KeyValuePair<string, IPriceField> pair in _priceFields)
             {
-                if (sb.Length > 0) sb.Append(' ');
+                if (sb.Length > 0)
+                {
+                    sb.Append(' ');
+                }
+
                 sb.Append(pair.Key);
                 sb.Append('=').Append('"');
                 sb.Append(pair.Value.Text);
                 sb.Append('"');
             }
+
             return sb.ToString();
         }
 
@@ -94,7 +112,8 @@ namespace BidFX.Public.API.Price
             {
                 _priceFields.Clear();
             }
-            foreach (var field in priceUpdate.PriceFields)
+
+            foreach (KeyValuePair<string, IPriceField> field in priceUpdate.PriceFields)
             {
                 SetField(field.Key, field.Value);
             }
