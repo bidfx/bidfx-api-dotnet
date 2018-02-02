@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
@@ -15,22 +17,30 @@ namespace BidFX.Public.API.Trade
         public event EventHandler<OrderResponse> OrderQueryEventHandler;
         public event EventHandler<OrderResponse> OrderSubmitEventHandler;
         private RESTClient _restClient;
-        private static readonly Random Random = new Random();
+        private static long _nextMessageId;
         public string Host { get; set; }
         public int Port { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-
+        
         public void Start()
         {
             var address = "https://" + Host + ":" + Port;
             _restClient = new RESTClient(address, Username, Password);
+            InitialiseNextMessageId();
             Log.InfoFormat("TradeManager connecting to {0}", address);
+        }
+
+        private void InitialiseNextMessageId()
+        {
+            long hashCode = Environment.TickCount.GetHashCode();
+            long mask = (1L << 16) - 1;
+            _nextMessageId = Math.Abs((hashCode & mask) << 32);
         }
         
         public long SubmitOrder(FxOrder fxOrder)
         {
-            var messageId = GenerateMessageId();
+            var messageId = GetNextMessageId();
             var json = JsonMarshaller.ToJSON(fxOrder);
             ThreadPool.QueueUserWorkItem(
                 delegate
@@ -43,7 +53,7 @@ namespace BidFX.Public.API.Trade
 
         public long SubmitQuery(string orderId)
         {
-            var messageId = GenerateMessageId();
+            var messageId = GetNextMessageId();
             ThreadPool.QueueUserWorkItem(
                 delegate
                 {
@@ -93,15 +103,9 @@ namespace BidFX.Public.API.Trade
             }
         }
 
-        private static long GenerateMessageId()
+        private static long GetNextMessageId()
         {
-            long nextLong;
-            lock (Random)
-            {
-                nextLong = Random.Next() << 32 | Random.Next(int.MinValue, int.MaxValue);
-            }
-            if (nextLong < 0) nextLong ^= -1;
-            return nextLong;
+            return Interlocked.Increment(ref _nextMessageId);
         }
     }
 }
