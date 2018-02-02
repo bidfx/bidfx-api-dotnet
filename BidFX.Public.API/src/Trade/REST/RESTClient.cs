@@ -68,7 +68,12 @@ namespace BidFX.Public.API.Trade.REST
             streamWriter.Write(json);
             streamWriter.Flush();
             streamWriter.Close();
-            return (HttpWebResponse) req.GetResponse();
+            var response = (HttpWebResponse) req.GetResponse();
+            if (Log.IsDebugEnabled)
+            {
+                Log.DebugFormat("Response Received, status {0}", response.StatusCode);
+            }
+            return response;
         }
     }
 }

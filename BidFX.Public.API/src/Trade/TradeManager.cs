@@ -30,15 +30,15 @@ namespace BidFX.Public.API.Trade
         
         public long SubmitOrder(FxOrder fxOrder)
         {
-            var clientId = GenerateMessageId();
+            var messageId = GenerateMessageId();
             var json = JsonMarshaller.ToJSON(fxOrder);
             ThreadPool.QueueUserWorkItem(
                 delegate
                 {
-                    SendOrderViaREST(clientId, json);
+                    SendOrderViaREST(messageId, json);
                 }
             );
-            return 0L;
+            return messageId;
         }
 
         public long SubmitQuery(string orderId)
@@ -50,7 +50,7 @@ namespace BidFX.Public.API.Trade
                     SendQueryViaREST(messageId, orderId);
                 }
             );
-            return 0L;
+            return messageId;
         }
 
         private void SendOrderViaREST(long messageId, string json)
