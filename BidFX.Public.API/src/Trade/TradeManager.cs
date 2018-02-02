@@ -30,13 +30,6 @@ namespace BidFX.Public.API.Trade
             InitialiseNextMessageId();
             Log.InfoFormat("TradeManager connecting to {0}", address);
         }
-
-        private void InitialiseNextMessageId()
-        {
-            long hashCode = Environment.TickCount.GetHashCode();
-            long mask = (1L << 16) - 1;
-            _nextMessageId = Math.Abs((hashCode & mask) << 32);
-        }
         
         public long SubmitOrder(FxOrder fxOrder)
         {
@@ -106,6 +99,14 @@ namespace BidFX.Public.API.Trade
         private static long GetNextMessageId()
         {
             return Interlocked.Increment(ref _nextMessageId);
+        }
+        
+
+        private static void InitialiseNextMessageId()
+        {
+            var hashCode = Environment.TickCount.GetHashCode();
+            const long mask = (1L << 16) - 1;
+            _nextMessageId = Math.Abs((hashCode & mask) << 32);
         }
     }
 }
