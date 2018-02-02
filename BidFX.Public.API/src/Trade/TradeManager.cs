@@ -27,11 +27,11 @@ namespace BidFX.Public.API.Trade
         {
             var address = "https://" + Host + ":" + Port;
             _restClient = new RESTClient(address, Username, Password);
-            initialiseNextMessageId();
+            InitialiseNextMessageId();
             Log.InfoFormat("TradeManager connecting to {0}", address);
         }
 
-        private void initialiseNextMessageId()
+        private void InitialiseNextMessageId()
         {
             long hashCode = Environment.TickCount.GetHashCode();
             long mask = (1L << 16) - 1;
