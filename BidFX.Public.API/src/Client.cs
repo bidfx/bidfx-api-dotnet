@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Trade;
 
@@ -52,6 +53,7 @@ namespace BidFX.Public.API
         /// </summary>
         public Client()
         {
+            LoadExternalAssembly("Newtonsoft.Json");
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
@@ -121,6 +123,23 @@ namespace BidFX.Public.API
                 Password = Password
             };
             _tradeManager.Start();
+        }
+
+        private void LoadExternalAssembly(string assemblyName)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+            {
+                var resourceName = new AssemblyName(assemblyName).Name + ".dll";
+                var resource = Array.Find(GetType().Assembly.GetManifestResourceNames(),
+                    element => element.EndsWith(resourceName));
+
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+                {
+                    var assemblyData = new byte[stream.Length];
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+                    return Assembly.Load(assemblyData);
+                }
+            };
         }
     }
 }

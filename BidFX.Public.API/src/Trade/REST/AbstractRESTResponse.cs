@@ -43,6 +43,11 @@ namespace BidFX.Public.API.Trade.REST
             return _responses[0].TryGetValue(fieldname, out retval) ? retval.ToString() : null;
         }
 
+        public int GetSize()
+        {
+            return _responses.Count;
+        }
+        
         protected HttpStatusCode GetStatusCode()
         {
             return StatusCode;

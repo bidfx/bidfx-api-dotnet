@@ -240,6 +240,10 @@
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll">
+      <Link>Newtonsoft.Json.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="packages.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

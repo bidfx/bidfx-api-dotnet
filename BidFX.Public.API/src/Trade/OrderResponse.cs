@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Trade
         
         public string GetOrderId()
         {
-            return StatusCode == HttpStatusCode.OK ? GetField("order_ts_id") : null;
+            return StatusCode == HttpStatusCode.OK && GetSize() > 0 ? GetField("order_ts_id") : "";
         }
 
         public override string ToString()
@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Trade
 
         public object GetState()
         {
-            return StatusCode == HttpStatusCode.OK ? GetField("state") : null;
+            return StatusCode == HttpStatusCode.OK ? GetField("state") : "";
         }
     }
 }

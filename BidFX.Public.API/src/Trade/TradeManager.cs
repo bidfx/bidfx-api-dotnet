@@ -58,11 +58,23 @@ namespace BidFX.Public.API.Trade
             Log.InfoFormat("Submmiting order, messageId {0}", messageId);
             Log.DebugFormat("Submitting order, messageId: {0}, Json: {1}", messageId, json);
             var response = _restClient.SendJSON("POST", "", json);
-            var orderResponse = new OrderResponse(response) {MessageId = messageId};
-//            _clientIdToOrderId[ClientID] = orderSubmitResponse.GetOrderId();
-            if (OrderSubmitEventHandler != null)
+            try
             {
-                OrderSubmitEventHandler(this, orderResponse);
+                var orderResponse = new OrderResponse(response) {MessageId = messageId};
+                if (OrderSubmitEventHandler != null)
+                {
+                    Log.DebugFormat("Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}", messageId, orderResponse.GetOrderId());
+                    OrderSubmitEventHandler(this, orderResponse);
+                }
+                else
+                {
+                    Log.WarnFormat("OrderSubmitEventHandler was null dropping order response, messageId: {0}, orderId: {1}", messageId, orderResponse.GetOrderId());
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Warn("Unexpected error occurred parsing response", e);
+                throw;
             }
         }
 
@@ -74,6 +86,10 @@ namespace BidFX.Public.API.Trade
             if (OrderQueryEventHandler != null)
             {
                 OrderQueryEventHandler(this, orderResponse);
+            }
+            else
+            {
+                Log.WarnFormat("OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}", messageId, orderResponse.GetOrderId());
             }
         }
 
