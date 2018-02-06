@@ -11,7 +11,7 @@ namespace BidFX.Public.API.Trade
         public void TestEmptyFxOrderReturnsEmptyDictionary()
         {
             FxOrder order = new FxOrderBuilder().Build();
-            string expected = "{}";
+            string expected = "[{}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
 
@@ -34,9 +34,9 @@ namespace BidFX.Public.API.Trade
                 .SetFarSettlementDate("2018-02-28")
                 .SetFarTenor("3Y")
                 .SetAllocationTemplate("AllocationName")
-                .SetStrategyParameter("strat_name", "strat_value")
+                .SetStrategyParameter("strategy_name", "strat_value")
                 .Build();
-            string expected = "{" +
+            string expected = "[{" +
                            "\"account\":\"FX_ACCT\"," +
                            "\"allocation_template\":\"AllocationName\"," +
                            "\"ccy_pair\":\"GBPUSD\"," +
@@ -52,9 +52,9 @@ namespace BidFX.Public.API.Trade
                            "\"reference2\":\"ref 2\"," +
                            "\"settlement_date\":\"2018-01-31\"," +
                            "\"side\":\"Buy\"," +
-                           "\"strat_name\":\"strat_value\"," +
+                           "\"strategy_name\":\"strat_value\"," +
                            "\"tenor\":\"2Y\"" +
-                           "}";
+                           "}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
 
@@ -66,11 +66,11 @@ namespace BidFX.Public.API.Trade
                 .SetFarQuantity("2000000")
                 .SetPrice("345.32123")
                 .Build();
-            string expected = "{" +
+            string expected = "[{" +
                            "\"far_quantity\":2000000," +
                            "\"price\":345.32123," +
                            "\"quantity\":1000000.00" +
-                           "}";
+                           "}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
     }

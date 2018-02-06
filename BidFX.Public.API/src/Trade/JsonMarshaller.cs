@@ -9,7 +9,7 @@ namespace BidFX.Public.API.Trade
         {
             StringBuilder stringBuilder = new StringBuilder();
             string[] components = order.getInternalComponents();
-            stringBuilder.Append("{");
+            stringBuilder.Append("[{");
             for (int i = 0; i < components.Length;)
             {
                 string key = components[i++];
@@ -39,7 +39,7 @@ namespace BidFX.Public.API.Trade
                 }
             }
 
-            stringBuilder.Append("}");
+            stringBuilder.Append("}]");
             return stringBuilder.ToString();
         }
     }
