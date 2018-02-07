@@ -59,7 +59,7 @@ namespace BidFX.Public.API.Example
             }
             */
             //Send a trade
-            DefaultClient.Client.TradeManager.OrderSubmitEventHandler += OnOrderSubmitResponse;
+            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
 /*            SendSpotEURGBPTrade();
             Thread.Sleep(TimeSpan.FromMilliseconds(200));
             SendSpotEURGBPTrade();
@@ -190,7 +190,7 @@ namespace BidFX.Public.API.Example
                 .SetSettlementDate("2018-02-07")
                 .SetReferenceOne(".NET API Example")
                 .Build();
-            long messageId = DefaultClient.Client.TradeManager.SubmitOrder(fxOrder);
+            long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
         }
 

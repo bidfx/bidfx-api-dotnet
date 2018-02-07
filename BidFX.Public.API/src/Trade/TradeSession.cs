@@ -8,7 +8,7 @@ using log4net;
 
 namespace BidFX.Public.API.Trade
 {
-    public class TradeManager
+    public class TradeSession
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

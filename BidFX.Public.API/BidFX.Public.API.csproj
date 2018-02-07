@@ -191,7 +191,7 @@
     <Compile Include="src\Trade\REST\AbstractRESTResponse.cs" />
     <Compile Include="src\Trade\REST\IRESTCallback.cs" />
     <Compile Include="src\Trade\REST\RESTClient.cs" />
-    <Compile Include="src\Trade\TradeManager.cs" />
+    <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />

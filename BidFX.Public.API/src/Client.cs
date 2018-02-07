@@ -47,7 +47,7 @@ namespace BidFX.Public.API
         public TimeSpan ReconnectInterval { get; set; }
 
         private PriceManager _priceManager;
-        private TradeManager _tradeManager;
+        private TradeSession _tradeSession;
 
         /// <summary>
         /// Creates a new Client that has yet to be configured.
@@ -88,12 +88,12 @@ namespace BidFX.Public.API
         /// <summary>
         /// The trading manager used to submit prices
         /// </summary>
-        public TradeManager TradeManager
+        public TradeSession TradeSession
         {
             get
             {
                 CreateTradeManager();
-                return _tradeManager;
+                return _tradeSession;
             }
         }
 
@@ -119,19 +119,19 @@ namespace BidFX.Public.API
 
         private void CreateTradeManager()
         {
-            if (_tradeManager != null)
+            if (_tradeSession != null)
             {
                 return;
             }
 
-            _tradeManager = new TradeManager
+            _tradeSession = new TradeSession
             {
                 Host = Host,
                 Port = Port == 0 ? 443 : Port,
                 Username = Username,
                 Password = Password
             };
-            _tradeManager.Start();
+            _tradeSession.Start();
         }
 
         private void LoadExternalAssembly(string assemblyName)
