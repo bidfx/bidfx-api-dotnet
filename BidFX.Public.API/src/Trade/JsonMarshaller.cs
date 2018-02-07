@@ -6,7 +6,7 @@ namespace BidFX.Public.API.Trade
 {
     public static class JsonMarshaller
     {
-        public static string ToJSON(FxOrder order)
+        public static string ToJSON(FxOrder order, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string[] components = order.getInternalComponents();
@@ -20,14 +20,11 @@ namespace BidFX.Public.API.Trade
                 stringBuilder.Append("\":");
 
                 AppendValue(stringBuilder, key, value);
-
-                if (i < components.Length)
-                {
-                    stringBuilder.Append(",");
-                }
+                stringBuilder.Append(",");
             }
-
-            stringBuilder.Append("}]");
+            stringBuilder.Append("\"correlation_id\":\"");
+            stringBuilder.Append(messageId);
+            stringBuilder.Append("\"}]");
             return stringBuilder.ToString();
         }
 

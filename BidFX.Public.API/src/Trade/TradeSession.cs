@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Trade
         public long SubmitOrder(FxOrder fxOrder)
         {
             long messageId = GetNextMessageId();
-            string json = JsonMarshaller.ToJSON(fxOrder);
+            string json = JsonMarshaller.ToJSON(fxOrder, messageId);
             ThreadPool.QueueUserWorkItem(
                 delegate { SendOrderViaREST(messageId, json); }
             );

@@ -8,11 +8,11 @@ namespace BidFX.Public.API.Trade
     public class JsonMarshallerTest
     {
         [Test]
-        public void TestEmptyFxOrderReturnsEmptyDictionary()
+        public void TestEmptyFxOrderReturnsJustCorrelationId()
         {
             FxOrder order = new FxOrderBuilder().Build();
-            const string expected = "[{}]";
-            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
+            const string expected = "[{\"correlation_id\":\"451\"}]";
+            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order, 451));
         }
 
         [Test]
@@ -53,9 +53,10 @@ namespace BidFX.Public.API.Trade
                                     "\"settlement_date\":\"2018-01-31\"," +
                                     "\"side\":\"Buy\"," +
                                     "\"strategy_name\":\"strat_value\"," +
-                                    "\"tenor\":\"2Y\"" +
+                                    "\"tenor\":\"2Y\"," +
+                                    "\"correlation_id\":\"321\"" +
                                     "}]";
-            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
+            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order, 321));
         }
 
         [Test]
@@ -69,9 +70,10 @@ namespace BidFX.Public.API.Trade
             const string expected = "[{" +
                                     "\"far_quantity\":2000000," +
                                     "\"price\":345.32123," +
-                                    "\"quantity\":1000000.00" +
+                                    "\"quantity\":1000000.00," +
+                                    "\"correlation_id\":\"123\"" +
                                     "}]";
-            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
+            Assert.AreEqual(expected, JsonMarshaller.ToJSON(order, 123));
         }
     }
 }
