@@ -11,7 +11,7 @@ namespace BidFX.Public.API.Trade
         public void TestEmptyFxOrderReturnsEmptyDictionary()
         {
             FxOrder order = new FxOrderBuilder().Build();
-            string expected = "[{}]";
+            const string expected = "[{}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
 
@@ -36,25 +36,25 @@ namespace BidFX.Public.API.Trade
                 .SetAllocationTemplate("AllocationName")
                 .SetStrategyParameter("strategy_name", "strat_value")
                 .Build();
-            string expected = "[{" +
-                           "\"account\":\"FX_ACCT\"," +
-                           "\"allocation_template\":\"AllocationName\"," +
-                           "\"ccy_pair\":\"GBPUSD\"," +
-                           "\"deal_type\":\"NDS\"," +
-                           "\"dealt_ccy\":\"GBP\"," +
-                           "\"far_dealt_ccy\":\"GBP\"," +
-                           "\"far_fixing_date\":\"2018-02-27\"," +
-                           "\"far_settlement_date\":\"2018-02-28\"," +
-                           "\"far_tenor\":\"3Y\"," +
-                           "\"fixing_date\":\"2018-01-30\"," +
-                           "\"handling_type\":\"automatic\"," +
-                           "\"reference\":\"ref 1\"," +
-                           "\"reference2\":\"ref 2\"," +
-                           "\"settlement_date\":\"2018-01-31\"," +
-                           "\"side\":\"Buy\"," +
-                           "\"strategy_name\":\"strat_value\"," +
-                           "\"tenor\":\"2Y\"" +
-                           "}]";
+            const string expected = "[{" +
+                                    "\"account\":\"FX_ACCT\"," +
+                                    "\"allocation_template\":\"AllocationName\"," +
+                                    "\"ccy_pair\":\"GBPUSD\"," +
+                                    "\"deal_type\":\"NDS\"," +
+                                    "\"dealt_ccy\":\"GBP\"," +
+                                    "\"far_dealt_ccy\":\"GBP\"," +
+                                    "\"far_fixing_date\":\"2018-02-27\"," +
+                                    "\"far_settlement_date\":\"2018-02-28\"," +
+                                    "\"far_tenor\":\"3Y\"," +
+                                    "\"fixing_date\":\"2018-01-30\"," +
+                                    "\"handling_type\":\"automatic\"," +
+                                    "\"reference\":\"ref 1\"," +
+                                    "\"reference2\":\"ref 2\"," +
+                                    "\"settlement_date\":\"2018-01-31\"," +
+                                    "\"side\":\"Buy\"," +
+                                    "\"strategy_name\":\"strat_value\"," +
+                                    "\"tenor\":\"2Y\"" +
+                                    "}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
 
@@ -66,11 +66,11 @@ namespace BidFX.Public.API.Trade
                 .SetFarQuantity("2000000")
                 .SetPrice("345.32123")
                 .Build();
-            string expected = "[{" +
-                           "\"far_quantity\":2000000," +
-                           "\"price\":345.32123," +
-                           "\"quantity\":1000000.00" +
-                           "}]";
+            const string expected = "[{" +
+                                    "\"far_quantity\":2000000," +
+                                    "\"price\":345.32123," +
+                                    "\"quantity\":1000000.00" +
+                                    "}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJSON(order));
         }
     }

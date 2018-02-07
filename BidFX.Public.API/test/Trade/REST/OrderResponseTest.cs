@@ -57,11 +57,24 @@ namespace BidFX.Public.API.Trade.REST
         [Test]
         public void NotAuthorizedResponseIsHandledCorrectly()
         {
-            OrderResponse orderResponse = new OrderResponse("", HttpStatusCode.Forbidden);
+            OrderResponse orderResponse = new OrderResponse("", HttpStatusCode.Unauthorized);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
-            List<string> expectedError = new List<string>() {"401 Forbidden - Invalid Username or Password"};
+            List<string> expectedError = new List<string>() {"401 Unauthorized - Invalid Username or Password"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
+        }
+
+        [Test]
+        public void ForbiddenResponseIsHandledCorrectly()
+        {
+            const string json = "{" +
+                                "\"type\": \"Forbidden\"," +
+                                "\"message\": \"User does not have the required permissions to access this resource\"" +
+                                "}";
+            OrderResponse orderResponse = new OrderResponse(json, HttpStatusCode.Forbidden);
+            Assert.IsNull(orderResponse.GetOrderId());
+            Assert.IsNull(orderResponse.GetState());
+            List<string> expectedError = new List<string>() {"User does not have the required permissions to access this resource"};
         }
     }
     

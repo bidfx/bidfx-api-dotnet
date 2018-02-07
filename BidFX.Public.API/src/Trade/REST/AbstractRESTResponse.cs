@@ -17,9 +17,9 @@ namespace BidFX.Public.API.Trade.REST
         {
             Params.NotNull(webResponse);
             StatusCode = webResponse.StatusCode;
-            if (StatusCode.Equals(HttpStatusCode.Forbidden))
+            if (StatusCode.Equals(HttpStatusCode.Unauthorized))
             {
-                SetForbiddenResponseJSON();
+                SetUnauthorizedResponseJSON();
                 return;
             }
             
@@ -40,9 +40,9 @@ namespace BidFX.Public.API.Trade.REST
         internal AbstractRESTResponse(string jsonString, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             StatusCode = statusCode;
-            if (StatusCode.Equals(HttpStatusCode.Forbidden))
+            if (StatusCode.Equals(HttpStatusCode.Unauthorized))
             {
-                SetForbiddenResponseJSON();
+                SetUnauthorizedResponseJSON();
             }
             else
             {
@@ -124,13 +124,13 @@ namespace BidFX.Public.API.Trade.REST
             }
         }
 
-        private void SetForbiddenResponseJSON()
+        private void SetUnauthorizedResponseJSON()
         {
             _responses = new List<Dictionary<string, object>>
             {
                 new Dictionary<string, object>()
             };
-            _responses[0]["errors"] = "[{\"message\": \"401 Forbidden - Invalid Username or Password\"}]";
+            _responses[0]["errors"] = "[{\"message\": \"401 Unauthorized - Invalid Username or Password\"}]";
         }
     }
 }
