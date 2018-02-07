@@ -237,6 +237,7 @@
     <Compile Include="test\Tools\VarintTest.cs" />
     <Compile Include="test\Trade\JsonMarshallerTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
+    <Compile Include="test\Trade\REST\OrderResponseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll">

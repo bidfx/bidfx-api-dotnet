@@ -1,9 +1,10 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using BidFX.Public.API.Trade.Order;
 
 namespace BidFX.Public.API.Trade
 {
-    public class JsonMarshaller
+    public static class JsonMarshaller
     {
         public static string ToJSON(FxOrder order)
         {
@@ -17,21 +18,8 @@ namespace BidFX.Public.API.Trade
                 stringBuilder.Append("\"");
                 stringBuilder.Append(key);
                 stringBuilder.Append("\":");
-                switch (key)
-                {
-                    case FxOrder.Quantity:
-                    case FxOrder.Price:
-                    case FxOrder.FarQuantity:
-                        //Decimals -> no quoting the value
-                        stringBuilder.Append(value);
-                        break;
-                    default:
-                        //String literals for values
-                        stringBuilder.Append("\"");
-                        stringBuilder.Append(value);
-                        stringBuilder.Append("\"");
-                        break;
-                }
+
+                AppendValue(stringBuilder, key, value);
 
                 if (i < components.Length)
                 {
@@ -41,6 +29,25 @@ namespace BidFX.Public.API.Trade
 
             stringBuilder.Append("}]");
             return stringBuilder.ToString();
+        }
+
+        private static void AppendValue(StringBuilder stringBuilder, string key, string value)
+        {
+            switch (key)
+            {
+                case FxOrder.Quantity:
+                case FxOrder.Price:
+                case FxOrder.FarQuantity:
+                    //Decimals -> no quoting the value
+                    stringBuilder.Append(value);
+                    break;
+                default:
+                    //String literals for values
+                    stringBuilder.Append("\"");
+                    stringBuilder.Append(value);
+                    stringBuilder.Append("\"");
+                    break;
+            }
         }
     }
 }

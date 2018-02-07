@@ -10,13 +10,19 @@ namespace BidFX.Public.API.Trade.REST
 {
     public abstract class AbstractRESTResponse : EventArgs
     {
-        protected readonly HttpStatusCode StatusCode;
+        private readonly HttpStatusCode StatusCode;
         private List<Dictionary<string, object>> _responses;
 
         protected AbstractRESTResponse(HttpWebResponse webResponse)
         {
             Params.NotNull(webResponse);
             StatusCode = webResponse.StatusCode;
+            if (StatusCode.Equals(HttpStatusCode.Forbidden))
+            {
+                SetForbiddenResponseJSON();
+                return;
+            }
+            
             Stream responseStream = webResponse.GetResponseStream();
             if (responseStream == null)
             {
@@ -27,21 +33,49 @@ namespace BidFX.Public.API.Trade.REST
             string jsonString = responseReader.ReadToEnd();
             ParseJsonResponse(jsonString);
         }
-
-        internal AbstractRESTResponse(string jsonString)
+        
+        /**
+         * For testing
+         */
+        internal AbstractRESTResponse(string jsonString, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
-            ParseJsonResponse(jsonString);
+            StatusCode = statusCode;
+            if (StatusCode.Equals(HttpStatusCode.Forbidden))
+            {
+                SetForbiddenResponseJSON();
+            }
+            else
+            {
+                ParseJsonResponse(jsonString);
+            }
         }
 
         private void ParseJsonResponse(string jsonString)
         {
-            _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+            try
+            {
+                _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+            }
+            catch (Exception e)
+            {
+                //Likely from a 501 server error or 408 timeout error, so will be a single dictionary.
+                _responses = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>()
+                };
+                _responses[0]["errors"] = "[" + jsonString + "]";
+            }
         }
 
         protected string GetField(string fieldname)
         {
             object retval;
             return _responses[0].TryGetValue(fieldname, out retval) ? retval.ToString() : null;
+        }
+
+        public bool HasField(string fieldname)
+        {
+            return _responses[0].ContainsKey(fieldname);
         }
 
         public int GetSize()
@@ -88,6 +122,15 @@ namespace BidFX.Public.API.Trade.REST
                 default:
                     return false;
             }
+        }
+
+        private void SetForbiddenResponseJSON()
+        {
+            _responses = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>()
+            };
+            _responses[0]["errors"] = "[{\"message\": \"401 Forbidden - Invalid Username or Password\"}]";
         }
     }
 }
