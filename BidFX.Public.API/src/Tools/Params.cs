@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <param name="errorMessage">the message to be supplied to the exception if p1 is null</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">with the supplied error message if the given parameter is null</exception>
-        public static T NotNull<T>(T p1, string errorMessage = "method parameter may not be null")
+        public static T NotNull<T>(T p1, string errorMessage = "Method parameter may not be null")
         {
             if (p1 == null)
             {
@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <param name="p1">the 1st parameter of the calling method</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">if the given parameter is null or an empty string</exception>
-        public static string NotEmpty(string p1, string errorMessage = "method parameter may not be a blank sring")
+        public static string NotEmpty(string p1, string errorMessage = "Method parameter may not be blank")
         {
             if (NotNull(p1).Equals(""))
             {
@@ -45,7 +45,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <param name="errorMessage">the message to be supplied to the exception if p1 is blank</param>
         /// <returns>the parameter value</returns>
         /// <exception cref="ArgumentException">if the given parameter is null or made up of only blank spaces</exception>
-        public static string NotBlank(string p1, string errorMessage = "method parameter may not be a blank string")
+        public static string NotBlank(string p1, string errorMessage = "Method parameter may not be blank")
         {
             if (NotNull(p1).Trim().Equals(""))
             {
@@ -67,7 +67,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (p < min || p > max)
             {
-                throw new ArgumentException("method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
+                throw new ArgumentException("Method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
             }
 
             return p;
@@ -85,7 +85,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (p < min || p > max)
             {
-                throw new ArgumentException("method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
+                throw new ArgumentException("Method parameter " + p + " not in the ranger [" + min + ", " + max + "]");
             }
 
             return p;
@@ -101,7 +101,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (p < 0)
             {
-                throw new ArgumentException("method parameter may be negative: " + p);
+                throw new ArgumentException("Method parameter may be negative: " + p);
             }
 
             return p;
@@ -117,7 +117,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             if (p < 0)
             {
-                throw new ArgumentException("method parameter may be negative: " + p);
+                throw new ArgumentException("Method parameter may be negative: " + p);
             }
 
             return p;

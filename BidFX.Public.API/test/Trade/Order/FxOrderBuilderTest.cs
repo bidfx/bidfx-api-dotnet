@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Currency Pair must be in format 'AAABBB': GBPUSD2")]
         public void TestCurrencyPairsWithInvalidLengthThrowsException()
         {
             _orderBuilder.SetCurrencyPair("GBPUSD2");
@@ -152,7 +152,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage= "Currency must be in format 'AAA': GBPD" )]
         public void TestNonThreeLetterCurrencyThrowsException()
         {
             _orderBuilder.SetCurrency("GBPD");
@@ -212,7 +212,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Side must be either 'Buy' or 'Sell': Invalid")]
         public void TestSettingInvalidSideThrowsException()
         {
             _orderBuilder.SetSide("Invalid");
@@ -256,7 +256,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Quantity is not a number: 27281P.00")]
         public void TestNonNumericOrPeridQuantityThrowsException()
         {
             _orderBuilder.SetQuantity("27281P.00").Build();
@@ -337,7 +337,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Method parameter may not be null")]
         public void TestSettingNullStrategyParameterNameThrowsException()
         {
             _orderBuilder.SetStrategyParameter(null, "not_null");
@@ -362,14 +362,14 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Method parameter may not be blank")]
         public void TestSettingEmptyParameterNameThrowsException()
         {
             _orderBuilder.SetStrategyParameter("", "value_one");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Method parameter may not be blank")]
         public void TestSettingBlankParameterNameThrowsException()
         {
             _orderBuilder.SetStrategyParameter("   ", "value_two");
@@ -587,7 +587,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "References can not contain pipes (|)")]
         public void TestSettingReferenceTwoWithPipe()
         {
             _orderBuilder.SetReferenceTwo("PartA|PartB");
@@ -640,14 +640,14 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
         public void TestSettingInvalidSettlementDateThrowsException()
         {
             _orderBuilder.SetSettlementDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingSettlementDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetSettlementDate("yyyy-mm-dd");
@@ -700,14 +700,14 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
         public void TestSettingInvalidFixingDateThrowsException()
         {
             _orderBuilder.SetFixingDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFixingDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFixingDate("yyyy-mm-dd");
@@ -760,14 +760,14 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
         public void TestSettingInvalidFarSettlementDateThrowsException()
         {
             _orderBuilder.SetFarSettlementDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFarSettlementDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFarSettlementDate("yyyy-mm-dd");
@@ -820,14 +820,14 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
         public void TestSettingInvalidFarFixingDateThrowsException()
         {
             _orderBuilder.SetFarFixingDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFarFixingDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFarFixingDate("yyyy-mm-dd");
@@ -908,7 +908,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarCurrency must be in format 'AAA': GBPD")]
         public void TestNonThreeLetterFarCurrencyThrowsException()
         {
             _orderBuilder.SetFarCurrency("GBPD");
@@ -925,7 +925,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarQuantity was not a number: 27281P.00")]
         public void TestNonNumericOrPeridFarQuantityThrowsException()
         {
             _orderBuilder.SetFarQuantity("27281P.00").Build();
@@ -1006,7 +1006,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Price was not a number: 27281P.00")]
         public void TestNonNumericOrPeridPriceThrowsException()
         {
             _orderBuilder.SetPrice("27281P.00").Build();

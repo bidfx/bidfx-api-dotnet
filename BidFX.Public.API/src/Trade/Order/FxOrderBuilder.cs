@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'AAABBB'");
+            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'AAABBB': " + currencyPair);
             _components[FxOrder.CurrencyPair] = currencyPair;
             return this;
         }
@@ -32,7 +32,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            currency = Params.ExactLength(currency, 3, "Currency must be in format 'AAA'");
+            currency = Params.ExactLength(currency, 3, "Currency must be in format 'AAA': " + currency);
             _components[FxOrder.Currency] = currency;
             return this;
         }
@@ -55,7 +55,7 @@ namespace BidFX.Public.API.Trade.Order
                     side = "Sell";
                     break;
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException("Side must be either 'Buy' or 'Sell': " + side);
             }
 
             _components[FxOrder.Side] = side;
@@ -232,7 +232,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            farCurrency = Params.ExactLength(farCurrency, 3, "farCurrency must be in format 'AAA'");
+            farCurrency = Params.ExactLength(farCurrency, 3, "FarCurrency must be in format 'AAA': " + farCurrency);
             _components[FxOrder.FarCurrency] = farCurrency;
             return this;
         }
@@ -309,7 +309,7 @@ namespace BidFX.Public.API.Trade.Order
             price = Params.Trim(price);
             if (!Params.IsNumeric(price))
             {
-                throw new ArgumentException("Price is not a number: " + price);
+                throw new ArgumentException("Price was not a number: " + price);
             }
 
             _components[FxOrder.Price] = price;
