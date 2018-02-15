@@ -47,7 +47,7 @@ namespace BidFX.Public.API.Trade
                                     "\"far_settlement_date\":\"2018-02-28\"," +
                                     "\"far_tenor\":\"3Y\"," +
                                     "\"fixing_date\":\"2018-01-30\"," +
-                                    "\"handling_type\":\"automatic\"," +
+                                    "\"handling_type\":\"Automatic\"," +
                                     "\"reference\":\"ref 1\"," +
                                     "\"reference2\":\"ref 2\"," +
                                     "\"settlement_date\":\"2018-01-31\"," +
