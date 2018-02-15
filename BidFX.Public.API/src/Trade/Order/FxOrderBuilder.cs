@@ -154,13 +154,13 @@ namespace BidFX.Public.API.Trade.Order
             switch (handlingType.ToLower())
             {
                 case "stream":
-                    handlingType = "stream";
+                    handlingType = "Stream";
                     break;
                 case "quote":
-                    handlingType = "quote";
+                    handlingType = "Quote";
                     break;
                 case "automatic":
-                    handlingType = "automatic";
+                    handlingType = "Automatic";
                     break;
                 default:
                     throw new ArgumentException("Unsupported handling type: " + handlingType);

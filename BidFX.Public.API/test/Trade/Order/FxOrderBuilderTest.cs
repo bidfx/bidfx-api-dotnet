@@ -60,23 +60,23 @@ namespace BidFX.Public.API.Trade.Order
         public void TestValidDealTypeSetsDealType()
         {
             FxOrder fxOrder = _orderBuilder.SetDealType("spot").Build();
-            Assert.AreEqual("Spot", fxOrder.GetDealType()); //TODO: Check this is the correct case
+            Assert.AreEqual("Spot", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("ndf").Build();
-            Assert.AreEqual("NDF", fxOrder.GetDealType()); //TODO: Check this is the correct case
+            Assert.AreEqual("NDF", fxOrder.GetDealType());
 
 
             fxOrder = _orderBuilder.SetDealType("outright").Build();
-            Assert.AreEqual("Outright", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
+            Assert.AreEqual("Outright", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("forward").Build();
-            Assert.AreEqual("Outright", fxOrder.GetDealType()); //TODO: Check this is the correct case/word
+            Assert.AreEqual("Outright", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("swap").Build();
-            Assert.AreEqual("Swap", fxOrder.GetDealType()); //TODO: Check this is the correct case
+            Assert.AreEqual("Swap", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("nds").Build();
-            Assert.AreEqual("NDS", fxOrder.GetDealType()); //TODO: Check this is the correct case
+            Assert.AreEqual("NDS", fxOrder.GetDealType());
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingSide()
         {
             FxOrder fxOrder = _orderBuilder.SetSide("buy").Build();
-            Assert.AreEqual("Buy", fxOrder.GetSide()); //TODO: Check this is the correct case
+            Assert.AreEqual("Buy", fxOrder.GetSide());
 
             fxOrder = _orderBuilder.SetSide("sell").Build();
             Assert.AreEqual("Sell", fxOrder.GetSide());
@@ -435,10 +435,13 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingHandlingType() //TODO: Do we restrict to "stream", "quote", and "automatic" only?
         {
             FxOrder fxOrder = _orderBuilder.SetHandlingType("Stream").Build();
-            Assert.AreEqual("stream", fxOrder.GetHandlingType()); //TODO: Check case on this
+            Assert.AreEqual("Stream", fxOrder.GetHandlingType());
 
             fxOrder = _orderBuilder.SetHandlingType("  Quote ").Build();
-            Assert.AreEqual("quote", fxOrder.GetHandlingType()); //TODO: Check case on this
+            Assert.AreEqual("Quote", fxOrder.GetHandlingType());
+
+            fxOrder = _orderBuilder.SetHandlingType("Automatic").Build();
+            Assert.AreEqual("Automatic", fxOrder.GetHandlingType());
         }
 
         [Test]
