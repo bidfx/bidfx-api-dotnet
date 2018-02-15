@@ -6,7 +6,6 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
-    //TODO: Setting null should remove from the dictionary
     public class FxOrderBuilder
     {
         private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
@@ -285,7 +284,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FxOrderBuilder
             SetAllocationTemplate(
-                string templateName) //TODO: Is this a template name or a set of allocation accounts + quantities?
+                string templateName)
         {
             if (Params.IsNullOrEmpty(templateName))
             {

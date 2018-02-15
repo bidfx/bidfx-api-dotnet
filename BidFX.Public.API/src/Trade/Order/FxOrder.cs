@@ -40,7 +40,7 @@ namespace BidFX.Public.API.Trade.Order
         /// <summary>
         /// Dangerous method: returns the internal components. Should only be used for marshalling.
         /// </summary>
-        internal string[] getInternalComponents()
+        internal string[] GetInternalComponents()
         {
             return _components;
         }
@@ -180,10 +180,10 @@ namespace BidFX.Public.API.Trade.Order
             return _componentDictionary[AllocationTemplate];
         }
 
-        public string GetStrategyParameter(string parameter_name)
+        public string GetStrategyParameter(string parameterName)
         {
             GenerateComponentDictionary();
-            return _componentDictionary[parameter_name];
+            return _componentDictionary[parameterName];
         }
 
         public string GetPriceType()
