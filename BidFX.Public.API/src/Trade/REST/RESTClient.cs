@@ -31,6 +31,12 @@ namespace BidFX.Public.API.Trade.REST
             _authHeader = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(username + ":" + password));
         }
 
+        /// <summary>
+        /// Send a REST request with no body.
+        /// </summary>
+        /// <param name="method">HTTP Method, i.e. GET, DELETE</param>
+        /// <param name="path">The path of the request location. Is appended to the Base Address.</param>
+        /// <returns></returns>
         public HttpWebResponse SendMessage(string method, string path)
         {
             if (!path.StartsWith("/"))
@@ -54,6 +60,13 @@ namespace BidFX.Public.API.Trade.REST
             return response;
         }
 
+        /// <summary>
+        /// Send a REST request with a JSON body.
+        /// </summary>
+        /// <param name="method">HTTP Method, i.e. GET, DELETE</param>
+        /// <param name="path">The path of the request location. Is appended to the Base Address.</param>
+        /// <param name="json">The JSON body to be attached to the message.</param>
+        /// <returns></returns>
         public HttpWebResponse SendJSON(string method, string path, string json)
         {
             if (!path.StartsWith("/"))
