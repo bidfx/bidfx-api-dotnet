@@ -8,8 +8,8 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestCommonKeyWhenExists()
         {
-            var actual = CommonComponents.CommonKeys[0];
-            var clone = (string) actual.Clone();
+            string actual = CommonComponents.CommonKeys[0];
+            string clone = (string) actual.Clone();
             Assert.AreSame(actual, CommonComponents.CommonKey(clone));
         }
 
@@ -28,8 +28,8 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestCommonValueWhenExists()
         {
-            var actual = CommonComponents.CommonValues[0];
-            var clone = (string) actual.Clone();
+            string actual = CommonComponents.CommonValues[0];
+            string clone = (string) actual.Clone();
             Assert.AreSame(actual, CommonComponents.CommonValue(clone));
         }
 

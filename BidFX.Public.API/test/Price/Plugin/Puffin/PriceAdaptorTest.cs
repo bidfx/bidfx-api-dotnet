@@ -9,15 +9,15 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void LongValuesAreNotConvertedIfTheyDoNotHaveDateFieldNames()
         {
-            var priceField = LongField(1480808590928L);
+            IPriceField priceField = LongField(1480808590928L);
             Assert.AreEqual(1480808590928L, PriceAdaptor.AdaptPriceField(FieldName.BidSize, priceField).Value);
         }
 
         [Test]
         public void LongDateTimeFieldsAreConvertedToDataTime()
         {
-            var dateTime = new DateTime(2016, 12, 3, 23, 43, 10, 928);
-            var priceField = LongField(1480808590928L);
+            DateTime dateTime = new DateTime(2016, 12, 3, 23, 43, 10, 928);
+            IPriceField priceField = LongField(1480808590928L);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.LastTime, priceField).Value);
@@ -29,7 +29,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public void LongDateTimeFieldsAreConvertedToIsoStringFormat()
         {
             const string isoDate = "2016-12-03T23:43:10.928Z";
-            var priceField = LongField(1480808590928L);
+            IPriceField priceField = LongField(1480808590928L);
             Assert.AreEqual(isoDate, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Text);
             Assert.AreEqual(isoDate, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Text);
         }
@@ -42,15 +42,15 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void IntValuesAreNotConvertedIfTheyDoNotHaveDateFieldNames()
         {
-            var priceField = IntField(20161203);
+            IPriceField priceField = IntField(20161203);
             Assert.AreEqual(20161203, PriceAdaptor.AdaptPriceField(FieldName.NumBids, priceField).Value);
         }
 
         [Test]
         public void IntDateTimeFieldsAreConvertedToDataTime()
         {
-            var dateTime = new DateTime(2016, 12, 3);
-            var priceField = IntField(20161203);
+            DateTime dateTime = new DateTime(2016, 12, 3);
+            IPriceField priceField = IntField(20161203);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.ExMarkerDate, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.DividendDate, priceField).Value);
         }
@@ -59,7 +59,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public void IntDateTimeFieldsAreConvertedToIsoStringFormat()
         {
             const string isoDate = "2016-12-01";
-            var priceField = IntField(20161201);
+            IPriceField priceField = IntField(20161201);
             Assert.AreEqual(isoDate, PriceAdaptor.AdaptPriceField(FieldName.ExMarkerDate, priceField).Text);
             Assert.AreEqual(isoDate, PriceAdaptor.AdaptPriceField(FieldName.DividendDate, priceField).Text);
         }
@@ -72,9 +72,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void PuffinDateTimeCanHaveSecondsMissing()
         {
-            var dateTime = new DateTime(2016, 11, 11, 15, 19, 0);
+            DateTime dateTime = new DateTime(2016, 11, 11, 15, 19, 0);
             const string dateText = "2016/11/11 15:19";
-            var priceField = new PriceField(dateText, dateText);
+            PriceField priceField = new PriceField(dateText, dateText);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Value);
         }
@@ -82,9 +82,9 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void PuffinDateTimeCanHaveTimeMissing()
         {
-            var dateTime = new DateTime(2016, 11, 11);
+            DateTime dateTime = new DateTime(2016, 11, 11);
             const string dateText = "2016/11/11";
-            var priceField = new PriceField(dateText, dateText);
+            PriceField priceField = new PriceField(dateText, dateText);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Value);
         }
@@ -93,8 +93,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public void PuffinDateTimeCanHaveDateMissing()
         {
             const string dateText = "20:30:56";
-            var priceField = new PriceField(dateText, dateText);
-            var dateTime = (DateTime) PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value;
+            PriceField priceField = new PriceField(dateText, dateText);
+            DateTime dateTime = (DateTime) PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value;
             Assert.AreEqual(20, dateTime.Hour);
             Assert.AreEqual(30, dateTime.Minute);
             Assert.AreEqual(56, dateTime.Second);
@@ -105,8 +105,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public void PuffinDateTimeCanHaveSingleDigitDayAndMonth()
         {
-            var dateTime = new DateTime(2016, 1, 2, 15, 19, 0);
-            var priceField = StringField("2016/1/2 15:19");
+            DateTime dateTime = new DateTime(2016, 1, 2, 15, 19, 0);
+            IPriceField priceField = StringField("2016/1/2 15:19");
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.SystemTime, priceField).Value);
             Assert.AreEqual(dateTime, PriceAdaptor.AdaptPriceField(FieldName.BidTime, priceField).Value);
         }

@@ -36,7 +36,7 @@ namespace BidFX.Public.API.Price
         {
             lock (_map)
             {
-                var copy = new List<Subscription>(_map.Values);
+                List<Subscription> copy = new List<Subscription>(_map.Values);
                 _map.Clear();
                 return copy;
             }

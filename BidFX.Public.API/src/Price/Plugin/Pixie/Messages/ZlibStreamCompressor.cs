@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public void Compress(MemoryStream fragment)
         {
-            var buffer = fragment.ToArray();
+            byte[] buffer = fragment.ToArray();
             _compressor.Write(buffer, 0, buffer.Length);
             fragment.SetLength(0);
         }

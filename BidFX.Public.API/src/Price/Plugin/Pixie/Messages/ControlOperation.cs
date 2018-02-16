@@ -20,12 +20,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         Toggle
     }
 
-    static class ControlOperationExtenstions
+    internal static class ControlOperationExtenstions
     {
         public static byte GetCode(this ControlOperation controlOperation)
         {
             if (controlOperation.Equals(ControlOperation.Refresh))
+            {
                 return (byte) 'R';
+            }
+
             return (byte) 'T';
         }
 
@@ -38,6 +41,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case 'T':
                     return ControlOperation.Toggle;
             }
+
             throw new ArgumentException("unknown subscription control type code '" + (char) code + "'");
         }
     }

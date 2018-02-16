@@ -25,7 +25,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void DecodeMessage()
         {
-            var priceSync = new PriceSync(new MemoryStream(EncodedMessage), new ZlibStreamInflator());
+            PriceSync priceSync = new PriceSync(new MemoryStream(EncodedMessage), new ZlibStreamInflator());
             Assert.AreEqual(250, priceSync.ConflationLatency);
             Assert.AreEqual(1, priceSync.Edition);
             Assert.AreEqual(1, priceSync.Options);

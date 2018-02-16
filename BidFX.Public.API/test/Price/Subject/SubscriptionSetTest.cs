@@ -33,18 +33,21 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void GetSubscriptionTest()
         {
-            var subscription1 = new Subscription(Subject1, true);
+            Subscription subscription1 = new Subscription(Subject1, true);
             Assert.AreEqual(subscription1.Subject, _subscriptionSet.GetSubscription(Subject1).Subject);
-            Assert.AreEqual(subscription1.AllPriceFields.FieldNames, _subscriptionSet.GetSubscription(Subject1).AllPriceFields.FieldNames);
-            Assert.AreEqual(subscription1.AllPriceFields.PriceFields, _subscriptionSet.GetSubscription(Subject1).AllPriceFields.PriceFields);
+            Assert.AreEqual(subscription1.AllPriceFields.FieldNames,
+                _subscriptionSet.GetSubscription(Subject1).AllPriceFields.FieldNames);
+            Assert.AreEqual(subscription1.AllPriceFields.PriceFields,
+                _subscriptionSet.GetSubscription(Subject1).AllPriceFields.PriceFields);
             Assert.AreEqual(subscription1.AutoRefresh, _subscriptionSet.GetSubscription(Subject1).AutoRefresh);
-            Assert.AreEqual(subscription1.SubscriptionStatus, _subscriptionSet.GetSubscription(Subject1).SubscriptionStatus);
+            Assert.AreEqual(subscription1.SubscriptionStatus,
+                _subscriptionSet.GetSubscription(Subject1).SubscriptionStatus);
         }
 
         [Test]
         public void ClearReturnsListOfSubscriptions()
         {
-            var subscriptions = _subscriptionSet.Clear().ToList();
+            List<Subscription> subscriptions = _subscriptionSet.Clear().ToList();
             Assert.Contains(_subscription1, subscriptions);
             Assert.Contains(_subscription2, subscriptions);
             Assert.AreEqual(2, subscriptions.Count);
@@ -53,7 +56,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void SubjectsTest()
         {
-            var subjects = _subscriptionSet.Subjects();
+            List<Subject> subjects = _subscriptionSet.Subjects();
             Assert.Contains(Subject1, subjects);
             Assert.Contains(Subject2, subjects);
             Assert.AreEqual(2, subjects.Count);
@@ -71,18 +74,18 @@ namespace BidFX.Public.API.Price.Subject
         {
             _subscription1.SubscriptionStatus = SubscriptionStatus.OK;
             _subscription2.SubscriptionStatus = SubscriptionStatus.OK;
-            var staleSubscriptions = _subscriptionSet.StaleSubscriptions().ToList();
+            List<Subscription> staleSubscriptions = _subscriptionSet.StaleSubscriptions().ToList();
             Assert.AreEqual(0, staleSubscriptions.Count);
-            
+
             _subscription1.SubscriptionStatus = SubscriptionStatus.STALE;
             staleSubscriptions = _subscriptionSet.StaleSubscriptions().ToList();
             Assert.Contains(_subscription1, staleSubscriptions);
             Assert.AreEqual(1, staleSubscriptions.Count);
-            
+
             _subscription1.SubscriptionStatus = SubscriptionStatus.OK;
             staleSubscriptions = _subscriptionSet.StaleSubscriptions().ToList();
             Assert.AreEqual(0, staleSubscriptions.Count);
-            
+
             _subscription1.SubscriptionStatus = SubscriptionStatus.STALE;
             _subscription2.SubscriptionStatus = SubscriptionStatus.STALE;
             staleSubscriptions = _subscriptionSet.StaleSubscriptions().ToList();

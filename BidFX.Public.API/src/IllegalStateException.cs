@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BidFX.Public.API.Price
+namespace BidFX.Public.API
 {
     internal class IllegalStateException : Exception
     {

@@ -52,7 +52,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         [Test]
         public void TestAFieldDefIsValidIfAllComponentsAreSet()
         {
-            var fieldDef = new FieldDef()
+            FieldDef fieldDef = new FieldDef()
             {
                 Fid = 1,
                 Name = "Bid",
@@ -66,7 +66,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         [Test]
         public void TestAFieldDefIsNotValidIfFidIsNotSet()
         {
-            var fieldDef = new FieldDef()
+            FieldDef fieldDef = new FieldDef()
             {
                 Name = "Bid",
                 Type = FieldType.Integer,
@@ -77,7 +77,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         [Test]
         public void TestAFieldDefIsNotValidIfNameIsNotSet()
         {
-            var fieldDef = new FieldDef()
+            FieldDef fieldDef = new FieldDef()
             {
                 Fid = 1,
                 Type = FieldType.Integer
@@ -88,7 +88,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         [Test]
         public void TestAFieldDefIsNotValidIfTypeIsNotSet()
         {
-            var fieldDef = new FieldDef()
+            FieldDef fieldDef = new FieldDef()
             {
                 Fid = 1,
                 Name = "Bid"

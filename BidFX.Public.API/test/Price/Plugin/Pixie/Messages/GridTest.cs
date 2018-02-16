@@ -101,6 +101,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 _grid.ColumnImage("column-" + i, i, range(i));
             }
+
             _grid.EndGridImage();
 
             Assert.AreEqual(numberOfColumns, _grid.NumberOfColumns);
@@ -195,11 +196,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private object[] range(int i)
         {
-            var values = new Object[i];
+            object[] values = new Object[i];
             for (int j = 0; j < values.Length; j++)
             {
                 values[j] = j * i;
             }
+
             return values;
         }
 

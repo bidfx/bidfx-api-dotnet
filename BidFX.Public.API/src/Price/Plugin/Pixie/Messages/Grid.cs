@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private void FillEmptyColumns(GridColumn[] array, int offset, int length)
         {
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 array[i + offset] = new GridColumn();
             }
@@ -35,6 +35,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 throw new IndexOutOfRangeException(i + " is greater than " + (_numberOfColumns - 1));
             }
+
             return _columns[i];
         }
 
@@ -69,6 +70,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 ResizeColumns(columnCount);
             }
+
             _imageColumnIndex = 0;
             _names = new string[columnCount];
             _numberOfColumns = columnCount;
@@ -76,7 +78,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private void ResizeColumns(int newSize)
         {
-            var newLength = _columns.Length;
+            int newLength = _columns.Length;
             while (newLength < newSize)
             {
                 newLength *= 2;
@@ -87,7 +89,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private void DoResizeColumns(int newLength)
         {
-            var newColumns = new GridColumn[newLength];
+            GridColumn[] newColumns = new GridColumn[newLength];
             Array.Copy(_columns, 0, newColumns, 0, _columns.Length);
             FillEmptyColumns(newColumns, _columns.Length, newColumns.Length - _columns.Length);
             _columns = newColumns;
@@ -118,6 +120,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                     "received column update with cid greater than current number of columns: " + cid + ", " +
                     _numberOfColumns);
             }
+
             _columns[cid].SetImage(columnValues, rowCount);
         }
 
@@ -129,7 +132,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public void PartialTruncatedColumnUpdate(string name, int cid, int rowCount, object[] columnValues, int[] rids,
             int truncatedRid)
         {
-            var gridColumn = UpdateColumn(cid, rowCount, columnValues, rids);
+            GridColumn gridColumn = UpdateColumn(cid, rowCount, columnValues, rids);
             gridColumn.DeleteFrom(truncatedRid);
         }
 
@@ -141,11 +144,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                     "received column update with cid greater than current number of columns: " + cid + ", " +
                     _numberOfColumns);
             }
-            var gridColumn = _columns[cid];
-            for (var i = 0; i < rowCount; i++)
+
+            GridColumn gridColumn = _columns[cid];
+            for (int i = 0; i < rowCount; i++)
             {
                 gridColumn.Set(rids[i], columnValues[i]);
             }
+
             return gridColumn;
         }
 

@@ -54,7 +54,7 @@ namespace BidFX.Public.API.Price.Tools
         [Test]
         public void TestClearBitInFullBitSetBit()
         {
-            var bitset = 0xffffffff;
+            uint bitset = 0xffffffff;
             Assert.AreEqual(0xfffffffe, BitSetter.ClearBit(bitset, 0));
             Assert.AreEqual(0xfffffffd, BitSetter.ClearBit(bitset, 1));
             Assert.AreEqual(0xfffffdff, BitSetter.ClearBit(bitset, 9));
@@ -65,7 +65,7 @@ namespace BidFX.Public.API.Price.Tools
         [Test]
         public void TestClearBit()
         {
-            var bitset = (uint) 0x55555555;
+            uint bitset = (uint) 0x55555555;
             Assert.AreEqual(0x55555554, BitSetter.ClearBit(bitset, 0));
             Assert.AreEqual(0x55555555, BitSetter.ClearBit(bitset, 1));
             Assert.AreEqual(0x55555555, BitSetter.ClearBit(bitset, 9));

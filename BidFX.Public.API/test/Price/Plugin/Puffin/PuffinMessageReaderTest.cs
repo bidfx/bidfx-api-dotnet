@@ -11,12 +11,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public virtual void level_one_price()
         {
-            var data =
+            string data =
                 "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name" +
                 "\bVodafone plc\u0004AskSize\u00053000\u0001\u0000";
-            var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new PuffinMessageReader(stream);
+            MemoryStream stream = new MemoryStream(ToLatinBytes(data));
+            PuffinMessageReader tokenizer = new PuffinMessageReader(stream);
             Assert.AreEqual(
                 new PuffinElement("Update")
                     .AddAttribute("Subject",
@@ -33,16 +33,16 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public virtual void repeat_level_one_price()
         {
-            var data =
+            string data =
                 "\u0002Update\u0004Subject\bAssetClass=FixedIncome,Exchange=SGC,Level=1,LiquidityProvider=Lynx,Symbol=DE000A14KK32" +
                 "\u0002Price\u0004Ask\u0006102.5\u0004Bid\u0006100.5\u0004BidSize\u00051000\u0004Name\bVodafone plc" +
                 "\u0004AskSize\u00053000\u0001\u0000" +
                 "\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008A\u008B\u008C\u008D\u0001\u0000";
-            var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new PuffinMessageReader(stream);
+            MemoryStream stream = new MemoryStream(ToLatinBytes(data));
+            PuffinMessageReader tokenizer = new PuffinMessageReader(stream);
 
-            var element1 = tokenizer.ReadMessage();
-            var element2 = tokenizer.ReadMessage();
+            PuffinElement element1 = tokenizer.ReadMessage();
+            PuffinElement element2 = tokenizer.ReadMessage();
             Assert.AreEqual(
                 new PuffinElement("Update")
                     .AddAttribute("Subject",
@@ -76,7 +76,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public virtual void depth_price()
         {
-            var data =
+            string data =
                 "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStoc" +
                 "k,Symbol=E:VOD\u0002Price\u0004Name\u0008Vodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006" +
                 "201\u0004BidSize1\u0005999\u0004AskSize1\u00051001\u0004Bid2\u0006198\u0004Ask2\u0006" +
@@ -88,18 +88,19 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 "207\u0004BidSize7\u0005993\u0004AskSize7\u00051007\u0004Bid8\u0006192\u0004Ask8\u0006" +
                 "208\u0004BidSize8\u0005992\u0004AskSize8\u00051008\u0004Bid9\u0006191\u0004Ask9\u0006" +
                 "209\u0004BidSize9\u0005991\u0004AskSize9\u00051009\u0001\u0000";
-            var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new PuffinMessageReader(stream);
+            MemoryStream stream = new MemoryStream(ToLatinBytes(data));
+            PuffinMessageReader tokenizer = new PuffinMessageReader(stream);
 
-            var price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
-            for (var i = 1; i < 10; ++i)
+            PuffinElement price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
+            for (int i = 1; i < 10; ++i)
             {
                 price.AddAttribute("Bid" + i, 200.0 - i)
                     .AddAttribute("Ask" + i, 200.0 + i)
                     .AddAttribute("BidSize" + i, 1000 - i)
                     .AddAttribute("AskSize" + i, 1000 + i);
             }
-            var element = new PuffinElement("Set")
+
+            PuffinElement element = new PuffinElement("Set")
                 .AddAttribute("Subject",
                     "AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStock,Symbol=E:VOD")
                 .AddElement(price);
@@ -109,7 +110,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         [Test]
         public virtual void repeat_depth_price()
         {
-            var data =
+            string data =
                 "\u0002Set\u0004Subject\u0008AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStoc" +
                 "k,Symbol=E:VOD\u0002Price\u0004Name\u0008Vodafone plc\u0004Bid1\u0006199\u0004Ask1\u0006" +
                 "201\u0004BidSize1\u0005999\u0004AskSize1\u00051001\u0004Bid2\u0006198\u0004Ask2\u0006" +
@@ -179,18 +180,19 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 "\n\u00d8\n\u00d9\n\u00da\n\u00db\n\u00dc\n\u00dd\n\u00de\n\u00df\n\u00e0\n\u00e1\n\u00e2" +
                 "\n\u00e3\n\u00e4\n\u00e5\n\u00e6\n\u00e7\n\u00e8\n\u00e9\n\u00ea\n\u00eb\n\u00ec\n\u00ed" +
                 "\n\u0001\u0000";
-            var stream = new MemoryStream(ToLatinBytes(data));
-            var tokenizer = new PuffinMessageReader(stream);
+            MemoryStream stream = new MemoryStream(ToLatinBytes(data));
+            PuffinMessageReader tokenizer = new PuffinMessageReader(stream);
 
-            var price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
-            for (var i = 1; i < 30; ++i)
+            PuffinElement price = new PuffinElement("Price").AddAttribute("Name", "Vodafone plc");
+            for (int i = 1; i < 30; ++i)
             {
                 price.AddAttribute("Bid" + i, 200.0 - i)
                     .AddAttribute("Ask" + i, 200.0 + i)
                     .AddAttribute("BidSize" + i, 1000 - i)
                     .AddAttribute("AskSize" + i, 1000 + i);
             }
-            var subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStock,Symbol=E:VOD";
+
+            string subject = "AssetClass=Equity,Exchange=LSE,Level=Depth,LiquidityProvider=ComStock,Symbol=E:VOD";
             Assert.AreEqual(new PuffinElement("Set")
                 .AddAttribute("Subject", subject).AddElement(price), tokenizer.ReadMessage());
             Assert.AreEqual(new PuffinElement("Update")

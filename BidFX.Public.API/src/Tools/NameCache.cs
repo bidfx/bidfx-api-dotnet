@@ -42,7 +42,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             lock (_cache)
             {
-                var next = LastID(namePrefix) + 1;
+                int next = LastID(namePrefix) + 1;
                 _cache[namePrefix] = next;
                 return next;
             }
@@ -65,7 +65,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>a set of names.</returns>
         public ICollection<string> Names()
         {
-            var collection = new List<string>(_cache.Keys);
+            List<string> collection = new List<string>(_cache.Keys);
             collection.Sort();
             return collection;
         }

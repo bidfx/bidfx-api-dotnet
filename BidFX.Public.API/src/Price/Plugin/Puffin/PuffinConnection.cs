@@ -14,10 +14,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     {
         private const string Subject = "Subject";
 
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -76,13 +76,18 @@ private static readonly ILog Log =
             {
                 while (_running.Value)
                 {
-                    var message = _puffinMessageReader.ReadMessage();
+                    PuffinElement message = _puffinMessageReader.ReadMessage();
                     if (message == null)
                     {
                         Log.Info("the Puffin server closed the connection");
                         break;
                     }
-                    if (Log.IsDebugEnabled) Log.Debug("received message: " + message);
+
+                    if (Log.IsDebugEnabled)
+                    {
+                        Log.Debug("received message: " + message);
+                    }
+
                     OnMessage(message);
                 }
             }
@@ -153,7 +158,11 @@ private static readonly ILog Log =
 
         private void SendMessageToPuffin(string message)
         {
-            if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("sending message: " + message);
+            }
+
             _timeOfLastMessageSent = DateTime.Now;
             _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             _stream.Flush();
@@ -163,7 +172,11 @@ private static readonly ILog Log =
         {
             if (_running.Value)
             {
-                if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("queuing message: " + message);
+                }
+
                 _messageQueue.Add(message);
             }
         }
@@ -196,22 +209,22 @@ private static readonly ILog Log =
 
         private void OnPriceUpdateMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            string subject = element.AttributeValue(Subject).Text;
+            IPriceMap priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
             _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, false);
         }
 
         private void OnPriceSetMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            string subject = element.AttributeValue(Subject).Text;
+            IPriceMap priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
             _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, true);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
+            string subject = element.AttributeValue(Subject).Text;
+            SubscriptionStatus status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
             _provider.InapiEventHandler.OnSubscriptionStatus(new Subject.Subject(subject), status,
                 element.AttributeValue("Text").Text);
         }
@@ -220,7 +233,7 @@ private static readonly ILog Log =
         {
             if ("true".Equals(element.AttributeValue("SyncClock").Text))
             {
-                var transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
+                long transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
                     .AddAttribute("ReceiveTime", JavaTime.ToJavaTime(_timeOfLastMessageReceived))

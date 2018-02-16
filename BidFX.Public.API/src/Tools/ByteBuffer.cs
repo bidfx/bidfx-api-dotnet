@@ -32,32 +32,38 @@ namespace BidFX.Public.API.Price.Tools
 
         public string ReadFromStreamUntil(Stream stream, byte endByte)
         {
-            var line = ReadFromBufferUntil(endByte);
+            string line = ReadFromBufferUntil(endByte);
             while (line == null)
             {
                 WriteBytesToBuffer(stream);
                 line = ReadFromBufferUntil(endByte);
             }
+
             return line;
         }
 
         private void WriteBytesToBuffer(Stream stream)
         {
-            var received = stream.Read(_buffer, WriterIndex, Capacity - WriterIndex);
+            int received = stream.Read(_buffer, WriterIndex, Capacity - WriterIndex);
             WriterIndex += received;
         }
 
         private string ReadFromBufferUntil(byte endChar)
         {
-            var start = ReaderIndex;
-            var eol = Array.IndexOf(_buffer, endChar, start, WriterIndex - start);
-            if (eol == -1) return null;
+            int start = ReaderIndex;
+            int eol = Array.IndexOf(_buffer, endChar, start, WriterIndex - start);
+            if (eol == -1)
+            {
+                return null;
+            }
+
             ReaderIndex = eol + 1;
             if (endChar.Equals(NewLine) && eol > 0 && _buffer[eol - 1] == CarriageReturn)
             {
                 eol--;
                 return Encoding.ASCII.GetString(_buffer, start, eol - start);
             }
+
             return Encoding.ASCII.GetString(_buffer, start, ReaderIndex - start);
         }
 

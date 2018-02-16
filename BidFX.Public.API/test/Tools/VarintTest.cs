@@ -31,7 +31,7 @@ namespace BidFX.Public.API.Price.Tools
         [Test]
         public void TestWriteU32WithNegativeUsesFiveBytes()
         {
-            var stream = new MemoryStream(16);
+            MemoryStream stream = new MemoryStream(16);
             Varint.WriteU32(stream, -1);
             Assert.AreEqual(5, stream.ToArray().Length);
         }
@@ -135,7 +135,7 @@ namespace BidFX.Public.API.Price.Tools
         [Test]
         public void TestWriteString()
         {
-            var stream = new MemoryStream(10);
+            MemoryStream stream = new MemoryStream(10);
             Varint.WriteString(stream, "test");
             Assert.AreEqual("0574657374", StreamAsHex(stream));
         }
@@ -176,7 +176,7 @@ namespace BidFX.Public.API.Price.Tools
 
         private static MemoryStream WriteStringToStream(string s)
         {
-            var bytes = new byte[s.Length + 1];
+            byte[] bytes = new byte[s.Length + 1];
             bytes[0] = (byte) (s.Length + 1);
             Encoding.UTF8.GetBytes(s, 0, s.Length, bytes, 1);
             return new MemoryStream(bytes);
@@ -194,71 +194,86 @@ namespace BidFX.Public.API.Price.Tools
 
         private static MemoryStream WriteU32ToNewStream(int value)
         {
-            var memoryStream = new MemoryStream();
+            MemoryStream memoryStream = new MemoryStream();
             Varint.WriteU32(memoryStream, value);
             return new MemoryStream(memoryStream.ToArray());
         }
 
         private static MemoryStream WriteU64ToNewStream(long value)
         {
-            var memoryStream = new MemoryStream();
+            MemoryStream memoryStream = new MemoryStream();
             Varint.WriteU64(memoryStream, value);
             return new MemoryStream(memoryStream.ToArray());
         }
 
         public static string StreamAsHex(MemoryStream stream)
         {
-            var array = stream.ToArray();
+            byte[] array = stream.ToArray();
             return EncodeAsHex(array);
         }
 
         public static MemoryStream HexStream(string hexString)
         {
-            var bytes = DecodeFromHex(hexString);
+            byte[] bytes = DecodeFromHex(hexString);
             return new MemoryStream(bytes);
         }
 
         private static string EncodeAsHex(byte[] bytes)
         {
-            var stringBuilder = new StringBuilder(bytes.Length << 1);
-            foreach (var b in bytes)
+            StringBuilder stringBuilder = new StringBuilder(bytes.Length << 1);
+            foreach (byte b in bytes)
             {
-                stringBuilder.Append(HexChars[(b >> 4 & 0xf)]);
-                stringBuilder.Append(HexChars[(b & 0xf)]);
+                stringBuilder.Append(HexChars[(b >> 4) & 0xf]);
+                stringBuilder.Append(HexChars[b & 0xf]);
             }
+
             return stringBuilder.ToString();
         }
 
         private static byte[] DecodeFromHex(string hex)
         {
-            var bytes = new byte[hex.Length + 1 >> 1];
-            var byteIndex = 0;
-            var charIndex = 0;
-            var charArray = hex.ToCharArray();
+            byte[] bytes = new byte[(hex.Length + 1) >> 1];
+            int byteIndex = 0;
+            int charIndex = 0;
+            char[] charArray = hex.ToCharArray();
             if ((hex.Length & 1) == 1)
             {
                 bytes[byteIndex++] = (byte) DecodeNibble(charArray[charIndex++]);
             }
+
             while (byteIndex < bytes.Length)
             {
                 bytes[byteIndex++] = DecodeByte(charArray[charIndex++], charArray[charIndex++]);
             }
+
             return bytes;
         }
 
         private static int DecodeNibble(char c)
         {
-            if (c >= '0' && c <= '9') return c - '0';
-            if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-            if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+            if (c >= '0' && c <= '9')
+            {
+                return c - '0';
+            }
+
+            if (c >= 'a' && c <= 'f')
+            {
+                return c - 'a' + 10;
+            }
+
+            if (c >= 'A' && c <= 'F')
+            {
+                return c - 'A' + 10;
+            }
+
             throw new FormatException();
         }
 
         private static byte DecodeByte(char c1, char c2)
         {
-            var high = DecodeNibble(c1);
-            var low = DecodeNibble(c2);
-            return (byte) ((high & 0x0f) << 4 | low);
+            int high = DecodeNibble(c1);
+            int low = DecodeNibble(c2);
+            return (byte) (((high & 0x0f) << 4) | low);
         }
     }
 }

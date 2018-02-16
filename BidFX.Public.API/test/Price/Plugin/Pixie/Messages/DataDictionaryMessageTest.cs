@@ -89,15 +89,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestDecodeFullDataDictionaryMessage()
         {
-            var memoryStream = new MemoryStream(Message);
-            var dataDictionaryMessage = new DataDictionaryMessage(memoryStream);
+            MemoryStream memoryStream = new MemoryStream(Message);
+            DataDictionaryMessage dataDictionaryMessage = new DataDictionaryMessage(memoryStream);
             Assert.AreEqual(_fieldDefs, dataDictionaryMessage.FieldDefs);
         }
 
         [Test]
         public void TestToString()
         {
-            var actual = new DataDictionaryMessage(new MemoryStream(Message)).ToString();
+            string actual = new DataDictionaryMessage(new MemoryStream(Message)).ToString();
             Assert.AreEqual("DataDictionaryMessage(update=False, fields=[\n" +
                             "  fieldDef(FID=0, name=\"Bid\", type=Double, encoding=Varint, scale=6)\n" +
                             "  fieldDef(FID=1, name=\"Ask\", type=Double, encoding=Varint, scale=6)\n" +

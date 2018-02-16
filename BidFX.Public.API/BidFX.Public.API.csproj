@@ -43,19 +43,43 @@
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920">
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Client.cs" />
     <Compile Include="src\DefaultClient.cs" />
-    <Compile Include="src\DevLog.cs" />
+    <Compile Include="src\IllegalStateException.cs" />
     <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />
@@ -105,17 +129,10 @@
     <Compile Include="src\Price\Subject\SubjectValidator.cs" />
     <Compile Include="src\Price\Subscription.cs" />
     <Compile Include="src\Price\SubscriptionSet.cs" />
-    <Compile Include="src\Price\Tools\BitSetter.cs" />
-    <Compile Include="src\Price\Tools\ConnectionTools.cs" />
-    <Compile Include="src\Price\Tools\NumericCharacterEntity.cs" />
-    <Compile Include="src\Price\Tools\Params.cs" />
-    <Compile Include="src\Price\Tools\StreamReaderHelper.cs" />
-    <Compile Include="src\Price\Tools\StringCharIterator.cs" />
     <Compile Include="src\PublicApi.cs" />
     <Compile Include="src\Price\FieldName.cs" />
     <Compile Include="src\Price\IBackground.cs" />
     <Compile Include="src\Price\IBulkSubscriber.cs" />
-    <Compile Include="src\Price\IllegalStateException.cs" />
     <Compile Include="src\Price\IApiEventHandler.cs" />
     <Compile Include="src\Price\IPriceField.cs" />
     <Compile Include="src\Price\IPriceMap.cs" />
@@ -152,15 +169,29 @@
     <Compile Include="src\Price\SubscriptionStatus.cs" />
     <Compile Include="src\Price\SubscriptionStatusEvent.cs" />
     <Compile Include="src\Price\Tick.cs" />
-    <Compile Include="src\Price\Tools\AtomicBoolean.cs" />
-    <Compile Include="src\Price\Tools\ByteBuffer.cs" />
-    <Compile Include="src\Price\Tools\GUID.cs" />
-    <Compile Include="src\Price\Tools\JavaTime.cs" />
-    <Compile Include="src\Price\Tools\NameCache.cs" />
-    <Compile Include="src\Price\Tools\ServiceProperties.cs" />
-    <Compile Include="src\Price\Tools\TunnelException.cs" />
-    <Compile Include="src\Price\Tools\Varint.cs" />
     <Compile Include="src\Price\ValueParser.cs" />
+    <Compile Include="src\Tools\AtomicBoolean.cs" />
+    <Compile Include="src\Tools\BitSetter.cs" />
+    <Compile Include="src\Tools\ByteBuffer.cs" />
+    <Compile Include="src\Tools\ConnectionTools.cs" />
+    <Compile Include="src\Tools\GUID.cs" />
+    <Compile Include="src\Tools\JavaTime.cs" />
+    <Compile Include="src\Tools\NameCache.cs" />
+    <Compile Include="src\Tools\NumericCharacterEntity.cs" />
+    <Compile Include="src\Tools\Params.cs" />
+    <Compile Include="src\Tools\ServiceProperties.cs" />
+    <Compile Include="src\Tools\StreamReaderHelper.cs" />
+    <Compile Include="src\Tools\StringCharIterator.cs" />
+    <Compile Include="src\Tools\TunnelException.cs" />
+    <Compile Include="src\Tools\Varint.cs" />
+    <Compile Include="src\Trade\JsonMarshaller.cs" />
+    <Compile Include="src\Trade\OrderResponse.cs" />
+    <Compile Include="src\Trade\Order\FxOrder.cs" />
+    <Compile Include="src\Trade\Order\FxOrderBuilder.cs" />
+    <Compile Include="src\Trade\REST\AbstractRESTResponse.cs" />
+    <Compile Include="src\Trade\REST\IRESTCallback.cs" />
+    <Compile Include="src\Trade\REST\RESTClient.cs" />
+    <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
@@ -199,13 +230,23 @@
     <Compile Include="test\Price\Subject\SubscriptionSetTest.cs" />
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
     <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
-    <Compile Include="test\Price\Tools\BitSetterTest.cs" />
-    <Compile Include="test\Price\Tools\NameCacheTest.cs" />
-    <Compile Include="test\Price\Tools\NumericCharacterEntityTest.cs" />
-    <Compile Include="test\Price\Tools\VarintTest.cs" />
+    <Compile Include="test\Tools\BitSetterTest.cs" />
+    <Compile Include="test\Tools\NameCacheTest.cs" />
+    <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
+    <Compile Include="test\Tools\ParamsTest.cs" />
+    <Compile Include="test\Tools\VarintTest.cs" />
+    <Compile Include="test\Trade\JsonMarshallerTest.cs" />
+    <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
+    <Compile Include="test\Trade\REST\OrderResponseTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <EmbeddedResource Include="..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll">
+      <Link>Newtonsoft.Json.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="packages.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
