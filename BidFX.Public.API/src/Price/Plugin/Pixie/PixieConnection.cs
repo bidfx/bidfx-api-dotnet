@@ -135,7 +135,7 @@ private static readonly ILog Log =
             }
             catch (Exception e)
             {
-                Log.Warn("Could not process PricSync due to " + e);
+                Log.Warn("Could not process PriceSync due to " + e);
                 throw e;
             }
         }
@@ -376,7 +376,7 @@ private static readonly ILog Log =
             public void PriceStatus(int sid, SubscriptionStatus status, string explanation)
             {
                 if (Log.IsDebugEnabled)
-                    Log.Debug("received price statis SID: " + sid + ", status: " + status + ", text: " + explanation);
+                    Log.Debug("received price status SID: " + sid + ", status: " + status + ", text: " + explanation);
 
                 if (sid >= _subjectSet.Count) return;
 
