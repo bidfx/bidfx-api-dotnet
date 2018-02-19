@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Reflection;
 using BidFX.Public.API.Price;
+using BidFX.Public.API.Trade;
 
 namespace BidFX.Public.API
 {
@@ -44,12 +47,14 @@ namespace BidFX.Public.API
         public TimeSpan ReconnectInterval { get; set; }
 
         private PriceManager _priceManager;
+        private TradeSession _tradeSession;
 
         /// <summary>
         /// Creates a new Client that has yet to be configured.
         /// </summary>
         public Client()
         {
+            LoadExternalAssembly("Newtonsoft.Json");
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
@@ -80,13 +85,29 @@ namespace BidFX.Public.API
             }
         }
 
+        /// <summary>
+        /// The trading manager used to submit prices
+        /// </summary>
+        public TradeSession TradeSession
+        {
+            get
+            {
+                CreateTradeManager();
+                return _tradeSession;
+            }
+        }
+
         private void CreatePriceManager()
         {
-            if (_priceManager != null) return;
+            if (_priceManager != null)
+            {
+                return;
+            }
+
             _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
             {
                 Host = Host,
-                Port = 443,
+                Port = Port == 0 ? 443 : Port,
                 Password = Password,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -94,6 +115,40 @@ namespace BidFX.Public.API
 //                    Username = Username // uncomment when SubjectMutator is removed
             };
             _priceManager.Start();
+        }
+
+        private void CreateTradeManager()
+        {
+            if (_tradeSession != null)
+            {
+                return;
+            }
+
+            _tradeSession = new TradeSession
+            {
+                Host = Host,
+                Port = Port == 0 ? 443 : Port,
+                Username = Username,
+                Password = Password
+            };
+            _tradeSession.Start();
+        }
+
+        private void LoadExternalAssembly(string assemblyName)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+            {
+                string resourceName = new AssemblyName(assemblyName).Name + ".dll";
+                string resource = Array.Find(GetType().Assembly.GetManifestResourceNames(),
+                    element => element.EndsWith(resourceName));
+
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+                {
+                    byte[] assemblyData = new byte[stream.Length];
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+                    return Assembly.Load(assemblyData);
+                }
+            };
         }
     }
 }

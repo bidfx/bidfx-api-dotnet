@@ -12,10 +12,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieProviderPlugin : IProviderPlugin
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -42,7 +42,7 @@ private static readonly ILog Log =
 
         public PixieProviderPlugin()
         {
-            var name =
+            string name =
                 NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
@@ -53,7 +53,11 @@ private static readonly ILog Log =
 
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("subscribing to " + subject);
+            }
+
             if (_pixieConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
@@ -67,7 +71,11 @@ private static readonly ILog Log =
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("unsubscribing from " + subject);
+            }
+
             if (_pixieConnection != null)
             {
                 _pixieConnection.Unsubscribe(subject);
@@ -76,7 +84,11 @@ private static readonly ILog Log =
 
         public void Start()
         {
-            if (InapiEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
+            if (InapiEventHandler == null)
+            {
+                throw new IllegalStateException("set event handler before starting plugin");
+            }
+
             if (_running.CompareAndSet(false, true))
             {
                 _outputThread.Start();
@@ -96,6 +108,7 @@ private static readonly ILog Log =
                 {
                     _pixieConnection.Close(Name + " stopped");
                 }
+
                 NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
             }
         }
@@ -112,6 +125,7 @@ private static readonly ILog Log =
                     Thread.Sleep(ReconnectInterval);
                 }
             }
+
             Log.Info("thread stopped");
         }
 
@@ -127,7 +141,10 @@ private static readonly ILog Log =
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled) Log.Debug("connection terminated by " + e.Message);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("connection terminated by " + e.Message);
+                }
             }
         }
 
@@ -137,12 +154,12 @@ private static readonly ILog Log =
             try
             {
                 Log.Info("opening socket to " + Host + ':' + Port);
-                var client = new TcpClient(Host, Port);
+                TcpClient client = new TcpClient(Host, Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
                     ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
-                    var tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -151,17 +168,21 @@ private static readonly ILog Log =
                 {
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                 }
+
                 _protocolOptions.ConfigureStream(_stream);
-                var welcome = ReadWelcomeMessage();
+                WelcomeMessage welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = (int) welcome.Version;
-                var login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
+                LoginMessage login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version);
                 WriteFrame(login);
-                var grantMessage = ReadGrantMessage();
+                GrantMessage grantMessage = ReadGrantMessage();
                 Log.Info("Received grant: " + grantMessage);
                 if (!grantMessage.Granted)
+                {
                     throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
+                }
+
                 Log.Info("Authenticated with Pixie server, client is logged in.");
             }
             catch (Exception e)
@@ -175,21 +196,21 @@ private static readonly ILog Log =
 
         private WelcomeMessage ReadWelcomeMessage()
         {
-            var memoryStream = ReadMessageFrame();
+            MemoryStream memoryStream = ReadMessageFrame();
             CheckType(memoryStream, PixieMessageType.Welcome);
             return new WelcomeMessage(memoryStream);
         }
 
         private GrantMessage ReadGrantMessage()
         {
-            var message = ReadMessageFrame();
+            MemoryStream message = ReadMessageFrame();
             CheckType(message, PixieMessageType.Grant);
             return new GrantMessage(message);
         }
 
         private static void CheckType(Stream stream, byte expectedType)
         {
-            var receivedType = (byte) stream.ReadByte();
+            byte receivedType = (byte) stream.ReadByte();
             if (receivedType != expectedType)
             {
                 throw new ArgumentException("received a message of type " + (char) receivedType +
@@ -199,9 +220,9 @@ private static readonly ILog Log =
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode(_protocolOptions.Version);
-            var frameLength = Convert.ToInt32(encodedMessage.Length);
-            var buffer = encodedMessage.GetBuffer();
+            MemoryStream encodedMessage = message.Encode(_protocolOptions.Version);
+            int frameLength = Convert.ToInt32(encodedMessage.Length);
+            byte[] buffer = encodedMessage.GetBuffer();
             Varint.WriteU32(_stream, frameLength);
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
@@ -209,8 +230,12 @@ private static readonly ILog Log =
 
         private MemoryStream ReadMessageFrame()
         {
-            var frameLength = Varint.ReadU32(_stream);
-            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
+            uint frameLength = Varint.ReadU32(_stream);
+            if (frameLength == 0)
+            {
+                throw new IOException("unexpected empty Pixie message frame");
+            }
+
             byte[] frameBuffer = new byte[frameLength];
             int totalRead = 0;
             while (totalRead < frameLength)
@@ -220,8 +245,10 @@ private static readonly ILog Log =
                 {
                     throw new IOException("end of message stream reached (perhaps the server closed the connection)");
                 }
+
                 totalRead += got;
             }
+
             return new MemoryStream(frameBuffer);
         }
 
@@ -233,8 +260,12 @@ private static readonly ILog Log =
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
-            var previousStatus = ProviderStatus;
-            if (previousStatus == status && string.Equals(StatusReason, reason)) return;
+            ProviderStatus previousStatus = ProviderStatus;
+            if (previousStatus == status && string.Equals(StatusReason, reason))
+            {
+                return;
+            }
+
             ProviderStatus = status;
             StatusReason = reason;
             InapiEventHandler.OnProviderStatus(this, previousStatus);

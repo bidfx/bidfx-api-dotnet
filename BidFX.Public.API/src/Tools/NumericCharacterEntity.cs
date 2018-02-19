@@ -22,7 +22,7 @@ namespace BidFX.Public.API.Price.Tools
 
         public void AddCharacterEncodingRange(int from, int to)
         {
-            for (var i = from; i <= to; i++)
+            for (int i = from; i <= to; i++)
             {
                 AddCharacterEncoding((char) i);
             }
@@ -30,31 +30,36 @@ namespace BidFX.Public.API.Price.Tools
 
         public string EncodeString(string s)
         {
-            if (s == null) return null;
-            var charArray = s.ToCharArray();
-            for (var i = 0; i < charArray.Length; i++)
+            if (s == null)
             {
-                var c = charArray[i];
-                var encoded = c < _encodingTable.Length ? _encodingTable[c] : CharacterEntity(c);
+                return null;
+            }
+
+            char[] charArray = s.ToCharArray();
+            for (int i = 0; i < charArray.Length; i++)
+            {
+                char c = charArray[i];
+                char[] encoded = c < _encodingTable.Length ? _encodingTable[c] : CharacterEntity(c);
                 if (encoded != null)
                 {
                     return EncodeRemaining(s, i, encoded);
                 }
             }
+
             return s;
         }
 
         public string EncodeRemaining(string s, int start, char[] encoded)
         {
-            var builder = ThreadLocalBuilder.Value;
+            StringBuilder builder = ThreadLocalBuilder.Value;
             builder.Length = 0;
             builder.Append(s.ToCharArray(0, start));
             builder.Append(encoded);
 
-            var charArray = s.ToCharArray();
-            for (var i = start + 1; i < charArray.Length; i++)
+            char[] charArray = s.ToCharArray();
+            for (int i = start + 1; i < charArray.Length; i++)
             {
-                var c = charArray[i];
+                char c = charArray[i];
                 encoded = c < _encodingTable.Length ? _encodingTable[c] : CharacterEntity(c);
                 if (encoded == null)
                 {
@@ -65,6 +70,7 @@ namespace BidFX.Public.API.Price.Tools
                     builder.Append(encoded);
                 }
             }
+
             return builder.ToString();
         }
 
@@ -75,28 +81,29 @@ namespace BidFX.Public.API.Price.Tools
 
         public string DecodeString(string s)
         {
-            var charArray = s.ToCharArray();
-            for (var i = 0; i < charArray.Length; i++)
+            char[] charArray = s.ToCharArray();
+            for (int i = 0; i < charArray.Length; i++)
             {
-                var c = charArray[i];
+                char c = charArray[i];
                 if (c == '&' && i < charArray.Length - 3)
                 {
                     return DecodeRemaining(s, i);
                 }
             }
+
             return s;
         }
 
         private static string DecodeRemaining(string s, int start)
         {
-            var builder = ThreadLocalBuilder.Value;
+            StringBuilder builder = ThreadLocalBuilder.Value;
             builder.Length = 0;
             builder.Append(s, 0, start);
 
-            var charArray = s.ToCharArray();
-            for (var i = start; i < charArray.Length; i++)
+            char[] charArray = s.ToCharArray();
+            for (int i = start; i < charArray.Length; i++)
             {
-                var c = charArray[i];
+                char c = charArray[i];
                 if (c == '&' && i < charArray.Length - 3)
                 {
                     i = NextDecodedChar(builder, charArray, i);
@@ -112,21 +119,26 @@ namespace BidFX.Public.API.Price.Tools
 
         private static int NextDecodedChar(StringBuilder builder, char[] s, int start)
         {
-            var i = start + 1;
-            var c = s[i++];
+            int i = start + 1;
+            char c = s[i++];
 
             if (c == '#')
             {
                 c = s[i++];
                 if (c >= '0' && c <= '9')
                 {
-                    var code = c - '0';
+                    int code = c - '0';
                     for (c = s[i++]; c >= '0' && c <= '9'; c = s[i++])
                     {
-                        if (i == s.Length) goto endofstring;
+                        if (i == s.Length)
+                        {
+                            goto endofstring;
+                        }
+
                         code *= 10;
                         code += c - '0';
                     }
+
                     if (c == ';')
                     {
                         builder.Append((char) code);

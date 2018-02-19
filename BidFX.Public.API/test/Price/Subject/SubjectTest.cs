@@ -54,13 +54,14 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestIterator()
         {
-            var mockHandler = new Mock<IComponentHandler>();
-            var handler = mockHandler.Object;
-            var callOrder = 0;
-            foreach (var component in mSubject)
+            Mock<IComponentHandler> mockHandler = new Mock<IComponentHandler>();
+            IComponentHandler handler = mockHandler.Object;
+            int callOrder = 0;
+            foreach (SubjectComponent component in mSubject)
             {
                 handler.SubjectComponent(component.Key, component.Value);
             }
+
             mockHandler.Setup(x => x.SubjectComponent("AssetClass", "Equity"))
                 .Callback(() => Assert.AreEqual(0, callOrder++));
             mockHandler.Setup(x => x.SubjectComponent("AssetClass", "Equity"))
@@ -84,14 +85,14 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestHtmlEncodingInToString()
         {
-            var subject1 = new SubjectBuilder()
+            Subject subject1 = new SubjectBuilder()
                 .SetComponent("One", "a b")
                 .SetComponent("Two", "c d e")
                 .SetComponent("Three", "a,2,3")
                 .CreateSubject();
             Assert.AreEqual("One=a&#32;b,Three=a&#44;2&#44;3,Two=c&#32;d&#32;e", subject1.ToString());
 
-            var subject2 = new Subject(subject1.ToString());
+            Subject subject2 = new Subject(subject1.ToString());
             Assert.AreEqual(subject1, subject2);
             Assert.AreEqual(subject1.GetHashCode(), subject2.GetHashCode());
             Assert.AreEqual(subject1.ToString(), subject2.ToString());
@@ -100,8 +101,8 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestBuildingANewInstanceFromToString()
         {
-            var s = mSubject.ToString();
-            var subject = new Subject(s);
+            string s = mSubject.ToString();
+            Subject subject = new Subject(s);
             Assert.AreEqual(mSubject, subject);
             Assert.AreEqual(s, subject.ToString());
         }

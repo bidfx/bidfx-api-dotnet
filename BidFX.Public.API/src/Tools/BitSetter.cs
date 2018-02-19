@@ -25,7 +25,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>the updated bit-set</returns>
         public static uint SetBit(uint bitSet, int bitPos)
         {
-            return bitSet | (uint) 1 << bitPos;
+            return bitSet | ((uint) 1 << bitPos);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>true if the bit is set and false otherwise</returns>
         public static bool IsSet(uint bitSet, int bitPos)
         {
-            return (bitSet & 1 << bitPos) != 0;
+            return (bitSet & (1 << bitPos)) != 0;
         }
     }
 }

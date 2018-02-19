@@ -15,10 +15,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieConnection : ISubscriber
     {
-        #if DEBUG
-private static readonly ILog Log = DevLog.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType);
+#if DEBUG
+private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #else
-private static readonly ILog Log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 
@@ -32,7 +32,7 @@ private static readonly ILog Log =
 
         private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
         private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
-        private List<Subject.Subject> _autoRefreshSubjects = new List<Subject.Subject>();
+        private readonly List<Subject.Subject> _autoRefreshSubjects = new List<Subject.Subject>();
         private long _lastSubscriptionCheckTime;
         private long _lastWriteTime;
         private long _lastMsgRecTime = CurrentTimeMillis();
@@ -60,18 +60,18 @@ private static readonly ILog Log =
             {
                 while (_running.Value)
                 {
-                    var message = ReadMessageFrame();
-                    var msgType = message.ReadByte();
+                    MemoryStream message = ReadMessageFrame();
+                    int msgType = message.ReadByte();
                     switch (msgType)
                     {
                         case PixieMessageType.DataDictionary:
-                            var dictionaryMessage = new DataDictionaryMessage(message);
+                            DataDictionaryMessage dictionaryMessage = new DataDictionaryMessage(message);
                             OnDataDictionary(dictionaryMessage);
                             break;
                         case PixieMessageType.PriceSync:
-                            var receivedTimeNanos = JavaTime.NanoTime();
-                            var receivedTime = JavaTime.CurrentTimeMillis();
-                            var priceSync = _priceSyncDecoder.DecodePriceSync(message);
+                            long receivedTimeNanos = JavaTime.NanoTime();
+                            long receivedTime = JavaTime.CurrentTimeMillis();
+                            PriceSync priceSync = _priceSyncDecoder.DecodePriceSync(message);
                             OnPriceSync(priceSync);
                             _ackQueue.Add(new AckData
                             {
@@ -82,7 +82,10 @@ private static readonly ILog Log =
                             });
                             break;
                         default:
-                            if (Log.IsDebugEnabled) Log.Debug("received message with type: " + (char) msgType);
+                            if (Log.IsDebugEnabled)
+                            {
+                                Log.Debug("received message with type: " + (char) msgType);
+                            }
                             break;
                     }
                 }
@@ -118,10 +121,10 @@ private static readonly ILog Log =
 
         private void OnPriceSync(PriceSync priceSync)
         {
-            var edition = (int) priceSync.Edition;
+            int edition = (int) priceSync.Edition;
             try
             {
-                var subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
+                List<Subject.Subject> subjectSet = _subjectSetRegister.SubjectSetByEdition(edition);
                 if (subjectSet == null)
                 {
                     Log.Error("tried to get edition " + edition +
@@ -129,8 +132,9 @@ private static readonly ILog Log =
                     throw new IllegalStateException("received PriceSync for edition " + edition +
                                                     " but it's not in the SubjectSetRegister.");
                 }
-                var visitor = new PriceSyncVisitor(subjectSet, this);
-                var gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(edition);
+
+                PriceSyncVisitor visitor = new PriceSyncVisitor(subjectSet, this);
+                IGridHeaderRegistry gridHeaderRegistryByEdition = _subjectSetRegister.GetGridHeaderRegistryByEdition(edition);
                 priceSync.Visit(_dataDictionary, gridHeaderRegistryByEdition, visitor);
             }
             catch (Exception e)
@@ -176,7 +180,7 @@ private static readonly ILog Log =
             {
                 while (_running.Value)
                 {
-                    var ackData = PollNextAck();
+                    AckData ackData = PollNextAck();
                     if (ackData != null)
                     {
                         WriteFrame(ackData.ToAckMessage());
@@ -202,14 +206,14 @@ private static readonly ILog Log =
         private AckData PollNextAck()
         {
             AckData ackData;
-            var timeout = Math.Max(1, _protocolOptions.SubscriptionInterval / 4);
+            long timeout = Math.Max(1, _protocolOptions.SubscriptionInterval / 4);
             _ackQueue.TryTake(out ackData, TimeSpan.FromMilliseconds(timeout));
             return ackData;
         }
 
         private void TryAndWriteHeartbeat()
         {
-            var timeSinceLastWrite = CurrentTimeMillis() - _lastWriteTime;
+            long timeSinceLastWrite = CurrentTimeMillis() - _lastWriteTime;
             if (timeSinceLastWrite > _protocolOptions.Heartbeat * 1000)
             {
                 WriteFrame(new HeartbeatMessage());
@@ -218,7 +222,7 @@ private static readonly ILog Log =
 
         private void PeriodicallyCheckSubscriptions()
         {
-            var timeNow = CurrentTimeMillis();
+            long timeNow = CurrentTimeMillis();
             if (timeNow - _lastSubscriptionCheckTime > _protocolOptions.SubscriptionInterval)
             {
                 _lastSubscriptionCheckTime = timeNow;
@@ -228,7 +232,7 @@ private static readonly ILog Log =
 
         private void CheckAndSendSubscriptions()
         {
-            var subscriptionSync = _subjectSetRegister.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _subjectSetRegister.NextSubscriptionSync();
             if (subscriptionSync != null)
             {
                 if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= PixieVersion.Version2)
@@ -242,10 +246,14 @@ private static readonly ILog Log =
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
-            var encodedMessage = message.Encode(_protocolOptions.Version);
-            var frameLength = Convert.ToInt32(encodedMessage.Length);
-            var buffer = encodedMessage.ToArray();
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("sending message: " + message);
+            }
+
+            MemoryStream encodedMessage = message.Encode(_protocolOptions.Version);
+            int frameLength = Convert.ToInt32(encodedMessage.Length);
+            byte[] buffer = encodedMessage.ToArray();
             Varint.WriteU32(_stream, frameLength);
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
@@ -255,10 +263,14 @@ private static readonly ILog Log =
         private MemoryStream ReadMessageFrame()
         {
             UpdateIdleTimeout();
-            var frameLength = Varint.ReadU32(_stream);
-            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
-            var frameBuffer = new byte[frameLength];
-            var totalRead = 0;
+            uint frameLength = Varint.ReadU32(_stream);
+            if (frameLength == 0)
+            {
+                throw new IOException("unexpected empty Pixie message frame");
+            }
+
+            byte[] frameBuffer = new byte[frameLength];
+            int totalRead = 0;
             while (totalRead < frameLength)
             {
                 UpdateIdleTimeout();
@@ -280,9 +292,9 @@ private static readonly ILog Log =
 
         private int CalculateTimeout()
         {
-            var fullIdleTimeoutMs = _protocolOptions.Idle * 1000;
-            var timeSinceRecLastMsgMs = CurrentTimeMillis() - _lastMsgRecTime;
-            var remainingTimeout = (int) (fullIdleTimeoutMs - timeSinceRecLastMsgMs);
+            int fullIdleTimeoutMs = _protocolOptions.Idle * 1000;
+            long timeSinceRecLastMsgMs = CurrentTimeMillis() - _lastMsgRecTime;
+            int remainingTimeout = (int) (fullIdleTimeoutMs - timeSinceRecLastMsgMs);
             return Math.Max(1, remainingTimeout);
         }
 
@@ -322,33 +334,47 @@ private static readonly ILog Log =
 
             public void PriceImage(int sid, Dictionary<string, object> price)
             {
-                if (Log.IsDebugEnabled) Log.Debug("received price image SID: " + sid + ", price: " + price);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("received price image SID: " + sid + ", price: " + price);
+                }
+
                 HandlePriceUpdateEvent(sid, price, true);
             }
 
             public void PriceUpdate(int sid, Dictionary<string, object> price)
             {
-                if (Log.IsDebugEnabled) Log.Debug("received price update SID: " + sid + ", price: " + price);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("received price update SID: " + sid + ", price: " + price);
+                }
+
                 HandlePriceUpdateEvent(sid, price, false);
             }
 
             private void HandlePriceUpdateEvent(int sid, Dictionary<string, object> price, bool replaceAllFields)
             {
-                if (sid >= _subjectSet.Count) return;
+                if (sid >= _subjectSet.Count)
+                {
+                    return;
+                }
 
-                var subject = _subjectSet[sid];
+                Subject.Subject subject = _subjectSet[sid];
 
-                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
+                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject))
+                {
+                    return;
+                }
 
                 CalculateHopLatency2(price);
-                var priceMap = CreatePriceMap(price);
+                IPriceMap priceMap = CreatePriceMap(price);
                 _pixieConnection.EventHandler.OnPriceUpdate(subject, priceMap, replaceAllFields);
             }
 
             private static IPriceMap CreatePriceMap(Dictionary<string, object> price)
             {
-                var priceMap = new PriceMap();
-                foreach (var attribute in price)
+                PriceMap priceMap = new PriceMap();
+                foreach (KeyValuePair<string, object> attribute in price)
                 {
                     priceMap.SetField(attribute.Key, new PriceField(attribute.Value.ToString(), attribute.Value));
                 }
@@ -359,11 +385,11 @@ private static readonly ILog Log =
             {
                 try
                 {
-                    var sysTime = price["SystemTime"];
-                    var sysTimeLong = Convert.ToInt64(sysTime);
+                    object sysTime = price["SystemTime"];
+                    long sysTimeLong = Convert.ToInt64(sysTime);
                     {
-                        var now = JavaTime.CurrentTimeMillis();
-                        var hopLatency2 = now - (long) sysTimeLong;
+                        long now = JavaTime.CurrentTimeMillis();
+                        long hopLatency2 = now - (long) sysTimeLong;
                         price["HopLatency2"] = hopLatency2;
                     }
                 }
@@ -376,27 +402,41 @@ private static readonly ILog Log =
             public void PriceStatus(int sid, SubscriptionStatus status, string explanation)
             {
                 if (Log.IsDebugEnabled)
+                {
                     Log.Debug("received price status SID: " + sid + ", status: " + status + ", text: " + explanation);
+                }
 
-                if (sid >= _subjectSet.Count) return;
+                if (sid >= _subjectSet.Count)
+                {
+                    return;
+                }
 
-                var subject = _subjectSet[sid];
+                Subject.Subject subject = _subjectSet[sid];
 
                 if (status.Equals(SubscriptionStatus.CLOSED) && _pixieConnection.AutoRefreshSubjects.Contains(subject))
                 {
                     _pixieConnection.Subscribe(subject, true);
                 }
 
-                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject)) return;
+                if (!_pixieConnection.SubjectSetRegister.IsCurrentlySubscribed(subject))
+                {
+                    return;
+                }
 
                 _pixieConnection.EventHandler.OnSubscriptionStatus(subject, status, explanation);
             }
 
             public void StartGridImage(int sid, int columnCount)
             {
-                if (Log.IsDebugEnabled) Log.Debug("start grid image SID: " + sid + ", columnCount: " + columnCount);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("start grid image SID: " + sid + ", columnCount: " + columnCount);
+                }
 
-                if (sid >= _subjectSet.Count) return;
+                if (sid >= _subjectSet.Count)
+                {
+                    return;
+                }
 
                 _gridSubject = _subjectSet[sid];
                 _grid = _pixieConnection.GridCache.Get(_gridSubject);
@@ -425,14 +465,14 @@ private static readonly ILog Log =
 
             private void PublishGrid()
             {
-                var map = new Dictionary<string, object>();
-                var columnNames = _grid.ColumnNames;
-                var numBidLevels = 0;
-                var numAskLevels = 0;
-                for (var i = 0; i < _grid.NumberOfColumns; i++)
+                Dictionary<string, object> map = new Dictionary<string, object>();
+                string[] columnNames = _grid.ColumnNames;
+                int numBidLevels = 0;
+                int numAskLevels = 0;
+                for (int i = 0; i < _grid.NumberOfColumns; i++)
                 {
-                    var columnName = columnNames[i];
-                    var column = _grid.GetColumn(i);
+                    string columnName = columnNames[i];
+                    IColumn column = _grid.GetColumn(i);
                     AddColumn(map, columnName, column);
                     if ("Bid".Equals(columnName))
                     {
@@ -443,26 +483,33 @@ private static readonly ILog Log =
                         numAskLevels = _grid.GetColumn(i).Size();
                     }
                 }
+
                 map["BidLevels"] = numBidLevels;
                 map["AskLevels"] = numAskLevels;
-                var priceMap = CreatePriceMap(map);
+                IPriceMap priceMap = CreatePriceMap(map);
                 _pixieConnection.EventHandler.OnPriceUpdate(_gridSubject, priceMap, false);
             }
 
             private void AddColumn(Dictionary<string, object> map, string columnName, IColumn column)
             {
-                for (var i = 0; i < column.Size(); i++)
+                for (int i = 0; i < column.Size(); i++)
                 {
-                    var rowNum = i + 1;
+                    int rowNum = i + 1;
                     map[columnName + rowNum] = column.Get(i);
                 }
             }
 
             public void StartGridUpdate(int sid, int columnCount)
             {
-                if (Log.IsDebugEnabled) Log.Debug("start grid update SID: " + sid + ", columnCount: " + columnCount);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("start grid update SID: " + sid + ", columnCount: " + columnCount);
+                }
 
-                if (sid >= _subjectSet.Count) return;
+                if (sid >= _subjectSet.Count)
+                {
+                    return;
+                }
 
                 _gridSubject = _subjectSet[sid];
                 _grid = _pixieConnection.GridCache.Get(_gridSubject);

@@ -25,7 +25,7 @@ namespace BidFX.Public.API.Price.Tools
 
         public static long ToJavaTime(DateTime dateTime)
         {
-            var timeSpan = (dateTime.ToUniversalTime() - Jan1st1970);
+            TimeSpan timeSpan = dateTime.ToUniversalTime() - Jan1st1970;
             return (long) timeSpan.TotalMilliseconds;
         }
 
@@ -46,17 +46,18 @@ namespace BidFX.Public.API.Price.Tools
 
         private static int DayToGregorianDate(int dayNumber)
         {
-            var year = (int) ((10000L * dayNumber + 14780) / 3652425);
-            var ddd = dayNumber - (365 * year + year / 4 - year / 100 + year / 400);
+            int year = (int) ((10000L * dayNumber + 14780) / 3652425);
+            int ddd = dayNumber - (365 * year + year / 4 - year / 100 + year / 400);
             if (ddd < 0)
             {
                 --year;
                 ddd = dayNumber - (365 * year + year / 4 - year / 100 + year / 400);
             }
-            var mi = (100 * ddd + 52) / 3060;
-            var month = (mi + 2) % 12 + 1;
+
+            int mi = (100 * ddd + 52) / 3060;
+            int month = (mi + 2) % 12 + 1;
             year += (mi + 2) / 12;
-            var day = ddd - (mi * 306 + 5) / 10 + 1;
+            int day = ddd - (mi * 306 + 5) / 10 + 1;
             return 10000 * year + 100 * month + day;
         }
 

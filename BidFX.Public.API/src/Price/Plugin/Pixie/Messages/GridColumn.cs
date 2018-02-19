@@ -30,6 +30,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 throw new IndexOutOfRangeException(i + " is greater than " + (_size - 1));
             }
+
             return i < _values.Length ? _values[i] : _overflow[i - _values.Length];
         }
 
@@ -39,6 +40,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 ExtendTo(i + 1);
             }
+
             if (i < _values.Length)
             {
                 _values[i] = value;
@@ -68,28 +70,29 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private void ResizeOverflow(int newSize)
         {
-            var newLength = _overflow.Length;
+            int newLength = _overflow.Length;
             while (newLength < newSize)
             {
                 newLength *= 2;
             }
+
             DoResizeOverflow(newLength);
         }
 
         private void DoResizeOverflow(int newLength)
         {
-            var newSnapshot = new object[newLength];
+            object[] newSnapshot = new object[newLength];
             Array.Copy(_overflow, 0, newSnapshot, 0, _overflow.Length);
             _overflow = newSnapshot;
         }
 
         public override string ToString()
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append("GridColumn(Size=").Append(_size).Append(',');
 
             builder.Append('[');
-            var first = true;
+            bool first = true;
             for (int i = 0; i < _size; i++)
             {
                 if (first)
@@ -100,8 +103,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 {
                     builder.Append(',');
                 }
+
                 builder.Append(Get(i));
             }
+
             builder.Append(']');
 
             builder.Append(')');

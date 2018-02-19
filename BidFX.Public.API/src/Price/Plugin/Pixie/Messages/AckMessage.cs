@@ -22,7 +22,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public MemoryStream Encode(int version)
         {
-            var memoryStream = new MemoryStream();
+            MemoryStream memoryStream = new MemoryStream();
             memoryStream.WriteByte(PixieMessageType.Ack);
             Varint.WriteU64(memoryStream, Revision);
             Varint.WriteU64(memoryStream, RevisionTime);
@@ -32,17 +32,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 Varint.WriteU64(memoryStream, HandlingDuration);
             }
+
             return memoryStream;
         }
 
         public override string ToString()
         {
             return "Ack(revision=" + Revision
-                   + ", revisionTime=" + JavaTime.ToIsoTime((long) RevisionTime)
-                   + ", priceReceivedTime=" + JavaTime.ToIsoTime(PriceReceivedTime)
-                   + ", ackTime=" + JavaTime.ToIsoTime(AckTime)
-                   + ", handlingDuration=" + HandlingDuration
-                   + "us)";
+                                   + ", revisionTime=" + JavaTime.ToIsoTime((long) RevisionTime)
+                                   + ", priceReceivedTime=" + JavaTime.ToIsoTime(PriceReceivedTime)
+                                   + ", ackTime=" + JavaTime.ToIsoTime(AckTime)
+                                   + ", handlingDuration=" + HandlingDuration
+                                   + "us)";
         }
 
         protected bool Equals(AckMessage other)
@@ -54,9 +55,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((AckMessage) obj);
         }
 
@@ -64,7 +77,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             unchecked
             {
-                var hashCode = Revision.GetHashCode();
+                int hashCode = Revision.GetHashCode();
                 hashCode = (hashCode * 397) ^ RevisionTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ PriceReceivedTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ AckTime.GetHashCode();

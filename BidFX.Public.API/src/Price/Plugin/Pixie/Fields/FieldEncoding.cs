@@ -68,7 +68,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         ZigZag = 'Z'
     }
 
-    static class FieldEncodingMethods
+    internal static class FieldEncodingMethods
     {
         /// <summary>
         /// Attempts to skip over the value part of a field of known encoding type. The different implementations of this method "skip" a specific amount of bytes.
@@ -101,22 +101,24 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
                     stream.Seek(16, SeekOrigin.Current);
                     break;
                 case FieldEncoding.ByteArray:
-                    var byteArraySize = Varint.ReadU32(stream);
+                    uint byteArraySize = Varint.ReadU32(stream);
                     stream.Seek(byteArraySize, SeekOrigin.Current);
                     break;
                 case FieldEncoding.VarintString:
-                    var varintStringSize = Varint.ReadU32(stream);
+                    uint varintStringSize = Varint.ReadU32(stream);
                     stream.Seek(varintStringSize - 1, SeekOrigin.Current);
                     break;
                 case FieldEncoding.Varint:
                     while (!Varint.IsFinalByte(stream.ReadByte()))
                     {
                     }
+
                     break;
                 case FieldEncoding.ZigZag:
                     while (!Varint.IsFinalByte(stream.ReadByte()))
                     {
                     }
+
                     break;
                 default:
                     throw new ArgumentException("unrecognised field encoding code: " + fieldEncoding + " ('" +

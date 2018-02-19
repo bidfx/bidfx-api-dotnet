@@ -181,16 +181,19 @@ namespace BidFX.Public.API.Price.Subject
             {
                 subjectBuilder.SetComponent("Account", account);
             }
+
             if (quantity != null)
             {
                 subjectBuilder.SetComponent("Quantity", quantity);
                 subjectBuilder.SetComponent("AllocQuantity", quantity.Replace("\\.\\d+", ""));
             }
+
             if (symbol != null)
             {
                 subjectBuilder.SetComponent("Symbol", symbol);
                 subjectBuilder.SetComponent("Currency", symbol.Substring(0, 3));
             }
+
             return subjectBuilder.CreateSubject();
         }
 

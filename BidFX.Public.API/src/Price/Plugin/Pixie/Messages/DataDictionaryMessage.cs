@@ -18,9 +18,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public DataDictionaryMessage(Stream stream)
         {
             _options = Varint.ReadU32(stream);
-            var size = (int) Varint.ReadU32(stream);
+            int size = (int) Varint.ReadU32(stream);
             _fieldDefs = new List<FieldDef>(size);
-            for (var i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 _fieldDefs.Add(ReadFieldDef(stream));
             }
@@ -45,7 +45,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override string ToString()
         {
-            var join = string.Join("\n  ", _fieldDefs.Select(x => x.ToString()).ToArray());
+            string join = string.Join("\n  ", _fieldDefs.Select(x => x.ToString()).ToArray());
             return new StringBuilder()
                 .Append("DataDictionaryMessage(" + "update=" + IsUpdate() + ", fields=[\n  ")
                 .Append(join)

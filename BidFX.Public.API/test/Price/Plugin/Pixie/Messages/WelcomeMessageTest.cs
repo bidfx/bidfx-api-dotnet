@@ -1,4 +1,5 @@
-﻿using BidFX.Public.API.Price.Tools;
+﻿using System.IO;
+using BidFX.Public.API.Price.Tools;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -10,9 +11,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void decodes_a_buffer_into_a_message()
         {
-            var memoryStream = VarintTest.HexStream(EncodedMessage);
+            MemoryStream memoryStream = VarintTest.HexStream(EncodedMessage);
             Assert.AreEqual(PixieMessageType.Welcome, memoryStream.ReadByte());
-            var message = new WelcomeMessage(memoryStream);
+            WelcomeMessage message = new WelcomeMessage(memoryStream);
             Assert.AreEqual(0, message.Options);
             Assert.AreEqual(1, message.Version);
             Assert.AreEqual(4321, message.ClientId);

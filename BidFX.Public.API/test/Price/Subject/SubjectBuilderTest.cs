@@ -27,11 +27,12 @@ namespace BidFX.Public.API.Price.Subject
         {
             _subjectBuilder.SetComponent("A",
                 "1").SetComponent("B", "2");
-            var handler = new Mock<IComponentHandler>();
-            foreach (var component in _subjectBuilder)
+            Mock<IComponentHandler> handler = new Mock<IComponentHandler>();
+            foreach (SubjectComponent component in _subjectBuilder)
             {
                 handler.Object.SubjectComponent(component.Key, component.Value);
             }
+
             handler.Verify(mock => mock.SubjectComponent("A", "1"));
             handler.Verify(mock => mock.SubjectComponent("B", "2"));
         }
@@ -49,7 +50,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void BuildATypicalSubject()
         {
-            var subject = _subjectBuilder
+            Subject subject = _subjectBuilder
                 .SetComponent("Level", "1")
                 .SetComponent("Symbol", "VOD.L")
                 .SetComponent("LiquidityProvider", "Reuters")
@@ -178,7 +179,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestCreateFromSubject()
         {
-            var subject = new Subject("Level=1,LiquidityProvider=Reuters,Symbol=BOD.L");
+            Subject subject = new Subject("Level=1,LiquidityProvider=Reuters,Symbol=BOD.L");
             _subjectBuilder = new SubjectBuilder(subject);
             Assert.AreEqual(subject.ToString(), _subjectBuilder.ToString());
         }
@@ -186,7 +187,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestCreateFromSubjectBuilder()
         {
-            var subjectBuilder = new SubjectBuilder()
+            SubjectBuilder subjectBuilder = new SubjectBuilder()
                 .SetComponent("Level", "1")
                 .SetComponent("Symbol", "VOD.L")
                 .SetComponent("LiquidityProvider", "Reuters");

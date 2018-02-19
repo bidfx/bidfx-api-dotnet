@@ -7,7 +7,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestValidSubjectKeys()
         {
-            var part = SubjectPart.Key;
+            SubjectPart part = SubjectPart.Key;
             try
             {
                 SubjectValidator.ValidatePart("a", part);
@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestValidValues()
         {
-            var part = SubjectPart.Value;
+            SubjectPart part = SubjectPart.Value;
             try
             {
                 SubjectValidator.ValidatePart("LSE", part);
@@ -50,7 +50,7 @@ namespace BidFX.Public.API.Price.Subject
         [Test]
         public void TestValidEncodedValues()
         {
-            var part = SubjectPart.Encoded;
+            SubjectPart part = SubjectPart.Encoded;
             try
             {
                 SubjectValidator.ValidatePart("LSE", part);

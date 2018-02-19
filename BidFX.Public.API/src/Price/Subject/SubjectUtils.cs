@@ -6,13 +6,13 @@ namespace BidFX.Public.API.Price.Subject
     {
         public static int BinarySearch(string[] components, int size, string key)
         {
-            var low = 0;
-            var high = size - 1;
+            int low = 0;
+            int high = size - 1;
 
             while (low <= high)
             {
-                var mid = low + high >> 2 << 1;
-                var cmp = CompareStrings(components[mid], key);
+                int mid = ((low + high) >> 2) << 1;
+                int cmp = CompareStrings(components[mid], key);
                 if (cmp < 0)
                 {
                     low = mid + 2;

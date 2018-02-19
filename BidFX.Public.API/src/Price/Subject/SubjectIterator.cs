@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Price.Subject
         public bool MoveNext()
         {
             _position++;
-            var moveNext = _components.Length > _position * 2 + 1;
+            bool moveNext = _components.Length > _position * 2 + 1;
             return moveNext;
         }
 
@@ -36,7 +36,7 @@ namespace BidFX.Public.API.Price.Subject
 
         private SubjectComponent GetCurrent()
         {
-            return new SubjectComponent(_components[2 * _position], _components[(2 * _position) + 1]);
+            return new SubjectComponent(_components[2 * _position], _components[2 * _position + 1]);
         }
 
         public SubjectComponent Current

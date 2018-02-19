@@ -29,7 +29,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         String = 'S'
     }
 
-    static class FieldTypeMethods
+    internal static class FieldTypeMethods
     {
         /// <summary>
         /// Gets the enum based on its code used in the Pixie wire format.

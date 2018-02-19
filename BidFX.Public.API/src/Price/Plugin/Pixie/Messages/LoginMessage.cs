@@ -23,12 +23,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public MemoryStream Encode(int version)
         {
-            var memoryStream = new MemoryStream();
+            MemoryStream memoryStream = new MemoryStream();
             memoryStream.WriteByte(PixieMessageType.Login);
             Varint.WriteString(memoryStream, Username);
             Varint.WriteString(memoryStream, Password);
             Varint.WriteString(memoryStream, Alias);
-            if (version < 2) return memoryStream;
+            if (version < 2)
+            {
+                return memoryStream;
+            }
+
             Varint.WriteString(memoryStream, Application);
             Varint.WriteString(memoryStream, ApplicationVersion);
             return memoryStream;
@@ -43,9 +47,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((LoginMessage) obj);
         }
 
@@ -53,7 +69,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             unchecked
             {
-                var hashCode = (Username != null ? Username.GetHashCode() : 0);
+                int hashCode = Username != null ? Username.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (Password != null ? Password.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Alias != null ? Alias.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Application != null ? Application.GetHashCode() : 0);

@@ -70,6 +70,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return "token(" + TokenType + " text=\"" + Text + "\")";
             }
+
             return "token(" + TokenType + " text=\"" + Text + "\", value=" + Value + ")";
         }
 
@@ -79,8 +80,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return true;
             }
-            if (!(o is PuffinToken)) return false;
-            var token = (PuffinToken) o;
+
+            if (!(o is PuffinToken))
+            {
+                return false;
+            }
+
+            PuffinToken token = (PuffinToken) o;
             return TokenType == token.TokenType && Text.Equals(token.Text);
         }
 

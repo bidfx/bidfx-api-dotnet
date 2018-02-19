@@ -1,4 +1,5 @@
-﻿using BidFX.Public.API.Price.Tools;
+﻿using System.IO;
+using BidFX.Public.API.Price.Tools;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -11,18 +12,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestDecodeGrant()
         {
-            var memoryStream = VarintTest.HexStream(EncodedGrant);
+            MemoryStream memoryStream = VarintTest.HexStream(EncodedGrant);
             memoryStream.ReadByte();
-            var grantMessage = new GrantMessage(memoryStream);
+            GrantMessage grantMessage = new GrantMessage(memoryStream);
             Assert.AreEqual(true, grantMessage.Granted);
         }
 
         [Test]
         public void TestDecodeDeny()
         {
-            var memoryStream = VarintTest.HexStream(EncodedDeny);
+            MemoryStream memoryStream = VarintTest.HexStream(EncodedDeny);
             memoryStream.ReadByte();
-            var grantMessage = new GrantMessage(memoryStream);
+            GrantMessage grantMessage = new GrantMessage(memoryStream);
             Assert.AreEqual(false, grantMessage.Granted);
             Assert.AreEqual("invalid credentials", grantMessage.Reason);
         }
@@ -30,7 +31,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestToString()
         {
-            var memoryStream = VarintTest.HexStream(EncodedGrant);
+            MemoryStream memoryStream = VarintTest.HexStream(EncodedGrant);
             memoryStream.ReadByte();
             Assert.AreEqual(@"Grant(granted=True, reason="""")", new GrantMessage(memoryStream).ToString());
         }

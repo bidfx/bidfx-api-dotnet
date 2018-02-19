@@ -189,7 +189,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Register(Subject0, false);
             _register.Register(Subject3, false);
             _register.Register(Subject1, false);
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
             Assert.AreEqual(new List<Subject.Subject> {Subject0, Subject1, Subject2, Subject3},
                 subscriptionSync.Subjects);
         }
@@ -225,7 +225,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Unregister(Subject0);
             _register.Unregister(Subject2);
             _register.Unregister(Subject1);
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
             Assert.AreEqual(new List<Subject.Subject> { }, subscriptionSync.Subjects);
             Assert.AreEqual(true, subscriptionSync.IsChangedEdition());
         }
@@ -261,7 +261,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             _register.Register(Subject0, false);
             _register.Register(Subject1, false);
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
             List<Subject.Subject> subjectSet = _register.SubjectSetByEdition(subscriptionSync.Edition);
             Assert.AreEqual(new List<Subject.Subject> {Subject0, Subject1}, subjectSet);
             Assert.AreEqual(subscriptionSync.Subjects, subjectSet);
@@ -311,6 +311,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             catch (ArgumentException e)
             {
             }
+
             try
             {
                 _register.SubjectSetByEdition(2);
@@ -319,6 +320,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             catch (ArgumentException e)
             {
             }
+
             Assert.AreSame(subjectSet3, _register.SubjectSetByEdition(3));
             Assert.AreSame(subjectSet3, _register.SubjectSetByEdition(3));
         }
@@ -330,7 +332,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.NextSubscriptionSync();
             _register.Register(Subject1, false);
             _register.NextSubscriptionSync();
-            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
+            IGridHeaderRegistry headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
             headerRegisterEd2.SetGridHeader(1, FieldDefs);
             _register.Unregister(Subject0);
             _register.NextSubscriptionSync();
@@ -346,17 +348,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.NextSubscriptionSync();
             _register.Register(Subject1, false);
             _register.NextSubscriptionSync();
-            var headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
+            IGridHeaderRegistry headerRegisterEd2 = _register.GetGridHeaderRegistryByEdition(2);
             headerRegisterEd2.SetGridHeader(0, FieldDefs);
             _register.Unregister(Subject0);
             _register.NextSubscriptionSync();
             List<Subject.Subject> subjectSet3 = _register.SubjectSetByEdition(3);
             Assert.IsFalse(subjectSet3.Contains(Subject0));
-            var headerRegisterEd3 = _register.GetGridHeaderRegistryByEdition(3);
+            IGridHeaderRegistry headerRegisterEd3 = _register.GetGridHeaderRegistryByEdition(3);
             for (int i = 0; i < subjectSet3.Count; i++)
             {
                 Assert.IsNull(headerRegisterEd3.GetGridHeader(i));
             }
+
             _register.NextSubscriptionSync();
             try
             {
@@ -378,11 +381,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Register(Subject2, false);
             _register.NextSubscriptionSync();
 
-            var subjectSet1 = _register.SubjectSetByEdition(1);
+            List<Subject.Subject> subjectSet1 = _register.SubjectSetByEdition(1);
             Assert.AreSame(subjectSet1, _register.SubjectSetByEdition(1));
             Assert.AreSame(subjectSet1, _register.SubjectSetByEdition(1));
 
-            var subjectSet2 = _register.SubjectSetByEdition(2);
+            List<Subject.Subject> subjectSet2 = _register.SubjectSetByEdition(2);
             Assert.AreSame(subjectSet2, _register.SubjectSetByEdition(2));
             Assert.AreSame(subjectSet2, _register.SubjectSetByEdition(2));
         }
@@ -433,13 +436,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             for (int i = 0; i < 100; i++)
             {
                 SubjectSetRegister register = new SubjectSetRegister();
-                var rnd = new Random();
-                var orderedEnumerable = input.OrderBy(j => rnd.Next());
+                Random rnd = new Random();
+                IOrderedEnumerable<Subject.Subject> orderedEnumerable = input.OrderBy(j => rnd.Next());
                 foreach (Subject.Subject subject in
                     orderedEnumerable)
                 {
                     register.Register(subject, false);
                 }
+
                 Assert.AreEqual(new List<Subject.Subject> {s1, s2, s3, s4, s5, s6, s7, s9, s10},
                     register.NextSubscriptionSync().Subjects);
             }
@@ -451,14 +455,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             List<Subject.Subject> sortedSubjects = new List<Subject.Subject>(RealSubscriptionsExample.SortedSubjects);
             for (int i = 0; i < 100; i++)
             {
-                var rnd = new Random();
-                var shuffledSubjects = sortedSubjects.OrderBy(j => rnd.Next());
+                Random rnd = new Random();
+                IOrderedEnumerable<Subject.Subject> shuffledSubjects = sortedSubjects.OrderBy(j => rnd.Next());
                 SubjectSetRegister subjectSetRegister = new SubjectSetRegister();
                 foreach (Subject.Subject subject in
                     shuffledSubjects)
                 {
                     subjectSetRegister.Register(subject, false);
                 }
+
                 Assert.AreEqual(sortedSubjects, subjectSetRegister.NextSubscriptionSync().Subjects);
             }
         }
@@ -572,7 +577,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Register(Subject0, false);
             _register.Unregister(Subject0);
             _register.Register(Subject0, false);
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
             Assert.AreEqual(new List<Subject.Subject> { }, subscriptionSync.Controls);
             Assert.AreEqual(new List<Subject.Subject> {Subject0}, subscriptionSync.Subjects);
         }
@@ -740,7 +745,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Register(Subject0, false); // new addition to subscription set
             _register.Unregister(RfqSubject3);
             _register.Register(RfqSubject3, false); // forces toggle unsubscribe and subscribe
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
 
             Assert.AreEqual(true, subscriptionSync.IsChangedEdition());
             Assert.AreEqual(new List<Subject.Subject> {Subject0, RfsSubject1, Subject2, RfqSubject3},
@@ -764,7 +769,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _register.Unregister(Subject0); // removal from subscription set
             _register.Unregister(RfqSubject3);
             _register.Register(RfqSubject3, false); // forces toggle unsubscribe and subscribe
-            var subscriptionSync = _register.NextSubscriptionSync();
+            SubscriptionSync subscriptionSync = _register.NextSubscriptionSync();
 
             Assert.AreEqual(true, subscriptionSync.IsChangedEdition());
             Assert.AreEqual(new List<Subject.Subject> {RfsSubject1, Subject2, RfqSubject3}, subscriptionSync.Subjects);
