@@ -30,28 +30,14 @@ namespace BidFX.Public.API.Trade.REST
             Stream responseStream = webResponse.GetResponseStream();
             if (responseStream == null)
             {
-                throw new IOException("No Response Stream from webResponse");
+                Log.Warn("No response stream from web response. Setting responses to empty list");
+                _responses = new List<Dictionary<string, object>>();
+                return;
             }
 
             StreamReader responseReader = new StreamReader(responseStream);
             string jsonString = responseReader.ReadToEnd();
             ParseJsonResponse(jsonString);
-        }
-        
-        /**
-         * For testing
-         */
-        internal AbstractRESTResponse(string jsonString, HttpStatusCode statusCode = HttpStatusCode.OK)
-        {
-            StatusCode = statusCode;
-            if (StatusCode.Equals(HttpStatusCode.Unauthorized))
-            {
-                SetUnauthorizedResponseJSON();
-            }
-            else
-            {
-                ParseJsonResponse(jsonString);
-            }
         }
 
         private void ParseJsonResponse(string jsonString)
@@ -137,6 +123,22 @@ namespace BidFX.Public.API.Trade.REST
                 new Dictionary<string, object>()
             };
             _responses[0]["errors"] = "[{\"message\": \"401 Unauthorized - Invalid Username or Password\"}]";
+        }
+        
+        /**
+         * For testing
+         */
+        internal AbstractRESTResponse(string jsonString, HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            StatusCode = statusCode;
+            if (StatusCode.Equals(HttpStatusCode.Unauthorized))
+            {
+                SetUnauthorizedResponseJSON();
+            }
+            else
+            {
+                ParseJsonResponse(jsonString);
+            }
         }
     }
 }
