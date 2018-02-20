@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using BidFX.Public.API.Price.Tools;
+using log4net;
 using Newtonsoft.Json;
 
 namespace BidFX.Public.API.Trade.REST
 {
     public abstract class AbstractRESTResponse : EventArgs
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly HttpStatusCode StatusCode;
         private List<Dictionary<string, object>> _responses;
 
@@ -58,7 +62,8 @@ namespace BidFX.Public.API.Trade.REST
             }
             catch (Exception e)
             {
-                //Likely from a 501 server error or 408 timeout error, so will be a single dictionary.
+                Log.WarnFormat("Unexpected Error occured deserializing REST response.\nMessage body: {0}\n{1}", jsonString, e);
+                //Likely from a 501 server error or 408 timeout error. All body is put into the error of the first item
                 _responses = new List<Dictionary<string, object>>
                 {
                     new Dictionary<string, object>()
@@ -105,6 +110,7 @@ namespace BidFX.Public.API.Trade.REST
 
         private static bool IsNumericType(object o)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (Type.GetTypeCode(o.GetType()))
             {
                 case TypeCode.Byte:

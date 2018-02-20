@@ -52,10 +52,7 @@ namespace BidFX.Public.API.Trade.REST
             req.ContentType = "application/json";
 
             HttpWebResponse response = (HttpWebResponse) req.GetResponse();
-            if (Log.IsDebugEnabled)
-            {
-                Log.DebugFormat("Response Received, status {0}", response.StatusCode);
-            }
+            Log.DebugFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
         }
@@ -85,10 +82,7 @@ namespace BidFX.Public.API.Trade.REST
             streamWriter.Flush();
             streamWriter.Close();
             HttpWebResponse response = (HttpWebResponse) req.GetResponse();
-            if (Log.IsDebugEnabled)
-            {
-                Log.DebugFormat("Response Received, status {0}", response.StatusCode);
-            }
+            Log.DebugFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
         }
