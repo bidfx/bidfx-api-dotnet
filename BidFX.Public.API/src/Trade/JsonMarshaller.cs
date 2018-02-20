@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Trade
     {
         public static string ToJSON(FxOrder order, long messageId)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder(255);
             string[] components = order.GetInternalComponents();
             stringBuilder.Append("[{");
             for (int i = 0; i < components.Length;)
