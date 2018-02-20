@@ -53,9 +53,20 @@ namespace BidFX.Public.API.Trade
         {
             Log.InfoFormat("Submmiting order, messageId {0}", messageId);
             Log.DebugFormat("Submitting order, messageId: {0}, Json: {1}", messageId, json);
-            HttpWebResponse response = _restClient.SendJSON("POST", "", json);
+            HttpWebResponse response;
             try
             {
+                response = _restClient.SendJSON("POST", "", json);
+            }
+            catch (Exception e)
+            {
+                Log.Warn("Unexpected error occurred sending message", e);
+                throw;
+            }
+
+            try
+            {
+                Log.InfoFormat("MessageId {0} - Response Received from Server. Processing", messageId);
                 OrderResponse orderResponse = new OrderResponse(response) {MessageId = messageId};
                 if (OrderSubmitEventHandler != null)
                 {
@@ -67,8 +78,8 @@ namespace BidFX.Public.API.Trade
                 else
                 {
                     Log.WarnFormat(
-                        "OrderSubmitEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
-                        messageId, orderResponse.GetOrderId());
+                        "OrderSubmitEventHandler was null dropping order response: {0}",
+                        orderResponse.ToString());
                 }
             }
             catch (Exception e)

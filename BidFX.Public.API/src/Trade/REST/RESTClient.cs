@@ -77,11 +77,21 @@ namespace BidFX.Public.API.Trade.REST
             req.Headers["Authorization"] = _authHeader;
 
             req.ContentType = "application/json";
-            StreamWriter streamWriter = new StreamWriter(req.GetRequestStream());
-            streamWriter.Write(json);
-            streamWriter.Flush();
-            streamWriter.Close();
-            HttpWebResponse response = (HttpWebResponse) req.GetResponse();
+            using (StreamWriter streamWriter = new StreamWriter(req.GetRequestStream()))
+            {
+                streamWriter.Write(json);
+            }
+
+            HttpWebResponse response;
+            try
+            {
+                response = (HttpWebResponse) req.GetResponse();
+            }
+            catch (WebException e)
+            {
+                // Occurs on non-success codes
+                response = (HttpWebResponse) e.Response;
+            }
             Log.DebugFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
