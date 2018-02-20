@@ -48,7 +48,7 @@ namespace BidFX.Public.API.Trade.REST
                                 "]";
             OrderResponse orderResponse = new OrderResponse(json);
             List<string> expectedError =
-                new List<string>() {"Invalid ExecutingAccount specified: INVALID_ACCOUNT:C:0001"};
+                new List<string> {"Invalid ExecutingAccount specified: INVALID_ACCOUNT:C:0001"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
             Assert.AreEqual("20180206-171449888_24", orderResponse.GetOrderId());
             Assert.AreEqual("NotValid", orderResponse.GetState());
@@ -60,7 +60,7 @@ namespace BidFX.Public.API.Trade.REST
             OrderResponse orderResponse = new OrderResponse("", HttpStatusCode.Unauthorized);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
-            List<string> expectedError = new List<string>() {"401 Unauthorized - Invalid Username or Password"};
+            List<string> expectedError = new List<string> {"401 Unauthorized - Invalid Username or Password"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
         }
 
@@ -74,7 +74,8 @@ namespace BidFX.Public.API.Trade.REST
             OrderResponse orderResponse = new OrderResponse(json, HttpStatusCode.Forbidden);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
-            List<string> expectedError = new List<string>() {"User does not have the required permissions to access this resource"};
+            List<string> expectedError = new List<string> {"User does not have the required permissions to access this resource"};
+            Assert.AreEqual(expectedError, orderResponse.GetErrors());
         }
     }
     
