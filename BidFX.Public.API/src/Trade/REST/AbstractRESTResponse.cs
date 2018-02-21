@@ -52,7 +52,7 @@ namespace BidFX.Public.API.Trade.REST
                 }
                 catch (JsonSerializationException e)
                 {
-                    Log.Warn("Error parsing JSON", e);
+                    Log.WarnFormat("Error parsing JSON: {0}, {1}", jsonString, e);
                 }
     
                 try
@@ -63,6 +63,7 @@ namespace BidFX.Public.API.Trade.REST
                     {
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString)
                     };
+                    Log.Info("Successfully parsed JSON as single Dictionary");
                     return;
                 }
                 catch (JsonSerializationException e)
