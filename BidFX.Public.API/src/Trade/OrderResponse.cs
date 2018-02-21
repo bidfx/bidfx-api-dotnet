@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using BidFX.Public.API.Trade.REST;
+using log4net;
 using Newtonsoft.Json;
 
 namespace BidFX.Public.API.Trade
 {
     public class OrderResponse : AbstractRESTResponse
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public long MessageId { get; internal set; }
 
         public OrderResponse(HttpWebResponse webResponse) : base(webResponse)
@@ -46,12 +52,56 @@ namespace BidFX.Public.API.Trade
         /// <summary>
         /// Get the errors attached to the order, if there is one.
         /// </summary>
-        /// <returns>The error given to the order, or null if there was no error.</returns>
+        /// <returns>A list of errors given to the order. The list is empty if there were no errors.</returns>
         public List<string> GetErrors()
         {
             string errors = GetField("errors");
-            List<Dictionary<string, string>> list = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(errors);
-            return list.ConvertAll(error => error["message"]);
+            if (errors == null)
+            {
+                string type = GetField("type");
+                string message = GetField("message");
+                if (type == null)
+                {
+                    return new List<string>();
+                }
+
+                Dictionary<string, string> error = new Dictionary<string, string>
+                    {
+                        {"type", type}, 
+                        {"message", message}
+                    };
+
+                return new List<string>
+                {
+                    ConvertErrorDictionaryToString(error)
+                };
+            }
+            
+            try
+            {
+                List<Dictionary<string, string>> list = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(errors);
+                return list.ConvertAll(ConvertErrorDictionaryToString);
+            }
+            catch (JsonSerializationException e)
+            {
+                Log.Error("Could not deserialize errors, returning as string", e);
+                return new List<string> {errors};
+            }
+        }
+
+        private string ConvertErrorDictionaryToString(Dictionary<string, string> error)
+        {
+            if (error.ContainsKey("type"))
+            {
+                return error["type"] + " - " + error["message"];
+            }
+
+            if (error.ContainsKey("message"))
+            {
+                return error["message"];
+            }
+
+            return string.Join(", ", error.Values.ToList());
         }
     }
 }

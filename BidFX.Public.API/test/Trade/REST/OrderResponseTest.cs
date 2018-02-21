@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using BidFX.Public.API.Trade.Order;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Trade.REST
@@ -14,7 +15,7 @@ namespace BidFX.Public.API.Trade.REST
                                 "\"message\": \"Timeout waiting for TSOM response\"" +
                                 "}";
             OrderResponse orderResponse = new OrderResponse(json);
-            List<string> expected = new List<string>() {"Timeout waiting for TSOM response"};
+            List<string> expected = new List<string>() {"Request Timeout - Timeout waiting for TSOM response"};
             Assert.AreEqual(expected, orderResponse.GetErrors());
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
@@ -48,10 +49,14 @@ namespace BidFX.Public.API.Trade.REST
                                 "]";
             OrderResponse orderResponse = new OrderResponse(json);
             List<string> expectedError =
-                new List<string> {"Invalid ExecutingAccount specified: INVALID_ACCOUNT:C:0001"};
+                new List<string> {"Internal Server Error - Invalid ExecutingAccount specified: INVALID_ACCOUNT:C:0001"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
             Assert.AreEqual("20180206-171449888_24", orderResponse.GetOrderId());
             Assert.AreEqual("NotValid", orderResponse.GetState());
+            Assert.AreEqual("Spot", orderResponse.GetField(FxOrder.DealType));
+            Assert.AreEqual("INVALID_ACCOUNT", orderResponse.GetField(FxOrder.Account));
+            Assert.AreEqual("1000000", orderResponse.GetField(FxOrder.Quantity));
+            Assert.AreEqual("EURGBP", orderResponse.GetField(FxOrder.CurrencyPair));
         }
 
         [Test]
@@ -60,7 +65,7 @@ namespace BidFX.Public.API.Trade.REST
             OrderResponse orderResponse = new OrderResponse("", HttpStatusCode.Unauthorized);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
-            List<string> expectedError = new List<string> {"401 Unauthorized - Invalid Username or Password"};
+            List<string> expectedError = new List<string> {"Unauthorized - Invalid Username or Password"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
         }
 
@@ -74,7 +79,7 @@ namespace BidFX.Public.API.Trade.REST
             OrderResponse orderResponse = new OrderResponse(json, HttpStatusCode.Forbidden);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
-            List<string> expectedError = new List<string> {"User does not have the required permissions to access this resource"};
+            List<string> expectedError = new List<string> {"Forbidden - User does not have the required permissions to access this resource"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
         }
     }

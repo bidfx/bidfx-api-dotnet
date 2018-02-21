@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Trade.REST
             StatusCode = webResponse.StatusCode;
             if (StatusCode.Equals(HttpStatusCode.Unauthorized))
             {
-                SetUnauthorizedResponseJSON();
+                SetUnauthorizedResponseJson();
                 return;
             }
             
@@ -44,29 +44,69 @@ namespace BidFX.Public.API.Trade.REST
         {
             try
             {
-                _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
-            }
-            catch (Exception e)
-            {
-                Log.WarnFormat("Unexpected Error occured deserializing REST response.\nMessage body: {0}\n{1}", jsonString, e);
-                //Likely from a 501 server error or 408 timeout error. All body is put into the error of the first item
+                try
+                {
+                    Log.DebugFormat("Parsing JSON: {0}", jsonString);
+                    _responses = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+                    return;
+                }
+                catch (JsonSerializationException e)
+                {
+                    Log.Warn("Error parsing JSON", e);
+                }
+    
+                try
+                {
+                    // Next we'll try parse as a single dictionary
+                    // likely from a 501 server error or 408 timeout error.
+                    _responses = new List<Dictionary<string, object>>
+                    {
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString)
+                    };
+                    return;
+                }
+                catch (JsonSerializationException e)
+                {
+                    Log.Warn("Could not parse JSON, putting response in error of first item");
+                }
+                
                 _responses = new List<Dictionary<string, object>>
                 {
                     new Dictionary<string, object>()
                 };
                 _responses[0]["errors"] = "[" + jsonString + "]";
+                
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unexpected error occurred processing JSON", e);
+                _responses = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>()
+                };
+                _responses[0]["errors"] = "[" + e.Message + "]";
             }
         }
 
-        protected string GetField(string fieldname)
+        /// <summary>
+        /// Get a value from the server response
+        /// </summary>
+        /// <param name="fieldName">Name of the field for which to get the value of</param>
+        /// <returns>The string representation of the value assigned to the field specified by fieldName, or null if the field does not exist</returns>
+        public string GetField(string fieldName)
         {
             object retval;
-            return _responses[0].TryGetValue(fieldname, out retval) ? retval.ToString() : null;
+            return _responses[0].TryGetValue(fieldName, out retval) && retval != null ? retval.ToString() : null;
         }
 
-        public bool HasField(string fieldname)
+        /// <summary>
+        /// Determines if the server response has a particular field.
+        /// </summary>
+        /// <param name="fieldName">The field to check the existance of.</param>
+        /// <returns>True if the field exists, false otherwise.</returns>
+        public bool HasField(string fieldName)
         {
-            return _responses[0].ContainsKey(fieldname);
+            return _responses[0].ContainsKey(fieldName);
         }
 
         public int GetSize()
@@ -116,13 +156,13 @@ namespace BidFX.Public.API.Trade.REST
             }
         }
 
-        private void SetUnauthorizedResponseJSON()
+        private void SetUnauthorizedResponseJson()
         {
             _responses = new List<Dictionary<string, object>>
             {
                 new Dictionary<string, object>()
             };
-            _responses[0]["errors"] = "[{\"message\": \"401 Unauthorized - Invalid Username or Password\"}]";
+            _responses[0]["errors"] = "[{\"type\": \"Unauthorized\",\"message\": \"Invalid Username or Password\"}]";
         }
         
         /**
@@ -133,7 +173,7 @@ namespace BidFX.Public.API.Trade.REST
             StatusCode = statusCode;
             if (StatusCode.Equals(HttpStatusCode.Unauthorized))
             {
-                SetUnauthorizedResponseJSON();
+                SetUnauthorizedResponseJson();
             }
             else
             {
