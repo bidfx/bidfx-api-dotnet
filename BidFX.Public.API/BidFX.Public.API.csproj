@@ -220,6 +220,7 @@
     <Compile Include="test\Price\Plugin\Puffin\PuffinMessageReaderTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\TokenDictionaryTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\ValueParserTest.cs" />
+    <Compile Include="test\Price\PriceMapTest.cs" />
     <Compile Include="test\Price\Subject\CommonComponentsTest.cs" />
     <Compile Include="test\Price\Subject\RequestSubjectComparatorTest.cs" />
     <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />

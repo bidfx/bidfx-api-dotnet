@@ -108,6 +108,9 @@ namespace BidFX.Public.API.Price
 
         internal void MergedPriceMap(IPriceMap priceUpdate, bool replaceAllFields)
         {
+            int oldBidLevels = IntField("BidLevels") ?? 0;
+            int oldAskLevels = IntField("AskLevels") ?? 0;
+            
             if (replaceAllFields)
             {
                 _priceFields.Clear();
@@ -117,8 +120,24 @@ namespace BidFX.Public.API.Price
             {
                 SetField(field.Key, field.Value);
             }
+            
+            int newBidLevels = IntField("BidLevels") ?? 0;
+            int newAskLevels = IntField("AskLevels") ?? 0;
+            
+            for (int i = newBidLevels + 1; i <= oldBidLevels; i++)
+            {
+                _priceFields.Remove("Bid" + i);
+                _priceFields.Remove("BidSize" + i);
+                _priceFields.Remove("BidFirm" + i);
+            }
+            for (int i = newAskLevels + 1; i <= oldAskLevels; i++)
+            {
+                _priceFields.Remove("Ask" + i);
+                _priceFields.Remove("AskSize" + i);
+                _priceFields.Remove("AskFirm" + i);
+            }
         }
-
+        
         public void Clear()
         {
             _priceFields.Clear();

@@ -501,10 +501,7 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
 
             public void StartGridUpdate(int sid, int columnCount)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("start grid update SID: " + sid + ", columnCount: " + columnCount);
-                }
+                Log.DebugFormat("start grid update SID: {0}, columnCount: {1}", sid, columnCount);
 
                 if (sid >= _subjectSet.Count)
                 {
