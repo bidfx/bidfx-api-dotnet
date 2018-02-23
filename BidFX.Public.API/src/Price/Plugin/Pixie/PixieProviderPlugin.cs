@@ -188,8 +188,17 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
             catch (Exception e)
             {
                 Log.Warn("failed to handshake with highway server due to " + e.Message);
-                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
-                                                                   + e.Message);
+                if (e.Message.Contains("401 Unauthorized"))
+                {
+                    NotifyStatusChange(ProviderStatus.Unauthorized, "Invalid Credentials: "
+                                                                    + e.Message);
+                    _running.SetValue(false);
+                }
+                else
+                {
+                    NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
+                                                                       + e.Message);
+                }
                 throw e;
             }
         }

@@ -13,8 +13,8 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string USERNAME = "dtang";
-        private const string PASSWORD = "HelloWorld123";
+        private const string USERNAME = "";
+        private const string PASSWORD = "";
         private const string ACCOUNT = "FX_ACCT";
         private readonly Client _client;
 
@@ -26,12 +26,12 @@ namespace BidFX.Public.API.Example
         private void Run()
         {
             Client _client = DefaultClient.Client;
-            _client.Host = "ny-tunnel.uatdev.tradingscreen.com";
+            _client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             _client.Username = USERNAME;
             _client.Password = PASSWORD;
             _client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;
 
-            if (_client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
+            if (_client.PriceSession.WaitUntilLoggedIn(TimeSpan.FromSeconds(15)))
             {
                 Subject depthSubject = CommonSubjects
                     .CreateLevelTwoSpotStreamingSubject(ACCOUNT, "GBPUSD", "GBP", "1000000.00").CreateSubject();
@@ -39,7 +39,14 @@ namespace BidFX.Public.API.Example
             }
             else
             {
-                Log.Warn("Timed out waiting for session to be ready.");
+                if (!_client.PriceSession.LoggedIn)
+                {
+                    Log.Warn("Invalid credentials.");
+                }
+                else
+                {
+                    Log.Warn("Timed out waiting for session to be ready.");
+                }
                 foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
                     Log.Info(providerProperties.ToString());

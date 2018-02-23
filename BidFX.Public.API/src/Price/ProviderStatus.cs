@@ -50,6 +50,9 @@
         /// Session it is not normal for a provider to notify NAPIClient when its status
         /// changes to Closed.
         /// </remarks>
-        Closed
+        Closed,
+        
+        /// <summary>Indicated that the provider recieved an unauthorized response from the server</summary>
+        Unauthorized
     }
 }
