@@ -355,6 +355,7 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                     return;
                 }
 
+                subscription.SubscriptionStatus = SubscriptionStatus.OK;
                 subscription.AllPriceFields.MergedPriceMap(priceUpdate, replaceAllFields);
                 if (_session.PriceUpdateEventHandler != null)
                 {
