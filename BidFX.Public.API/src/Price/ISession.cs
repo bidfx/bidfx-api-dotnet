@@ -42,9 +42,17 @@ namespace BidFX.Public.API.Price
         /// Checks if the session is ready for handling subscriptions.
         /// </summary>
         /// <remarks>
-        /// The session is ready when it is running and all of its provider plugins are ready.
+        /// The session is ready when it is running and at least one of its provider plugins are logged in and ready.
         /// </remarks>
         bool LoggedIn { get; }
+        
+        /// <summary>
+        /// Checks if the session is ready for handling subscriptions.
+        /// </summary>
+        /// <remarks>
+        /// The session is ready when it is running and all of its provider plugins have returned, but not necessarily successfully logged in.
+        /// </remarks>
+        bool Ready { get; }
 
         /// <summary>
         /// Waits until the session is ready with all configured plugins connected, up and ready
