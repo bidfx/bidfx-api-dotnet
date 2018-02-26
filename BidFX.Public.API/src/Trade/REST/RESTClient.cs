@@ -7,7 +7,7 @@ using log4net;
 
 namespace BidFX.Public.API.Trade.REST
 {
-    public class RESTClient
+    internal class RESTClient
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string ApiPath = "/api/om/v2beta/fx"; //TODO: set to not-beta

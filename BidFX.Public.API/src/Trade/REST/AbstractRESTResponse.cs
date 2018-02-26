@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace BidFX.Public.API.Trade.REST
 {
-    public abstract class AbstractRESTResponse : EventArgs
+    internal abstract class AbstractRESTResponse: OrderResponse
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -94,7 +94,7 @@ namespace BidFX.Public.API.Trade.REST
         /// </summary>
         /// <param name="fieldName">Name of the field for which to get the value of</param>
         /// <returns>The string representation of the value assigned to the field specified by fieldName, or null if the field does not exist</returns>
-        public string GetField(string fieldName)
+        public override string GetField(string fieldName)
         {
             object retval;
             return _responses[0].TryGetValue(fieldName, out retval) && retval != null ? retval.ToString() : null;

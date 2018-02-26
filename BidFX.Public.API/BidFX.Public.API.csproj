@@ -191,6 +191,7 @@
     <Compile Include="src\Trade\REST\AbstractRESTResponse.cs" />
     <Compile Include="src\Trade\REST\IRESTCallback.cs" />
     <Compile Include="src\Trade\REST\RESTClient.cs" />
+    <Compile Include="src\Trade\REST\RESTOrderResponse.cs" />
     <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
@@ -238,7 +239,7 @@
     <Compile Include="test\Tools\VarintTest.cs" />
     <Compile Include="test\Trade\JsonMarshallerTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
-    <Compile Include="test\Trade\REST\OrderResponseTest.cs" />
+    <Compile Include="test\Trade\REST\RESTOrderResponseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll">

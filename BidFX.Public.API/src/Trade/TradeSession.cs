@@ -67,7 +67,7 @@ namespace BidFX.Public.API.Trade
             try
             {
                 Log.InfoFormat("MessageId {0} - Response Received from Server. Processing", messageId);
-                OrderResponse orderResponse = new OrderResponse(response) {MessageId = messageId};
+                OrderResponse orderResponse = new RESTOrderResponse(response, messageId);
                 if (OrderSubmitEventHandler != null)
                 {
                     Log.DebugFormat(
@@ -93,7 +93,7 @@ namespace BidFX.Public.API.Trade
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
             HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId);
-            OrderResponse orderResponse = new OrderResponse(response) {MessageId = messageId};
+            OrderResponse orderResponse = new RESTOrderResponse(response, messageId);
             if (OrderQueryEventHandler != null)
             {
                 OrderQueryEventHandler(this, orderResponse);

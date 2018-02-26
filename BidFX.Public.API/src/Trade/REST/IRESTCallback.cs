@@ -1,6 +1,6 @@
 ﻿namespace BidFX.Public.API.Trade.REST
 {
-    public interface IRESTCallback<out T> where T : AbstractRESTResponse
+    internal interface IRESTCallback<out T> where T : AbstractRESTResponse
     {
         void Notfiy();
 

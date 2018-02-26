@@ -191,7 +191,6 @@ namespace BidFX.Public.API.Example
                 .SetPrice("1.180000")
                 .SetQuantity("2000000")
                 .SetSide("Sell")
-                .SetSettlementDate("2018-02-07")
                 .SetReferenceOne(".NET API Example")
                 .Build();
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
@@ -200,7 +199,7 @@ namespace BidFX.Public.API.Example
 
         private static void OnOrderSubmitResponse(object sender, OrderResponse orderResponse)
         {
-            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", orderResponse.MessageId,
+            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", orderResponse.GetMessageId(),
                 orderResponse.GetOrderId(), orderResponse.GetState());
         }
     }

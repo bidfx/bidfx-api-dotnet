@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace BidFX.Public.API.Trade.REST
 {
-    public class OrderResponseTest
+    public class RESTOrderResponseTest
     {
         [Test]
         public void SingleErrorResponseIsParsedCorrectly()
@@ -14,7 +14,7 @@ namespace BidFX.Public.API.Trade.REST
                                 "\"type\": \"Request Timeout\"," +
                                 "\"message\": \"Timeout waiting for TSOM response\"" +
                                 "}";
-            OrderResponse orderResponse = new OrderResponse(json);
+            OrderResponse orderResponse = new RESTOrderResponse(json);
             List<string> expected = new List<string>() {"Request Timeout - Timeout waiting for TSOM response"};
             Assert.AreEqual(expected, orderResponse.GetErrors());
             Assert.IsNull(orderResponse.GetOrderId());
@@ -47,7 +47,7 @@ namespace BidFX.Public.API.Trade.REST
                                 "\"state\":\"NotValid\"" +
                                 "}" +
                                 "]";
-            OrderResponse orderResponse = new OrderResponse(json);
+            OrderResponse orderResponse = new RESTOrderResponse(json);
             List<string> expectedError =
                 new List<string> {"Internal Server Error - Invalid ExecutingAccount specified: INVALID_ACCOUNT:C:0001"};
             Assert.AreEqual(expectedError, orderResponse.GetErrors());
@@ -62,7 +62,7 @@ namespace BidFX.Public.API.Trade.REST
         [Test]
         public void NotAuthorizedResponseIsHandledCorrectly()
         {
-            OrderResponse orderResponse = new OrderResponse("", HttpStatusCode.Unauthorized);
+            OrderResponse orderResponse = new RESTOrderResponse("", HttpStatusCode.Unauthorized);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
             List<string> expectedError = new List<string> {"Unauthorized - Invalid Username or Password"};
@@ -76,7 +76,7 @@ namespace BidFX.Public.API.Trade.REST
                                 "\"type\": \"Forbidden\"," +
                                 "\"message\": \"User does not have the required permissions to access this resource\"" +
                                 "}";
-            OrderResponse orderResponse = new OrderResponse(json, HttpStatusCode.Forbidden);
+            OrderResponse orderResponse = new RESTOrderResponse(json, HttpStatusCode.Forbidden);
             Assert.IsNull(orderResponse.GetOrderId());
             Assert.IsNull(orderResponse.GetState());
             List<string> expectedError = new List<string> {"Forbidden - User does not have the required permissions to access this resource"};
