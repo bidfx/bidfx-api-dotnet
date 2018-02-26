@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Trade
             string address = "https://" + Host + ":" + Port;
             _restClient = new RESTClient(address, Username, Password);
             InitialiseNextMessageId();
-            Log.InfoFormat("TradeManager connecting to {0}", address);
+            Log.InfoFormat("TradeSession connecting to {0}", address);
         }
 
         public long SubmitOrder(FxOrder fxOrder)

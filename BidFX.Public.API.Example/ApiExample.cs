@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Example
 
         private ApiExample()
         {
-            DefaultClient.Client.Host = "ny-tunnel.uatdev.tradingscreen.com";
+            DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             DefaultClient.Client.Username = "";
             DefaultClient.Client.Password = "";
             
