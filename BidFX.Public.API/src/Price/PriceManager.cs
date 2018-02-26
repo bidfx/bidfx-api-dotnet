@@ -137,15 +137,19 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
 
         public bool Ready
         {
-            get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.Unauthorized == pp.ProviderStatus); }
+            get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus); }
         }
 
-        public bool LoggedIn
+        private bool ProvidersInFinalState
         {
-            get { return _providerPlugins.Any(pp => ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.TemporarilyDown == pp.ProviderStatus); }
+            get
+            {
+                return _providerPlugins.All(pp =>
+                    ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.Unauthorized == pp.ProviderStatus);
+            }
         }
 
-        private bool WaitUntilReady(TimeSpan timeout)
+        public bool WaitUntilReady(TimeSpan timeout)
         {
             if (Ready)
             {
@@ -164,16 +168,11 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                         continue;
                     }
 
-                    return false;
-                } while (!Ready);
+                    return false; //Timed out
+                } while (!ProvidersInFinalState);
 
-                return true;
+                return Ready;
             }
-        }
-
-        public bool WaitUntilLoggedIn(TimeSpan timeout)
-        {
-            return WaitUntilReady(timeout) && LoggedIn;
         }
 
         public ICollection<IProviderProperties> ProviderProperties()

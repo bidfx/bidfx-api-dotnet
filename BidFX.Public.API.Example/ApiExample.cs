@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Price;
@@ -14,7 +15,7 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
@@ -37,20 +38,20 @@ namespace BidFX.Public.API.Example
         {
             
             //Pricing
-            if (DefaultClient.Client.PriceSession.WaitUntilLoggedIn(TimeSpan.FromSeconds(15)))
+            if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-//                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-//                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-//                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-//                SendPremiumFxSubscriptions();
+                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
+                SendPremiumFxSubscriptions();
                 SendLevelTwoStreamingSubscriptions();
             }
             else
             {
-                if (!DefaultClient.Client.PriceSession.LoggedIn)
+                if (DefaultClient.Client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
                 {
                     Log.Warn("Invalid Credentials");
                 }
@@ -58,21 +59,17 @@ namespace BidFX.Public.API.Example
                 {
                     Log.Warn("timed out waiting on session to be ready");
                 }
-                foreach (var providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
+                foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
                     Log.Info(providerProperties.ToString());
                 }
                 DefaultClient.Client.PriceSession.Stop();
+                return;
             }
             
             //Send a trade
-            //DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-/*            SendSpotEURGBPTrade();
-            Thread.Sleep(TimeSpan.FromMilliseconds(200));
+            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
             SendSpotEURGBPTrade();
-            Thread.Sleep(TimeSpan.FromMilliseconds(400));*/
-            //SendSpotEURGBPTrade();
-            //Thread.Sleep(TimeSpan.FromMilliseconds(2000));
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -134,12 +131,12 @@ namespace BidFX.Public.API.Example
             DefaultClient.Client.PriceSubscriber.Subscribe(
                 CommonSubjects.CreateLevelTwoSpotStreamingSubject("FX_ACCT", "EURUSD", "EUR", "1000000.00")
                     .CreateSubject());
-/*            DefaultClient.Client.PriceSubscriber.Subscribe(
+            DefaultClient.Client.PriceSubscriber.Subscribe(
                 CommonSubjects.CreateLevelTwoForwardStreamingSubject("FX_ACCT", "EURGBP", "EUR", "1000000.00",
                     "BD", "20181220").CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
                 CommonSubjects.CreateLevelTwoNdfStreamingSubject("FX_ACCT", "USDJPY", "USD", "1000000.00", "4M", "")
-                    .CreateSubject());*/
+                    .CreateSubject());
         }
 
         private void SendIndicativeSubscriptions(params string[] ccyPairs)

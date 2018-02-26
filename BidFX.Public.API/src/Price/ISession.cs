@@ -44,14 +44,6 @@ namespace BidFX.Public.API.Price
         /// <remarks>
         /// The session is ready when it is running and at least one of its provider plugins are logged in and ready.
         /// </remarks>
-        bool LoggedIn { get; }
-        
-        /// <summary>
-        /// Checks if the session is ready for handling subscriptions.
-        /// </summary>
-        /// <remarks>
-        /// The session is ready when it is running and all of its provider plugins have returned, but not necessarily successfully logged in.
-        /// </remarks>
         bool Ready { get; }
 
         /// <summary>
@@ -66,8 +58,8 @@ namespace BidFX.Public.API.Price
         /// orders based on market data provided by the API.
         /// </remarks>
         /// <param name="timeout"></param>
-        /// <returns>true if the session is ready and false if the wait timed out or login failed</returns>
-        bool WaitUntilLoggedIn(TimeSpan timeout);
+        /// <returns>true if the session is ready and false if the wait timed out or a provider returned Unauthorized</returns>
+        bool WaitUntilReady(TimeSpan timeout);
 
         /// <summary>
         /// Gets a collection of provider properties.
