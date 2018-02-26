@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price
 {
     /// <summary>
     /// An interface used for stopping and starting API components with long lived background tasks.

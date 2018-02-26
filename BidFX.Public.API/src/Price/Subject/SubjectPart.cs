@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price.Subject
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price.Subject
 {
     internal enum SubjectPart
     {

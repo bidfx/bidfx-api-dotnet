@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
+
+using System;
 using System.Net;
 using System.Reflection;
 using System.Threading;

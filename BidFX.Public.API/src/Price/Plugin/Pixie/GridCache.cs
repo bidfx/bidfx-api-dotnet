@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.Collections.Generic;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie

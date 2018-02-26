@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price.Plugin.Pixie
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieVersion
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

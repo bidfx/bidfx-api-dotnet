@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.IO;
 using Ionic.Zlib;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.IO;
 using System.Text;
 using BidFX.Public.API.Price.Tools;
 

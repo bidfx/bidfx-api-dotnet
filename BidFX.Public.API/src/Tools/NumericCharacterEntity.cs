@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.Text;
 using System.Threading;
 
 namespace BidFX.Public.API.Price.Tools

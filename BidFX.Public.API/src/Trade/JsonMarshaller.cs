@@ -1,4 +1,5 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
+
 using System.Text;
 using BidFX.Public.API.Trade.Order;
 
