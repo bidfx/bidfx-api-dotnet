@@ -182,6 +182,7 @@
     <Compile Include="src\Tools\ServiceProperties.cs" />
     <Compile Include="src\Tools\StreamReaderHelper.cs" />
     <Compile Include="src\Tools\StringCharIterator.cs" />
+    <Compile Include="src\Tools\TimeFieldTools.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\Tools\Varint.cs" />
     <Compile Include="src\Trade\JsonMarshaller.cs" />

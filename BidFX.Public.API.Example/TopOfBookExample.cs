@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
+using BidFX.Public.API.Price.Tools;
 using log4net;
 
 namespace BidFX.Public.API.Example
@@ -66,18 +67,24 @@ namespace BidFX.Public.API.Example
                 int asks = priceEvent.AllPriceFields.IntField("AskLevels") ?? 0;
                 for (int i = 1; i <= Math.Min(Math.Max(bids, asks), 3); i++)
                 {
+                    string bidtime = TimeFieldTools.ToDateTime(priceEvent.AllPriceFields.DecimalField("BidTime" + i) ?? 0).ToString("HH:mm:ss.fff");
                     string bidfirm = priceEvent.AllPriceFields.StringField("BidFirm" + i) ?? "";
                     decimal bid = priceEvent.AllPriceFields.DecimalField("Bid" + i) ?? 0;
                     decimal ask = priceEvent.AllPriceFields.DecimalField("Ask" + i) ?? 0;
                     string askfirm = priceEvent.AllPriceFields.StringField("AskFirm" + i) ?? "";
+                    string asktime = TimeFieldTools.ToDateTime(priceEvent.AllPriceFields.DecimalField("AskTime" + i) ?? 0).ToString("HH:mm:ss.fff");
                     stringBuilder.AppendLine();
+                    stringBuilder.Append(bidtime.PadLeft(13));
+                    stringBuilder.Append(" ");
                     stringBuilder.Append(bidfirm.PadLeft(6));
                     stringBuilder.Append(" ");
                     stringBuilder.Append(bid.ToString("#.00000").PadLeft(8));
                     stringBuilder.Append("|");
                     stringBuilder.Append(ask.ToString("#.00000").PadRight(8));
                     stringBuilder.Append(" ");
-                    stringBuilder.Append(askfirm.PadRight(8));
+                    stringBuilder.Append(askfirm.PadRight(6));
+                    stringBuilder.Append(" ");
+                    stringBuilder.Append(asktime.PadRight(13));
                 }
 
                 Log.Info(stringBuilder.ToString());
