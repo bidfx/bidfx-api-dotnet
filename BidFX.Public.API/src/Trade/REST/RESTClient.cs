@@ -53,7 +53,16 @@ namespace BidFX.Public.API.Trade.REST
 
             req.ContentType = "application/json";
 
-            HttpWebResponse response = (HttpWebResponse) req.GetResponse();
+            HttpWebResponse response;
+            try
+            {
+                response = (HttpWebResponse) req.GetResponse();
+            }
+            catch (WebException e)
+            {
+                // Occurs on non-success codes
+                response = (HttpWebResponse) e.Response;
+            }
             Log.DebugFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
