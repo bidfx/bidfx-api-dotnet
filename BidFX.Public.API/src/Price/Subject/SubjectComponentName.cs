@@ -8,16 +8,21 @@ namespace BidFX.Public.API.Price.Subject
     public class SubjectComponentName
     {
         /// <summary>
-        /// Account code component field name.
+        /// Account component field name.
         /// </summary>
         public const string BuySideAccount = "BuySideAccount";
 
-        /// <summary>
+/*        /// <summary>
         /// Allocation account component field name.
         /// </summary>
-        public const string BuySideAllocAccount = "BuySideAllocAccount";
+        public const string BuySideAllocAccount = "BuySideAllocAccount";*/
 
         /// <summary>
+        /// Name of a pre-trade allocation template.
+        /// </summary>
+        public const string AllocationTemplate = "AllocationTemplate";
+
+/*        /// <summary>
         /// Allocation quantity component field name.
         /// </summary>
         public const string AllocQuantity = "AllocQuantity";
@@ -25,7 +30,7 @@ namespace BidFX.Public.API.Price.Subject
         /// <summary>
         /// Far allocation quantity component field name.
         /// </summary>
-        public const string FarAllocQuantity = "FarAllocQuantity";
+        public const string FarAllocQuantity = "FarAllocQuantity";*/
 
         /// <summary>
         /// Alternate user name component field name used for receiving pricing for another user.

@@ -11,9 +11,6 @@ namespace BidFX.Public.API.Price.Subject
     internal static class SubjectMutator
     {
         private const string Account = "Account";
-        private const string AllocAccount = "AllocAccount";
-        private const string AllocQty = "AllocQty";
-        private const string AllocEndQty = "AllocEndty";
         private const string AltUserName = "AltUserName";
         private const string Source = "Source";
         private const string SubClass = "SubClass";
@@ -29,9 +26,6 @@ namespace BidFX.Public.API.Price.Subject
         private static readonly Dictionary<string, string> ComponentNameMap = new Dictionary<string, string>
         {
             {SubjectComponentName.BuySideAccount, Account},
-            {SubjectComponentName.BuySideAllocAccount, AllocAccount},
-            {SubjectComponentName.AllocQuantity, AllocQty},
-            {SubjectComponentName.FarAllocQuantity, AllocEndQty},
             {SubjectComponentName.OnBehalfOf, AltUserName},
             {SubjectComponentName.LiquidityProvider, Source},
             {SubjectComponentName.DealType, SubClass},
