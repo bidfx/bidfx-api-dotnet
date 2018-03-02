@@ -136,5 +136,10 @@ namespace BidFX.Public.API.Price.Subject
         /// Far settlement date component field name used for FX Swaps
         /// </summary>
         public const string FarSettlementDate = "FarSettlementDate";
+
+        /// <summary>
+        /// Limit the maximum depth returned in a level 2 subscription
+        /// </summary>
+        public const string Rows = "Rows";
     }
 }
