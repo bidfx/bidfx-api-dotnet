@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Currency Pair must be in format 'AAABBB': GBPUSD2")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Currency Pair must be in format 'XXXYYY': GBPUSD2")]
         public void TestCurrencyPairsWithInvalidLengthThrowsException()
         {
             _orderBuilder.SetCurrencyPair("GBPUSD2");
@@ -60,20 +60,20 @@ namespace BidFX.Public.API.Trade.Order
         public void TestValidDealTypeSetsDealType()
         {
             FxOrder fxOrder = _orderBuilder.SetDealType("spot").Build();
-            Assert.AreEqual("Spot", fxOrder.GetDealType());
+            Assert.AreEqual("SPOT", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("ndf").Build();
             Assert.AreEqual("NDF", fxOrder.GetDealType());
 
 
             fxOrder = _orderBuilder.SetDealType("outright").Build();
-            Assert.AreEqual("Outright", fxOrder.GetDealType());
+            Assert.AreEqual("FWD", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("forward").Build();
-            Assert.AreEqual("Outright", fxOrder.GetDealType());
+            Assert.AreEqual("FWD", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("swap").Build();
-            Assert.AreEqual("Swap", fxOrder.GetDealType());
+            Assert.AreEqual("SWAP", fxOrder.GetDealType());
 
             fxOrder = _orderBuilder.SetDealType("nds").Build();
             Assert.AreEqual("NDS", fxOrder.GetDealType());
@@ -152,7 +152,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage= "Currency must be in format 'AAA': GBPD" )]
+        [ExpectedException("System.ArgumentException", ExpectedMessage= "Currency must be in format 'XXX': GBPD" )]
         public void TestNonThreeLetterCurrencyThrowsException()
         {
             _orderBuilder.SetCurrency("GBPD");
@@ -199,20 +199,20 @@ namespace BidFX.Public.API.Trade.Order
         public void TestSettingSide()
         {
             FxOrder fxOrder = _orderBuilder.SetSide("buy").Build();
-            Assert.AreEqual("Buy", fxOrder.GetSide());
+            Assert.AreEqual("BUY", fxOrder.GetSide());
 
             fxOrder = _orderBuilder.SetSide("sell").Build();
-            Assert.AreEqual("Sell", fxOrder.GetSide());
+            Assert.AreEqual("SELL", fxOrder.GetSide());
 
             fxOrder = _orderBuilder.SetSide("  buy").Build();
-            Assert.AreEqual("Buy", fxOrder.GetSide());
+            Assert.AreEqual("BUY", fxOrder.GetSide());
 
             fxOrder = _orderBuilder.SetSide(" sell  ").Build();
-            Assert.AreEqual("Sell", fxOrder.GetSide());
+            Assert.AreEqual("SELL", fxOrder.GetSide());
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Side must be either 'Buy' or 'Sell': Invalid")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Side must be either 'BUY' or 'SELL': Invalid")]
         public void TestSettingInvalidSideThrowsException()
         {
             _orderBuilder.SetSide("Invalid");
@@ -434,14 +434,20 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingHandlingType() //TODO: Do we restrict to "stream", "quote", and "automatic" only?
         {
-            FxOrder fxOrder = _orderBuilder.SetHandlingType("Stream").Build();
-            Assert.AreEqual("Stream", fxOrder.GetHandlingType());
+            FxOrder fxOrder = _orderBuilder.SetHandlingType("STREAM").Build();
+            Assert.AreEqual("RFS", fxOrder.GetHandlingType());
+            
+            fxOrder = _orderBuilder.SetHandlingType("RFS").Build();
+            Assert.AreEqual("RFS", fxOrder.GetHandlingType());
 
             fxOrder = _orderBuilder.SetHandlingType("  Quote ").Build();
-            Assert.AreEqual("Quote", fxOrder.GetHandlingType());
+            Assert.AreEqual("RFQ", fxOrder.GetHandlingType());
+            
+            fxOrder = _orderBuilder.SetHandlingType("  rfq ").Build();
+            Assert.AreEqual("RFQ", fxOrder.GetHandlingType());
 
             fxOrder = _orderBuilder.SetHandlingType("Automatic").Build();
-            Assert.AreEqual("Automatic", fxOrder.GetHandlingType());
+            Assert.AreEqual("AUTOMATIC", fxOrder.GetHandlingType());
         }
 
         [Test]

@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'AAABBB': " + currencyPair);
+            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'XXXYYY': " + currencyPair);
             _components[FxOrder.CurrencyPair] = currencyPair;
             return this;
         }
@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            currency = Params.ExactLength(currency, 3, "Currency must be in format 'AAA': " + currency);
+            currency = Params.ExactLength(currency, 3, "Currency must be in format 'XXX': " + currency);
             _components[FxOrder.Currency] = currency;
             return this;
         }
@@ -47,16 +47,16 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             side = Params.Trim(side);
-            switch (side.ToLower())
+            switch (side.ToUpper())
             {
-                case "buy":
-                    side = "Buy";
+                case "BUY":
+                    side = "BUY";
                     break;
-                case "sell":
-                    side = "Sell";
+                case "SELL":
+                    side = "SELL";
                     break;
                 default:
-                    throw new ArgumentException("Side must be either 'Buy' or 'Sell': " + side);
+                    throw new ArgumentException("Side must be either 'BUY' or 'SELL': " + side);
             }
 
             _components[FxOrder.Side] = side;
@@ -93,17 +93,18 @@ namespace BidFX.Public.API.Trade.Order
             switch (dealType.ToLower())
             {
                 case "spot":
-                    dealType = "Spot";
+                    dealType = "SPOT";
                     break;
                 case "outright":
                 case "forward":
-                    dealType = "Outright";
+                case "fwd":
+                    dealType = "FWD";
                     break;
                 case "ndf":
                     dealType = "NDF";
                     break;
                 case "swap":
-                    dealType = "Swap";
+                    dealType = "SWAP";
                     break;
                 case "nds":
                     dealType = "NDS";
@@ -152,16 +153,18 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             handlingType = Params.Trim(handlingType);
-            switch (handlingType.ToLower())
+            switch (handlingType.ToUpper())
             {
-                case "stream":
-                    handlingType = "Stream";
+                case "STREAM":
+                case "RFS":
+                    handlingType = "RFS";
                     break;
-                case "quote":
-                    handlingType = "Quote";
+                case "QUOTE":
+                case "RFQ":
+                    handlingType = "RFQ";
                     break;
-                case "automatic":
-                    handlingType = "Automatic";
+                case "AUTOMATIC":
+                    handlingType = "AUTOMATIC";
                     break;
                 default:
                     throw new ArgumentException("Unsupported handling type: " + handlingType);

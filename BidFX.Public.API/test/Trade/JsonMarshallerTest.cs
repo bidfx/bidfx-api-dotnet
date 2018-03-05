@@ -23,11 +23,11 @@ namespace BidFX.Public.API.Trade
                 .SetDealType("NDS")
                 .SetCurrency("GBP")
                 .SetFixingDate("2018-01-30")
-                .SetHandlingType("automatic")
+                .SetHandlingType("AUTOMATIC")
                 .SetReferenceOne("ref 1")
                 .SetReferenceTwo("ref 2")
                 .SetSettlementDate("2018-01-31")
-                .SetSide("Buy")
+                .SetSide("BUY")
                 .SetTenor("2Y")
                 .SetFarCurrency("GBP")
                 .SetFarFixingDate("2018-02-27")
@@ -47,11 +47,11 @@ namespace BidFX.Public.API.Trade
                                     "\"far_settlement_date\":\"2018-02-28\"," +
                                     "\"far_tenor\":\"3Y\"," +
                                     "\"fixing_date\":\"2018-01-30\"," +
-                                    "\"handling_type\":\"Automatic\"," +
+                                    "\"handling_type\":\"AUTOMATIC\"," +
                                     "\"reference\":\"ref 1\"," +
                                     "\"reference2\":\"ref 2\"," +
                                     "\"settlement_date\":\"2018-01-31\"," +
-                                    "\"side\":\"Buy\"," +
+                                    "\"side\":\"BUY\"," +
                                     "\"strategy_name\":\"strat_value\"," +
                                     "\"tenor\":\"2Y\"," +
                                     "\"correlation_id\":\"321\"" +
