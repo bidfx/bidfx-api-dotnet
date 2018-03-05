@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Trade.REST
     internal class RESTClient
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private const string ApiPath = "/api/om/v2beta/fx"; //TODO: set to not-beta
+        private const string ApiPath = "/api/om/v2/fx";
         private readonly string _authHeader;
         private readonly string _baseAddress;
 
