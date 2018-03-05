@@ -28,6 +28,12 @@ namespace BidFX.Public.API.Trade.REST
                 SetUnauthorizedResponseJson();
                 return;
             }
+
+            if (StatusCode.Equals(HttpStatusCode.NotFound))
+            {
+                SetNotFoundResponseJson(webResponse);
+                return;
+            }
             
             Stream responseStream = webResponse.GetResponseStream();
             if (responseStream == null)
@@ -166,6 +172,15 @@ namespace BidFX.Public.API.Trade.REST
                 new Dictionary<string, object>()
             };
             _responses[0]["errors"] = "[{\"type\": \"Unauthorized\",\"message\": \"Invalid Username or Password\"}]";
+        }
+        
+        private void SetNotFoundResponseJson(WebResponse webResponse)
+        {
+            _responses = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>()
+            };
+            _responses[0]["errors"] = "[{\"type\": \"Not Found\",\"message\": \"Could not find the resource at " + webResponse.ResponseUri +"\"}]";
         }
         
         /**
