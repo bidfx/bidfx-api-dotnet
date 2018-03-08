@@ -125,7 +125,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            tenor = Params.Trim(tenor);
+            tenor = Params.Trim(tenor).ToUpper();
             _components[FxOrder.Tenor] = tenor;
             return this;
         }
@@ -328,7 +328,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            priceType = Params.Trim(priceType);
+            priceType = Params.Trim(priceType).ToUpper();
             _components[FxOrder.PriceType] = priceType;
             return this;
         }

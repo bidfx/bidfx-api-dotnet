@@ -318,7 +318,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestBlankTenorThrowsException()
+        public void TestBlankTenorClearsTenor()
         {
             _orderBuilder.SetTenor("BD");
             _orderBuilder.SetTenor("     ");
@@ -432,7 +432,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestSettingHandlingType() //TODO: Do we restrict to "stream", "quote", and "automatic" only?
+        public void TestSettingHandlingType()
         {
             FxOrder fxOrder = _orderBuilder.SetHandlingType("STREAM").Build();
             Assert.AreEqual("RFS", fxOrder.GetHandlingType());

@@ -15,7 +15,7 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main2(string[] args)
+        public static void Main(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
@@ -191,6 +191,7 @@ namespace BidFX.Public.API.Example
                 .SetPrice("1.180000")
                 .SetQuantity("2000000")
                 .SetSide("Sell")
+                .SetTenor("Spot")
                 .SetReferenceOne(".NET API Example")
                 .Build();
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
@@ -201,6 +202,7 @@ namespace BidFX.Public.API.Example
         {
             Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", orderResponse.GetMessageId(),
                 orderResponse.GetOrderId(), orderResponse.GetState());
+            Log.InfoFormat("Errors: {0}", string.Join(", ", orderResponse.GetErrors()));
         }
     }
 }

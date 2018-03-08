@@ -19,7 +19,7 @@ namespace BidFX.Public.API.Example
         private const string ACCOUNT = "FX_ACCT";
         private readonly Client _client;
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             new TopOfBookExample().Run();
         }
