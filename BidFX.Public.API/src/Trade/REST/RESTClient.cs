@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Trade.REST
                 path = "/" + path;
             }
 
-            Log.DebugFormat("Sending REST message to {0}{1}", _baseAddress, path);
+            Log.InfoFormat("Sending REST message to {0}{1}", _baseAddress, path);
             HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
@@ -63,7 +63,7 @@ namespace BidFX.Public.API.Trade.REST
                 // Occurs on non-success codes
                 response = (HttpWebResponse) e.Response;
             }
-            Log.DebugFormat("Response Received, status {0}", response.StatusCode);
+            Log.InfoFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
         }
@@ -82,7 +82,7 @@ namespace BidFX.Public.API.Trade.REST
                 path = "/" + path;
             }
 
-            Log.DebugFormat("Sending REST message with JSON to {0}{1}", _baseAddress, path);
+            Log.InfoFormat("Sending REST message with JSON to {0}{1}", _baseAddress, path);
             HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
@@ -103,7 +103,7 @@ namespace BidFX.Public.API.Trade.REST
                 // Occurs on non-success codes
                 response = (HttpWebResponse) e.Response;
             }
-            Log.DebugFormat("Response Received, status {0}", response.StatusCode);
+            Log.InfoFormat("Response Received, status {0}", response.StatusCode);
 
             return response;
         }
