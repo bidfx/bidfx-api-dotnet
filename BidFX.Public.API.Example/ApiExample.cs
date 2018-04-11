@@ -70,7 +70,6 @@ namespace BidFX.Public.API.Example
             //Send a trade
             DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
             SendSpotEURGBPTrade();
-            Thread.Sleep(10000);
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
