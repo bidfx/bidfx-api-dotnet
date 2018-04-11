@@ -29,7 +29,7 @@ namespace BidFX.Public.API.Trade.Order
         public const string FarQuantity = "far_quantity";
         public const string AllocationTemplate = "allocation_template";
         public const string Price = "price";
-        public const string PriceType = "price_type";
+        public const string OrderType = "order_type";
 
         private readonly string[] _components;
         private Dictionary<string, string> _componentDictionary;
@@ -188,10 +188,10 @@ namespace BidFX.Public.API.Trade.Order
             return _componentDictionary[parameterName];
         }
 
-        public string GetPriceType()
+        public string GetOrderType()
         {
             GenerateComponentDictionary();
-            return _componentDictionary[PriceType];
+            return _componentDictionary[OrderType];
         }
     }
 }

@@ -24,8 +24,8 @@ namespace BidFX.Public.API.Example
         private ApiExample()
         {
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.Username = "";
-            DefaultClient.Client.Password = "";
+            DefaultClient.Client.Username = "dtang";
+            DefaultClient.Client.Password = "HelloWorld123";
             
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
@@ -37,39 +37,40 @@ namespace BidFX.Public.API.Example
         private void RunTest()
         {
             
-            //Pricing
-            if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
-            {
-                Log.Info("pricing session is ready");
-                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-                SendPremiumFxSubscriptions();
-                SendLevelTwoStreamingSubscriptions();
-            }
-            else
-            {
-                if (DefaultClient.Client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
-                {
-                    Log.Warn("Invalid Credentials");
-                }
-                else
-                {
-                    Log.Warn("timed out waiting on session to be ready");
-                }
-                foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
-                {
-                    Log.Info(providerProperties.ToString());
-                }
-                DefaultClient.Client.PriceSession.Stop();
-                return;
-            }
+//            //Pricing
+//            if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
+//            {
+//                Log.Info("pricing session is ready");
+//                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+//                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+//                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
+//                SendPremiumFxSubscriptions();
+//                SendLevelTwoStreamingSubscriptions();
+//            }
+//            else
+//            {
+//                if (DefaultClient.Client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
+//                {
+//                    Log.Warn("Invalid Credentials");
+//                }
+//                else
+//                {
+//                    Log.Warn("timed out waiting on session to be ready");
+//                }
+//                foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
+//                {
+//                    Log.Info(providerProperties.ToString());
+//                }
+//                DefaultClient.Client.PriceSession.Stop();
+//                return;
+//            }
             
             //Send a trade
             DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
             SendSpotEURGBPTrade();
+            Thread.Sleep(10000);
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -187,12 +188,13 @@ namespace BidFX.Public.API.Example
                 .SetCurrency("GBP")
                 .SetDealType("Spot")
                 .SetHandlingType("stream")
-                .SetPriceType("Limit")
+                .SetOrderType("Limit")
                 .SetPrice("1.180000")
                 .SetQuantity("2000000")
                 .SetSide("Sell")
                 .SetTenor("Spot")
                 .SetReferenceOne(".NET API Example")
+                .SetAllocationTemplate("TEST2")
                 .Build();
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
