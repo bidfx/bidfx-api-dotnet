@@ -187,12 +187,13 @@ namespace BidFX.Public.API.Example
                 .SetCurrency("GBP")
                 .SetDealType("Spot")
                 .SetHandlingType("stream")
-                .SetPriceType("Limit")
+                .SetOrderType("Limit")
                 .SetPrice("1.180000")
                 .SetQuantity("2000000")
                 .SetSide("Sell")
                 .SetTenor("Spot")
                 .SetReferenceOne(".NET API Example")
+                .SetAllocationTemplate("TEST2")
                 .Build();
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);

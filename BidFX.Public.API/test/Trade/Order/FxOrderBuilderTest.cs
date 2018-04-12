@@ -1049,38 +1049,38 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        public void TestSettingPriceType()
+        public void TestSettingOrderType()
         {
-            FxOrder fxOrder = _orderBuilder.SetPriceType("Limit").Build();
-            Assert.AreEqual("Limit", fxOrder.GetPriceType());
+            FxOrder fxOrder = _orderBuilder.SetOrderType("Limit").Build();
+            Assert.AreEqual("LIMIT", fxOrder.GetOrderType());
 
-            fxOrder = _orderBuilder.SetPriceType(" Market  ").Build();
-            Assert.AreEqual("Market", fxOrder.GetPriceType());
+            fxOrder = _orderBuilder.SetOrderType(" Market  ").Build();
+            Assert.AreEqual("MARKET", fxOrder.GetOrderType());
         }
 
         [Test]
-        public void TestSettingNullPriceTypeClearsPriceType()
+        public void TestSettingNullOrderTypeClearsOrderType()
         {
-            _orderBuilder.SetPriceType("Limit");
-            _orderBuilder.SetPriceType(null);
+            _orderBuilder.SetOrderType("Limit");
+            _orderBuilder.SetOrderType(null);
             FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
         }
 
         [Test]
-        public void TestSettingEmptyPriceTypeClearsPriceType()
+        public void TestSettingEmptyOrderTypeClearsOrderType()
         {
-            _orderBuilder.SetPriceType("Limit");
-            _orderBuilder.SetPriceType("");
+            _orderBuilder.SetOrderType("Limit");
+            _orderBuilder.SetOrderType("");
             FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
         }
 
         [Test]
-        public void TestSettingBlankPriceTypeClearsPriceType()
+        public void TestSettingBlankOrderTypeClearsOrderType()
         {
-            _orderBuilder.SetPriceType("Limit");
-            _orderBuilder.SetPriceType("  ");
+            _orderBuilder.SetOrderType("Limit");
+            _orderBuilder.SetOrderType("  ");
             FxOrder fxOrder = _orderBuilder.Build();
             Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
         }

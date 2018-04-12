@@ -320,16 +320,16 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
-        public FxOrderBuilder SetPriceType(string priceType)
+        public FxOrderBuilder SetOrderType(string orderType)
         {
-            if (Params.IsNullOrEmpty(priceType))
+            if (Params.IsNullOrEmpty(orderType))
             {
-                _components.Remove(FxOrder.PriceType);
+                _components.Remove(FxOrder.OrderType);
                 return this;
             }
 
-            priceType = Params.Trim(priceType).ToUpper();
-            _components[FxOrder.PriceType] = priceType;
+            orderType = Params.Trim(orderType).ToUpper();
+            _components[FxOrder.OrderType] = orderType;
             return this;
         }
 
