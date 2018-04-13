@@ -29,6 +29,7 @@ namespace BidFX.Public.API.Trade
                 .SetSettlementDate("2018-01-31")
                 .SetSide("BUY")
                 .SetTenor("2Y")
+                .SetOrderType("LIMIT")
                 .SetFarCurrency("GBP")
                 .SetFarFixingDate("2018-02-27")
                 .SetFarSettlementDate("2018-02-28")
@@ -48,7 +49,8 @@ namespace BidFX.Public.API.Trade
                                     "\"far_tenor\":\"3Y\"," +
                                     "\"fixing_date\":\"2018-01-30\"," +
                                     "\"handling_type\":\"AUTOMATIC\"," +
-                                    "\"reference\":\"ref 1\"," +
+                                    "\"order_type\":\"LIMIT\"," +
+                                    "\"reference1\":\"ref 1\"," +
                                     "\"reference2\":\"ref 2\"," +
                                     "\"settlement_date\":\"2018-01-31\"," +
                                     "\"side\":\"BUY\"," +

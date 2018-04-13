@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Trade.Order
         public const string Account = "account";
         public const string SettlementDate = "settlement_date";
         public const string FixingDate = "fixing_date";
-        public const string Reference1 = "reference";
+        public const string Reference1 = "reference1";
         public const string Reference2 = "reference2";
         public const string FarTenor = "far_tenor";
         public const string FarCurrency = "far_dealt_ccy";
