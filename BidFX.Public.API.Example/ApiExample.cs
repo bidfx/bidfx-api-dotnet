@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Trade;
@@ -17,6 +16,7 @@ namespace BidFX.Public.API.Example
 
         public static void Main(string[] args)
         {
+
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
         }
@@ -24,8 +24,12 @@ namespace BidFX.Public.API.Example
         private ApiExample()
         {
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.Username = "";
-            DefaultClient.Client.Password = "";
+            DefaultClient.Client.Username = "lasman";
+            DefaultClient.Client.Password = "HelloWorld123";
+            if (!DefaultClient.Client.SetDepthSubscriptionLimit("0000418684088267991776204692688552290739494"))
+            {
+                throw new Exception("Couldn't restrict number of depth subscriptions");
+            }
             
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
@@ -41,12 +45,12 @@ namespace BidFX.Public.API.Example
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+/*                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-                SendPremiumFxSubscriptions();
+                SendPremiumFxSubscriptions();*/
                 SendLevelTwoStreamingSubscriptions();
             }
             else

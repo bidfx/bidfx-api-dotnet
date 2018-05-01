@@ -18,12 +18,8 @@ namespace BidFX.Public.API.Price
     /// </summary>
     internal class PriceManager : ISession, IBulkSubscriber
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
@@ -32,7 +28,6 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         private readonly Thread _subscriptionRefreshThread;
         private readonly object _readyLock = new object();
         private const bool Tunnel = true; //Set to false if connecting to a local instance of a provider for testing.
-
         public static string Username { get; internal set; } //Delete when SubjectMutator is removed
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
@@ -43,6 +38,7 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         public int Port { get; set; }
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
+        public int LevelTwoSubscriptionLimit { get; internal set;  }
 
         public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
@@ -207,8 +203,22 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
+
+            if (subject.GetComponent("Level").Equals("2") && SubjectExceedsLevelTwoLimit(subject))
+            {
+                Log.WarnFormat("Could not subscribe to subject - Maximum number of level two subjects reached: {0}", LevelTwoSubscriptionLimit);
+                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level two subjects reached: " + LevelTwoSubscriptionLimit);
+                return;
+            }
+            
             Subscription subscription = _subscriptions.Add(subject, autoRefresh);
             RefreshSubscription(subscription, refresh);
+        }
+
+        private bool SubjectExceedsLevelTwoLimit(Subject.Subject subject)
+        {
+            return _subscriptions.LevelTwoSubjects() >= LevelTwoSubscriptionLimit &&
+                   !_subscriptions.Subjects().Contains(subject);
         }
 
         private void RefreshSubscription(Subscription subscription, bool refresh = true)
@@ -391,13 +401,12 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                 }
 
                 Subscription subscription = _session._subscriptions.GetSubscription(subject);
-                if (subscription == null)
+                if (subscription != null)
                 {
-                    return;
+                    subscription.SubscriptionStatus = status;
+                    subscription.AllPriceFields.Clear();
                 }
 
-                subscription.SubscriptionStatus = status;
-                subscription.AllPriceFields.Clear();
                 if (_session.SubscriptionStatusEventHandler != null)
                 {
                     _session.SubscriptionStatusEventHandler(this, new SubscriptionStatusEvent
