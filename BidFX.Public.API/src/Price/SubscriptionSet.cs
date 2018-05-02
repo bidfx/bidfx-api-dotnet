@@ -10,6 +10,8 @@ namespace BidFX.Public.API.Price
         private readonly Dictionary<Subject.Subject, Subscription> _map =
             new Dictionary<Subject.Subject, Subscription>();
 
+        private int _levelTwoSubjects = 0;
+
         public Subscription Add(Subject.Subject subject, bool autoRefresh)
         {
             lock (_map)
@@ -17,6 +19,11 @@ namespace BidFX.Public.API.Price
                 if (!_map.ContainsKey(subject))
                 {
                     _map[subject] = new Subscription(subject, autoRefresh);
+                    string level = subject.GetComponent("Level");
+                    if (level != null && level.Equals("2"))
+                    {
+                        _levelTwoSubjects++;
+                    }
                 }
 
                 return _map[subject];
@@ -30,6 +37,11 @@ namespace BidFX.Public.API.Price
                 if (_map.ContainsKey(subject))
                 {
                     _map.Remove(subject);
+                    string level = subject.GetComponent("Level");
+                    if (level != null && level.Equals("2"))
+                    {
+                        _levelTwoSubjects--;
+                    }
                 }
             }
         }
@@ -50,6 +62,11 @@ namespace BidFX.Public.API.Price
             {
                 return new List<Subject.Subject>(_map.Keys);
             }
+        }
+
+        public int LevelTwoSubjects()
+        {
+            return _levelTwoSubjects;
         }
 
         public IEnumerable<Subscription> StaleSubscriptions()

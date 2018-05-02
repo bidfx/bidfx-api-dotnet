@@ -2,14 +2,22 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Trade;
+using log4net;
 
 namespace BidFX.Public.API
 {
     public class Client
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private static BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
+        private int _levelTwoSubscriptionLimit = 30;
+        
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
@@ -99,6 +107,32 @@ namespace BidFX.Public.API
             }
         }
 
+        public bool SetDepthSubscriptionLimit(string subscriptionLimitString)
+        {
+            try
+            {
+                int newLimit = int.Parse(subscriptionLimitString.Substring(0, 5));
+                BigInteger signature = BigInteger.Parse(subscriptionLimitString.Substring(5));
+                if (!BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(newLimit))
+                {
+                    throw new ArgumentException("signature of subscription limit string does not match expected value");
+                }
+
+                _levelTwoSubscriptionLimit = newLimit;
+                if (_priceManager != null)
+                {
+                    _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
+                }
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                Log.Error("Could not update depth subscription limit", e);
+                return false;
+            }
+        }
+
         private void CreatePriceManager()
         {
             if (_priceManager != null)
@@ -115,6 +149,7 @@ namespace BidFX.Public.API
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
 //                    Username = Username // uncomment when SubjectMutator is removed
+                LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit
             };
             _priceManager.Start();
         }
