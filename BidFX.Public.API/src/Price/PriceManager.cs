@@ -204,7 +204,8 @@ namespace BidFX.Public.API.Price
         {
             Log.Info("subscribe to " + subject);
 
-            if (subject.GetComponent("Level").Equals("2") && SubjectExceedsLevelTwoLimit(subject))
+            string level = subject.GetComponent("Level");
+            if (level != null && level.Equals("2") && SubjectExceedsLevelTwoLimit(subject))
             {
                 Log.WarnFormat("Could not subscribe to subject - Maximum number of level two subjects reached: {0}", LevelTwoSubscriptionLimit);
                 _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level two subjects reached: " + LevelTwoSubscriptionLimit);
