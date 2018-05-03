@@ -16,7 +16,7 @@ namespace BidFX.Public.API
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         private static BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
-        private int _levelTwoSubscriptionLimit = 30;
+        private int _levelTwoSubscriptionLimit = 20;
         
         /// <summary>
         /// The username to authenticate with.
