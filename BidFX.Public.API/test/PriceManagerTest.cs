@@ -11,9 +11,8 @@ namespace BidFX.Public.API
         [Test]
         public void TestCantOverSubscribeOnDepth()
         {
-            PriceManager priceManager = new PriceManager("user");
-            
-            priceManager.LevelTwoSubscriptionLimit = 1;
+            PriceManager priceManager = new PriceManager {LevelTwoSubscriptionLimit = 1};
+
             priceManager.Start();
 
             bool receivedRejection = false;
@@ -37,9 +36,8 @@ namespace BidFX.Public.API
         [Test]
         public void TestCanSubscribeLevelOneWhenFullySubscribedLevelTwo()
         {
-            PriceManager priceManager = new PriceManager("user");
-            
-            priceManager.LevelTwoSubscriptionLimit = 0;
+            PriceManager priceManager = new PriceManager {LevelTwoSubscriptionLimit = 0};
+
             priceManager.Start();
 
             int receivedRejections = 0;

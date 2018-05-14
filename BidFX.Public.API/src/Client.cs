@@ -140,7 +140,7 @@ namespace BidFX.Public.API
                 return;
             }
 
-            _priceManager = new PriceManager(Username) // Remove this param when SubjectMutator is removed
+            _priceManager = new PriceManager()
             {
                 Host = Host,
                 Port = Port == 0 ? 443 : Port,
@@ -148,7 +148,7 @@ namespace BidFX.Public.API
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
-//                    Username = Username // uncomment when SubjectMutator is removed
+                Username = Username,
                 LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit
             };
             _priceManager.Start();

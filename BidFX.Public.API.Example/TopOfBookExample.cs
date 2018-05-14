@@ -14,10 +14,9 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string USERNAME = "";
-        private const string PASSWORD = "";
-        private const string ACCOUNT = "FX_ACCT";
-        private readonly Client _client;
+        private const string Username = "";
+        private const string Password = "";
+        private const string Account = "FX_ACCT";
 
         public static void Main2(string[] args)
         {
@@ -28,14 +27,14 @@ namespace BidFX.Public.API.Example
         {
             Client _client = DefaultClient.Client;
             _client.Host = "ny-tunnel.uatdev.tradingscreen.com";
-            _client.Username = USERNAME;
-            _client.Password = PASSWORD;
+            _client.Username = Username;
+            _client.Password = Password;
             _client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;
 
             if (_client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Subject depthSubject = CommonSubjects
-                    .CreateLevelTwoSpotStreamingSubject(ACCOUNT, "GBPUSD", "GBP", "1000000.00").CreateSubject();
+                    .CreateLevelTwoSpotStreamingSubject(Username, Account, "GBPUSD", "GBP", "1000000.00").CreateSubject();
                 _client.PriceSubscriber.Subscribe(depthSubject);
             }
             else
