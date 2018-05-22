@@ -319,7 +319,7 @@
             string quantity, string assetClass, string level, string requestFor)
         {
             subjectBuilder
-                .SetComponent(SubjectComponentName.User, user)
+                .SetIfNotNull(SubjectComponentName.User, user)
                 .SetComponent(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, assetClass)
                 .SetComponent(SubjectComponentName.Currency, currency)
