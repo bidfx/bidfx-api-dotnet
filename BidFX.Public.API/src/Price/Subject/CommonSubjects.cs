@@ -11,6 +11,7 @@
             SubjectBuilder subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Spot, liquidityProvider, currency,
                 quantity, CommonComponents.Fx, "1", requestFor);
+            subjectBuilder.SetComponent(SubjectComponentName.Tenor, CommonComponents.Spot);
             return subjectBuilder;
         }
 
@@ -238,6 +239,7 @@
             SubjectBuilder subjectBuilder = new SubjectBuilder();
             AddBasicComponents(subjectBuilder, account, ccyPair, CommonComponents.Spot, CommonComponents.FXTS, currency,
                 quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
+            subjectBuilder.SetComponent(SubjectComponentName.Tenor, CommonComponents.Spot);
             return subjectBuilder;
         }
 
