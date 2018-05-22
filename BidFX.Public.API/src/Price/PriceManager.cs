@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Price
         private readonly IApiEventHandler _inapiEventHandler;
         private readonly Thread _subscriptionRefreshThread;
         private readonly object _readyLock = new object();
-        private const bool Tunnel = false; //Set to false if connecting to a local instance of a provider for testing.
+        private const bool Tunnel = true; //Set to false if connecting to a local instance of a provider for testing.
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
