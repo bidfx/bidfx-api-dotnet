@@ -38,7 +38,8 @@ namespace BidFX.Public.API.Price
         public int Port { get; set; }
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
-        public int LevelTwoSubscriptionLimit { get; internal set;  }
+        public int LevelTwoSubscriptionLimit { get; internal set; }
+        public int LevelOneSubscriptionLimit { get; internal set; }
 
         public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
@@ -204,21 +205,42 @@ namespace BidFX.Public.API.Price
         {
             Log.Info("subscribe to " + subject);
 
+            if (SubjectExceedsLimits(subject))
+            {
+                return;
+            }
+            Subscription subscription = _subscriptions.Add(subject, autoRefresh);
+            RefreshSubscription(subscription, refresh);
+        }
+
+        private bool SubjectExceedsLimits(Subject.Subject subject)
+        {
             string level = subject.GetComponent("Level");
             if (level != null && level.Equals("2") && SubjectExceedsLevelTwoLimit(subject))
             {
                 Log.WarnFormat("Could not subscribe to subject - Maximum number of level two subjects reached: {0}", LevelTwoSubscriptionLimit);
                 _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level two subjects reached: " + LevelTwoSubscriptionLimit);
-                return;
+                return true;
+            }
+            if (level != null && level.Equals("1") && SubjectExceedsLevelOneLimit(subject))
+            {
+                Log.WarnFormat("Could not subscribe to subject - Maximum number of level one subjects reached: {0}", LevelOneSubscriptionLimit);
+                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level one subjects reached: " + LevelOneSubscriptionLimit);
+                return true;
             }
             
-            Subscription subscription = _subscriptions.Add(subject, autoRefresh);
-            RefreshSubscription(subscription, refresh);
+            return false;
         }
 
         private bool SubjectExceedsLevelTwoLimit(Subject.Subject subject)
         {
             return _subscriptions.LevelTwoSubjects() >= LevelTwoSubscriptionLimit &&
+                   !_subscriptions.Subjects().Contains(subject);
+        }
+        
+        private bool SubjectExceedsLevelOneLimit(Subject.Subject subject)
+        {
+            return _subscriptions.LevelOneSubjects() >= LevelOneSubscriptionLimit &&
                    !_subscriptions.Subjects().Contains(subject);
         }
 

@@ -30,6 +30,10 @@ namespace BidFX.Public.API.Example
             {
                 throw new Exception("Couldn't restrict number of depth subscriptions");
             }
+            if (!DefaultClient.Client.SetLevelOneSubscriptionLimit("0005022676531820744303226904389626603522073"))
+            {
+                throw new Exception("Couldn't restrict number of level one subscriptions");
+            }
             
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;

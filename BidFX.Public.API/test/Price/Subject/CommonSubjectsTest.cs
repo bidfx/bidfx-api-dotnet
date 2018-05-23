@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price.Subject
             Subject subj = CommonSubjects
                 .CreateLevelOneSpotStreamingSubject("FX_ACCT", "GBPUSD", "BARC", "GBP", "5000000.00").CreateSubject();
             Assert.AreEqual(
-                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=GBP,DealType=Spot,Level=1,LiquidityProvider=BARC,Quantity=5000000.00,RequestFor=Stream,Symbol=GBPUSD",
+                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=GBP,DealType=Spot,Level=1,LiquidityProvider=BARC,Quantity=5000000.00,RequestFor=Stream,Symbol=GBPUSD,Tenor=Spot",
                 subj.ToString());
         }
 
@@ -20,7 +20,7 @@ namespace BidFX.Public.API.Price.Subject
             Subject subj = CommonSubjects.CreateLevelOneSpotQuoteSubject("FX_ACCT", "EURUSD", "JPMX", "EUR", "10000000.00")
                 .CreateSubject();
             Assert.AreEqual(
-                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=EUR,DealType=Spot,Level=1,LiquidityProvider=JPMX,Quantity=10000000.00,RequestFor=Quote,Symbol=EURUSD",
+                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=EUR,DealType=Spot,Level=1,LiquidityProvider=JPMX,Quantity=10000000.00,RequestFor=Quote,Symbol=EURUSD,Tenor=Spot",
                 subj.ToString());
         }
 
@@ -192,7 +192,7 @@ namespace BidFX.Public.API.Price.Subject
             Subject subj = CommonSubjects.CreateLevelTwoSpotStreamingSubject("FX_ACCT", "GBPUSD", "GBP", "50000000.00")
                 .CreateSubject();
             Assert.AreEqual(
-                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=GBP,DealType=Spot,Level=2,LiquidityProvider=FXTS,Quantity=50000000.00,RequestFor=Stream,Symbol=GBPUSD",
+                "AssetClass=Fx,BuySideAccount=FX_ACCT,Currency=GBP,DealType=Spot,Level=2,LiquidityProvider=FXTS,Quantity=50000000.00,RequestFor=Stream,Symbol=GBPUSD,Tenor=Spot",
                 subj.ToString());
         }
 
