@@ -15,8 +15,7 @@ namespace BidFX.Public.API
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static BigInteger SubscriptionLimitPublicKey =
-            BigInteger.Parse("125134336105432108045835366424157859929");
+        private static BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
 
         private int _levelTwoSubscriptionLimit = 20;
         private int _levelOneSubscriptionLimit = 500;
@@ -126,7 +125,6 @@ namespace BidFX.Public.API
                 {
                     _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
                 }
-
                 return true;
             }
             catch (Exception e)
@@ -152,7 +150,6 @@ namespace BidFX.Public.API
                 {
                     _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
                 }
-
                 return true;
             }
             catch (Exception e)
