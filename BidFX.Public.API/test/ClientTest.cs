@@ -15,9 +15,9 @@ namespace BidFX.Public.API
         {
             Client client = new Client();
             ISession unused = client.PriceSession;
-            Assert.IsTrue(client.SetDepthSubscriptionLimit("0006076303678645270052016889170255093682297"));
-            Assert.IsTrue(client.SetDepthSubscriptionLimit("000805555434543764398893583033760486589300"));
-            Assert.IsTrue(client.SetDepthSubscriptionLimit("0015031211767855928379875643592271457043880"));
+            Assert.IsTrue(client.SetDepthSubscriptionLimit("00060-76303678645270052016889170255093682297"));
+            Assert.IsTrue(client.SetDepthSubscriptionLimit("80-5555434543764398893583033760486589300"));
+            Assert.IsTrue(client.SetDepthSubscriptionLimit("0150-31211767855928379875643592271457043880"));
         }
 
         [Test]
@@ -34,9 +34,9 @@ namespace BidFX.Public.API
         {
             Client client = new Client();
             ISession unused = client.PriceSession;
-            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("0030048604692006149898576801843163581163962"));
-            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("0015031211767855928379875643592271457043880"));
-            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("0040019486452728575513700892659900873492749"));
+            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("00300-48604692006149898576801843163581163962"));
+            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("150-31211767855928379875643592271457043880"));
+            Assert.IsTrue(client.SetLevelOneSubscriptionLimit("0400-19486452728575513700892659900873492749"));
         }
 
         [Test]

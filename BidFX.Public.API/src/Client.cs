@@ -113,14 +113,13 @@ namespace BidFX.Public.API
         {
             try
             {
-                int newLimit = int.Parse(subscriptionLimitString.Substring(0, 5));
-                BigInteger signature = BigInteger.Parse(subscriptionLimitString.Substring(5));
-                if (!IsValidLimitSignature(signature, newLimit))
+                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
+                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
                 {
                     throw new ArgumentException("signature of subscription limit string does not match expected value");
                 }
 
-                _levelTwoSubscriptionLimit = newLimit;
+                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
                 if (_priceManager != null)
                 {
                     _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
@@ -138,14 +137,13 @@ namespace BidFX.Public.API
         {
             try
             {
-                int newLimit = int.Parse(subscriptionLimitString.Substring(0, 5));
-                BigInteger signature = BigInteger.Parse(subscriptionLimitString.Substring(5));
-                if (!IsValidLimitSignature(signature, newLimit))
+                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
+                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
                 {
                     throw new ArgumentException("signature of subscription limit string does not match expected value");
                 }
 
-                _levelOneSubscriptionLimit = newLimit;
+                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
                 if (_priceManager != null)
                 {
                     _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
@@ -159,7 +157,13 @@ namespace BidFX.Public.API
             }
         }
 
-        private bool IsValidLimitSignature(BigInteger signature, int limit)
+        private Tuple<int, BigInteger> splitSubscriptionLimitString(string subscriptionLimitString)
+        {
+            String[] subscriptionLimit = subscriptionLimitString.Split('-');
+            return Tuple.Create(int.Parse(subscriptionLimit[0]), BigInteger.Parse(subscriptionLimit[1]));
+        }
+        
+        private bool IsValidLimitSignature(int limit, BigInteger signature)
         {
             return BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(limit);
         }
