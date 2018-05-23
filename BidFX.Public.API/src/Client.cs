@@ -14,10 +14,12 @@ namespace BidFX.Public.API
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         private static BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
+
         private int _levelTwoSubscriptionLimit = 20;
-        
+        private int _levelOneSubscriptionLimit = 500;
+
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
@@ -111,26 +113,59 @@ namespace BidFX.Public.API
         {
             try
             {
-                int newLimit = int.Parse(subscriptionLimitString.Substring(0, 5));
-                BigInteger signature = BigInteger.Parse(subscriptionLimitString.Substring(5));
-                if (!BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(newLimit))
+                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
+                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
                 {
                     throw new ArgumentException("signature of subscription limit string does not match expected value");
                 }
 
-                _levelTwoSubscriptionLimit = newLimit;
+                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
                 if (_priceManager != null)
                 {
                     _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
                 }
                 return true;
-
             }
             catch (Exception e)
             {
                 Log.Error("Could not update depth subscription limit", e);
                 return false;
             }
+        }
+
+        public bool SetLevelOneSubscriptionLimit(string subscriptionLimitString)
+        {
+            try
+            {
+                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
+                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
+                {
+                    throw new ArgumentException("signature of subscription limit string does not match expected value");
+                }
+
+                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
+                if (_priceManager != null)
+                {
+                    _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Error("Could not update depth subscription limit", e);
+                return false;
+            }
+        }
+
+        private Tuple<int, BigInteger> splitSubscriptionLimitString(string subscriptionLimitString)
+        {
+            String[] subscriptionLimit = subscriptionLimitString.Split('-');
+            return Tuple.Create(int.Parse(subscriptionLimit[0]), BigInteger.Parse(subscriptionLimit[1]));
+        }
+        
+        private bool IsValidLimitSignature(int limit, BigInteger signature)
+        {
+            return BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(limit);
         }
 
         private void CreatePriceManager()
@@ -149,7 +184,9 @@ namespace BidFX.Public.API
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
 //                    Username = Username // uncomment when SubjectMutator is removed
-                LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit
+                LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit,
+                LevelOneSubscriptionLimit = _levelOneSubscriptionLimit
+              
             };
             _priceManager.Start();
         }

@@ -11,6 +11,7 @@ namespace BidFX.Public.API.Price
             new Dictionary<Subject.Subject, Subscription>();
 
         private int _levelTwoSubjects = 0;
+        private int _levelOneSubjects = 0;
 
         public Subscription Add(Subject.Subject subject, bool autoRefresh)
         {
@@ -23,6 +24,10 @@ namespace BidFX.Public.API.Price
                     if (level != null && level.Equals("2"))
                     {
                         _levelTwoSubjects++;
+                    }
+                    if (level != null && level.Equals("1"))
+                    {
+                        _levelOneSubjects++;
                     }
                 }
 
@@ -41,6 +46,10 @@ namespace BidFX.Public.API.Price
                     if (level != null && level.Equals("2"))
                     {
                         _levelTwoSubjects--;
+                    }
+                    if (level != null && level.Equals("1"))
+                    {
+                        _levelOneSubjects--;
                     }
                 }
             }
@@ -67,6 +76,11 @@ namespace BidFX.Public.API.Price
         public int LevelTwoSubjects()
         {
             return _levelTwoSubjects;
+        }
+
+        public int LevelOneSubjects()
+        {
+            return _levelOneSubjects;
         }
 
         public IEnumerable<Subscription> StaleSubscriptions()
