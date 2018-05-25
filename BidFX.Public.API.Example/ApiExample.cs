@@ -27,12 +27,15 @@ namespace BidFX.Public.API.Example
         private ApiExample()
         {
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.DisableHostnameSslChecks = true;
             DefaultClient.Client.Username = username;
             DefaultClient.Client.Password = password;
-            if (!DefaultClient.Client.SetDepthSubscriptionLimit("0000418684088267991776204692688552290739494"))
+            if (!DefaultClient.Client.SetDepthSubscriptionLimit("4-18684088267991776204692688552290739494"))
             {
                 throw new Exception("Couldn't restrict number of depth subscriptions");
+            }
+            if (!DefaultClient.Client.SetLevelOneSubscriptionLimit("50-22676531820744303226904389626603522073"))
+            {
+                throw new Exception("Couldn't restrict number of level one subscriptions");
             }
             
             var session = DefaultClient.Client.PriceSession;
@@ -49,13 +52,13 @@ namespace BidFX.Public.API.Example
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendLevelOneStreamingSubscriptions(/*"DBFX", "RBCFX", */"SSFX"/*, "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX"*/);
-//                SendLevelOneQuoteSubscriptions("DBFX", "RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-//                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-//                SendPremiumFxSubscriptions();
-//                SendLevelTwoStreamingSubscriptions();
+/*                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
+                SendPremiumFxSubscriptions();*/
+                SendLevelTwoStreamingSubscriptions();
             }
             else
             {
@@ -75,9 +78,11 @@ namespace BidFX.Public.API.Example
                 return;
             }
             
-/*            //Send a trade
+            //Send a trade
+            /*
             DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-            SendSpotEURGBPTrade();*/
+            SendSpotEURGBPTrade();
+            */
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -87,23 +92,23 @@ namespace BidFX.Public.API.Example
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateLevelOneSpotStreamingSubject(username,
                         "FX_ACCT", "EURUSD", source, "EUR", "1000000.11").CreateSubject());
-//                DefaultClient.Client.PriceSubscriber.Subscribe(
-//                    CommonSubjects.CreateLevelOneSpotStreamingSubject(username,
-//                        "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject());
-//                DefaultClient.Client.PriceSubscriber.Subscribe(
-//                    CommonSubjects.CreateLevelOneForwardStreamingSubject(username,
-//                        "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "", "20180530").CreateSubject());
-//                DefaultClient.Client.PriceSubscriber.Subscribe(
-//                    CommonSubjects.CreateLevelOneNdfStreamingSubject(username,
-//                        "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
-//                DefaultClient.Client.PriceSubscriber.Subscribe(
-//                    CommonSubjects.CreateLevelOneSwapStreamingSubject(username,
-//                            "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
-//                        .CreateSubject());
-//                DefaultClient.Client.PriceSubscriber.Subscribe(
-//                    CommonSubjects.CreateLevelOneNdsStreamingSubject(username,
-//                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "BD", "20180815", "1000000.00", "BD",
-//                        "20180918").CreateSubject());
+                DefaultClient.Client.PriceSubscriber.Subscribe(
+                    CommonSubjects.CreateLevelOneSpotStreamingSubject(username,
+                        "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject());
+                DefaultClient.Client.PriceSubscriber.Subscribe(
+                    CommonSubjects.CreateLevelOneForwardStreamingSubject(username,
+                        "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "", "20180530").CreateSubject());
+                DefaultClient.Client.PriceSubscriber.Subscribe(
+                    CommonSubjects.CreateLevelOneNdfStreamingSubject(username,
+                        "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
+                DefaultClient.Client.PriceSubscriber.Subscribe(
+                    CommonSubjects.CreateLevelOneSwapStreamingSubject(username,
+                            "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
+                        .CreateSubject());
+                DefaultClient.Client.PriceSubscriber.Subscribe(
+                    CommonSubjects.CreateLevelOneNdsStreamingSubject(username,
+                        "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "BD", "20180815", "1000000.00", "BD",
+                        "20180918").CreateSubject());
             }
         }
 

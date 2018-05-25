@@ -131,5 +131,43 @@ namespace BidFX.Public.API.Price.Subject
             _subscriptionSet.Remove(s1);
             Assert.AreEqual(0, _subscriptionSet.LevelTwoSubjects());
         }
+
+        [Test]
+        public void TestContainsLevelOneSubscriptions()
+        {
+            Subject s1 = new Subject("Level=1");
+            Subject s2 = new Subject("Level=2");
+            Subject s3 = new Subject("User=lasman");
+            Subject s4 = new Subject("User=lasman,Level=2");
+            Subject s5 = new Subject("User=lasman,Level=1");
+
+            _subscriptionSet.Add(s1, false);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Add(s2, false);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Add(s3, false);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Add(s4, false);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Add(s5, false);
+            Assert.AreEqual(2, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Add(s5, false);
+            Assert.AreEqual(2, _subscriptionSet.LevelOneSubjects());
+            
+            _subscriptionSet.Remove(s5);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s5);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s4);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s3);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s2);
+            Assert.AreEqual(1, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s1);
+            Assert.AreEqual(0, _subscriptionSet.LevelOneSubjects());
+            _subscriptionSet.Remove(s1);
+            Assert.AreEqual(0, _subscriptionSet.LevelOneSubjects());
+        }
     }
 }
