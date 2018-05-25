@@ -320,7 +320,7 @@
         {
             subjectBuilder
                 .SetIfNotNull(SubjectComponentName.User, user)
-                .SetComponent(SubjectComponentName.BuySideAccount, account)
+                .SetIfNotNull(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, assetClass)
                 .SetComponent(SubjectComponentName.Currency, currency)
                 .SetComponent(SubjectComponentName.Quantity, quantity)
