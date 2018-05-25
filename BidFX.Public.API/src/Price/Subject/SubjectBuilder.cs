@@ -87,9 +87,9 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         /// <param name="key">the components key</param>
         /// <param name="value">the components value</param>
         /// <returns>the builder so that calls can be chained</returns>
-        public SubjectBuilder SetIfNotNull(string key, string value)
+        public SubjectBuilder SetIfNotNullOrEmpty(string key, string value)
         {
-            return value != null ? SetComponent(key, value) : this;
+            return !string.IsNullOrEmpty(value) ? SetComponent(key, value) : this;
         }
 
         public void SubjectComponent(string key, string value)

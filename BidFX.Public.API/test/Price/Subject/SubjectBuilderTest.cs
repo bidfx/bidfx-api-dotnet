@@ -201,8 +201,9 @@ namespace BidFX.Public.API.Price.Subject
         public void TestSetComponentIfNotNull()
         {
             SubjectBuilder subjectBuilder = new SubjectBuilder()
-                .SetIfNotNull("Level", "1")
-                .SetIfNotNull("Symbol", null);
+                .SetIfNotNullOrEmpty("Level", "1")
+                .SetIfNotNullOrEmpty("Symbol", null)
+                .SetIfNotNullOrEmpty("Account", "");
             Assert.AreEqual("Level=1", subjectBuilder.ToString());
         }
     }

@@ -319,8 +319,8 @@
             string quantity, string assetClass, string level, string requestFor)
         {
             subjectBuilder
-                .SetIfNotNull(SubjectComponentName.User, user)
-                .SetIfNotNull(SubjectComponentName.BuySideAccount, account)
+                .SetIfNotNullOrEmpty(SubjectComponentName.User, user)
+                .SetIfNotNullOrEmpty(SubjectComponentName.BuySideAccount, account)
                 .SetComponent(SubjectComponentName.AssetClass, assetClass)
                 .SetComponent(SubjectComponentName.Currency, currency)
                 .SetComponent(SubjectComponentName.Quantity, quantity)
