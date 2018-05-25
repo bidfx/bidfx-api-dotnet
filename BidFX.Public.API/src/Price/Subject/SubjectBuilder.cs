@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using log4net;
 
 namespace BidFX.Public.API.Price.Subject
@@ -78,6 +79,17 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
 
             SubjectComponent(key, value);
             return this;
+        }
+
+        /// <summary>
+        ///  Sets a component of the subject, only if the value is not null
+        /// </summary>
+        /// <param name="key">the components key</param>
+        /// <param name="value">the components value</param>
+        /// <returns>the builder so that calls can be chained</returns>
+        public SubjectBuilder SetIfNotNull(string key, string value)
+        {
+            return value != null ? SetComponent(key, value) : this;
         }
 
         public void SubjectComponent(string key, string value)

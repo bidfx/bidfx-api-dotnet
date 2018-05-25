@@ -14,15 +14,14 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string USERNAME = "";
-        private const string PASSWORD = "";
-        private const string ACCOUNT = "FX_ACCT";
-        private readonly Client _client;
+        private const string Username = "";
+        private const string Password = "";
+        private const string Account = "FX_ACCT";
 
-        private int updateCount = 0;
+        private int _updateCount = 0;
         private Stopwatch stopwatch = new Stopwatch();
         
-        private readonly string[] ccyPairs =
+        private readonly string[] _ccyPairs =
         {
             "EURGBP",
             "EURAUD",
@@ -95,7 +94,7 @@ namespace BidFX.Public.API.Example
             "20200309",
             "20210309"
         };
-        
+
         public static void Main3(string[] args)
         {
             new BestOfBookStressTest().Run();
@@ -103,24 +102,24 @@ namespace BidFX.Public.API.Example
 
         private void Run()
         {
-            Client _client = DefaultClient.Client;
-            _client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            _client.Username = USERNAME;
-            _client.Password = PASSWORD;
-            _client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;
+            Client client = DefaultClient.Client;
+            client.Host = "ny-tunnel.uatprod.tradingscreen.com";
+            client.Username = Username;
+            client.Password = Password;
+            client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;
 
-            if (_client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
+            if (client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 SendSubscriptions();
                 stopwatch.Start();
                 Thread.Sleep(TimeSpan.FromSeconds(120));
                 stopwatch.Stop();
-                _client.PriceSession.Stop();
+                client.PriceSession.Stop();
                 OutputData();
             }
             else
             {
-                if (_client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
+                if (client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
                 {
                     Log.Warn("Invalid credentials.");
                 }
@@ -140,10 +139,10 @@ namespace BidFX.Public.API.Example
         private void SendSubscriptions()
         {
             SubjectBuilder sb =
-                CommonSubjects.CreateLevelTwoForwardStreamingSubject("FX_ACCT", "XXXYYY", "XXX", "1000000", "BD",
+                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Username, Account, "XXXYYY", "XXX", "1000000", "BD",
                     "20180101");
             sb.SetComponent(SubjectComponentName.Rows, "1");
-            foreach (string ccyPair in ccyPairs)
+            foreach (string ccyPair in _ccyPairs)
             {
                 string ccy = ccyPair.Substring(0, 3);
                 foreach (string settlementDate in settlementDates)
@@ -160,13 +159,13 @@ namespace BidFX.Public.API.Example
         {
             if (stopwatch.IsRunning)
             {
-                updateCount++;
+                _updateCount++;
             }
         }
 
         private void OutputData()
         {
-            Log.InfoFormat("{0} price updates received in {1} ms from {3} subscriptions - {2} updates/s", updateCount, stopwatch.ElapsedMilliseconds, 1000* updateCount/stopwatch.ElapsedMilliseconds,ccyPairs.Length * settlementDates.Length);
+            Log.InfoFormat("{0} price updates received in {1} ms from {3} subscriptions - {2} updates/s", _updateCount, stopwatch.ElapsedMilliseconds, 1000* _updateCount/stopwatch.ElapsedMilliseconds,_ccyPairs.Length * settlementDates.Length);
         }
     }
 }

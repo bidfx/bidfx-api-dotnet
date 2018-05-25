@@ -196,5 +196,14 @@ namespace BidFX.Public.API.Price.Subject
             _subjectBuilder.SetComponent("Account", "FX_ACCT");
             Assert.AreNotEqual(subjectBuilder.ToString(), _subjectBuilder.ToString());
         }
+
+        [Test]
+        public void TestSetComponentIfNotNull()
+        {
+            SubjectBuilder subjectBuilder = new SubjectBuilder()
+                .SetIfNotNull("Level", "1")
+                .SetIfNotNull("Symbol", null);
+            Assert.AreEqual("Level=1", subjectBuilder.ToString());
+        }
     }
 }
