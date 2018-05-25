@@ -41,7 +41,17 @@ namespace BidFX.Public.API.Price
             uut.SetField("Ask3", new PriceField("1.2307", 1.2307));
             uut.SetField("Ask4", new PriceField("1.2308", 1.2308));
             uut.SetField("Ask5", new PriceField("1.2309", 1.2309));
-            
+            uut.SetField("BidTime1", new PriceField("2500", 2500));
+            uut.SetField("BidTime2", new PriceField("2501", 2501));
+            uut.SetField("BidTime3", new PriceField("2502", 2502));
+            uut.SetField("BidTime4", new PriceField("2503", 2503));
+            uut.SetField("BidTime5", new PriceField("2504", 2504));
+            uut.SetField("AskTime1", new PriceField("1500", 1500));
+            uut.SetField("AskTime2", new PriceField("1501", 1501));
+            uut.SetField("AskTime3", new PriceField("1502", 1502));
+            uut.SetField("AskTime4", new PriceField("1503", 1503));
+            uut.SetField("AskTime5", new PriceField("1504", 1504));
+
             PriceMap newPriceMap = new PriceMap();
             newPriceMap.SetField("BidLevels", new PriceField("2", 2));
             newPriceMap.SetField("AskLevels", new PriceField("3", 3));
@@ -60,7 +70,12 @@ namespace BidFX.Public.API.Price
             newPriceMap.SetField("Ask1", new PriceField("1.2305", 1.2305));
             newPriceMap.SetField("Ask2", new PriceField("1.2306", 1.2306));
             newPriceMap.SetField("Ask3", new PriceField("1.2307", 1.2307));
-            
+            uut.SetField("BidTime1", new PriceField("5500", 5500));
+            uut.SetField("BidTime2", new PriceField("5501", 5501));
+            uut.SetField("AskTime1", new PriceField("6500", 6500));
+            uut.SetField("AskTime2", new PriceField("6501", 6501));
+            uut.SetField("AskTime3", new PriceField("6502", 6502));
+
             uut.MergedPriceMap(newPriceMap, false);
             
             Assert.AreEqual(3, uut.IntField("AskLevels"));
@@ -95,6 +110,16 @@ namespace BidFX.Public.API.Price
             Assert.AreEqual(1.2307, uut.DecimalField("Ask3"));
             Assert.IsNull(uut.DecimalField("Ask4"));
             Assert.IsNull(uut.DecimalField("Ask5"));
+            Assert.AreEqual(5500, uut.IntField("BidTime1"));
+            Assert.AreEqual(5501, uut.IntField("BidTime2"));
+            Assert.IsNull(uut.IntField("BidTime3"));
+            Assert.IsNull(uut.IntField("BidTime4"));
+            Assert.IsNull(uut.IntField("BidTime5"));
+            Assert.AreEqual(6500, uut.IntField("AskTime1"));
+            Assert.AreEqual(6501, uut.IntField("AskTime2"));
+            Assert.AreEqual(6502, uut.IntField("AskTime3"));
+            Assert.IsNull(uut.IntField("AskTime4"));
+            Assert.IsNull(uut.IntField("AskTime5"));
         }
     }
 }

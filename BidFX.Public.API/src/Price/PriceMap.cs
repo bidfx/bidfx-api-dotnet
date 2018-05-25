@@ -131,12 +131,14 @@ namespace BidFX.Public.API.Price
                 _priceFields.Remove("Bid" + i);
                 _priceFields.Remove("BidSize" + i);
                 _priceFields.Remove("BidFirm" + i);
+                _priceFields.Remove("BidTime" + i);
             }
             for (int i = newAskLevels + 1; i <= oldAskLevels; i++)
             {
                 _priceFields.Remove("Ask" + i);
                 _priceFields.Remove("AskSize" + i);
                 _priceFields.Remove("AskFirm" + i);
+                _priceFields.Remove("AskTime" + i);
             }
         }
         
