@@ -74,6 +74,33 @@ namespace BidFX.Public.API.Price.Subject
             "sendercompid",
             "eti",
             "destination",
+            
+            //From Enum
+            SubjectComponentName.AllocationTemplate,
+            SubjectComponentName.AssetClass,
+            SubjectComponentName.BuySideAccount,
+            SubjectComponentName.BuySideId,
+            SubjectComponentName.Currency,
+            SubjectComponentName.DealType,
+            SubjectComponentName.FarCurrency,
+            SubjectComponentName.FarFixingDate,
+            SubjectComponentName.FarQuantity,
+            SubjectComponentName.FarSettlementDate,
+            SubjectComponentName.FarTenor,
+            SubjectComponentName.FixingDate,
+            SubjectComponentName.FarQuantity,
+            SubjectComponentName.FarSettlementDate,
+            SubjectComponentName.Level,
+            SubjectComponentName.LiquidityProvider,
+            SubjectComponentName.NumAllocs,
+            SubjectComponentName.OnBehalfOf,
+            SubjectComponentName.Quantity,
+            SubjectComponentName.RequestFor,
+            SubjectComponentName.Rows,
+            SubjectComponentName.SettlementDate,
+            SubjectComponentName.Symbol,
+            SubjectComponentName.Tenor,
+            SubjectComponentName.User
         };
 
         internal static readonly string[] CommonValues =
@@ -445,6 +472,9 @@ namespace BidFX.Public.API.Price.Subject
             NDS,
             NDF,
 
+            Indi,
+            PremiumFX,
+            
             Cross,
 
             // Tube components

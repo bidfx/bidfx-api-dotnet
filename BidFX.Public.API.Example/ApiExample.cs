@@ -29,7 +29,7 @@ namespace BidFX.Public.API.Example
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             DefaultClient.Client.Username = username;
             DefaultClient.Client.Password = password;
-            if (!DefaultClient.Client.SetDepthSubscriptionLimit("4-18684088267991776204692688552290739494"))
+            if (!DefaultClient.Client.SetLevelTwoSubscriptionLimit("4-18684088267991776204692688552290739494"))
             {
                 throw new Exception("Couldn't restrict number of depth subscriptions");
             }

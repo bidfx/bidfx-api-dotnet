@@ -5,8 +5,10 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -25,6 +27,8 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly GUID _guid = new GUID();
         private readonly PixieProtocolOptions _protocolOptions = new PixieProtocolOptions();
+        private readonly Regex _settlementDateRegex = new Regex("^2[0-9][0-9][0-9](0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$");
+        private readonly Regex _tenorRegex = new Regex("^((BD|SPOT(_NEXT)?|TO[DM])|[1-4]W|([1-9]|[1-2][0-9]|3[0-6])M|([1-9]|1[0-9]|20)Y|IMM[HMUZ]|BMF[UVXZFGHJKMNQ])$");
 
         public string Name { get; private set; }
         public string Service { get; set; }
@@ -60,6 +64,11 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                 Log.Debug("subscribing to " + subject);
             }
 
+            if (!ValidateSubject(subject))
+            {
+                return;
+            }
+            
             if (_pixieConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
@@ -280,6 +289,65 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
             ProviderStatus = status;
             StatusReason = reason;
             InapiEventHandler.OnProviderStatus(this, previousStatus);
+        }
+
+        private bool ValidateSubject(Subject.Subject subject)
+        {
+            string dealType = subject.GetComponent(SubjectComponentName.DealType);
+            if (dealType == null)
+            {
+                InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "DealType is null");
+                return false;
+            }
+
+            if (dealType.Equals(CommonComponents.Forward) || dealType.Equals(CommonComponents.NDF) ||
+                dealType.Equals(CommonComponents.Swap) || dealType.Equals(CommonComponents.NDS))
+            {
+                string tenor = subject.GetComponent(SubjectComponentName.Tenor);
+                string settlementDate = subject.GetComponent(SubjectComponentName.SettlementDate);
+                if (tenor == null && settlementDate == null)
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "Tenor and SettlementDate are both null");
+                    return false;
+                }
+
+                if (settlementDate != null && !_settlementDateRegex.IsMatch(settlementDate.ToUpper()))
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "Invalid SettlementDate");
+                    return false;
+                }
+
+                if (tenor != null && settlementDate == null && !_tenorRegex.IsMatch(tenor.ToUpper()))
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "Unsupported Tenor");
+                    return false;
+                }
+            }
+
+            if (dealType.Equals(CommonComponents.Swap) || dealType.Equals(CommonComponents.NDS))
+            {
+                string farTenor = subject.GetComponent(SubjectComponentName.FarTenor);
+                string farSettlementDate = subject.GetComponent(SubjectComponentName.FarSettlementDate);
+                if (farTenor == null && farSettlementDate == null)
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "FarTenor and FarSettlementDate are both null");
+                    return false;
+                }
+
+                if (farSettlementDate != null && !_settlementDateRegex.IsMatch(farSettlementDate.ToUpper()))
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "Invalid SettlementDate");
+                    return false;
+                }
+
+                if (farTenor != null && farSettlementDate == null && !_tenorRegex.IsMatch(farTenor.ToUpper()))
+                {
+                    InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "Unsupported Tenor");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public PixieProtocolOptions PixieProtocolOptions
