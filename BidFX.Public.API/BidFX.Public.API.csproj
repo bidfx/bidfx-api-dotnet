@@ -111,6 +111,7 @@
     <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamCompressor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Messages\ZlibStreamInflator.cs" />
     <Compile Include="src\Price\Plugin\Pixie\PixieProtocolOptions.cs" />
+    <Compile Include="src\Price\Plugin\Pixie\PixieSubjectValidator.cs" />
     <Compile Include="src\Price\Plugin\Pixie\PixieVersion.cs" />
     <Compile Include="src\Price\Plugin\Pixie\SubjectSetRegister.cs" />
     <Compile Include="src\Price\Subject\CommonComponents.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="test\Price\Plugin\Pixie\Messages\PriceUpdateDecoderTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Messages\WelcomeMessageTest.cs" />
+    <Compile Include="test\Price\Plugin\Pixie\PixieSubjectValidatorTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\RealSubscriptionExample.cs" />
     <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
     <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
