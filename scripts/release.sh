@@ -13,7 +13,7 @@ TEMP_FILE="${ASSEMBLY_FILE}.tmp"
 
 cp ${ASSEMBLY_FILE} ${BAK}
 
-assembly_regex='\[assembly: AssemblyVersion\("([[:digit:]](.[[:digit:]]){2,}+(-SNAPSHOT)?)"\)\]'
+assembly_regex='\[assembly: AssemblyVersion\("([[:digit:]](.[[:digit:]]){2,3})"\)\]'
 contents=`cat ${ASSEMBLY_FILE}`
 if  [[ ${contents} =~ $assembly_regex ]]
 then
@@ -24,16 +24,7 @@ else
     exit 1
 fi
 
-snapshot_regex='(.*)-SNAPSHOT$'
-if [[ ! ${current_version} =~ $snapshot_regex ]]
-then
-    printf "Current version is not a SNAPSHOT\n"
-    exit 1
-else
-    release_version="${BASH_REMATCH[1]}"
-fi
-
-printf "What is the release version? (${release_version}): "
+printf "What is the release version? (${current_version}): "
 read user_input
 if [[ -n ${user_input} ]]
 then
@@ -44,7 +35,7 @@ fi
 lastdigit_regex='(.*\.)([[:digit:]])'
 if [[ ${release_version} =~ $lastdigit_regex ]]
 then
-    new_snapshot_version="${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))-SNAPSHOT"
+    new_snapshot_version="${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))"
 else
     printf "Could not get digits for new Snapshot version\n"
     exit 1
