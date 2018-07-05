@@ -86,8 +86,6 @@ then
     exit 1
 fi
 
-read user_input
-
 # Update to snapshot version
 > ${TEMP_FILE}
 cat ${ASSEMBLY_FILE} | while read line; do
