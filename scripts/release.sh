@@ -20,7 +20,7 @@ then
     printf "Current version: ${BASH_REMATCH[1]}\n"
     current_version="${BASH_REMATCH[1]}"
 else
-    printf "Could not obtain AssemblyVersion"
+    printf "Could not obtain AssemblyVersion\n"
     exit 1
 fi
 
@@ -29,10 +29,12 @@ read user_input
 if [[ -n ${user_input} ]]
 then
     release_version=${user_input}
+else
+    release_version=${current_version}
 fi
 # printf "Release version will be ${release_version}\n"
 
-lastdigit_regex='(.*\.)([[:digit:]])'
+lastdigit_regex='(.*\.)([[:digit:]]+)'
 if [[ ${release_version} =~ $lastdigit_regex ]]
 then
     new_snapshot_version="${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))"
@@ -50,31 +52,37 @@ fi
 # printf "New snapshot version will be ${new_snapshot_version}\n"
 
 # Update AssemblyInfo with Release Version
-> ${TEMP_FILE}
-assembly_file_regex='\[assembly: AssemblyFileVersion\(".*"\)\]'
-cat ${ASSEMBLY_FILE} | while read line; do
-    if [[ ${line} =~ $assembly_regex ]]
-    then
-        echo "[assembly: AssemblyVersion(\"${release_version}\")]" >> ${TEMP_FILE}
-    elif [[ ${line} =~ $assembly_file_regex ]]
-    then
-        echo "[assembly: AssemblyFileVersion(\"${release_version}\")]" >> ${TEMP_FILE}
-    else
-        echo ${line} >> ${TEMP_FILE}
-    fi
-done
-mv ${TEMP_FILE} ${ASSEMBLY_FILE}
-
-# Commit to Git
-git commit -am "prepare release ${release_version}"
-if [[ $? -ne 0 ]];
+if [[ "${current_version}" != "${release_version}" ]]
 then
-    exit 1
+    > ${TEMP_FILE}
+    assembly_file_regex='\[assembly: AssemblyFileVersion\(".*"\)\]'
+    cat ${ASSEMBLY_FILE} | while read line; do
+        if [[ ${line} =~ $assembly_regex ]]
+        then
+            echo "[assembly: AssemblyVersion(\"${release_version}\")]" >> ${TEMP_FILE}
+        elif [[ ${line} =~ $assembly_file_regex ]]
+        then
+            echo "[assembly: AssemblyFileVersion(\"${release_version}\")]" >> ${TEMP_FILE}
+        else
+            echo ${line} >> ${TEMP_FILE}
+        fi
+    done
+    mv ${TEMP_FILE} ${ASSEMBLY_FILE}
+    
+    # Commit to Git
+    
+    git commit -m "prepare release ${release_version}" ${ASSEMBLY_FILE}
+    if [[ $? -ne 0 ]];
+    then
+        printf "Error committing, exit code ${?}\n"
+        exit 1
+    fi
 fi
 
 git tag "public-api-dotnet-${release_version}"
 if [[ $? -ne 0 ]];
 then
+    printf "Error tagging, exit code ${?}\n"
     exit 1
 fi
 
@@ -96,14 +104,16 @@ done
 mv ${TEMP_FILE} ${ASSEMBLY_FILE}
 
 # Commit to git and push
-git commit -am "prepare for next development iteration"
+git commit -m "prepare for next development iteration" ${ASSEMBLY_FILE}
 if [[ $? -ne 0 ]];
 then
+    printf "Error committing next iteration, exit code ${?}\n"
     exit 1
 fi
 git push && git push --tags
 if [[ $? -ne 0 ]];
 then
+    printf "Error pushing, exit code ${?}\n"
     exit 1
 fi
 
