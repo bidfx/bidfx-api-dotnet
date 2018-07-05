@@ -52,10 +52,10 @@ fi
 # printf "New snapshot version will be ${new_snapshot_version}\n"
 
 # Update AssemblyInfo with Release Version
+assembly_file_regex='\[assembly: AssemblyFileVersion\(".*"\)\]'
 if [[ "${current_version}" != "${release_version}" ]]
 then
     > ${TEMP_FILE}
-    assembly_file_regex='\[assembly: AssemblyFileVersion\(".*"\)\]'
     cat ${ASSEMBLY_FILE} | while read line; do
         if [[ ${line} =~ $assembly_regex ]]
         then
