@@ -5,8 +5,10 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -14,12 +16,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieProviderPlugin : IProviderPlugin
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
 
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
@@ -60,6 +58,11 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                 Log.Debug("subscribing to " + subject);
             }
 
+            if (!PixieSubjectValidator.ValidateSubject(subject, InapiEventHandler))
+            {
+                return;
+            }
+            
             if (_pixieConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,

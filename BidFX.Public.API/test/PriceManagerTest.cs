@@ -24,8 +24,8 @@ namespace BidFX.Public.API
                 }
             };
             
-            Subject s1 = new Subject("Level=2,User=lasman");
-            Subject s2 = new Subject("Level=2,User=dtang");
+            Subject s1 = new Subject("DealType=Spot,Level=2,User=lasman");
+            Subject s2 = new Subject("DealType=Spot,Level=2,User=dtang");
             
             priceManager.Subscribe(s1);
             priceManager.Subscribe(s2);
@@ -53,8 +53,8 @@ namespace BidFX.Public.API
                 }
             };
             
-            Subject s1 = new Subject("Level=2,User=lasman");
-            Subject s2 = new Subject("Level=1,User=dtang");
+            Subject s1 = new Subject("DealType=Spot,Level=2,User=lasman");
+            Subject s2 = new Subject("DealType=Spot,Level=1,User=dtang");
             
             priceManager.Subscribe(s1);
             Assert.AreEqual(1, receivedRejections);
@@ -113,8 +113,8 @@ namespace BidFX.Public.API
                 }
             };
             
-            Subject s1 = new Subject("Level=1,User=lasman");
-            Subject s2 = new Subject("Level=2,User=dtang");
+            Subject s1 = new Subject("DealType=Spot,Level=1,User=lasman");
+            Subject s2 = new Subject("DealType=Spot,Level=2,User=dtang");
             
             priceManager.Subscribe(s1);
             Assert.AreEqual(1, receivedRejections);

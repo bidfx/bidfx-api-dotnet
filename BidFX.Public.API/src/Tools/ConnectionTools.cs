@@ -55,7 +55,14 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("sending: " + message);
+                #if DEBUG
+                    Log.Debug("sending: " + message);
+                #else
+                    if (!message.Contains("Authorization: "))
+                    {
+                        Log.Debug("sending: " + message);
+                    }
+                #endif
             }
 
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
