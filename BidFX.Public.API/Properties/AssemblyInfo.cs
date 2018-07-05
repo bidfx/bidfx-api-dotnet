@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyVersion("1.1.6")]
-[assembly: AssemblyFileVersion("1.1.6")]
+[assembly: AssemblyVersion("1.1.5.1")]
+[assembly: AssemblyFileVersion("1.1.5.1")]
 [assembly: AssemblyCopyright("Copyright © 2018")]
 [assembly: AssemblyCompany("BidFX Limited")]
 [assembly: AssemblyTitle("BidFX.Public.API")]
@@ -28,4 +28,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("096EDEB7-9912-45BC-9C51-A7E871E58C4E")]
