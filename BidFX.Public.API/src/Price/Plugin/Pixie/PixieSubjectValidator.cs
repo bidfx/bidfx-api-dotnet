@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             if (dealType.Equals(CommonComponents.Swap) || dealType.Equals(CommonComponents.NDS))
             {
-                if (!CheckNDFFields(subject, inApiEventHandler))
+                if (!CheckFarFields(subject, inApiEventHandler))
                 {
                     return false;
                 }
@@ -77,7 +77,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return true;
         }
         
-        private static bool CheckNDFFields(Subject.Subject subject, IApiEventHandler inApiEventHandler)
+        private static bool CheckFarFields(Subject.Subject subject, IApiEventHandler inApiEventHandler)
         {
             string farTenor = subject.GetComponent(SubjectComponentName.FarTenor);
             string farSettlementDate = subject.GetComponent(SubjectComponentName.FarSettlementDate);
