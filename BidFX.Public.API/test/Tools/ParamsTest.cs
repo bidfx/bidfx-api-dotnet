@@ -63,55 +63,6 @@ namespace BidFX.Public.API.Price.Tools
     }
 
     [TestFixture]
-    public class TrimTest
-    {
-        [Test]
-        public void TestEmptyStringReturnsSameObject()
-        {
-            string expected = "";
-            Assert.AreSame(expected, Params.Trim(expected));
-        }
-
-        [Test]
-        public void TestBlankStringReturnsEmptyString()
-        {
-            Assert.AreEqual("", Params.Trim("   "));
-        }
-
-        [Test]
-        public void TestStringWithNoWhitespaceReturnsSameObject()
-        {
-            string expected = "AString";
-            Assert.AreSame(expected, Params.Trim(expected));
-        }
-
-        [Test]
-        public void TestStringWithWhitespaceInMiddleReturnsSameObject()
-        {
-            string expected = "Another String";
-            Assert.AreSame(expected, Params.Trim(expected));
-        }
-
-        [Test]
-        public void TestTrimsLeadingWhitespace()
-        {
-            Assert.AreEqual("String", Params.Trim("   String"));
-        }
-
-        [Test]
-        public void TestTrimsTrailingWhitespace()
-        {
-            Assert.AreEqual("String", Params.Trim("String   "));
-        }
-
-        [Test]
-        public void TestTrimsWhitespaceAtBothEnds()
-        {
-            Assert.AreEqual("String", Params.Trim("   String     "));
-        }
-    }
-
-    [TestFixture]
     public class IsNumericTest
     {
         [Test]

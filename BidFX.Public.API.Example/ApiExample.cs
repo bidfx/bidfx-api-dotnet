@@ -11,15 +11,14 @@ namespace BidFX.Public.API.Example
 {
     internal class ApiExample
     {
-        private const string username = "";
-        private const string password = "";
+        private const string Username = "";
+        private const string Password = "";
         
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
-
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
         }
@@ -27,22 +26,13 @@ namespace BidFX.Public.API.Example
         private ApiExample()
         {
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
-            DefaultClient.Client.Username = username;
-            DefaultClient.Client.Password = password;
-            if (!DefaultClient.Client.SetLevelTwoSubscriptionLimit("4-18684088267991776204692688552290739494"))
-            {
-                throw new Exception("Couldn't restrict number of depth subscriptions");
-            }
-            if (!DefaultClient.Client.SetLevelOneSubscriptionLimit("50-22676531820744303226904389626603522073"))
-            {
-                throw new Exception("Couldn't restrict number of level one subscriptions");
-            }
+            DefaultClient.Client.Username = Username;
+            DefaultClient.Client.Password = Password;
             
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
             session.ProviderStatusEventHandler += OnProviderStatus;
-            
         }
 
         private void RunTest()
@@ -52,12 +42,12 @@ namespace BidFX.Public.API.Example
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-/*                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-                SendPremiumFxSubscriptions();*/
+                SendPremiumFxSubscriptions();
                 SendLevelTwoStreamingSubscriptions();
             }
             else
@@ -90,23 +80,23 @@ namespace BidFX.Public.API.Example
             foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Username,
                         "FX_ACCT", "EURUSD", source, "EUR", "1000000.11").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Username,
                         "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneForwardStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneForwardStreamingSubject(Username,
                         "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "", "20180530").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdfStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneNdfStreamingSubject(Username,
                         "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSwapStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneSwapStreamingSubject(Username,
                             "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
                         .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdsStreamingSubject(username,
+                    CommonSubjects.CreateLevelOneNdsStreamingSubject(Username,
                         "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "BD", "20180815", "1000000.00", "BD",
                         "20180918").CreateSubject());
             }
@@ -117,23 +107,23 @@ namespace BidFX.Public.API.Example
             foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Username,
                         "FX_ACCT", "EURUSD", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Username,
                         "FX_ACCT", "EURGBP", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneForwardQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneForwardQuoteSubject(Username,
                         "FX_ACCT", "EURUSD", source, "USD", "1000000.00", "1Y", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdfQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneNdfQuoteSubject(Username,
                         "FX_ACCT", "USDKRW", source, "USD", "1000000.00", "1Y", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSwapQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneSwapQuoteSubject(Username,
                             "FX_ACCT", "EURNOK", source, "EUR", "1000000.00", "1Y", "", "1000000.00", "2Y", "")
                         .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdsQuoteSubject(username,
+                    CommonSubjects.CreateLevelOneNdsQuoteSubject(Username,
                             "FX_ACCT", "CHFJPY", source, "CHF", "1000000.00", "6M", "", "1000000.00", "1Y", "")
                         .CreateSubject());
             }
@@ -142,13 +132,13 @@ namespace BidFX.Public.API.Example
         private void SendLevelTwoStreamingSubscriptions()
         {
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoSpotStreamingSubject(username, "FX_ACCT", "EURUSD", "EUR", "1000000.00")
+                CommonSubjects.CreateLevelTwoSpotStreamingSubject(Username, "FX_ACCT", "EURUSD", "EUR", "1000000.00")
                     .CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoForwardStreamingSubject(username, "FX_ACCT", "EURGBP", "EUR", "1000000.00",
+                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Username, "FX_ACCT", "EURGBP", "EUR", "1000000.00",
                     "BD", "20181220").CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoNdfStreamingSubject(username, "FX_ACCT", "USDJPY", "USD", "1000000.00", "4M", "")
+                CommonSubjects.CreateLevelTwoNdfStreamingSubject(Username, "FX_ACCT", "USDJPY", "USD", "1000000.00", "4M", "")
                     .CreateSubject());
         }
 
@@ -164,13 +154,13 @@ namespace BidFX.Public.API.Example
         private void SendPremiumFxSubscriptions()
         {
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURUSD", false, false).SetComponent("User", "lasman").CreateSubject());
+                CommonSubjects.CreatePremiumFxSubject("EURUSD", false, false).SetComponent("User", Username).CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURGBP", true, false).SetComponent("User", "lasman").CreateSubject());
+                CommonSubjects.CreatePremiumFxSubject("EURGBP", true, false).SetComponent("User", Username).CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("GBPJPY", false, true).SetComponent("User", "lasman").CreateSubject());
+                CommonSubjects.CreatePremiumFxSubject("GBPJPY", false, true).SetComponent("User", Username).CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURCAD", true, true).SetComponent("User", "lasman").CreateSubject());
+                CommonSubjects.CreatePremiumFxSubject("EURCAD", true, true).SetComponent("User", Username).CreateSubject());
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
@@ -201,8 +191,8 @@ namespace BidFX.Public.API.Example
                 .SetDealType("Spot")
                 .SetHandlingType("stream")
                 .SetOrderType("Limit")
-                .SetPrice("1.180000")
-                .SetQuantity("2000000")
+                .SetPrice(1.180000m)
+                .SetQuantity(2000000)
                 .SetSide("Sell")
                 .SetTenor("Spot")
                 .SetReferenceOne(".NET API Example")
@@ -212,11 +202,11 @@ namespace BidFX.Public.API.Example
             Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
         }
 
-        private static void OnOrderSubmitResponse(object sender, OrderResponse orderResponse)
+        private static void OnOrderSubmitResponse(object sender, Order order)
         {
-            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", orderResponse.GetMessageId(),
-                orderResponse.GetOrderId(), orderResponse.GetState());
-            Log.InfoFormat("Errors: {0}", string.Join(", ", orderResponse.GetErrors()));
+            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", order.GetMessageId(),
+                order.GetOrderTsId(), order.GetState());
+            Log.InfoFormat("Errors: {0}", string.Join(", ", order.GetErrors()));
         }
     }
 }

@@ -8,20 +8,18 @@ using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
-    public class FxOrderBuilder
+    public class FxOrderBuilder : OrderBuilder<FxOrderBuilder, FxOrder>
     {
-        private readonly Dictionary<string, string> _components = new Dictionary<string, string>();
-
         public FxOrderBuilder SetCurrencyPair(string currencyPair)
         {
             if (Params.IsNullOrEmpty(currencyPair))
             {
-                _components.Remove(FxOrder.CurrencyPair);
+                Components.Remove(FxOrder.CurrencyPair);
                 return this;
             }
 
-            currencyPair = Params.ExactLength(currencyPair, 6, "Currency Pair must be in format 'XXXYYY': " + currencyPair);
-            _components[FxOrder.CurrencyPair] = currencyPair;
+            currencyPair = Params.ExactLength(currencyPair, 6, "CurrencyPair must be in format 'XXXYYY': " + currencyPair);
+            Components[FxOrder.CurrencyPair] = currencyPair;
             return this;
         }
 
@@ -29,55 +27,12 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(currency))
             {
-                _components.Remove(FxOrder.Currency);
+                Components.Remove(FxOrder.Currency);
                 return this;
             }
 
             currency = Params.ExactLength(currency, 3, "Currency must be in format 'XXX': " + currency);
-            _components[FxOrder.Currency] = currency;
-            return this;
-        }
-
-        public FxOrderBuilder SetSide(string side)
-        {
-            if (Params.IsNullOrEmpty(side))
-            {
-                _components.Remove(FxOrder.Side);
-                return this;
-            }
-
-            side = Params.Trim(side);
-            switch (side.ToUpper())
-            {
-                case "BUY":
-                    side = "BUY";
-                    break;
-                case "SELL":
-                    side = "SELL";
-                    break;
-                default:
-                    throw new ArgumentException("Side must be either 'BUY' or 'SELL': " + side);
-            }
-
-            _components[FxOrder.Side] = side;
-            return this;
-        }
-
-        public FxOrderBuilder SetQuantity(string quantity)
-        {
-            if (Params.IsNullOrEmpty(quantity))
-            {
-                _components.Remove(FxOrder.Quantity);
-                return this;
-            }
-
-            quantity = Params.Trim(quantity);
-            if (!Params.IsNumeric(quantity))
-            {
-                throw new ArgumentException("Quantity is not a number: " + quantity);
-            }
-
-            _components[FxOrder.Quantity] = quantity;
+            Components[FxOrder.Currency] = currency;
             return this;
         }
 
@@ -85,11 +40,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(dealType))
             {
-                _components.Remove(FxOrder.DealType);
+                Components.Remove(FxOrder.DealType);
                 return this;
             }
 
-            dealType = Params.Trim(dealType);
+            dealType = dealType.Trim();
             switch (dealType.ToLower())
             {
                 case "spot":
@@ -110,10 +65,10 @@ namespace BidFX.Public.API.Trade.Order
                     dealType = "NDS";
                     break;
                 default:
-                    throw new ArgumentException("Unsupported deal type: " + dealType);
+                    throw new ArgumentException("Unsupported DealType: " + dealType);
             }
 
-            _components[FxOrder.DealType] = dealType;
+            Components[FxOrder.DealType] = dealType;
             return this;
         }
 
@@ -121,69 +76,12 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(tenor))
             {
-                _components.Remove(FxOrder.Tenor);
+                Components.Remove(FxOrder.Tenor);
                 return this;
             }
 
-            tenor = Params.Trim(tenor).ToUpper();
-            _components[FxOrder.Tenor] = tenor;
-            return this;
-        }
-
-        public FxOrderBuilder
-            SetExecutingVenue(string executingVenue) //TODO: REST API is hardcoding this to TS-SS, should we offer this?
-        {
-            if (Params.IsNullOrEmpty(executingVenue))
-            {
-                _components.Remove(FxOrder.ExecutingVenue);
-                return this;
-            }
-
-            executingVenue = Params.Trim(executingVenue);
-            _components[FxOrder.ExecutingVenue] = executingVenue;
-            return this;
-        }
-
-        public FxOrderBuilder SetHandlingType(string handlingType)
-        {
-            if (Params.IsNullOrEmpty(handlingType))
-            {
-                _components.Remove(FxOrder.HandlingType);
-                return this;
-            }
-
-            handlingType = Params.Trim(handlingType);
-            switch (handlingType.ToUpper())
-            {
-                case "STREAM":
-                case "RFS":
-                    handlingType = "RFS";
-                    break;
-                case "QUOTE":
-                case "RFQ":
-                    handlingType = "RFQ";
-                    break;
-                case "AUTOMATIC":
-                    handlingType = "AUTOMATIC";
-                    break;
-                default:
-                    throw new ArgumentException("Unsupported handling type: " + handlingType);
-            }
-
-            _components[FxOrder.HandlingType] = handlingType;
-            return this;
-        }
-
-        public FxOrderBuilder SetAccount(string account)
-        {
-            if (Params.IsNullOrEmpty(account))
-            {
-                _components.Remove(FxOrder.Account);
-                return this;
-            }
-
-            account = Params.Trim(account);
-            _components[FxOrder.Account] = account;
+            tenor = tenor.ToUpper().Trim();
+            Components[FxOrder.Tenor] = tenor;
             return this;
         }
 
@@ -191,13 +89,13 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(settlementDate))
             {
-                _components.Remove(FxOrder.SettlementDate);
+                Components.Remove(FxOrder.SettlementDate);
                 return this;
             }
 
-            settlementDate = Params.Trim(settlementDate);
-            settlementDate = FormatDates(settlementDate);
-            _components[FxOrder.SettlementDate] = settlementDate;
+            settlementDate = settlementDate.Trim();
+            settlementDate = FormatDate("SettlementDate", settlementDate, true);
+            Components[FxOrder.SettlementDate] = settlementDate;
             return this;
         }
 
@@ -205,13 +103,13 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(fixingDate))
             {
-                _components.Remove(FxOrder.FixingDate);
+                Components.Remove(FxOrder.FixingDate);
                 return this;
             }
 
-            fixingDate = Params.Trim(fixingDate);
-            fixingDate = FormatDates(fixingDate);
-            _components[FxOrder.FixingDate] = fixingDate;
+            fixingDate = fixingDate.Trim();
+            fixingDate = FormatDate("FixingDate", fixingDate, true);
+            Components[FxOrder.FixingDate] = fixingDate;
             return this;
         }
 
@@ -219,12 +117,12 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(farTenor))
             {
-                _components.Remove(FxOrder.FarTenor);
+                Components.Remove(FxOrder.FarTenor);
                 return this;
             }
 
-            farTenor = Params.Trim(farTenor);
-            _components[FxOrder.FarTenor] = farTenor;
+            farTenor = farTenor.Trim();
+            Components[FxOrder.FarTenor] = farTenor;
             return this;
         }
 
@@ -232,12 +130,12 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(farCurrency))
             {
-                _components.Remove(FxOrder.FarCurrency);
+                Components.Remove(FxOrder.FarCcy);
                 return this;
             }
 
             farCurrency = Params.ExactLength(farCurrency, 3, "FarCurrency must be in format 'AAA': " + farCurrency);
-            _components[FxOrder.FarCurrency] = farCurrency;
+            Components[FxOrder.FarCcy] = farCurrency;
             return this;
         }
 
@@ -245,13 +143,13 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(farSettlementDate))
             {
-                _components.Remove(FxOrder.FarSettlementDate);
+                Components.Remove(FxOrder.FarSettlementDate);
                 return this;
             }
 
-            farSettlementDate = Params.Trim(farSettlementDate);
-            farSettlementDate = FormatDates(farSettlementDate);
-            _components[FxOrder.FarSettlementDate] = farSettlementDate;
+            farSettlementDate = farSettlementDate.Trim();
+            farSettlementDate = FormatDate("FarSettlementDate", farSettlementDate, true);
+            Components[FxOrder.FarSettlementDate] = farSettlementDate;
             return this;
         }
 
@@ -259,173 +157,93 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (Params.IsNullOrEmpty(farFixingDate))
             {
-                _components.Remove(FxOrder.FarFixingDate);
+                Components.Remove(FxOrder.FarFixingDate);
                 return this;
             }
 
-            farFixingDate = Params.Trim(farFixingDate);
-            farFixingDate = FormatDates(farFixingDate);
-            _components[FxOrder.FarFixingDate] = farFixingDate;
+            farFixingDate = farFixingDate.Trim();
+            farFixingDate = FormatDate("FarFixingDate", farFixingDate, true);
+            Components[FxOrder.FarFixingDate] = farFixingDate;
             return this;
         }
 
-        public FxOrderBuilder SetFarQuantity(string farQuantity)
+        public FxOrderBuilder SetFarQuantity(decimal? farQuantity)
         {
-            if (Params.IsNullOrEmpty(farQuantity))
+            if (!farQuantity.HasValue)
             {
-                _components.Remove(FxOrder.FarQuantity);
+                Components.Remove(FxOrder.FarQuantity);
                 return this;
             }
 
-            farQuantity = Params.Trim(farQuantity);
-            if (!Params.IsNumeric(farQuantity))
+            if (farQuantity < 0)
             {
-                throw new ArgumentException("FarQuantity was not a number: " + farQuantity);
+                throw new ArgumentException("FarQuantity can not be negative: " + farQuantity);
             }
-
-            _components[FxOrder.FarQuantity] = farQuantity;
+            
+            Components[FxOrder.FarQuantity] = farQuantity.Value;
             return this;
         }
 
-        public FxOrderBuilder
-            SetAllocationTemplate(
-                string templateName)
+        public FxOrderBuilder SetAllocationTemplate(string templateName)
         {
             if (Params.IsNullOrEmpty(templateName))
             {
-                _components.Remove(FxOrder.AllocationTemplate);
+                Components.Remove(FxOrder.AllocationTemplate);
                 return this;
             }
 
-            templateName = Params.Trim(templateName);
-            _components[FxOrder.AllocationTemplate] = templateName;
-            return this;
-        }
-
-        public FxOrderBuilder SetPrice(string price)
-        {
-            if (Params.IsNullOrEmpty(price))
-            {
-                _components.Remove(FxOrder.Price);
-                return this;
-            }
-
-            price = Params.Trim(price);
-            if (!Params.IsNumeric(price))
-            {
-                throw new ArgumentException("Price was not a number: " + price);
-            }
-
-            _components[FxOrder.Price] = price;
-            return this;
-        }
-
-        public FxOrderBuilder SetOrderType(string orderType)
-        {
-            if (Params.IsNullOrEmpty(orderType))
-            {
-                _components.Remove(FxOrder.OrderType);
-                return this;
-            }
-
-            orderType = Params.Trim(orderType).ToUpper();
-            _components[FxOrder.OrderType] = orderType;
-            return this;
-        }
-
-        public FxOrderBuilder SetReferenceOne(string referenceOne)
-        {
-            if (Params.IsNullOrEmpty(referenceOne))
-            {
-                _components.Remove(FxOrder.Reference1);
-                return this;
-            }
-
-            if (referenceOne.Contains("|"))
-            {
-                throw new ArgumentException("References can not contain pipes (|)");
-            }
-
-            _components[FxOrder.Reference1] = referenceOne;
-            return this;
-        }
-
-        public FxOrderBuilder SetReferenceTwo(string referenceTwo)
-        {
-            if (Params.IsNullOrEmpty(referenceTwo))
-            {
-                _components.Remove(FxOrder.Reference2);
-                return this;
-            }
-
-            if (referenceTwo.Contains("|"))
-            {
-                throw new ArgumentException("References can not contain pipes (|)");
-            }
-
-            _components[FxOrder.Reference2] = referenceTwo;
+            templateName = templateName.Trim();
+            Components[FxOrder.AllocationTemplate] = templateName;
             return this;
         }
 
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
             Params.NotBlank(name);
-            name = Params.Trim(name); //TODO: Checking on names vs existing properties?
+            name = name.Trim(); //TODO: Checking on names vs existing properties?
             if (Params.IsNullOrEmpty(value))
             {
-                _components.Remove(name);
+                Components.Remove(name);
                 return this;
             }
 
-            value = Params.Trim(value);
-            _components[name] = value;
+            value = value.Trim();
+            Components[name] = value;
             return this;
         }
 
-        public FxOrder Build()
+        public FxOrderBuilder SetFarSide(string side)
         {
-            string[] internalComponents = new string[_components.Count * 2];
-            int i = 0;
-            IOrderedEnumerable<KeyValuePair<string, string>> components = _components.OrderBy(kvp => kvp.Key);
-            foreach (KeyValuePair<string, string> component in components)
+            if (Params.IsNullOrEmpty(side))
             {
-                internalComponents[i++] = component.Key;
-                internalComponents[i++] = component.Value;
+                Components.Remove(FxOrder.FarSide);
+                return this;
             }
 
-            return new FxOrder(internalComponents);
+            side = side.Trim();
+            switch (side.ToUpper())
+            {
+                case "BUY":
+                    side = "BUY";
+                    break;
+                case "SELL":
+                    side = "SELL";
+                    break;
+                default:
+                    throw new ArgumentException("Side must be either 'BUY' or 'SELL': " + side);
+            }
+            
+            Components[FxOrder.FarSide] = side;
+            return this;
         }
 
-        private static readonly Regex DateRegex =
-            new Regex(@"^(\d\d\d\d)(?:(?:-([0-1]?\d)-([0-3]?\d))|([0-1]?\d)([0-3]?\d))$", RegexOptions.Compiled);
-
-        private static string FormatDates(string date)
+        public override FxOrder Build()
         {
-            Match match = DateRegex.Match(date);
-            if (!match.Success)
-            {
-                throw new ArgumentException("Date was not in valid format (YYYYY-MM-DD): " + date);
-            }
+            return new FxOrder(Components);
+        }
 
-            GroupCollection groups = match.Groups;
-            string year = groups[1].ToString();
-
-            string month = groups[2].ToString();
-            if (month == "")
-            {
-                month = groups[4].ToString();
-            }
-
-            string day = groups[3].ToString();
-            if (day == "")
-            {
-                day = groups[5].ToString();
-            }
-
-            return year + "-"
-                        + (month.Length == 2 ? month : "0" + month)
-                        + "-"
-                        + (day.Length == 2 ? day : "0" + day);
+        public FxOrderBuilder() : base("FX")
+        {
         }
     }
 }

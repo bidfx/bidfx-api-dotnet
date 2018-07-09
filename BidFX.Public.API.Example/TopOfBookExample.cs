@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Example
         private const string Password = "";
         private const string Account = "FX_ACCT";
 
-        public static void Main2(string[] args)
+        public static void Main(string[] args)
         {
             new TopOfBookExample().Run();
         }
@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Example
         private void Run()
         {
             Client _client = DefaultClient.Client;
-            _client.Host = "ny-tunnel.uatdev.tradingscreen.com";
+            _client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             _client.Username = Username;
             _client.Password = Password;
             _client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;

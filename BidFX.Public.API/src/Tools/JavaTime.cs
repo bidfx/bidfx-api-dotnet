@@ -64,7 +64,7 @@ namespace BidFX.Public.API.Price.Tools
         }
 
         /// <summary>
-        /// Converts a Java time to an ISO formatted date, in the form 'yyyMMdd', based on the Gregorian calendar and the UTC time zone.
+        /// Converts a Java time to an ISO formatted date, in the form 'yyyyMMdd', based on the Gregorian calendar and the UTC time zone.
         /// </summary>
         /// <param name="millis">time in milliseconds since 1 January 1970</param>
         /// <returns>the ISO date for the Gregorian calendar in UTC expressed as an int</returns>

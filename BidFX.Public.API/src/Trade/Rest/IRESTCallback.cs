@@ -2,14 +2,14 @@
 
 namespace BidFX.Public.API.Trade.REST
 {
-    internal interface IRESTCallback<out T> where T : AbstractRESTResponse
+    internal interface IRESTCallback
     {
         void Notfiy();
 
         bool HasResponse();
 
-        T GetResponse();
+        Order.Order GetResponse();
 
-        T GetResponse(long timeout);
+        Order.Order GetResponse(long timeout);
     }
 }

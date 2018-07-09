@@ -43,9 +43,6 @@
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920">
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -186,14 +183,17 @@
     <Compile Include="src\Tools\TimeFieldTools.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\Tools\Varint.cs" />
-    <Compile Include="src\Trade\JsonMarshaller.cs" />
-    <Compile Include="src\Trade\OrderResponse.cs" />
+    <Compile Include="src\Trade\Order\Error.cs" />
+    <Compile Include="src\Trade\Order\FutureOrder.cs" />
+    <Compile Include="src\Trade\Order\FutureOrderBuilder.cs" />
     <Compile Include="src\Trade\Order\FxOrder.cs" />
     <Compile Include="src\Trade\Order\FxOrderBuilder.cs" />
-    <Compile Include="src\Trade\REST\AbstractRESTResponse.cs" />
-    <Compile Include="src\Trade\REST\IRESTCallback.cs" />
-    <Compile Include="src\Trade\REST\RESTClient.cs" />
-    <Compile Include="src\Trade\REST\RESTOrderResponse.cs" />
+    <Compile Include="src\Trade\Order\Order.cs" />
+    <Compile Include="src\Trade\Order\OrderBuilder.cs" />
+    <Compile Include="src\Trade\Rest\IRESTCallback.cs" />
+    <Compile Include="src\Trade\Rest\Json\JsonException.cs" />
+    <Compile Include="src\Trade\Rest\Json\JsonMarshaller.cs" />
+    <Compile Include="src\Trade\Rest\RESTClient.cs" />
     <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\ClientTest.cs" />
     <Compile Include="test\PriceManagerTest.cs" />
@@ -241,15 +241,12 @@
     <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
     <Compile Include="test\Tools\ParamsTest.cs" />
     <Compile Include="test\Tools\VarintTest.cs" />
-    <Compile Include="test\Trade\JsonMarshallerTest.cs" />
+    <Compile Include="test\Trade\Order\FutureOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
-    <Compile Include="test\Trade\REST\RESTOrderResponseTest.cs" />
+    <Compile Include="test\Trade\Order\OrderBuilderTest.cs" />
+    <Compile Include="test\Trade\Rest\Json\JsonMarshallerTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll">
-      <Link>Newtonsoft.Json.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <Content Include="..\scripts\release.sh" />
     <Content Include="packages.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

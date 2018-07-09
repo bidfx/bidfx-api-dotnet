@@ -5,6 +5,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using BidFX.Public.API.Trade.Order;
+using BidFX.Public.API.Trade.Rest.Json;
 using BidFX.Public.API.Trade.REST;
 using log4net;
 
@@ -15,8 +16,8 @@ namespace BidFX.Public.API.Trade
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event EventHandler<OrderResponse> OrderQueryEventHandler;
-        public event EventHandler<OrderResponse> OrderSubmitEventHandler;
+        public event EventHandler<Order.Order> OrderQueryEventHandler;
+        public event EventHandler<Order.Order> OrderSubmitEventHandler;
         private RESTClient _restClient;
         private static long _nextMessageId;
         public string Host { get; set; }
@@ -35,7 +36,7 @@ namespace BidFX.Public.API.Trade
         public long SubmitOrder(FxOrder fxOrder)
         {
             long messageId = GetNextMessageId();
-            string json = JsonMarshaller.ToJSON(fxOrder, messageId);
+            string json = JsonMarshaller.ToJson(fxOrder, messageId);
             ThreadPool.QueueUserWorkItem(
                 delegate { SendOrderViaREST(messageId, json); }
             );
@@ -69,19 +70,19 @@ namespace BidFX.Public.API.Trade
             try
             {
                 Log.InfoFormat("MessageId {0} - Response Received from Server. Processing", messageId);
-                OrderResponse orderResponse = new RESTOrderResponse(response, messageId);
+                Order.Order order = JsonMarshaller.FromJson(response.GetResponseStream().ToString());
                 if (OrderSubmitEventHandler != null)
                 {
                     Log.DebugFormat(
                         "Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}",
-                        messageId, orderResponse.GetOrderId());
-                    OrderSubmitEventHandler(this, orderResponse);
+                        messageId, order.GetOrderTsId());
+                    OrderSubmitEventHandler(this, order);
                 }
                 else
                 {
                     Log.WarnFormat(
                         "OrderSubmitEventHandler was null dropping order response: {0}",
-                        orderResponse.ToString());
+                        order.ToString());
                 }
             }
             catch (Exception e)
@@ -95,15 +96,15 @@ namespace BidFX.Public.API.Trade
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
             HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId);
-            OrderResponse orderResponse = new RESTOrderResponse(response, messageId);
+            Order.Order order = JsonMarshaller.FromJson(response.GetResponseStream().ToString());
             if (OrderQueryEventHandler != null)
             {
-                OrderQueryEventHandler(this, orderResponse);
+                OrderQueryEventHandler(this, order);
             }
             else
             {
                 Log.WarnFormat("OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
-                    messageId, orderResponse.GetOrderId());
+                    messageId, order.GetOrderTsId());
             }
         }
 
