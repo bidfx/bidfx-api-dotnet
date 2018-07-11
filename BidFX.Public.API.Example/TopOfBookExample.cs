@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Example
         private const string Password = "";
         private const string Account = "FX_ACCT";
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             new TopOfBookExample().Run();
         }

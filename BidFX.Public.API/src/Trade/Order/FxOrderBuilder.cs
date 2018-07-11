@@ -80,7 +80,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            tenor = tenor.ToUpper().Trim();
+            tenor = tenor.Trim().ToUpper();
             Components[FxOrder.Tenor] = tenor;
             return this;
         }
@@ -121,7 +121,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            farTenor = farTenor.Trim();
+            farTenor = farTenor.Trim().ToUpper();
             Components[FxOrder.FarTenor] = farTenor;
             return this;
         }

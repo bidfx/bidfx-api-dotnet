@@ -3,15 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using BidFX.Public.API.Trade.Order;
-using log4net.Filter;
-using NUnit.Framework;
+using log4net;
 
 namespace BidFX.Public.API.Trade.Rest.Json
 {
     public static class JsonMarshaller
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         public static string ToJson(Order.Order order, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);
@@ -23,7 +25,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
             return stringBuilder.ToString();
         }
 
-        private static void AppendObject(object item, StringBuilder stringBuilder)
+        private static void AppendItem(object item, StringBuilder stringBuilder)
         {
             if (item == null)
             {
@@ -74,21 +76,21 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 stringBuilder.Append(loopDelim);
                 AppendString(keyValuePair.Key, stringBuilder);
                 stringBuilder.Append(":");
-                AppendObject(keyValuePair.Value, stringBuilder);
+                AppendItem(keyValuePair.Value, stringBuilder);
                 loopDelim = ",";
             }
 
             stringBuilder.Append("}");
         }
 
-        private static void AppendEnumerable(IEnumerable<object> item, StringBuilder stringBuilder)
+        private static void AppendEnumerable(IEnumerable<object> list, StringBuilder stringBuilder)
         {
             stringBuilder.Append("[");
             string loopDelim = "";
-            foreach (object o in item)
+            foreach (object item in list)
             {
                 stringBuilder.Append(loopDelim);
-                AppendObject(o, stringBuilder);
+                AppendItem(item, stringBuilder);
                 loopDelim = ",";
             }
 
@@ -142,7 +144,8 @@ namespace BidFX.Public.API.Trade.Rest.Json
                     case "FUTURE":
                         return new FutureOrder((Dictionary<string, object>) firstItem);
                     default:
-                        throw new ArgumentException("Unknown assetclass: " + assetClass);
+                        Log.WarnFormat("Unknown assetclass {0}. Creating default order.");
+                        return new Order.Order((Dictionary<string, object>) firstItem);
                 }
             }
             else if (jsonObject is Dictionary<string, object>)
@@ -195,6 +198,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 
         private static object ParseItem(string json, ref int pointer)
         {
+            SkipWhitespace(json, ref pointer);
             switch (json[pointer])
             {
                 case '{':

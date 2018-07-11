@@ -17,7 +17,7 @@ namespace BidFX.Public.API.Example
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Main2(string[] args)
+        public static void Main(string[] args)
         {
             Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
             new ApiExample().RunTest();
@@ -69,10 +69,8 @@ namespace BidFX.Public.API.Example
             }
             
             //Send a trade
-            /*
-            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-            SendSpotEURGBPTrade();
-            */
+//            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
+//            SendSpotEURGBPTrade();
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -188,25 +186,41 @@ namespace BidFX.Public.API.Example
                 .SetAccount("FX_ACCT")
                 .SetCurrencyPair("EURGBP")
                 .SetCurrency("GBP")
-                .SetDealType("Spot")
+                .SetDealType("Swap")
                 .SetHandlingType("stream")
                 .SetOrderType("Limit")
                 .SetPrice(1.180000m)
                 .SetQuantity(2000000)
                 .SetSide("Sell")
-                .SetTenor("Spot")
+                .SetTenor("2W")
+                .SetFarCurrency("GBP")
+                .SetFarQuantity(2000000)
+                .SetFarSide("Buy")
+                .SetFarTenor("4M")
                 .SetReferenceOne(".NET API Example")
-                .SetAllocationTemplate("TEST2")
                 .Build();
+            FutureOrder futureOrder = new FutureOrderBuilder()
+                .SetExecutingBroker("TS-SS")
+                .SetInstrumentCode("ZVBH9 Index")
+                .SetInstrumentCodeType("BLOOMBERG")
+                .SetOrderType("LIMIT")
+                .SetPrice(99)
+                .SetQuantity(1000)
+                .SetReferenceOne(".NET API Example")
+                .SetSide("BUY")
+                .Build();
+            
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
-            Log.InfoFormat("Order Submitted. MessageId {0}", messageId);
+            Log.InfoFormat("FXOrder Submitted. MessageId {0}", messageId);
+            messageId = DefaultClient.Client.TradeSession.SubmitOrder(futureOrder);
+            Log.InfoFormat("FutureOrder Submitted. MessageId {0}", messageId);
+            
         }
 
         private static void OnOrderSubmitResponse(object sender, Order order)
         {
-            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}", order.GetMessageId(),
-                order.GetOrderTsId(), order.GetState());
-            Log.InfoFormat("Errors: {0}", string.Join(", ", order.GetErrors()));
+            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}, FullOrder => {3}", order.GetMessageId(),
+                order.GetOrderTsId(), order.GetState(), order);
         }
     }
 }
