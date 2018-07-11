@@ -137,30 +137,10 @@ namespace BidFX.Public.API.Price.Tools
                 throw new ArgumentException(errorMessage);
             }
 
-            p = Trim(p);
+            p = p.Trim();
             if (p.Length != length)
             {
                 throw new ArgumentException(errorMessage);
-            }
-
-            return p;
-        }
-
-        /// <summary>
-        /// Trim the supplied string, returning quickly the supplied string if no trimming is necessary.
-        /// </summary>
-        /// <param name="p">string to trim</param>
-        /// <returns>p trimmed of whitespace.</returns>
-        public static string Trim(string p)
-        {
-            if (p.Length == 0)
-            {
-                return p;
-            }
-
-            if (p[0] == ' ' || p[p.Length - 1] == ' ')
-            {
-                return p.Trim();
             }
 
             return p;
@@ -184,7 +164,7 @@ namespace BidFX.Public.API.Price.Tools
         /// <returns>True if the string is null or empty, false otherwise.</returns>
         public static bool IsNullOrEmpty(string p)
         {
-            return p == null || Trim(p).Length == 0;
+            return p == null || p.Trim().Length == 0;
         }
     }
 }

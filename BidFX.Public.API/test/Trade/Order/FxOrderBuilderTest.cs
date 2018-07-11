@@ -13,6 +13,13 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
+        public void TestAssetClassIsSetInOrder()
+        {
+            FxOrder fxOrder = _orderBuilder.Build();
+            Assert.AreEqual("FX", fxOrder.GetAssetClass());
+        }
+
+        [Test]
         public void TestSettingCurrencyPair()
         {
             FxOrder fxOrder = _orderBuilder.SetCurrencyPair("GBPUSD").Build();
@@ -23,7 +30,7 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Currency Pair must be in format 'XXXYYY': GBPUSD2")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "CurrencyPair must be in format 'XXXYYY': GBPUSD2")]
         public void TestCurrencyPairsWithInvalidLengthThrowsException()
         {
             _orderBuilder.SetCurrencyPair("GBPUSD2");
@@ -35,7 +42,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrencyPair("USDJPY");
             _orderBuilder.SetCurrencyPair("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrencyPair());
         }
 
         [Test]
@@ -44,7 +52,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrencyPair("USDJPY");
             _orderBuilder.SetCurrencyPair("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrencyPair());
         }
 
         [Test]
@@ -53,7 +62,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrencyPair("EURUSD");
             _orderBuilder.SetCurrencyPair(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrencyPair());
         }
 
         [Test]
@@ -64,7 +74,6 @@ namespace BidFX.Public.API.Trade.Order
 
             fxOrder = _orderBuilder.SetDealType("ndf").Build();
             Assert.AreEqual("NDF", fxOrder.GetDealType());
-
 
             fxOrder = _orderBuilder.SetDealType("outright").Build();
             Assert.AreEqual("FWD", fxOrder.GetDealType());
@@ -85,7 +94,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetDealType("Swap");
             _orderBuilder.SetDealType(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -94,7 +103,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetDealType("NDS");
             _orderBuilder.SetDealType("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -103,11 +112,11 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetDealType("Spot");
             _orderBuilder.SetDealType("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported deal type: Invalid")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported DealType: Invalid")]
         public void TestInvalidDealTypeThrowsException()
         {
             FxOrder fxOrder = _orderBuilder.SetDealType("Invalid").Build();
@@ -130,7 +139,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrency("GBP");
             _orderBuilder.SetCurrency(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrency());
         }
 
         [Test]
@@ -139,7 +149,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrency("USD");
             _orderBuilder.SetCurrency("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrency());
         }
 
         [Test]
@@ -148,7 +159,8 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetCurrency("EUR");
             _orderBuilder.SetCurrency("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+            Assert.IsNull(fxOrder.GetCurrency());
         }
 
         [Test]
@@ -156,137 +168,6 @@ namespace BidFX.Public.API.Trade.Order
         public void TestNonThreeLetterCurrencyThrowsException()
         {
             _orderBuilder.SetCurrency("GBPD");
-        }
-
-        [Test]
-        public void TestSettingExecutingAccount()
-        {
-            FxOrder fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
-            Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
-
-            fxOrder = _orderBuilder.SetAccount("  AN_ACCOUNT ").Build();
-            Assert.AreEqual("AN_ACCOUNT", fxOrder.GetAccount());
-        }
-
-        [Test]
-        public void TestNullAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestEmptyAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestBlankAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount("   ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingSide()
-        {
-            FxOrder fxOrder = _orderBuilder.SetSide("buy").Build();
-            Assert.AreEqual("BUY", fxOrder.GetSide());
-
-            fxOrder = _orderBuilder.SetSide("sell").Build();
-            Assert.AreEqual("SELL", fxOrder.GetSide());
-
-            fxOrder = _orderBuilder.SetSide("  buy").Build();
-            Assert.AreEqual("BUY", fxOrder.GetSide());
-
-            fxOrder = _orderBuilder.SetSide(" sell  ").Build();
-            Assert.AreEqual("SELL", fxOrder.GetSide());
-        }
-
-        [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Side must be either 'BUY' or 'SELL': Invalid")]
-        public void TestSettingInvalidSideThrowsException()
-        {
-            _orderBuilder.SetSide("Invalid");
-        }
-
-        [Test]
-        public void TestSettingNullSideClearsSide()
-        {
-            _orderBuilder.SetSide("Buy");
-            _orderBuilder.SetSide(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptySideClearsSide()
-        {
-            _orderBuilder.SetSide("Sell");
-            _orderBuilder.SetSide("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankSideClearsSide()
-        {
-            _orderBuilder.SetSide("Sell");
-            _orderBuilder.SetSide("     ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingQuantity()
-        {
-            FxOrder fxOrder = _orderBuilder.SetQuantity("1000000.00").Build();
-            Assert.AreEqual("1000000.00", fxOrder.GetQuantity());
-
-            fxOrder = _orderBuilder.SetQuantity("5000000").Build();
-            Assert.AreEqual("5000000", fxOrder.GetQuantity());
-        }
-
-        [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Quantity is not a number: 27281P.00")]
-        public void TestNonNumericOrPeridQuantityThrowsException()
-        {
-            _orderBuilder.SetQuantity("27281P.00").Build();
-        }
-
-        [Test]
-        public void TestNullQuantityClearsQuantity()
-        {
-            _orderBuilder.SetQuantity("2000000");
-            _orderBuilder.SetQuantity(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestEmptyQuantityClearsQuantity()
-        {
-            _orderBuilder.SetQuantity("30000000");
-            _orderBuilder.SetQuantity("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestBlankQuantityClearsQuantity()
-        {
-            _orderBuilder.SetQuantity("10000000.00");
-            _orderBuilder.SetQuantity("     ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
         }
 
         [Test]
@@ -305,7 +186,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetTenor("6M");
             _orderBuilder.SetTenor(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -314,7 +195,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetTenor("4M");
             _orderBuilder.SetTenor("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -323,7 +204,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetTenor("BD");
             _orderBuilder.SetTenor("     ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -349,7 +230,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetStrategyParameter("not_null", "not_null_either");
             _orderBuilder.SetStrategyParameter("not_null", null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -381,7 +262,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetStrategyParameter("parameter_one", "not_empty");
             _orderBuilder.SetStrategyParameter("parameter_one", "");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -390,216 +271,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetStrategyParameter("parameter_one", "not_empty");
             _orderBuilder.SetStrategyParameter("parameter_one", "   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-
-        [Test]
-        public void TestSettingExecutingVenue()
-        {
-            FxOrder fxOrder = _orderBuilder.SetExecutingVenue("executing_venue_abc").Build();
-            Assert.AreEqual("executing_venue_abc", fxOrder.GetExecutingVenue());
-
-            fxOrder = _orderBuilder.SetExecutingVenue("   executing_venue_def ").Build();
-            Assert.AreEqual("executing_venue_def", fxOrder.GetExecutingVenue());
-        }
-
-        [Test]
-        public void TestSettingNullExecutingVenueClearsExecutingVenue()
-        {
-            _orderBuilder.SetExecutingVenue("TS-SS");
-            _orderBuilder.SetExecutingVenue(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyExecutingValueClearsExecutingVenue()
-        {
-            _orderBuilder.SetExecutingVenue("TS-SS");
-            _orderBuilder.SetExecutingVenue("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankExecutingValueClearsExecutingVenue()
-        {
-            _orderBuilder.SetExecutingVenue("TS-SS");
-            _orderBuilder.SetExecutingVenue("   ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingHandlingType()
-        {
-            FxOrder fxOrder = _orderBuilder.SetHandlingType("STREAM").Build();
-            Assert.AreEqual("RFS", fxOrder.GetHandlingType());
-            
-            fxOrder = _orderBuilder.SetHandlingType("RFS").Build();
-            Assert.AreEqual("RFS", fxOrder.GetHandlingType());
-
-            fxOrder = _orderBuilder.SetHandlingType("  Quote ").Build();
-            Assert.AreEqual("RFQ", fxOrder.GetHandlingType());
-            
-            fxOrder = _orderBuilder.SetHandlingType("  rfq ").Build();
-            Assert.AreEqual("RFQ", fxOrder.GetHandlingType());
-
-            fxOrder = _orderBuilder.SetHandlingType("Automatic").Build();
-            Assert.AreEqual("AUTOMATIC", fxOrder.GetHandlingType());
-        }
-
-        [Test]
-        public void TestSettingNullHandlingTypeClearsHandlingType()
-        {
-            _orderBuilder.SetHandlingType("automatic");
-            _orderBuilder.SetHandlingType(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyHandlingTypeClearsHandlingType()
-        {
-            _orderBuilder.SetHandlingType("stream");
-            _orderBuilder.SetHandlingType("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankHandlingTypeClearsHandlingType()
-        {
-            _orderBuilder.SetHandlingType("quote");
-            _orderBuilder.SetHandlingType("    ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingAccount()
-        {
-            FxOrder fxOrder = _orderBuilder.SetAccount("FX_ACCT").Build();
-            Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
-
-            fxOrder = _orderBuilder.SetAccount("  ANOTHER_ACCOUNT ").Build();
-            Assert.AreEqual("ANOTHER_ACCOUNT", fxOrder.GetAccount());
-        }
-
-        [Test]
-        public void TestSettingNullAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankAccountClearsAccount()
-        {
-            _orderBuilder.SetAccount("FX_ACCT");
-            _orderBuilder.SetAccount("   ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingReferenceOne()
-        {
-            FxOrder fxOrder = _orderBuilder.SetReferenceOne("reference_one").Build();
-            Assert.AreEqual("reference_one", fxOrder.GetReference1());
-
-            fxOrder = _orderBuilder.SetReferenceOne("  reference_one_with_whitespace ").Build();
-            Assert.AreEqual("  reference_one_with_whitespace ", fxOrder.GetReference1());
-        }
-
-        [Test]
-        public void TestSettingNullReferenceOneClearsReferenceOne()
-        {
-            _orderBuilder.SetReferenceOne("reference_one");
-            _orderBuilder.SetReferenceOne(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyReferenceOneClearsReferenceOne()
-        {
-            _orderBuilder.SetReferenceOne("reference_one");
-            _orderBuilder.SetReferenceOne("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankReferenceOneClearsReferenceOne()
-        {
-            _orderBuilder.SetReferenceOne("reference_one");
-            _orderBuilder.SetReferenceOne("   ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        [ExpectedException("System.ArgumentException")]
-        public void TestSettingReferenceOneWithPipe()
-        {
-            _orderBuilder.SetReferenceOne("PartA|PartB");
-        }
-
-        [Test]
-        public void TestSettingReferenceTwo()
-        {
-            FxOrder fxOrder = _orderBuilder.SetReferenceTwo("reference_two").Build();
-            Assert.AreEqual("reference_two", fxOrder.GetReference2());
-
-            fxOrder = _orderBuilder.SetReferenceTwo("  reference_two_with_whitespace ").Build();
-            Assert.AreEqual("  reference_two_with_whitespace ", fxOrder.GetReference2());
-        }
-
-        [Test]
-        public void TestSettingNullReferenceTwoClearsReferenceTwo()
-        {
-            _orderBuilder.SetReferenceTwo("reference_one");
-            _orderBuilder.SetReferenceTwo(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyReferenceTwoClearsReferenceTwo()
-        {
-            _orderBuilder.SetReferenceTwo("reference_one");
-            _orderBuilder.SetReferenceTwo("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankReferenceTwoClearsReferenceTwo()
-        {
-            _orderBuilder.SetReferenceTwo("reference_one");
-            _orderBuilder.SetReferenceTwo("   ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "References can not contain pipes (|)")]
-        public void TestSettingReferenceTwoWithPipe()
-        {
-            _orderBuilder.SetReferenceTwo("PartA|PartB");
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -627,7 +299,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -636,7 +308,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -645,18 +317,18 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSettlementDate("2018-02-23");
             _orderBuilder.SetSettlementDate("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "SettlementDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidSettlementDateThrowsException()
         {
             _orderBuilder.SetSettlementDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "SettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingSettlementDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetSettlementDate("yyyy-mm-dd");
@@ -687,7 +359,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -696,7 +368,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -705,18 +377,18 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFixingDate("2018-12-12");
             _orderBuilder.SetFixingDate("  ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FixingDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFixingDateThrowsException()
         {
             _orderBuilder.SetFixingDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "FixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFixingDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFixingDate("yyyy-mm-dd");
@@ -747,7 +419,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -756,7 +428,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -765,18 +437,18 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarSettlementDate("2018-12-12");
             _orderBuilder.SetFarSettlementDate("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarSettlementDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFarSettlementDateThrowsException()
         {
             _orderBuilder.SetFarSettlementDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarSettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFarSettlementDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFarSettlementDate("yyyy-mm-dd");
@@ -807,7 +479,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -816,7 +488,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -825,18 +497,18 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarFixingDate("2018-12-12");
             _orderBuilder.SetFarFixingDate("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): 291")]
+        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarFixingDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFarFixingDateThrowsException()
         {
             _orderBuilder.SetFarFixingDate("291");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Date was not in valid format (YYYYY-MM-DD): yyyy-mm-dd")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarFixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFarFixingDateWithBadCharactersThrowsException()
         {
             _orderBuilder.SetFarFixingDate("yyyy-mm-dd");
@@ -858,7 +530,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -867,7 +539,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -876,7 +548,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarTenor("1M");
             _orderBuilder.SetFarTenor("  ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -895,7 +567,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -904,7 +576,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -913,7 +585,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetFarCurrency("GBP");
             _orderBuilder.SetFarCurrency("    ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -926,45 +598,27 @@ namespace BidFX.Public.API.Trade.Order
         [Test]
         public void TestSettingFarQuantity()
         {
-            FxOrder fxOrder = _orderBuilder.SetFarQuantity("1000000.00").Build();
-            Assert.AreEqual("1000000.00", fxOrder.GetFarQuantity());
+            FxOrder fxOrder = _orderBuilder.SetFarQuantity(1000000.00m).Build();
+            Assert.AreEqual(1000000.00m, fxOrder.GetFarQuantity());
 
-            fxOrder = _orderBuilder.SetFarQuantity("5000000").Build();
-            Assert.AreEqual("5000000", fxOrder.GetFarQuantity());
+            fxOrder = _orderBuilder.SetFarQuantity(5000000).Build();
+            Assert.AreEqual(5000000m, fxOrder.GetFarQuantity());
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarQuantity was not a number: 27281P.00")]
+        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarQuantity can not be negative: -2700")]
         public void TestNonNumericOrPeridFarQuantityThrowsException()
         {
-            _orderBuilder.SetFarQuantity("27281P.00").Build();
+            _orderBuilder.SetFarQuantity(-2700).Build();
         }
 
         [Test]
         public void TestSettingNullFarQuantityClearsFarQuantity()
         {
-            _orderBuilder.SetFarQuantity("1000000.00");
+            _orderBuilder.SetFarQuantity(1000000.00m);
             _orderBuilder.SetFarQuantity(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyFarQuantityClearsFarQuantity()
-        {
-            _orderBuilder.SetFarQuantity("1000000.00");
-            _orderBuilder.SetFarQuantity("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankFarQuantityClearsFarQuantity()
-        {
-            _orderBuilder.SetFarQuantity("1000000.00");
-            _orderBuilder.SetFarQuantity("    ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -983,7 +637,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate(null);
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -992,7 +646,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate("");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
         }
 
         [Test]
@@ -1001,88 +655,61 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAllocationTemplate("alloc_template");
             _orderBuilder.SetAllocationTemplate("   ");
             FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            Assert.AreEqual(1, fxOrder.GetInternalComponents().Count);
+        }
+        
+        [Test]
+        public void TestSettingFarSide()
+        {
+            FxOrder order = _orderBuilder.SetFarSide("buy").Build();
+            Assert.AreEqual("BUY", order.GetFarSide());
+
+            order = _orderBuilder.SetFarSide("sell").Build();
+            Assert.AreEqual("SELL", order.GetFarSide());
+
+            order = _orderBuilder.SetFarSide("  buy").Build();
+            Assert.AreEqual("BUY", order.GetFarSide());
+
+            order = _orderBuilder.SetFarSide(" sell  ").Build();
+            Assert.AreEqual("SELL", order.GetFarSide());
         }
 
         [Test]
-        public void TestSettingPrice()
+        [ExpectedException("System.ArgumentException", ExpectedMessage =
+            "Side must be either 'BUY' or 'SELL': Invalid")]
+        public void TestSettingInvalidFarSideThrowsException()
         {
-            FxOrder fxOrder = _orderBuilder.SetPrice("1000000.00").Build();
-            Assert.AreEqual("1000000.00", fxOrder.GetPrice());
-
-            fxOrder = _orderBuilder.SetPrice("5000000").Build();
-            Assert.AreEqual("5000000", fxOrder.GetPrice());
+            _orderBuilder.SetFarSide("Invalid");
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Price was not a number: 27281P.00")]
-        public void TestNonNumericOrPeridPriceThrowsException()
+        public void TestSettingNullFarSideClearsSide()
         {
-            _orderBuilder.SetPrice("27281P.00").Build();
+            _orderBuilder.SetFarSide("Buy");
+            _orderBuilder.SetFarSide(null);
+            FxOrder order = _orderBuilder.Build();
+            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.IsNull(order.GetFarSide());
         }
 
         [Test]
-        public void TestSettingNullPriceClearsPrice()
+        public void TestSettingEmptyFarSideClearsSide()
         {
-            _orderBuilder.SetPrice("1.345");
-            _orderBuilder.SetPrice(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            _orderBuilder.SetFarSide("Sell");
+            _orderBuilder.SetFarSide("");
+            FxOrder order = _orderBuilder.Build();
+            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.IsNull(order.GetFarSide());
         }
 
         [Test]
-        public void TestSettingEmptyPriceClearsPrice()
+        public void TestSettingBlankFarSideClearsSide()
         {
-            _orderBuilder.SetPrice("1.345");
-            _orderBuilder.SetPrice("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankPriceClearsPrice()
-        {
-            _orderBuilder.SetPrice("1.345");
-            _orderBuilder.SetPrice("     ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingOrderType()
-        {
-            FxOrder fxOrder = _orderBuilder.SetOrderType("Limit").Build();
-            Assert.AreEqual("LIMIT", fxOrder.GetOrderType());
-
-            fxOrder = _orderBuilder.SetOrderType(" Market  ").Build();
-            Assert.AreEqual("MARKET", fxOrder.GetOrderType());
-        }
-
-        [Test]
-        public void TestSettingNullOrderTypeClearsOrderType()
-        {
-            _orderBuilder.SetOrderType("Limit");
-            _orderBuilder.SetOrderType(null);
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingEmptyOrderTypeClearsOrderType()
-        {
-            _orderBuilder.SetOrderType("Limit");
-            _orderBuilder.SetOrderType("");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
-        }
-
-        [Test]
-        public void TestSettingBlankOrderTypeClearsOrderType()
-        {
-            _orderBuilder.SetOrderType("Limit");
-            _orderBuilder.SetOrderType("  ");
-            FxOrder fxOrder = _orderBuilder.Build();
-            Assert.AreEqual(0, fxOrder.GetInternalComponents().Length);
+            _orderBuilder.SetFarSide("Sell");
+            _orderBuilder.SetFarSide("     ");
+            FxOrder order = _orderBuilder.Build();
+            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.IsNull(order.GetFarSide());
         }
     }
 }
