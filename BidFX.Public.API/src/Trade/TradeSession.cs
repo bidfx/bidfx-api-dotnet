@@ -1,10 +1,12 @@
 ﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using BidFX.Public.API.Trade.Instruction;
 using BidFX.Public.API.Trade.Rest.Json;
 using BidFX.Public.API.Trade.REST;
 using log4net;
@@ -16,8 +18,9 @@ namespace BidFX.Public.API.Trade
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event EventHandler<Order.Order> OrderQueryEventHandler;
         public event EventHandler<Order.Order> OrderSubmitEventHandler;
+        public event EventHandler<Order.Order> OrderQueryEventHandler;
+        public event EventHandler<Order.Order> OrderInstructionEventHandler;
         private RESTClient _restClient;
         private static long _nextMessageId;
         public string Host { get; set; }
@@ -52,19 +55,97 @@ namespace BidFX.Public.API.Trade
             return messageId;
         }
 
+        public long SubmitOrderInstruction(OrderInstruction instruction)
+        {
+            long messageId = GetNextMessageId();
+            string json = JsonMarshaller.ToJson(instruction, messageId);
+            if (instruction is OrderAmend)
+            {
+                ThreadPool.QueueUserWorkItem(
+                    delegate { SendAmendViaRest(messageId, json); }
+                );
+            }
+            else if (instruction is OrderCancel)
+            {
+                ThreadPool.QueueUserWorkItem(
+                    delegate { SendCancelViaRest(messageId, json); }
+                );
+            }
+            else if (instruction is OrderSubmit)
+            {
+                ThreadPool.QueueUserWorkItem(
+                    delegate { SendSubmitViaRest(messageId, json); }
+                );
+            }
+            else
+            {
+                Log.ErrorFormat("MessageId {0} - Don't know what to do with Instruction of type {1}", messageId, instruction.GetType());
+            }
+
+            return messageId;
+        }
+
         private void SendOrderViaREST(long messageId, string json)
         {
-            Log.InfoFormat("Submmiting order, messageId: {0}", messageId);
-            Log.DebugFormat("Submitting order, messageId: {0}, Json: {1}", messageId, json);
+            if (Log.IsDebugEnabled)
+            {
+                Log.DebugFormat("Submitting order, messageId: {0}, json: {1}", messageId, json);
+            }
+            else
+            {
+                Log.InfoFormat("Submitting order, messageId: {0}", messageId);
+            }
+            Order.Order order = SendObjectViaRest(messageId, json, "");
+            if (order != null && OrderSubmitEventHandler != null)
+            {
+                OrderSubmitEventHandler.Invoke(this, order);
+            }
+        }
+
+        private void SendAmendViaRest(long mesageId, string json)
+        {
+            SendInstructionViaRest(mesageId, json, "/amend");
+        }
+
+        private void SendCancelViaRest(long messageId, string json)
+        {
+            SendInstructionViaRest(messageId, json, "/cancel");
+        }
+
+        private void SendSubmitViaRest(long messageId, string json)
+        {
+            SendInstructionViaRest(messageId, json, "/submit");
+        }
+
+        private void SendInstructionViaRest(long messageId, string json, string path)
+        {
+            if (Log.IsDebugEnabled)
+            {
+                Log.DebugFormat("Submitting instruction, messageId: {0}, json: {1}", messageId, json);
+            }
+            else
+            {
+                Log.InfoFormat("Submitting instruction, messageId: {0}", messageId);
+            }
+
+            Order.Order  order= SendObjectViaRest(messageId, json, "/amend");
+            if (order != null && OrderInstructionEventHandler != null)
+            {
+                OrderInstructionEventHandler.Invoke(this, order);
+            }
+        }
+
+        private Order.Order SendObjectViaRest(long messageId, string json, string path)
+        {
             HttpWebResponse response;
             try
             {
-                response = _restClient.SendJSON("POST", "", json);
+                response = _restClient.SendJSON("POST", path, json);
             }
             catch (Exception e)
             {
                 Log.Warn("Unexpected error occurred sending message", e);
-                throw;
+                return null;
             }
 
             try
@@ -74,7 +155,7 @@ namespace BidFX.Public.API.Trade
                 if (jsonResponse == null)
                 {
                     Log.InfoFormat("MessageId {0} - No body to return.", messageId);
-                    return;
+                    return null;
                 }
                 else
                 {
@@ -89,19 +170,20 @@ namespace BidFX.Public.API.Trade
                             "Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}",
                             messageId, order.GetOrderTsId());
                     }
-                    OrderSubmitEventHandler(this, order);
+                    return order;
                 }
                 else
                 {
                     Log.WarnFormat(
                         "OrderSubmitEventHandler was null dropping order response: {0}",
                         order.ToString());
+                    return null;
                 }
             }
             catch (Exception e)
             {
                 Log.Warn("Unexpected error occurred parsing response", e);
-                throw;
+                return null;
             }
         }
 
