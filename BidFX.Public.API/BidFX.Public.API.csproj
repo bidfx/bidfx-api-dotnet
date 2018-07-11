@@ -183,6 +183,14 @@
     <Compile Include="src\Tools\TimeFieldTools.cs" />
     <Compile Include="src\Tools\TunnelException.cs" />
     <Compile Include="src\Tools\Varint.cs" />
+    <Compile Include="src\Trade\Instruction\OrderAmend.cs" />
+    <Compile Include="src\Trade\Instruction\OrderAmendBuilder.cs" />
+    <Compile Include="src\Trade\Instruction\OrderCancel.cs" />
+    <Compile Include="src\Trade\Instruction\OrderCancelBuilder.cs" />
+    <Compile Include="src\Trade\Instruction\OrderInstruction.cs" />
+    <Compile Include="src\Trade\Instruction\OrderInstructionBuilder.cs" />
+    <Compile Include="src\Trade\Instruction\OrderSubmit.cs" />
+    <Compile Include="src\Trade\Instruction\OrderSubmitBuilder.cs" />
     <Compile Include="src\Trade\Order\Error.cs" />
     <Compile Include="src\Trade\Order\FutureOrder.cs" />
     <Compile Include="src\Trade\Order\FutureOrderBuilder.cs" />
@@ -192,6 +200,7 @@
     <Compile Include="src\Trade\Order\OrderBuilder.cs" />
     <Compile Include="src\Trade\Rest\IRESTCallback.cs" />
     <Compile Include="src\Trade\Rest\Json\JsonException.cs" />
+    <Compile Include="src\Trade\Rest\Json\JsonMarshallable.cs" />
     <Compile Include="src\Trade\Rest\Json\JsonMarshaller.cs" />
     <Compile Include="src\Trade\Rest\RESTClient.cs" />
     <Compile Include="src\Trade\TradeSession.cs" />
@@ -241,6 +250,9 @@
     <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
     <Compile Include="test\Tools\ParamsTest.cs" />
     <Compile Include="test\Tools\VarintTest.cs" />
+    <Compile Include="test\Trade\Instruction\OrderAmendBuilderTest.cs" />
+    <Compile Include="test\Trade\Instruction\OrderCancelBuilderTest.cs" />
+    <Compile Include="test\Trade\Instruction\OrderSubmitBuilderTest.cs" />
     <Compile Include="test\Trade\Order\FutureOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\OrderBuilderTest.cs" />

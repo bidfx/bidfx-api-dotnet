@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BidFX.Public.API.Trade.Rest.Json;
 
 namespace BidFX.Public.API.Trade.Order
 {
-    public class Order : EventArgs
+    public class Order : EventArgs, IJsonMarshallable
     {
         internal const string AssetClass = "asset_class";
         internal const string Account = "account";
@@ -47,7 +48,7 @@ namespace BidFX.Public.API.Trade.Order
             _jsonMap = new SortedDictionary<string, object>(jsonMap);
         }
 
-        internal IDictionary<string, object> GetInternalComponents()
+        public IDictionary<string, object> GetJsonMap()
         {
             return _jsonMap;
         }

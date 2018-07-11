@@ -10,14 +10,14 @@ using log4net;
 
 namespace BidFX.Public.API.Trade.Rest.Json
 {
-    public static class JsonMarshaller
+    internal static class JsonMarshaller
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
-        public static string ToJson(Order.Order order, long messageId)
+        public static string ToJson(IJsonMarshallable item, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);
-            IDictionary<string, object> components = order.GetInternalComponents();
+            IDictionary<string, object> components = item.GetJsonMap();
             components.Add("correlation_id", messageId.ToString());
             stringBuilder.Append("[");
             AppendDictionary(components, stringBuilder);

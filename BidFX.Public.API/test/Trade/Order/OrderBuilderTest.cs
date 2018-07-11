@@ -37,7 +37,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetAccount("FX_ACCT");
             _orderBuilder.SetAccount("   ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSide("Buy");
             _orderBuilder.SetSide(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSide("Sell");
             _orderBuilder.SetSide("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetSide("Sell");
             _orderBuilder.SetSide("     ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetQuantity(2000000);
             _orderBuilder.SetQuantity(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -161,7 +161,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetHandlingType("automatic");
             _orderBuilder.SetHandlingType(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -170,7 +170,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetHandlingType("stream");
             _orderBuilder.SetHandlingType("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetHandlingType("quote");
             _orderBuilder.SetHandlingType("    ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -207,7 +207,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -216,7 +216,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceOne("reference_one");
             _orderBuilder.SetReferenceOne("   ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetReferenceTwo("reference_one");
             _orderBuilder.SetReferenceTwo("   ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -293,7 +293,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetPrice(1.345m);
             _orderBuilder.SetPrice(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -312,7 +312,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetOrderType("Limit");
             _orderBuilder.SetOrderType(null);
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -321,7 +321,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetOrderType("Limit");
             _orderBuilder.SetOrderType("");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
 
         [Test]
@@ -330,7 +330,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetOrderType("Limit");
             _orderBuilder.SetOrderType("  ");
             Order order = _orderBuilder.Build();
-            Assert.AreEqual(1, order.GetInternalComponents().Count);
+            Assert.AreEqual(1, order.GetJsonMap().Count);
         }
     }
 

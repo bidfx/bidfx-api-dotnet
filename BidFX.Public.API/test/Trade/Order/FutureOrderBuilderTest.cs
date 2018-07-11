@@ -62,7 +62,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetContractDate("2017-03");
             _orderBuilder.SetContractDate(null);
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetContractDate());
         }
 
@@ -72,7 +72,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetContractDate("2017-03");
             _orderBuilder.SetContractDate("");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetContractDate());
         }
 
@@ -82,7 +82,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetContractDate("2017-03");
             _orderBuilder.SetContractDate("   ");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetContractDate());
         }
 
@@ -120,7 +120,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCode("FDXU8");
             _orderBuilder.SetInstrumentCode("");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCode());
         }
 
@@ -130,7 +130,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCode("FDXU8");
             _orderBuilder.SetInstrumentCode("    ");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCode());
         }
 
@@ -140,7 +140,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCode("FDXU8");
             _orderBuilder.SetInstrumentCode(null);
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCode());
         }
 
@@ -160,7 +160,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCodeType("BLOOMBERG");
             _orderBuilder.SetInstrumentCodeType("");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCodeType());
         }
 
@@ -170,7 +170,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCodeType("BLOOMBERG");
             _orderBuilder.SetInstrumentCodeType("    ");
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCodeType());
         }
 
@@ -180,7 +180,7 @@ namespace BidFX.Public.API.Trade.Order
             _orderBuilder.SetInstrumentCodeType("BLOOMBERG");
             _orderBuilder.SetInstrumentCodeType(null);
             FutureOrder futureOrder = _orderBuilder.Build();
-            Assert.AreEqual(1, futureOrder.GetInternalComponents().Count);
+            Assert.AreEqual(1, futureOrder.GetJsonMap().Count);
             Assert.IsNull(futureOrder.GetInstrumentCodeType());
         }
     }
