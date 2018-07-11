@@ -214,6 +214,11 @@ namespace BidFX.Public.API.Trade.Order
             return (T) (_jsonMap.TryGetValue(key, out value) ? value : null);
         }
 
+        internal void SetMessageId(long messageId)
+        {
+            _jsonMap[MessageId] = messageId;
+        }
+        
         public override string ToString()
         {
             return DeepStringDictionary(_jsonMap);
