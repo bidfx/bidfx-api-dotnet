@@ -17,13 +17,27 @@ namespace BidFX.Public.API
 
         private static readonly BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
 
-        private int _levelTwoSubscriptionLimit = 20;
         private int _levelOneSubscriptionLimit = 500;
+        private int _levelTwoSubscriptionLimit = 20;
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        public string Username { get; set; }
+        public string Username
+        {
+            get { return _username; }
+            set
+            {
+                _username = value;
+                _levelOneSubscriptionLimit = 500;
+                _levelTwoSubscriptionLimit = 20;
+                if (_priceManager != null)
+                {
+                    _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
+                    _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
+                }
+            }
+        }
 
         /// <summary>
         /// The password associated for the given username.
@@ -60,6 +74,7 @@ namespace BidFX.Public.API
 
         private PriceManager _priceManager;
         private TradeSession _tradeSession;
+        private string _username;
 
         /// <summary>
         /// Creates a new Client that has yet to be configured.
@@ -109,63 +124,93 @@ namespace BidFX.Public.API
             }
         }
 
-        public bool SetLevelTwoSubscriptionLimit(string subscriptionLimitString)
+        public void SetLevelTwoSubscriptionLimit(string subscriptionLimitString)
         {
-            try
+            string[] parts = subscriptionLimitString.Split('-');
+            int limit = int.Parse(parts[0]);
+            string username = parts[1];
+            int level = int.Parse(parts[2]);
+            BigInteger signedString = BigInteger.Parse(parts[3]);
+            if (level != 2)
             {
-                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
-                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
-                {
-                    throw new ArgumentException("signature of subscription limit string does not match expected value");
-                }
-
-                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
-                if (_priceManager != null)
-                {
-                    _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
-                }
-                return true;
+                throw new ArgumentException("Subscription Limit String is not for level 2 subscriptions");
             }
-            catch (Exception e)
+            if (!IsValidLimitSignature(limit, username, level, signedString))
             {
-                Log.Error("Could not update depth subscription limit", e);
-                return false;
+                throw new ArgumentException("signature of subscription limit string does not match expected value");
+            }
+
+            _levelTwoSubscriptionLimit = limit;
+            if (_priceManager != null)
+            {
+                _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
             }
         }
 
-        public bool SetLevelOneSubscriptionLimit(string subscriptionLimitString)
+        public void SetLevelOneSubscriptionLimit(string subscriptionLimitString)
         {
-            try
+            string[] parts = subscriptionLimitString.Split('-');
+            int limit = int.Parse(parts[0]);
+            string username = parts[1];
+            int level = int.Parse(parts[2]);
+            BigInteger signedString = BigInteger.Parse(parts[3]);
+            if (level != 1)
             {
-                Tuple<int, BigInteger> subscriptionLimit = splitSubscriptionLimitString(subscriptionLimitString);
-                if (!IsValidLimitSignature(subscriptionLimit.Item1, subscriptionLimit.Item2))
-                {
-                    throw new ArgumentException("signature of subscription limit string does not match expected value");
-                }
-
-                _levelOneSubscriptionLimit = subscriptionLimit.Item1;
-                if (_priceManager != null)
-                {
-                    _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
-                }
-                return true;
+                throw new ArgumentException("Subscription Limit String is not for level 1 subscriptions");
             }
-            catch (Exception e)
+            if (!IsValidLimitSignature(limit, username, level, signedString))
             {
-                Log.Error("Could not update depth subscription limit", e);
-                return false;
+                throw new ArgumentException("signature of subscription limit string does not match expected value");
+            }
+
+            _levelOneSubscriptionLimit = limit;
+            if (_priceManager != null)
+            {
+                _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
             }
         }
 
-        private Tuple<int, BigInteger> splitSubscriptionLimitString(string subscriptionLimitString)
+        private int HashLimitDetails(int limit, string username, int level)
         {
-            String[] subscriptionLimit = subscriptionLimitString.Split('-');
-            return Tuple.Create(int.Parse(subscriptionLimit[0]), BigInteger.Parse(subscriptionLimit[1]));
+            int hashcode = limit;
+            hashcode = hashcode * 31 + level;
+            hashcode = hashcode * 31 + HashString(username);
+            if (hashcode < 0)
+            {
+                if (hashcode == -2147483648)
+                {
+                    return 0;
+                }
+
+                return -hashcode;
+            }
+            return hashcode;
+        }
+
+        private int HashString(string input)
+        {
+            int hashcode = 0;
+            foreach (char c in input)
+            {
+                hashcode = hashcode * 31 + c;
+            }
+            return hashcode;
         }
         
-        private bool IsValidLimitSignature(int limit, BigInteger signature)
+        
+        private bool IsValidLimitSignature(int limit, string username, int level, BigInteger signature)
         {
-            return BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(limit);
+            if (Username == null)
+            {
+                throw new MissingFieldException("Client has no username set");
+            }
+
+            if (!Username.Equals(username))
+            {
+                throw new ArgumentException("given string is for user " + username + ", but client is configured for user " + Username);
+            }
+            int limitDetailsHash = HashLimitDetails(limit, username, level);
+            return BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(limitDetailsHash);
         }
 
         private void CreatePriceManager()
