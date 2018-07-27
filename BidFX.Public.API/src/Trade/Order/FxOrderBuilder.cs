@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BidFX.Public.API.Enums;
 using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
@@ -80,7 +81,15 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            tenor = tenor.Trim().ToUpper();
+            FxTenor fxTenor = FxTenor.GetTenor(tenor);
+            if (fxTenor != null)
+            {
+                tenor = fxTenor.GetBizString();
+            }
+            else
+            {
+                tenor = tenor.Trim().ToUpper();
+            }
             Components[FxOrder.Tenor] = tenor;
             return this;
         }
@@ -121,7 +130,15 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            farTenor = farTenor.Trim().ToUpper();
+            FxTenor fxTenor = FxTenor.GetTenor(farTenor);
+            if (fxTenor != null)
+            {
+                farTenor = fxTenor.GetBizString();
+            }
+            else
+            {
+                farTenor = farTenor.Trim().ToUpper();
+            }
             Components[FxOrder.FarTenor] = farTenor;
             return this;
         }

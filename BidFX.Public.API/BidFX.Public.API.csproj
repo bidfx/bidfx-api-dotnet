@@ -78,6 +78,7 @@
     <Compile Include="src\Client.cs" />
     <Compile Include="src\DefaultClient.cs" />
     <Compile Include="src\IllegalStateException.cs" />
+    <Compile Include="src\Price\Enums\FxTenor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\ClientTest.cs" />
     <Compile Include="test\PriceManagerTest.cs" />
+    <Compile Include="test\Price\Enums\FxTenorTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
     <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
