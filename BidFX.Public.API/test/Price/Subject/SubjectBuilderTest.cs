@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using BidFX.Public.API.Enums;
+using Moq;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Subject
@@ -146,12 +147,6 @@ namespace BidFX.Public.API.Price.Subject
         public void CantSetEmptyKeys()
         {
             Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("", "Reuters"));
-        }
-
-        [Test]
-        public void CantSetNullValues()
-        {
-            Assert.Throws<IllegalSubjectException>(() => _subjectBuilder.SetComponent("LiquidityProvider", null));
         }
 
         [Test]

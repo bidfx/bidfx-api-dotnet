@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
+using BidFX.Public.API.Enums;
 using log4net;
 
 namespace BidFX.Public.API.Price.Subject
@@ -76,7 +77,6 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                 Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
                 return this;
             }
-
             SubjectComponent(key, value);
             return this;
         }

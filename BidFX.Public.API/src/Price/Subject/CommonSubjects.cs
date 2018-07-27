@@ -1,4 +1,7 @@
-﻿namespace BidFX.Public.API.Price.Subject
+﻿using BidFX.Public.API.Enums;
+using BidFX.Public.API.Price.Plugin.Puffin;
+
+namespace BidFX.Public.API.Price.Subject
 {
     public class CommonSubjects
     {
@@ -44,7 +47,8 @@
                 CommonComponents.Forward, liquidityProvider, currency, quantity, CommonComponents.Fx, "1", requestFor);
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
@@ -86,7 +90,8 @@
 
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
@@ -132,7 +137,8 @@
 
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
@@ -142,7 +148,8 @@
 
             if (!string.IsNullOrWhiteSpace(farTenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farTenor);
+                FxTenor fxTenor = FxTenor.GetTenor(farTenor);
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, fxTenor != null ? fxTenor.GetBizString() : farTenor);
             }
 
             if (!string.IsNullOrWhiteSpace(farSettlementDate))
@@ -189,7 +196,8 @@
                 .SetComponent(SubjectComponentName.FarQuantity, farQuantity);
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
@@ -199,7 +207,8 @@
 
             if (!string.IsNullOrWhiteSpace(farTenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, farTenor);
+                FxTenor fxTenor = FxTenor.GetTenor(farTenor);
+                subjectBuilder.SetComponent(SubjectComponentName.FarTenor, fxTenor != null ? fxTenor.GetBizString() : farTenor);
             }
 
             if (!string.IsNullOrWhiteSpace(farSettlementDate))
@@ -254,7 +263,8 @@
                 currency, quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
@@ -276,7 +286,8 @@
                 quantity, CommonComponents.Fx, "2", CommonComponents.Stream);
             if (!string.IsNullOrWhiteSpace(tenor))
             {
-                subjectBuilder.SetComponent(SubjectComponentName.Tenor, tenor);
+                FxTenor fxTenor = FxTenor.GetTenor(tenor);
+                subjectBuilder.SetComponent(SubjectComponentName.Tenor, fxTenor != null ? fxTenor.GetBizString() : tenor);
             }
 
             if (!string.IsNullOrWhiteSpace(settlementDate))
