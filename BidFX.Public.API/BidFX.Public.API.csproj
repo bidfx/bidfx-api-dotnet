@@ -200,8 +200,8 @@
     <Compile Include="src\Trade\Order\OrderBuilder.cs" />
     <Compile Include="src\Trade\Rest\IRESTCallback.cs" />
     <Compile Include="src\Trade\Rest\Json\JsonException.cs" />
-    <Compile Include="src\Trade\Rest\Json\IJsonMarshallable.cs" />
     <Compile Include="src\Trade\Rest\Json\JsonMarshaller.cs" />
+    <Compile Include="src\Trade\Rest\Json\IJsonMarshallable.cs" />
     <Compile Include="src\Trade\Rest\RESTClient.cs" />
     <Compile Include="src\Trade\TradeSession.cs" />
     <Compile Include="test\ClientTest.cs" />
