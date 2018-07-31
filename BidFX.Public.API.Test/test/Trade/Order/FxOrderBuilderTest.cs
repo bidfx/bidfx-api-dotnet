@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -30,10 +31,11 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "CurrencyPair must be in format 'XXXYYY': GBPUSD2")]
-        public void TestCurrencyPairsWithInvalidLengthThrowsException()
+                public void TestCurrencyPairsWithInvalidLengthThrowsException()
         {
-            _orderBuilder.SetCurrencyPair("GBPUSD2");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetCurrencyPair("GBPUSD2"));
+            Assert.AreEqual("CurrencyPair must be in format 'XXXYYY': GBPUSD2", exception.Message);
+
         }
 
         [Test]
@@ -116,11 +118,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Unsupported DealType: Invalid")]
         public void TestInvalidDealTypeThrowsException()
         {
-            FxOrder fxOrder = _orderBuilder.SetDealType("Invalid").Build();
-            Assert.Null(fxOrder.GetDealType());
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetDealType("Invalid").Build());
+            Assert.AreEqual("Unsupported DealType: Invalid", exception.Message);
         }
 
         [Test]
@@ -164,10 +165,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage= "Currency must be in format 'XXX': GBPD" )]
         public void TestNonThreeLetterCurrencyThrowsException()
         {
-            _orderBuilder.SetCurrency("GBPD");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetCurrency("GBPD"));
+            Assert.AreEqual("Currency must be in format 'XXX': GBPD", exception.Message);
         }
 
         [Test]
@@ -218,10 +219,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "Method parameter may not be null")]
         public void TestSettingNullStrategyParameterNameThrowsException()
         {
-            _orderBuilder.SetStrategyParameter(null, "not_null");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetStrategyParameter(null, "not_null"));
+            Assert.AreEqual("Method parameter may not be null", exception.Message);
         }
 
         [Test]
@@ -243,17 +244,19 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Method parameter may not be blank")]
-        public void TestSettingEmptyParameterNameThrowsException()
+                public void TestSettingEmptyParameterNameThrowsException()
         {
-            _orderBuilder.SetStrategyParameter("", "value_one");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetStrategyParameter("", "value_one"));
+            Assert.AreEqual("Method parameter may not be blank", exception.Message);
+
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Method parameter may not be blank")]
-        public void TestSettingBlankParameterNameThrowsException()
+                public void TestSettingBlankParameterNameThrowsException()
         {
-            _orderBuilder.SetStrategyParameter("   ", "value_two");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetStrategyParameter("   ", "value_two"));
+            Assert.AreEqual("Method parameter may not be blank", exception.Message);
+
         }
 
         [Test]
@@ -321,17 +324,19 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "SettlementDate was not in valid format (YYYY-MM-DD): 291")]
-        public void TestSettingInvalidSettlementDateThrowsException()
+                public void TestSettingInvalidSettlementDateThrowsException()
         {
-            _orderBuilder.SetSettlementDate("291");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetSettlementDate("291"));
+            Assert.AreEqual("SettlementDate was not in valid format (YYYY-MM-DD): 291", exception.Message);
+
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "SettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
-        public void TestSettingSettlementDateWithBadCharactersThrowsException()
+                public void TestSettingSettlementDateWithBadCharactersThrowsException()
         {
-            _orderBuilder.SetSettlementDate("yyyy-mm-dd");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetSettlementDate("yyyy-mm-dd"));
+            Assert.AreEqual("SettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd", exception.Message);
+
         }
 
         [Test]
@@ -381,17 +386,18 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FixingDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFixingDateThrowsException()
         {
-            _orderBuilder.SetFixingDate("291");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFixingDate("291"));
+            Assert.AreEqual("FixingDate was not in valid format (YYYY-MM-DD): 291", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "FixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
-        public void TestSettingFixingDateWithBadCharactersThrowsException()
+                public void TestSettingFixingDateWithBadCharactersThrowsException()
         {
-            _orderBuilder.SetFixingDate("yyyy-mm-dd");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFixingDate("yyyy-mm-dd"));
+            Assert.AreEqual("FixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd", exception.Message);
+
         }
 
         [Test]
@@ -441,17 +447,17 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarSettlementDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFarSettlementDateThrowsException()
         {
-            _orderBuilder.SetFarSettlementDate("291");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarSettlementDate("291"));
+            Assert.AreEqual("FarSettlementDate was not in valid format (YYYY-MM-DD): 291", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarSettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
         public void TestSettingFarSettlementDateWithBadCharactersThrowsException()
         {
-            _orderBuilder.SetFarSettlementDate("yyyy-mm-dd");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarSettlementDate("yyyy-mm-dd"));
+            Assert.AreEqual("FarSettlementDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd", exception.Message);
         }
 
         [Test]
@@ -501,17 +507,18 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException" , ExpectedMessage = "FarFixingDate was not in valid format (YYYY-MM-DD): 291")]
         public void TestSettingInvalidFarFixingDateThrowsException()
         {
-            _orderBuilder.SetFarFixingDate("291");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarFixingDate("291"));
+            Assert.AreEqual("FarFixingDate was not in valid format (YYYY-MM-DD): 291", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarFixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd")]
-        public void TestSettingFarFixingDateWithBadCharactersThrowsException()
+                public void TestSettingFarFixingDateWithBadCharactersThrowsException()
         {
-            _orderBuilder.SetFarFixingDate("yyyy-mm-dd");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarFixingDate("yyyy-mm-dd"));
+            Assert.AreEqual("FarFixingDate was not in valid format (YYYY-MM-DD): yyyy-mm-dd", exception.Message);
+
         }
 
         [Test]
@@ -589,10 +596,11 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarCurrency must be in format 'AAA': GBPD")]
-        public void TestNonThreeLetterFarCurrencyThrowsException()
+                public void TestNonThreeLetterFarCurrencyThrowsException()
         {
-            _orderBuilder.SetFarCurrency("GBPD");
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarCurrency("GBPD"));
+            Assert.AreEqual("FarCurrency must be in format 'AAA': GBPD", exception.Message);
+
         }
 
         [Test]
@@ -606,10 +614,11 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "FarQuantity can not be negative: -2700")]
-        public void TestNonNumericOrPeridFarQuantityThrowsException()
+                public void TestNonNumericOrPeridFarQuantityThrowsException()
         {
-            _orderBuilder.SetFarQuantity(-2700).Build();
+ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarQuantity(-2700).Build());
+            Assert.AreEqual("FarQuantity can not be negative: -2700", exception.Message);
+
         }
 
         [Test]
@@ -675,11 +684,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage =
-            "Side must be either 'BUY' or 'SELL': Invalid")]
         public void TestSettingInvalidFarSideThrowsException()
         {
-            _orderBuilder.SetFarSide("Invalid");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetFarSide("Invalid"));
+            Assert.AreEqual("Side must be either 'BUY' or 'SELL': Invalid", exception.Message);
         }
 
         [Test]

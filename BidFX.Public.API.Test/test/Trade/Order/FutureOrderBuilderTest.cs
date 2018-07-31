@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -87,17 +88,17 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "ContractDate was not in valid format (YYYY-MM): 284")]
         public void TestSettingInvalidContractDateThrowsException()
         {
-            _orderBuilder.SetContractDate("284");
+            ArgumentException exception = Assert.Throws<ArgumentException> (() => _orderBuilder.SetContractDate("284"));
+            Assert.AreEqual("ContractDate was not in valid format (YYYY-MM): 284", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "ContractDate was not in valid format (YYYY-MM): yyyy-mm")]
         public void TestSettingContractDateWithBadCharactersThrowsException()
         {
-            _orderBuilder.SetContractDate("yyyy-mm");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetContractDate("yyyy-mm"));
+            Assert.AreEqual("ContractDate was not in valid format (YYYY-MM): yyyy-mm", exception.Message);
         }
 
         /**

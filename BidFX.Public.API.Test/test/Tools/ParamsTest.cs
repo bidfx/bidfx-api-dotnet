@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Server;
+﻿using System;
+using Microsoft.SqlServer.Server;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Price.Tools
@@ -7,58 +8,59 @@ namespace BidFX.Public.API.Price.Tools
     public class ExactLengthTest
     {
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestEmptyStringIsLengthZero()
         {
             Assert.AreEqual("", Params.ExactLength("", 0, "Empty String 0 Threw Exception"));
-            Params.ExactLength("", 2, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength("", 2, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestBlankStringIsLengthZero()
         {
             Assert.AreEqual("", Params.ExactLength("   ", 0, "Blank String 0 Threw Exception"));
-            Params.ExactLength("   ", 2, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength("   ", 2, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestStringLengthSix()
         {
             Assert.AreEqual("STRING", Params.ExactLength("STRING", 6, "\"STRING\" 6 Threw Exception"));
-            Params.ExactLength("STRING", 4, "Expected Exception.");
+            ArgumentException exception =
+                Assert.Throws<ArgumentException>(() => Params.ExactLength("STRING", 4, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestStringLengthTrailingWhitespaceLengthSize()
         {
             Assert.AreEqual("STRING", Params.ExactLength("STRING     ", 6, "\"STRING     \" 6 Threw Exception"));
-            Params.ExactLength("STRING     ", 8, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength("STRING     ", 8, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestStringLengthPrecedingWhitespaceLengthSize()
         {
             Assert.AreEqual("STRING", Params.ExactLength("     STRING", 6, "\"     STRING\" 6 Threw Exception"));
-            Params.ExactLength("     STRING", 3, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength("     STRING", 3, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestStringLengthBothEndsWhitespaceLengthSize()
         {
             Assert.AreEqual("STRING", Params.ExactLength("     STRING   ", 6, "\"     STRING   \" 6 Threw Exception"));
-            Params.ExactLength("     STRING   ", 2, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength("     STRING   ", 2, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Expected Exception.")]
         public void TestNullThrowsException()
         {
-            Params.ExactLength(null, 3, "Expected Exception.");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => Params.ExactLength(null, 3, "Expected Exception."));
+            Assert.AreEqual("Expected Exception.", exception.Message);
         }
     }
 
