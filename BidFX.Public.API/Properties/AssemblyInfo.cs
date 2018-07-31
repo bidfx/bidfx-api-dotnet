@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 
 // Allow internals visibile to tests
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleTo("BidFX.Public.API.Test")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components. If you need to access a type in this assembly from 

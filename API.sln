@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BidFX.Public.API", "BidFX.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BidFX.Public.API.Example", "BidFX.Public.API.Example\BidFX.Public.API.Example.csproj", "{5C8CA288-1771-4ED0-A3AB-8A234523379F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BidFX.Public.API.Test", "BidFX.Public.API.Test\BidFX.Public.API.Test.csproj", "{01867AA2-4169-4A0F-9246-37CBB5301DC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5C8CA288-1771-4ED0-A3AB-8A234523379F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C8CA288-1771-4ED0-A3AB-8A234523379F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C8CA288-1771-4ED0-A3AB-8A234523379F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01867AA2-4169-4A0F-9246-37CBB5301DC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01867AA2-4169-4A0F-9246-37CBB5301DC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01867AA2-4169-4A0F-9246-37CBB5301DC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01867AA2-4169-4A0F-9246-37CBB5301DC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

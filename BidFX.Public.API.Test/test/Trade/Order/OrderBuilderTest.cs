@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -75,11 +76,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage =
-            "Side must be either 'BUY' or 'SELL': Invalid")]
         public void TestSettingInvalidSideThrowsException()
         {
-            _orderBuilder.SetSide("Invalid");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetSide("Invalid"));
+            Assert.AreEqual("Side must be either 'BUY' or 'SELL': Invalid", exception.Message);
         }
 
         [Test]
@@ -129,11 +129,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage =
-            "Quantity can not be negative: -5")]
         public void TestNegativeQuantityThrowsException()
         {
-            _orderBuilder.SetQuantity(-5);
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetQuantity(-5));
+            Assert.AreEqual("Quantity can not be negative: -5", exception.Message);
         }
 
         [Test]
@@ -220,10 +219,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException")]
         public void TestSettingReferenceOneWithPipe()
         {
-            _orderBuilder.SetReferenceOne("PartA|PartB");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetReferenceOne("PartA|PartB"));
+            Assert.AreEqual("References can not contain pipes (|)", exception.Message);
         }
 
         [Test]
@@ -264,10 +263,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "References can not contain pipes (|)")]
         public void TestSettingReferenceTwoWithPipe()
         {
-            _orderBuilder.SetReferenceTwo("PartA|PartB");
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetReferenceTwo("PartA|PartB"));
+            Assert.AreEqual("References can not contain pipes (|)", exception.Message);
         }
 
         [Test]
@@ -281,10 +280,10 @@ namespace BidFX.Public.API.Trade.Order
         }
 
         [Test]
-        [ExpectedException("System.ArgumentException", ExpectedMessage = "Price can not be negative: -2")]
         public void TestNegativePriceThrowsException()
         {
-            _orderBuilder.SetPrice(-2).Build();
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _orderBuilder.SetPrice(-2).Build());
+            Assert.AreEqual("Price can not be negative: -2", exception.Message);
         }
 
         [Test]
