@@ -13,11 +13,6 @@ namespace BidFX.Public.API.Trade.Instruction
 
         public OrderAmend(Dictionary<string, object> components) : base(components)
         {}
-        
-        public string GetOrderTsId()
-        {
-            return GetComponent<string>(OrderTsId);
-        }
 
         public string GetOwner()
         {

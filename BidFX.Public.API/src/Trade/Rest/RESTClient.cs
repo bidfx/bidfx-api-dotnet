@@ -11,7 +11,7 @@ namespace BidFX.Public.API.Trade.REST
 {
     internal class RESTClient
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger("RESTClient");
         private const string ApiPath = "/api/om/v2/order";
         private readonly string _authHeader;
         private readonly string _baseAddress;

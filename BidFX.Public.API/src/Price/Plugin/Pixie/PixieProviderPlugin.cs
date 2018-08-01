@@ -17,7 +17,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     internal class PixieProviderPlugin : IProviderPlugin
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("PixieProviderPlugin");
 
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);

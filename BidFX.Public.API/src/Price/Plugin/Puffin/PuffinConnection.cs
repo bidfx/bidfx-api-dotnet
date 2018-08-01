@@ -15,13 +15,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     internal class PuffinConnection : ISubscriber
     {
         private const string Subject = "Subject";
-
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("PuffinConnection");
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Thread _publisherThread;

@@ -16,7 +16,7 @@ namespace BidFX.Public.API.Trade
     public class TradeSession
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("TradeSession");
 
         public event EventHandler<Order.Order> OrderSubmitEventHandler;
         public event EventHandler<Order.Order> OrderQueryEventHandler;

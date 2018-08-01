@@ -15,12 +15,8 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("SubjectBuilder");
 
         private string[] _components;
         private int _size;
@@ -77,7 +73,7 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
                 Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
                 return this;
             }
-            SubjectComponent(key, value);
+            ((IComponentHandler) this).SubjectComponent(key, value);
             return this;
         }
 
@@ -92,7 +88,7 @@ private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMet
             return !string.IsNullOrEmpty(value) ? SetComponent(key, value) : this;
         }
 
-        public void SubjectComponent(string key, string value)
+        void IComponentHandler.SubjectComponent(string key, string value)
         {
             AddComponent(InternaliseKey(key), InternaliseValue(value));
         }

@@ -12,12 +12,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     internal class PriceUpdateDecoder
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("PriceUpdateDecoder");
 
         public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
