@@ -6,12 +6,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class FieldExtractor
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("FieldExtractor");
 
 
         public static string Extract(string message, string fieldName)

@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Example
     public class BestOfBookStressTest
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("BestOfBookStressTest");
 
         private const string Username = "";
         private const string Password = "";

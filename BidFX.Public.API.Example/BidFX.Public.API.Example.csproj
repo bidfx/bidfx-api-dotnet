@@ -52,13 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BidFX.Public.API\BidFX.Public.API.csproj">
       <Project>{096edeb7-9912-45bc-9c51-a7e871e58c4e}</Project>
       <Name>BidFX.Public.API</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

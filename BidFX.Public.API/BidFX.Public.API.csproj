@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Obfuscar.2.2.12\build\obfuscar.props" Condition="Exists('..\packages\Obfuscar.2.2.12\build\obfuscar.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -28,7 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\Pre-Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -201,15 +202,41 @@
     <Compile Include="src\Trade\TradeSession.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\scripts\release.sh" />
-    <Content Include="packages.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\scripts\release.sh">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Include="obfuscar.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Obfuscar">
+      <Version>2.2.12</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+      "$(Obfuscar)" obfuscar.xml
+      mkdir "..\Release"
+      copy "..\Obfuscator_Output\BidFX.Public.API.dll" "..\Release\BidFX.Public.API.dll" /Y
+      copy "DotNetZip.dll" "..\Release\DotNetZip.dll" /Y
+      copy "log4net.dll" "..\Release\log4net.dll" /Y
+      copy "System.IO.dll" "..\Release\System.IO.dll" /Y
+      copy "System.Net.Http.dll" "..\Release\System.Net.Http.dll" /Y
+      copy "System.Net.Http.Primitives.dll" "..\Release\System.Net.Http.Primitives.dll" /Y
+      copy "System.Net.Http.WebRequest.dll" "..\Release\System.Net.Http.WebRequest.dll" /Y
+      copy "System.Runtime.dll" "..\Release\System.Runtime.dll" /Y
+      copy "System.Threading.Tasks.dll" "..\Release\System.Threading.Tasks.dll" /Y
+      )</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

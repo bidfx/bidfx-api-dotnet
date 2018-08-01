@@ -9,12 +9,8 @@ namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("ValueParser");
 
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;

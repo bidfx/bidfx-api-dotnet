@@ -13,7 +13,7 @@ namespace BidFX.Public.API
     public class Client
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("Client");
 
         private static readonly BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
 

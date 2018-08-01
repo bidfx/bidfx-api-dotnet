@@ -17,12 +17,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieConnection : ISubscriber
     {
-#if DEBUG
-private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#else
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-#endif
+            LogManager.GetLogger("PixieConnection");
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;
