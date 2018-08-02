@@ -43,7 +43,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public PixieProviderPlugin()
         {
             string name =
-                NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
+                NameCache.Default().CreateUniqueName("PixieProviderPlugin");
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";

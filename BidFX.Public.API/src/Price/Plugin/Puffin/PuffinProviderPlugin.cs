@@ -52,7 +52,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public PuffinProviderPlugin()
         {
             string name =
-                NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
+                NameCache.Default().CreateUniqueName("PuffinProviderPlugin");
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";
