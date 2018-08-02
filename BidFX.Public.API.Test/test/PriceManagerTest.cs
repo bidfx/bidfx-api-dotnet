@@ -2,6 +2,7 @@
 
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
+using BidFX.Public.API.Price.Tools;
 using NUnit.Framework;
 
 namespace BidFX.Public.API
@@ -11,7 +12,11 @@ namespace BidFX.Public.API
         [Test]
         public void TestCantOverSubscribeOnDepth()
         {
-            PriceManager priceManager = new PriceManager {LevelTwoSubscriptionLimit = 1};
+            PriceManager priceManager = new PriceManager
+            {
+                LoginService = TestUtils.GetMockLoginService(),
+                LevelTwoSubscriptionLimit = 1
+            };
 
             priceManager.Start();
 
@@ -36,7 +41,12 @@ namespace BidFX.Public.API
         [Test]
         public void TestCanSubscribeLevelOneWhenFullySubscribedLevelTwo()
         {
-            PriceManager priceManager = new PriceManager{LevelTwoSubscriptionLimit = 0};priceManager.LevelOneSubscriptionLimit = 1;
+            PriceManager priceManager = new PriceManager
+            {
+                LoginService = TestUtils.GetMockLoginService(),
+                LevelTwoSubscriptionLimit = 0,
+                LevelOneSubscriptionLimit = 1
+            };
             priceManager.Start();
 
             int receivedRejections = 0;
@@ -67,7 +77,10 @@ namespace BidFX.Public.API
         [Test]
         public void TestCantOverSubscribeOnLevelOne()
         {
-            PriceManager priceManager = new PriceManager();
+            PriceManager priceManager = new PriceManager
+            {
+                LoginService = TestUtils.GetMockLoginService(),
+            };
             
             priceManager.LevelOneSubscriptionLimit = 1;
             priceManager.Start();
@@ -93,7 +106,10 @@ namespace BidFX.Public.API
         [Test]
         public void TestCanSubscribeLevelTwoWhenFullySubscribedLevelOne()
         {
-            PriceManager priceManager = new PriceManager();
+            PriceManager priceManager = new PriceManager
+            {
+                LoginService = TestUtils.GetMockLoginService(),
+            };
             
             priceManager.LevelOneSubscriptionLimit = 0;
             priceManager.LevelTwoSubscriptionLimit = 1;

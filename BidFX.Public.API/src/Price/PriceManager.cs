@@ -31,10 +31,6 @@ namespace BidFX.Public.API.Price
 
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public int LevelTwoSubscriptionLimit { get; internal set; }
@@ -46,6 +42,7 @@ namespace BidFX.Public.API.Price
 
         public PriceManager()
         {
+            // TODO - stop when login service disconnects
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new ApiEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
@@ -57,6 +54,10 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("Not logged in.");
+            }
             AddPublicPuffinProvider();
             AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
@@ -75,10 +76,7 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PuffinProviderPlugin
             {
-                Host = Host,
-                Password = Password,
-                Username = Username,
-                Port = Port,
+                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://puffin",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -90,10 +88,7 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PixieProviderPlugin
             {
-                Host = Host,
-                Password = Password,
-                Username = Username,
-                Port = Port,
+                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://highway",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -145,6 +140,8 @@ namespace BidFX.Public.API.Price
                     ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.Unauthorized == pp.ProviderStatus);
             }
         }
+
+        public LoginService LoginService { get; set; }
 
         public bool WaitUntilReady(TimeSpan timeout)
         {

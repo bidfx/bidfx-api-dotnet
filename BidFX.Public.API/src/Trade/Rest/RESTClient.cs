@@ -14,22 +14,19 @@ namespace BidFX.Public.API.Trade.REST
         private static readonly ILog Log = LogManager.GetLogger("RESTClient");
         private const string ApiPath = "/api/om/v2/order";
         private readonly string _authHeader;
-        private readonly string _baseAddress;
+        private readonly Uri _address;
 
-        public RESTClient(string baseAddress, string username, string password)
+        public RESTClient(Uri baseAddress, string username, string password)
         {
-            baseAddress = baseAddress.ToLower();
-            if (!(baseAddress.StartsWith("http://") || baseAddress.StartsWith("https://")))
+            if (!("https".Equals(baseAddress.Scheme) || "http".Equals(baseAddress.Scheme)))
             {
-                throw new ArgumentException("baseAddress must start with http:// or https://");
+                throw new ArgumentException("Scheme must be http or https");
             }
 
-            if (baseAddress.EndsWith("/"))
+            _address = new UriBuilder(baseAddress)
             {
-                baseAddress = baseAddress.Substring(0, baseAddress.Length - 1);
-            }
-
-            _baseAddress = baseAddress + ApiPath;
+                Path = ApiPath
+            }.Uri;
             _authHeader = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(username + ":" + password));
         }
 
@@ -46,8 +43,8 @@ namespace BidFX.Public.API.Trade.REST
                 path = "/" + path;
             }
 
-            Log.InfoFormat("Sending REST message to {0}{1}", _baseAddress, path);
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
+            Log.InfoFormat("Sending REST message to {0}{1}", _address, path);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_address + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
 
@@ -82,8 +79,8 @@ namespace BidFX.Public.API.Trade.REST
                 path = "/" + path;
             }
 
-            Log.InfoFormat("Sending REST message with JSON to {0}{1}", _baseAddress, path);
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_baseAddress + path);
+            Log.InfoFormat("Sending REST message with JSON to {0}{1}", _address, path);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_address + path);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
 

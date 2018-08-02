@@ -23,21 +23,40 @@ namespace BidFX.Public.API.Trade
         public event EventHandler<Order.Order> OrderInstructionEventHandler;
         private RESTClient _restClient;
         private static long _nextMessageId;
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public bool Running { get; private set; }
+        internal LoginService LoginService { private get; set; }
 
         public void Start()
         {
-            string address = "https://" + Host + ":" + Port;
-            _restClient = new RESTClient(address, Username, Password);
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("Not logged in.");
+            }
+            Uri uri = new UriBuilder
+            {
+                Scheme = LoginService.Https ? "https" : "http",
+                Host = LoginService.Host,
+                Port = LoginService.Port
+            }.Uri;
+            _restClient = new RESTClient(uri, LoginService.Username, LoginService.Password);
             InitialiseNextMessageId();
-            Log.InfoFormat("TradeSession connecting to {0}", address);
+            Log.InfoFormat("TradeSession connecting to {0}", uri);
+            LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
+            Running = true;
+        }
+        
+        public void Stop()
+        {
+            Running = false;
+            LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
         }
 
         public long SubmitOrder(Order.Order order)
         {
+            if (!Running)
+            {
+                throw new IllegalStateException("TradeSession is not running");
+            }
             long messageId = GetNextMessageId();
             string json = JsonMarshaller.ToJson(order, messageId);
             ThreadPool.QueueUserWorkItem(
@@ -48,6 +67,10 @@ namespace BidFX.Public.API.Trade
 
         public long SubmitQuery(string orderId)
         {
+            if (!Running)
+            {
+                throw new IllegalStateException("TradeSession is not running");
+            }
             long messageId = GetNextMessageId();
             ThreadPool.QueueUserWorkItem(
                 delegate { SendQueryViaREST(messageId, orderId); }
@@ -57,6 +80,10 @@ namespace BidFX.Public.API.Trade
 
         public long SubmitOrderInstruction(OrderInstruction instruction)
         {
+            if (!Running)
+            {
+                throw new IllegalStateException("TradeSession is not running");
+            }
             long messageId = GetNextMessageId();
             string json = JsonMarshaller.ToJson(instruction, messageId);
             if (instruction is OrderAmend)
@@ -87,6 +114,11 @@ namespace BidFX.Public.API.Trade
 
         private void SendOrderViaREST(long messageId, string json)
         {
+            if (!Running)
+            {
+                throw new IllegalStateException("TradeSession is not running");
+            }
+            
             if (Log.IsDebugEnabled)
             {
                 Log.DebugFormat("Submitting order, messageId: {0}, json: {1}", messageId, json);
@@ -235,6 +267,11 @@ namespace BidFX.Public.API.Trade
             StreamReader streamReader = new StreamReader(responseStream);
             return streamReader.ReadToEnd();
         }
-        
+
+        private void OnForcedDisconnect(object sender, LoginService.DisconnectEventArgs e)
+        {
+            Running = false;
+            LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+        }
     }
 }

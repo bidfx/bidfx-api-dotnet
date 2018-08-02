@@ -1,9 +1,7 @@
 /// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
 
 using System;
-using System.IO;
 using System.Numerics;
-using System.Reflection;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Trade;
 using log4net;
@@ -15,20 +13,23 @@ namespace BidFX.Public.API
         private static readonly ILog Log =
             LogManager.GetLogger("Client");
 
+
         private static readonly BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
 
         private int _levelOneSubscriptionLimit = 500;
         private int _levelTwoSubscriptionLimit = 20;
+
+        internal LoginService LoginService { get; set; }
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
         public string Username
         {
-            get { return _username; }
+            get { return LoginService.Username; }
             set
             {
-                _username = value;
+                LoginService.Username = value;
                 _levelOneSubscriptionLimit = 500;
                 _levelTwoSubscriptionLimit = 20;
                 if (_priceManager != null)
@@ -42,18 +43,30 @@ namespace BidFX.Public.API
         /// <summary>
         /// The password associated for the given username.
         /// </summary>
-        public string Password { get; set; }
+        public string Password
+        {
+            get { return LoginService.Password; }
+            set { LoginService.Password = value;  }
+        }
 
         /// <summary>
         /// The host name of the BidFX point of presence you wish to connect to.
         /// </summary>
-        public string Host { get; set; }
+        public string Host
+        {
+            get { return LoginService.Host; }
+            set { LoginService.Host = value; }
+        }
 
         /// <summary>
         /// The port number on which to connect.
         /// The default is set to 443, which is used when tunneling to BidFX.
         /// </summary>
-        public int Port { get; set; }
+        public int Port
+        {
+            get { return LoginService.Port; }
+            set { LoginService.Port = value; }
+        }
 
         /// <summary>
         /// A flag indicating wether the hostname should be checked on the SSL certificates.
@@ -74,14 +87,14 @@ namespace BidFX.Public.API
 
         private PriceManager _priceManager;
         private TradeSession _tradeSession;
-        private string _username;
+
 
         /// <summary>
         /// Creates a new Client that has yet to be configured.
         /// </summary>
         public Client()
         {
-            LoadExternalAssembly("Newtonsoft.Json");
+            LoginService = new LoginService();
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
@@ -122,6 +135,30 @@ namespace BidFX.Public.API
                 CreateTradeManager();
                 return _tradeSession;
             }
+        }
+
+        public bool LoggedIn
+        {
+            get { return LoginService.LoggedIn; }
+        }
+
+        public void Stop()
+        {
+            LoginService.Stop();
+            if (_priceManager != null)
+            {
+                _priceManager.Stop();
+            }
+
+            if (_tradeSession != null)
+            {
+                TradeSession.Stop();
+            }
+        }
+
+        public void Start()
+        {
+            LoginService.Start();
         }
 
         public void SetLevelTwoSubscriptionLimit(string subscriptionLimitString)
@@ -220,15 +257,12 @@ namespace BidFX.Public.API
                 return;
             }
 
-            _priceManager = new PriceManager()
+            _priceManager = new PriceManager
             {
-                Host = Host,
-                Port = Port == 0 ? 443 : Port,
-                Password = Password,
+                LoginService = LoginService,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
-                Username = Username,
                 LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit,
                 LevelOneSubscriptionLimit = _levelOneSubscriptionLimit
               
@@ -245,29 +279,9 @@ namespace BidFX.Public.API
 
             _tradeSession = new TradeSession
             {
-                Host = Host,
-                Port = Port == 0 ? 443 : Port,
-                Username = Username,
-                Password = Password
+                LoginService = LoginService
             };
             _tradeSession.Start();
-        }
-
-        private void LoadExternalAssembly(string assemblyName)
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-            {
-                string resourceName = new AssemblyName(assemblyName).Name + ".dll";
-                string resource = Array.Find(GetType().Assembly.GetManifestResourceNames(),
-                    element => element.EndsWith(resourceName));
-
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
-                {
-                    byte[] assemblyData = new byte[stream.Length];
-                    stream.Read(assemblyData, 0, assemblyData.Length);
-                    return Assembly.Load(assemblyData);
-                }
-            };
         }
     }
 }

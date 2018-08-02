@@ -73,6 +73,7 @@
     <Compile Include="src\Client.cs" />
     <Compile Include="src\DefaultClient.cs" />
     <Compile Include="src\IllegalStateException.cs" />
+    <Compile Include="src\LoginService.cs" />
     <Compile Include="src\Price\Enums\FxTenor.cs" />
     <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />

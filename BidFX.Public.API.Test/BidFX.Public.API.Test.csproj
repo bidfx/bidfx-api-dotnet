@@ -93,11 +93,14 @@
     <Compile Include="test\Price\Subject\SubjectTest.cs" />
     <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
     <Compile Include="test\Price\Subject\SubscriptionSetTest.cs" />
+    <Compile Include="test\LoginServiceTest.cs" />
     <Compile Include="test\Tools\BitSetterTest.cs" />
     <Compile Include="test\Tools\NameCacheTest.cs" />
     <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
     <Compile Include="test\Tools\ParamsTest.cs" />
+    <Compile Include="test\Tools\TestUtils.cs" />
     <Compile Include="test\Tools\VarintTest.cs" />
+    <Compile Include="test\Tools\WebServer.cs" />
     <Compile Include="test\Trade\Instruction\OrderAmendBuilderTest.cs" />
     <Compile Include="test\Trade\Instruction\OrderCancelBuilderTest.cs" />
     <Compile Include="test\Trade\Instruction\OrderSubmitBuilderTest.cs" />

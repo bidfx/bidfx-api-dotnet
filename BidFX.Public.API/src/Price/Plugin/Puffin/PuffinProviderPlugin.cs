@@ -32,11 +32,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         public string StatusReason { get; private set; }
         public IApiEventHandler InapiEventHandler { get; set; }
 
-        public string Host { get; set; }
-        public int Port { get; set; }
+        public LoginService LoginService { get; set; }
         public string Service { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
         public bool Tunnel { get; set; }
         public bool DisableHostnameSslChecks { get; set; }
@@ -79,13 +76,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 Log.Debug("subscribing to " + subject);
             }
-
-            if (!IsPermissionGranted(subject)) //Restriction for AXA
-            {
-                InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.PROHIBITED,
-                    "permission denied for subject");
-            }
-            else if (_puffinConnection == null)
+            
+            if (_puffinConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
                     "Puffin price server connection is down");
@@ -94,12 +86,6 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 _puffinConnection.Subscribe(subject);
             }
-        }
-
-        private static bool IsPermissionGranted(Subject.Subject subject)
-        {
-            // TODO remove this one we have better server-side entitlement checks
-            return true;
         }
 
         public void Unsubscribe(Subject.Subject subject)
@@ -119,7 +105,6 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             // TODO use a subject filter to route between plugins
             return subject.GetComponent("Source") != null;
-            ;
         }
 
         public void Start()
@@ -129,8 +114,14 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 throw new IllegalStateException("set event handler before starting plugin");
             }
 
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("must be logged in before starting plugin");
+            }
+
             if (_running.CompareAndSet(false, true))
             {
+                LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
                 _startTime = JavaTime.CurrentTimeMillis();
                 _outputThread.Start();
             }
@@ -138,15 +129,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public void Stop()
         {
-            if (_running.CompareAndSet(true, false))
-            {
-                if (_puffinConnection != null)
-                {
-                    _puffinConnection.Close(Name + " stopped");
-                }
-
-                NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
-            }
+            ForcedDisconnect("client closed connection");
         }
 
         public bool Running
@@ -181,19 +164,24 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private bool IsConfigured()
         {
-            if (Host == null)
+            if (LoginService == null)
+            {
+                NotifyStatusChange(ProviderStatus.Invalid, "Login Provider has not been set");
+            }
+            
+            if (LoginService.Host == null)
             {
                 NotifyStatusChange(ProviderStatus.Invalid, "Host property has not been set");
                 return false;
             }
 
-            if (Username == null)
+            if (LoginService.Username == null)
             {
                 NotifyStatusChange(ProviderStatus.Invalid, "Username property has not been set");
                 return false;
             }
 
-            if (Password == null)
+            if (LoginService.Password == null)
             {
                 NotifyStatusChange(ProviderStatus.Invalid, "Password property has not been set");
                 return false;
@@ -225,13 +213,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             try
             {
-                Log.Info("opening socket to " + Host + ':' + Port);
-                TcpClient client = new TcpClient(Host, Port);
+                Log.Info("opening socket to " + LoginService.Host + ':' + LoginService.Port);
+                TcpClient client = new TcpClient(LoginService.Host, LoginService.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
-                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    ConnectionTools.UpgradeToSsl(ref _stream, LoginService.Host, DisableHostnameSslChecks);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(LoginService.Username, LoginService.Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     SendPuffinUrl();
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -243,10 +231,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
                 string welcome = ReadMessage();
                 string publicKey = FieldExtractor.Extract(welcome, "PublicKey");
-                string encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, Password);
+                string encryptedPassword = LoginEncryption.EncryptWithPublicKey(publicKey, LoginService.Password);
                 ConnectionTools.SendMessage(_stream, new PuffinElement(PuffinTagName.Login)
                     .AddAttribute("Alias", ServiceProperties.Username())
-                    .AddAttribute("Name", Username)
+                    .AddAttribute("Name", LoginService.Username)
                     .AddAttribute("Password", encryptedPassword)
                     .AddAttribute("Description", PublicApi.Name)
                     .AddAttribute("Version", ProtocolVersion)
@@ -264,13 +252,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     .AddAttribute("server", false)
                     .AddAttribute("discoverable", true)
                     .AddAttribute("startTime", _startTime)
-                    .AddAttribute("username", Username)
+                    .AddAttribute("username", LoginService.Username)
                     .AddAttribute("userAlias", ServiceProperties.Username())
                     .AddAttribute("name", PublicApi.Name)
                     .AddAttribute("package", PublicApi.Package)
                     .AddAttribute("version", PublicApi.Version)
                     .AddAttribute("protocolVersion", ProtocolVersion)
-                    .AddAttribute("environment", ServiceProperties.Environment(Host))
+                    .AddAttribute("environment", ServiceProperties.Environment(LoginService.Host))
                     .AddAttribute("city", ServiceProperties.City())
                     .AddAttribute("locale", ServiceProperties.Locale())
                     .AddAttribute("host", ServiceProperties.Host())
@@ -298,7 +286,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         private void SendPuffinUrl()
         {
             ConnectionTools.SendMessage(_stream,
-                "puffin://" + Username + "@puffin?encrypt=false&zipPrices=true&zipRequests=false\n");
+                "puffin://" + LoginService.Username + "@puffin?encrypt=false&zipPrices=true&zipRequests=false\n");
         }
 
         private string ReadMessage()
@@ -310,6 +298,25 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
 
             return message;
+        }
+
+        private void OnForcedDisconnect(object sender, LoginService.DisconnectEventArgs e)
+        {
+            ForcedDisconnect(e.Reason);
+        }
+        
+        private void ForcedDisconnect(string reason)
+        {
+            if (_running.CompareAndSet(true, false))
+            {
+                if (_puffinConnection != null)
+                {
+                    _puffinConnection.Close(Name + " stopped");
+                }
+
+                NotifyStatusChange(ProviderStatus.Closed, reason);
+                LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+            }
         }
     }
 }
