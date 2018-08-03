@@ -206,9 +206,7 @@
     <Content Include="..\scripts\release.sh">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="obfuscar.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="obfuscar.xml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -225,9 +223,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (
-      "$(Obfuscar)" obfuscar.xml
+      "$(Obfuscar)" "..\..\obfuscar.xml"
       mkdir "..\BidFX.Public.API"
-      copy "..\Obfuscator_Output\BidFX.Public.API.dll" "..BidFX.Public.API\BidFX.Public.API.dll" /Y
+      copy "..\Obfuscator_Output\BidFX.Public.API.dll" "..\BidFX.Public.API\BidFX.Public.API.dll" /Y
       copy "DotNetZip.dll" "..\BidFX.Public.API\DotNetZip.dll" /Y
       copy "log4net.dll" "..\BidFX.Public.API\log4net.dll" /Y
       copy "System.IO.dll" "..\BidFX.Public.API\System.IO.dll" /Y

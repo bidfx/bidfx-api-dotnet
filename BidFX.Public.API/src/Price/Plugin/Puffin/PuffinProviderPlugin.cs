@@ -300,7 +300,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             return message;
         }
 
-        private void OnForcedDisconnect(object sender, LoginService.DisconnectEventArgs e)
+        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
         {
             ForcedDisconnect(e.Reason);
         }

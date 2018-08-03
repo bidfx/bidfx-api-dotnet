@@ -15,11 +15,14 @@ namespace BidFX.Public.API
 
 
         private static readonly BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
-
         private int _levelOneSubscriptionLimit = 500;
         private int _levelTwoSubscriptionLimit = 20;
-
         internal LoginService LoginService { get; set; }
+
+        /// <summary>
+        /// Raised when the client has been forced to disconnect from the server.
+        /// </summary>
+        public event EventHandler<DisconnectEventArgs> OnForcedDisconnectEventHandler; 
 
         /// <summary>
         /// The username to authenticate with.
@@ -98,6 +101,7 @@ namespace BidFX.Public.API
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
+            LoginService.OnForcedDisconnectEventHandler += OnLoginServiceForcedDisconnect;
         }
 
         /// <summary>
@@ -108,6 +112,7 @@ namespace BidFX.Public.API
         {
             get
             {
+                LoginService.Start();
                 CreatePriceManager();
                 return _priceManager;
             }
@@ -120,6 +125,7 @@ namespace BidFX.Public.API
         {
             get
             {
+                LoginService.Start();
                 CreatePriceManager();
                 return _priceManager;
             }
@@ -132,6 +138,7 @@ namespace BidFX.Public.API
         {
             get
             {
+                LoginService.Start();
                 CreateTradeManager();
                 return _tradeSession;
             }
@@ -154,11 +161,6 @@ namespace BidFX.Public.API
             {
                 TradeSession.Stop();
             }
-        }
-
-        public void Start()
-        {
-            LoginService.Start();
         }
 
         public void SetLevelTwoSubscriptionLimit(string subscriptionLimitString)
@@ -282,6 +284,14 @@ namespace BidFX.Public.API
                 LoginService = LoginService
             };
             _tradeSession.Start();
+        }
+
+        private void OnLoginServiceForcedDisconnect(object sender, DisconnectEventArgs eventArgs)
+        {
+            if (OnForcedDisconnectEventHandler != null)
+            {
+                OnForcedDisconnectEventHandler.Invoke(this, eventArgs);
+            }
         }
     }
 }

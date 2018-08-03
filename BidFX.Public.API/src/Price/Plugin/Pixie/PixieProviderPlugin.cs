@@ -26,10 +26,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public string Name { get; private set; }
         public string Service { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
+        public LoginService LoginService { get; set; }
         public bool Tunnel { set; get; }
         public bool DisableHostnameSslChecks { get; set; }
         public ProviderStatus ProviderStatus { get; private set; }
@@ -94,8 +91,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 throw new IllegalStateException("set event handler before starting plugin");
             }
 
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("must be logged in before starting plugin");
+            }
+
             if (_running.CompareAndSet(false, true))
             {
+                LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
                 _outputThread.Start();
             }
         }
@@ -107,15 +110,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Stop()
         {
-            if (_running.CompareAndSet(true, false))
-            {
-                if (_pixieConnection != null)
-                {
-                    _pixieConnection.Close(Name + " stopped");
-                }
-
-                NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
-            }
+            ForcedDisconnect("client closed connection");
         }
 
         private void RunningLoop()
@@ -158,13 +153,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
-                Log.Info("opening socket to " + Host + ':' + Port);
-                TcpClient client = new TcpClient(Host, Port);
+                Log.Info("opening socket to " + LoginService.Host + ':' + LoginService.Port);
+                TcpClient client = new TcpClient(LoginService.Host, LoginService.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
-                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    ConnectionTools.UpgradeToSsl(ref _stream, LoginService.Host, DisableHostnameSslChecks);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(LoginService.Username, LoginService.Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -178,7 +173,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 WelcomeMessage welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = (int) welcome.Version;
-                LoginMessage login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
+                LoginMessage login = new LoginMessage(LoginService.Username, LoginService.Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version);
                 WriteFrame(login);
                 GrantMessage grantMessage = ReadGrantMessage();
@@ -288,6 +283,25 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public PixieProtocolOptions PixieProtocolOptions
         {
             get { return _protocolOptions; }
+        }
+
+        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
+        {
+            ForcedDisconnect(e.Reason);
+        }
+        
+        private void ForcedDisconnect(string reason)
+        {
+            if (_running.CompareAndSet(true, false))
+            {
+                if (_pixieConnection != null)
+                {
+                    _pixieConnection.Close(Name + " stopped");
+                }
+
+                NotifyStatusChange(ProviderStatus.Closed, reason);
+                LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+            }
         }
     }
 }

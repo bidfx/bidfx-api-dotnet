@@ -2,16 +2,19 @@
 
 using System;
 using System.Net;
+using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
+using log4net;
 
 
 namespace BidFX.Public.API
 {
     internal class LoginService
     {
-        private const string ProductLookupPath = "api/auth/v1/product";
+        private static readonly ILog Log = LogManager.GetLogger("LoginService"); 
+        private static readonly string ProductLookupPath = "api/auth/v1/product";
         
         public TimeSpan RecheckInterval { get; set; }
         public bool Https { get; set; }
@@ -28,8 +31,11 @@ namespace BidFX.Public.API
 
         public LoginService()
         {
+            Port = 443;
+            Host = "ny-tunnel.prod.tradingscreen.com";
             Https = true;
-            RecheckInterval = TimeSpan.FromMinutes(5);
+            RecheckInterval = TimeSpan.FromSeconds(5);
+//            RecheckInterval = TimeSpan.FromMinutes(5);
             Product = "BidFXDotnet";
         }
 
@@ -37,18 +43,21 @@ namespace BidFX.Public.API
         {
             if (LoggedIn)
             {
+                Log.Debug("Already logged in");
                 return;
             }
 
             HttpStatusCode statusCode;
             if (UserHasProduct(out statusCode))
             {
+                Log.Debug("Succesfully validated user permissions");
                 LoggedIn = true;
                 StartRecurringAuthorizationCheck();
             }
             else
             {
                 string failureReason = GetReasonForFailure(statusCode);
+                Log.ErrorFormat("Could not validate user: {0}", failureReason);
                 throw new AuthenticationException(failureReason);
             }
         }
@@ -110,13 +119,18 @@ namespace BidFX.Public.API
         {
             _authorizationChecker = new Timer(state =>
             {
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("Rechecking user permissions...");
+                }
                 HttpStatusCode statusCode;
                 if (!UserHasProduct(out statusCode))
                 {
+                    string failureReason = GetReasonForFailure(statusCode);
+                    Log.WarnFormat("Could not revalidate user permissions: {0}", failureReason);
                     Stop();
                     if (OnForcedDisconnectEventHandler != null)
                     {
-                        string failureReason = GetReasonForFailure(statusCode);
                         OnForcedDisconnectEventHandler(this, new DisconnectEventArgs(failureReason));
                     }
                 }
@@ -139,15 +153,15 @@ namespace BidFX.Public.API
                 return "could not authorize user";
             }
         }
+    }
 
-        public class DisconnectEventArgs : EventArgs
+    public class DisconnectEventArgs : EventArgs
+    {
+        public string Reason { get; private set; }
+
+        public DisconnectEventArgs(string reason)
         {
-            public string Reason { get; private set; }
-
-            public DisconnectEventArgs(string reason)
-            {
-                Reason = reason;
-            }
+            Reason = reason;
         }
     }
 }

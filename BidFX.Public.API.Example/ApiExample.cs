@@ -11,24 +11,31 @@ namespace BidFX.Public.API.Example
 {
     internal class ApiExample
     {
-        private const string Username = "";
-        private const string Password = "";
+        private const string Username = "lasman";
+        private const string Password = "HelloWorld123";
         
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void Main(string[] args)
         {
-            Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
-            new ApiExample().RunTest();
+            try
+            {
+                Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
+                new ApiExample().RunTest();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
+                Environment.Exit(1);
+            }
         }
 
         private ApiExample()
         {
-            DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
+            DefaultClient.Client.Host = "ny-tunnel.uatdev.tradingscreen.com";
             DefaultClient.Client.Username = Username;
             DefaultClient.Client.Password = Password;
-            
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;
@@ -221,6 +228,12 @@ namespace BidFX.Public.API.Example
         {
             Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}, FullOrder => {3}", order.GetMessageId(),
                 order.GetOrderTsId(), order.GetState(), order);
+        }
+
+        private static void OnDisconnect(object sender, DisconnectEventArgs eventArgs)
+        {
+            Log.InfoFormat("Forced to disconnect. Closing program. {0}", eventArgs.Reason);
+            Environment.Exit(1);
         }
     }
 }

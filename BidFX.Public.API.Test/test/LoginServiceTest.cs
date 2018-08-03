@@ -5,6 +5,7 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
+using BidFX.Public.API.Trade;
 using NUnit.Framework;
 
 namespace BidFX.Public.API.Test.test
@@ -47,8 +48,9 @@ namespace BidFX.Public.API.Test.test
         {
             _client.Username = "akearney";
             _client.Password = "";
+            TradeSession tradeSession;
             AuthenticationException exception = Assert.Throws<AuthenticationException>(() =>
-                _client.Start());
+                 tradeSession = _client.TradeSession);
             Assert.AreEqual("invalid credentials", exception.Message);
             Assert.IsFalse(_client.LoggedIn);
             Assert.Throws<IllegalStateException>(() => _client.PriceSession.ToString());
@@ -60,12 +62,11 @@ namespace BidFX.Public.API.Test.test
         {
             _client.Username = "dtang";
             _client.Password = "";
+            TradeSession tradeSession;
             AuthenticationException exception = Assert.Throws<AuthenticationException>(() =>
-                _client.Start());
+                tradeSession = _client.TradeSession);
             Assert.AreEqual("user dtang does not have product BidFXDotnet assigned. Please contact your account manager if you believe this is a mistake", exception.Message);
             Assert.IsFalse(_client.LoggedIn);
-            Assert.Throws<IllegalStateException>(() => _client.PriceSession.ToString());
-            Assert.Throws<IllegalStateException>(() => _client.TradeSession.ToString());
         }
 
         [Test]
@@ -73,9 +74,9 @@ namespace BidFX.Public.API.Test.test
         {
             _client.Username = "lasman";
             _client.Password = "";
-            _client.Start();
+            TradeSession tradeSession = _client.TradeSession;
             Assert.IsTrue(_client.LoggedIn);
-            Assert.IsTrue(_client.TradeSession.Running);
+            Assert.IsTrue(tradeSession.Running);
         }
 
         [Test]
@@ -84,13 +85,13 @@ namespace BidFX.Public.API.Test.test
             _client.Username = "lasman";
             _client.Password = "";
             _client.LoginService.RecheckInterval = TimeSpan.FromSeconds(2);
-            _client.Start();
+            TradeSession tradeSession = _client.TradeSession;
             Assert.IsTrue(_client.LoggedIn);
-            Assert.IsTrue(_client.TradeSession.Running);
+            Assert.IsTrue(tradeSession.Running);
             _endpoint.LoginProductAssignments["lasman"].Remove("BidFXDotnet");
             Thread.Sleep(TimeSpan.FromSeconds(4));
             Assert.IsFalse(_client.LoggedIn);
-            Assert.IsFalse(_client.TradeSession.Running);
+            Assert.IsFalse(tradeSession.Running);
         }
 
         [Test]
@@ -99,7 +100,6 @@ namespace BidFX.Public.API.Test.test
             _client.Username = "dtang";
             _client.Password = "";
             _client.LoginService.Product = "BidFXExcel";
-            _client.Start();
             Assert.IsTrue(_client.LoggedIn);
             Assert.IsTrue(_client.TradeSession.Running);
         }

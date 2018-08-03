@@ -268,7 +268,7 @@ namespace BidFX.Public.API.Trade
             return streamReader.ReadToEnd();
         }
 
-        private void OnForcedDisconnect(object sender, LoginService.DisconnectEventArgs e)
+        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
         {
             Running = false;
             LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
