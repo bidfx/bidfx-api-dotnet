@@ -11,8 +11,8 @@ namespace BidFX.Public.API.Example
 {
     internal class ApiExample
     {
-        private const string Username = "lasman";
-        private const string Password = "HelloWorld123";
+        private const string Username = "";
+        private const string Password = "";
         
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Example
 
         private ApiExample()
         {
-            DefaultClient.Client.Host = "ny-tunnel.uatdev.tradingscreen.com";
+            DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             DefaultClient.Client.Username = Username;
             DefaultClient.Client.Password = Password;
             var session = DefaultClient.Client.PriceSession;
@@ -59,25 +59,18 @@ namespace BidFX.Public.API.Example
             }
             else
             {
-                if (DefaultClient.Client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
-                {
-                    Log.Warn("Invalid Credentials");
-                }
-                else
-                {
-                    Log.Warn("timed out waiting on session to be ready");
-                }
+                Log.Warn("timed out waiting on session to be ready");
                 foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
                     Log.Info(providerProperties.ToString());
                 }
-                DefaultClient.Client.PriceSession.Stop();
+                DefaultClient.Client.Stop();
                 return;
             }
             
             //Send a trade
-//            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-//            SendSpotEURGBPTrade();
+            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
+            SendSpotEURGBPTrade();
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -207,20 +200,18 @@ namespace BidFX.Public.API.Example
                 .SetReferenceOne(".NET API Example")
                 .Build();
             FutureOrder futureOrder = new FutureOrderBuilder()
-                .SetExecutingBroker("TS-SS")
-                .SetInstrumentCode("ZVBH9 Index")
+                .SetInstrumentCode("HGU8 Comdty")
                 .SetInstrumentCodeType("BLOOMBERG")
-                .SetOrderType("LIMIT")
-                .SetPrice(99)
-                .SetQuantity(1000)
+                .SetOrderType("MARKET")
+                .SetQuantity(20)
                 .SetReferenceOne(".NET API Example")
-                .SetSide("BUY")
+                .SetSide("SELL")
                 .Build();
             
             long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
             Log.InfoFormat("FXOrder Submitted. MessageId {0}", messageId);
-            messageId = DefaultClient.Client.TradeSession.SubmitOrder(futureOrder);
-            Log.InfoFormat("FutureOrder Submitted. MessageId {0}", messageId);
+            long futuremessageId = DefaultClient.Client.TradeSession.SubmitOrder(futureOrder);
+            Log.InfoFormat("FutureOrder Submitted. MessageId {0}", futuremessageId);
             
         }
 
