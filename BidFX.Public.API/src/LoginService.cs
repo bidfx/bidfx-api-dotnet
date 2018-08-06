@@ -14,7 +14,7 @@ namespace BidFX.Public.API
     internal class LoginService
     {
         private static readonly ILog Log = LogManager.GetLogger("LoginService"); 
-        private static readonly string ProductLookupPath = "api/auth/v1/product";
+        private static readonly string ProductLookupPath = @"api/auth/v1/product";
         
         public TimeSpan RecheckInterval { get; set; }
         public bool Https { get; set; }
@@ -32,10 +32,9 @@ namespace BidFX.Public.API
         public LoginService()
         {
             Port = 443;
-            Host = "ny-tunnel.prod.tradingscreen.com";
+            Host = @"ny-tunnel.prod.tradingscreen.com";
             Https = true;
-            RecheckInterval = TimeSpan.FromSeconds(5);
-//            RecheckInterval = TimeSpan.FromMinutes(5);
+            RecheckInterval = TimeSpan.FromMinutes(5);
             Product = "BidFXDotnet";
         }
 
@@ -73,15 +72,17 @@ namespace BidFX.Public.API
 
         private bool UserHasProduct(out HttpStatusCode statusCode)
         {
-            HttpWebResponse response = SendProductMessage();
-            if (response != null)
+            using (HttpWebResponse response = SendProductMessage())
             {
-                statusCode = response.StatusCode;
-                return HttpStatusCode.OK.Equals(response.StatusCode);
-            }
+                if (response != null)
+                {
+                    statusCode = response.StatusCode;
+                    return HttpStatusCode.OK.Equals(response.StatusCode);
+                }
 
-            statusCode = HttpStatusCode.NotFound;
-            return false;
+                statusCode = HttpStatusCode.NotFound;
+                return false;
+            }
         }
 
         private HttpWebResponse SendProductMessage()
@@ -98,6 +99,7 @@ namespace BidFX.Public.API
             request.Method = "GET";
             request.Headers["Authorization"] = CreateAuthHeader();
             request.ContentType = "application/json";
+            request.KeepAlive = false;
 
             try
             {

@@ -103,9 +103,9 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(AlternateOwner);
         }
 
-        public string GetMessageId()
+        public long GetMessageId()
         {
-            return GetComponent<string>(MessageId);
+            return GetComponent<long>(MessageId);
         }
 
         public string GetCreationDate()

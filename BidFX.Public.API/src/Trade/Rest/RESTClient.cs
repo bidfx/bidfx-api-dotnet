@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using log4net;
 
@@ -12,7 +11,7 @@ namespace BidFX.Public.API.Trade.REST
     internal class RESTClient
     {
         private static readonly ILog Log = LogManager.GetLogger("RESTClient");
-        private const string ApiPath = "/api/om/v2/order";
+        private const string ApiPath = @"/api/om/v2/order";
         private readonly string _authHeader;
         private readonly Uri _address;
 
@@ -38,18 +37,18 @@ namespace BidFX.Public.API.Trade.REST
         /// <returns></returns>
         public HttpWebResponse SendMessage(string method, string path)
         {
-            if (!path.StartsWith("/"))
+            Uri address = new UriBuilder(_address)
             {
-                path = "/" + path;
-            }
-
-            Log.InfoFormat("Sending REST message to {0}{1}", _address, path);
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_address + path);
+                Path = _address.AbsolutePath + "/" + path
+            }.Uri;
+            
+            Log.InfoFormat("Sending REST message to {0}", address);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(address.AbsoluteUri.Trim());
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
-
             req.ContentType = "application/json";
-
+            req.KeepAlive = false;
+            req.ServicePoint.Expect100Continue = false;
             HttpWebResponse response;
             try
             {
@@ -68,23 +67,25 @@ namespace BidFX.Public.API.Trade.REST
         /// <summary>
         /// Send a REST request with a JSON body.
         /// </summary>
-        /// <param name="method">HTTP Method, i.e. GET, DELETE</param>
+        /// <param name="method">HTTP Method, i.e. POST, PUT</param>
         /// <param name="path">The path of the request location. Is appended to the Base Address.</param>
         /// <param name="json">The JSON body to be attached to the message.</param>
         /// <returns></returns>
         public HttpWebResponse SendJSON(string method, string path, string json)
         {
-            if (!path.StartsWith("/"))
+            Uri address = new UriBuilder(_address)
             {
-                path = "/" + path;
-            }
-
-            Log.InfoFormat("Sending REST message with JSON to {0}{1}", _address, path);
-            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(_address + path);
+                Path = _address.AbsolutePath + "/" + path
+            }.Uri;
+            
+            Log.DebugFormat("Sending REST message with JSON to {0}", address);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(address);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
-
+            req.Accept = "application/json";
             req.ContentType = "application/json";
+            req.KeepAlive = false;
+            req.ServicePoint.Expect100Continue = false;
             using (StreamWriter streamWriter = new StreamWriter(req.GetRequestStream()))
             {
                 streamWriter.Write(json);

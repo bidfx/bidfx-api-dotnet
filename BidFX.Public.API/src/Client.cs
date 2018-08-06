@@ -159,7 +159,7 @@ namespace BidFX.Public.API
 
             if (_tradeSession != null)
             {
-                TradeSession.Stop();
+                _tradeSession.Stop();
             }
         }
 

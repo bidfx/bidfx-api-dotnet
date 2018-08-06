@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace BidFX.Public.API.Trade.Rest.Json
 {
-    internal interface IJsonMarshallable
+    public interface IJsonMarshallable
     {
         IDictionary<string, object> GetJsonMap();
     }

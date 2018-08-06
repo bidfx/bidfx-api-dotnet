@@ -136,17 +136,17 @@ namespace BidFX.Public.API.Trade
 
         private void SendAmendViaRest(long mesageId, string json)
         {
-            SendInstructionViaRest(mesageId, json, "/amend");
+            SendInstructionViaRest(mesageId, json, "amend");
         }
 
         private void SendCancelViaRest(long messageId, string json)
         {
-            SendInstructionViaRest(messageId, json, "/cancel");
+            SendInstructionViaRest(messageId, json, "cancel");
         }
 
         private void SendSubmitViaRest(long messageId, string json)
         {
-            SendInstructionViaRest(messageId, json, "/submit");
+            SendInstructionViaRest(messageId, json, "submit");
         }
 
         private void SendInstructionViaRest(long messageId, string json, string path)
@@ -170,7 +170,7 @@ namespace BidFX.Public.API.Trade
 
         private Order.Order SendObjectViaRest(long messageId, string json, string path)
         {
-            HttpWebResponse response;
+            HttpWebResponse response = null;
             try
             {
                 response = _restClient.SendJSON("POST", path, json);
@@ -178,6 +178,10 @@ namespace BidFX.Public.API.Trade
             catch (Exception e)
             {
                 Log.Warn("Unexpected error occurred sending message", e);
+                if (response != null)
+                {
+                    response.Close();
+                }
                 return null;
             }
 
@@ -185,6 +189,7 @@ namespace BidFX.Public.API.Trade
             {
                 Log.InfoFormat("MessageId {0} - Response Received from Server. Processing", messageId);
                 string jsonResponse = GetBodyFromResponse(response);
+                response.Close();
                 if (jsonResponse == null)
                 {
                     Log.InfoFormat("MessageId {0} - No body to return.", messageId);
@@ -223,17 +228,20 @@ namespace BidFX.Public.API.Trade
         private void SendQueryViaREST(long messageId, string orderId)
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
-            HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId);
-            Order.Order order = JsonMarshaller.FromJson(GetBodyFromResponse(response));
-            order.SetMessageId(messageId);
-            if (OrderQueryEventHandler != null)
+            using (HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId))
             {
-                OrderQueryEventHandler(this, order);
-            }
-            else
-            {
-                Log.WarnFormat("OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
-                    messageId, order.GetOrderTsId());
+                Order.Order order = JsonMarshaller.FromJson(GetBodyFromResponse(response));
+                order.SetMessageId(messageId);
+                if (OrderQueryEventHandler != null)
+                {
+                    OrderQueryEventHandler(this, order);
+                }
+                else
+                {
+                    Log.WarnFormat(
+                        "OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
+                        messageId, order.GetOrderTsId());
+                }
             }
         }
 
