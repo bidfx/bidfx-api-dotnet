@@ -103,9 +103,15 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(AlternateOwner);
         }
 
-        public string GetMessageId()
+        public long? GetMessageId()
         {
-            return GetComponent<string>(MessageId);
+            long id;
+            if (long.TryParse(GetComponent<string>(MessageId), out id))
+            {
+                return id;
+            }
+            return null;
+
         }
 
         public string GetCreationDate()
@@ -214,9 +220,9 @@ namespace BidFX.Public.API.Trade.Order
             return (T) (_jsonMap.TryGetValue(key, out value) ? value : null);
         }
 
-        internal void SetMessageId(string messageId)
+        internal void SetMessageId(long messageId)
         {
-            _jsonMap[MessageId] = messageId;
+            _jsonMap[MessageId] = messageId.ToString();
         }
         
         public override string ToString()

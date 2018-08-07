@@ -163,7 +163,7 @@ namespace BidFX.Public.API.Trade
             Order.Order  order= SendObjectViaRest(messageId, json, "/amend");
             if (order != null && OrderInstructionEventHandler != null)
             {
-                order.SetMessageId(messageId.ToString());
+                order.SetMessageId(messageId);
                 OrderInstructionEventHandler.Invoke(this, order);
             }
         }
@@ -231,7 +231,7 @@ namespace BidFX.Public.API.Trade
             using (HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId))
             {
                 Order.Order order = JsonMarshaller.FromJson(GetBodyFromResponse(response));
-                order.SetMessageId(messageId.ToString());
+                order.SetMessageId(messageId);
                 if (OrderQueryEventHandler != null)
                 {
                     OrderQueryEventHandler(this, order);
