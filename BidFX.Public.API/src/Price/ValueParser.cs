@@ -21,11 +21,11 @@ namespace BidFX.Public.API.Price
             {
                 return decimal.Parse(s, DecimalStyle, CultureInfo.InvariantCulture);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (Log.IsDebugEnabled)
                 {
-                    Log.Debug("cannot convert \"" + s + "\" to decimal");
+                    Log.Debug("cannot convert \"" + s + "\" to decimal", e);
                 }
 
                 return defaultValue;
@@ -38,11 +38,11 @@ namespace BidFX.Public.API.Price
             {
                 return long.Parse(s, NumberStyles.AllowLeadingSign);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (Log.IsDebugEnabled)
                 {
-                    Log.Debug("cannot convert \"" + s + "\" to long");
+                    Log.Debug("cannot convert \"" + s + "\" to long", e);
                 }
 
                 return defaultValue;
@@ -55,13 +55,12 @@ namespace BidFX.Public.API.Price
             {
                 return int.Parse(s, NumberStyles.AllowLeadingSign);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (Log.IsDebugEnabled)
                 {
-                    Log.Debug("cannot convert \"" + s + "\" to int");
+                    Log.Debug("cannot convert \"" + s + "\" to int", e);
                 }
-
                 return defaultValue;
             }
         }
@@ -89,11 +88,11 @@ namespace BidFX.Public.API.Price
                 decimal abs = whole + (decimal) numerator / denominator;
                 return fraction[0] == '-' ? -abs : abs;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (Log.IsDebugEnabled)
                 {
-                    Log.Debug("cannot convert fraction \"" + fraction + "\" to decimal");
+                    Log.Debug("cannot convert fraction \"" + fraction + "\" to decimal", e);
                 }
 
                 return 0m;

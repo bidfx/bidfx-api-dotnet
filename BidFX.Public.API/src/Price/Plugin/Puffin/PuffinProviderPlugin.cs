@@ -202,10 +202,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("connection terminated by " + e.Message);
-                }
+                Log.Warn("connection terminated by " + e.Message);
             }
         }
 
