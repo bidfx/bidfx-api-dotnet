@@ -53,8 +53,8 @@ namespace BidFX.Public.API.Test.test
                  tradeSession = _client.TradeSession);
             Assert.AreEqual("invalid credentials", exception.Message);
             Assert.IsFalse(_client.LoggedIn);
-            Assert.Throws<IllegalStateException>(() => _client.PriceSession.ToString());
-            Assert.Throws<IllegalStateException>(() => _client.TradeSession.ToString());
+            Assert.Throws<AuthenticationException>(() => _client.PriceSession.ToString());
+            Assert.Throws<AuthenticationException>(() => _client.TradeSession.ToString());
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace BidFX.Public.API.Test.test
             TradeSession tradeSession;
             AuthenticationException exception = Assert.Throws<AuthenticationException>(() =>
                 tradeSession = _client.TradeSession);
-            Assert.AreEqual("user dtang does not have product BidFXDotnet assigned. Please contact your account manager if you believe this is a mistake", exception.Message);
+            Assert.AreEqual("user dtang does not have the required products (BidFXDotnet, TSWebAPI) assigned. Please contact your account manager if you believe this is a mistake", exception.Message);
             Assert.IsFalse(_client.LoggedIn);
         }
 
@@ -100,8 +100,9 @@ namespace BidFX.Public.API.Test.test
             _client.Username = "dtang";
             _client.Password = "";
             _client.LoginService.Product = "BidFXExcel";
+            TradeSession tradeSession = _client.TradeSession;
             Assert.IsTrue(_client.LoggedIn);
-            Assert.IsTrue(_client.TradeSession.Running);
+            Assert.IsTrue(tradeSession.Running);
         }
         
         private class MockEndpoint

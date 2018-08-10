@@ -132,10 +132,8 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 object assetClass = ((Dictionary<string, object>) firstItem)[Order.Order.AssetClass];
                 if (!(assetClass is string))
                 {
-                    throw new ArgumentException("Could not read assetclass");
+                    throw new ArgumentException("Could not read Asset Class of Result");
                 }
-
-                FormatErrors((Dictionary<string, object>) firstItem);
 
                 switch ((string) assetClass)
                 {
@@ -156,44 +154,13 @@ namespace BidFX.Public.API.Trade.Rest.Json
                     throw new ArgumentException("Could not get an error message");
                 }
                 
-                Error error = new Error(null, message.ToString());
+                Error error = new Error(null, message.ToString(), null);
                 return new Order.Order(new Dictionary<string, object> {{Order.Order.Errors, new List<Error>{error}}});
             }
             else
             {
                 throw new ArgumentException("Could not read JSON");
             }
-        }
-
-        private static void FormatErrors(Dictionary<string, object> firstItem)
-        {
-            object errorsObject;
-            if (!firstItem.TryGetValue(Order.Order.Errors, out errorsObject))
-            {
-                return;
-            }
-
-            if (!(errorsObject is List<object>))
-            {
-                throw new ArgumentException("Could not parse errors - was not a list");
-            }
-            
-            List<Error> errors = new List<Error>();
-            foreach (object rawError in (List<object>) errorsObject)
-            {
-                if (!(rawError is Dictionary<string, object>))
-                {
-                    continue;
-                }
-                
-                object field;
-                object message;
-                ((Dictionary<string, object>) rawError).TryGetValue("field", out field);
-                ((Dictionary<string, object>) rawError).TryGetValue("message", out message);
-                errors.Add(new Error(field == null ? null : field.ToString(), message == null ? null : message.ToString()));
-            }
-
-            firstItem[Order.Order.Errors] = errors;
         }
 
         private static object ParseItem(string json, ref int pointer)

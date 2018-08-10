@@ -22,15 +22,9 @@ namespace BidFX.Public.API.Trade.Order
         public const string FarFixingDate = "far_fixing_date";
         public const string FarQuantity = "far_quantity";
         public const string FarSide = "far_side";
-        public const string AllocationTemplate = "allocation_template";
 
         internal FxOrder(Dictionary<string, object> components) : base(components)
         {
-        }
-
-        public string GetAllocationTemplate()
-        {
-            return GetComponent<string>(AllocationTemplate);
         }
         
         public string GetCurrencyPair()

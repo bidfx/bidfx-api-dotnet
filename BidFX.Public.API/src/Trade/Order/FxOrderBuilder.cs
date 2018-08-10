@@ -201,19 +201,6 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
-        public FxOrderBuilder SetAllocationTemplate(string templateName)
-        {
-            if (Params.IsNullOrEmpty(templateName))
-            {
-                Components.Remove(FxOrder.AllocationTemplate);
-                return this;
-            }
-
-            templateName = templateName.Trim();
-            Components[FxOrder.AllocationTemplate] = templateName;
-            return this;
-        }
-
         public FxOrderBuilder SetStrategyParameter(string name, string value)
         {
             Params.NotBlank(name);

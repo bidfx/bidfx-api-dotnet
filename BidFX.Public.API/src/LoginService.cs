@@ -147,8 +147,9 @@ namespace BidFX.Public.API
             }
             else if (HttpStatusCode.Forbidden.Equals(statusCode))
             {
-                return "user " + Username + " does not have product " + Product +
-                       " assigned. Please contact your account manager if you believe this is a mistake";
+                return "user " + Username + " does not have the required products " +
+                       "(" + Product + ", TSWebAPI) " +
+                       "assigned. Please contact your account manager if you believe this is a mistake";
             }
             else
             {

@@ -8,8 +8,10 @@ namespace BidFX.Public.API.Trade.Order
 {
     public class Order : EventArgs, IJsonMarshallable
     {
-        internal const string AssetClass = "asset_class";
         internal const string Account = "account";
+        internal const string AllocationTemplate = "allocation_template";
+        internal const string AlternateOwner = "alternate_owner";
+        internal const string AssetClass = "asset_class";
         internal const string Currency = "dealt_ccy";
         internal const string Side = "side";
         internal const string Quantity = "quantity";
@@ -17,35 +19,53 @@ namespace BidFX.Public.API.Trade.Order
         internal const string Reference1 = "reference1";
         internal const string Reference2 = "reference2";
         internal const string Price = "price";
+        internal const string OrderInstruction = "order_instruction";
         internal const string OrderType = "order_type";
-        internal const string AlternateOwner = "alternate_owner";
-        internal const string MessageId = "correlation_id";
-        internal const string CreationDate = "creation_date";
-        internal const string DeactivationDate = "deactivation_date";
-        internal const string DoneForDay = "done_for_day";
-        internal const string ErrantQuantity = "errant_quantity";
-        internal const string ExecutedQuantity = "executed_quantity";
-        internal const string ExecutingBroker = "executing_broker";
-        internal const string FullyExecuted = "fully_executed";
-        internal const string LeavesQuantity = "leaves_quantity";
-        internal const string OrderTsId = "order_ts_id";
-        internal const string OutstandingQuantity = "outstanding_quantity";
-        internal const string Owner = "owner";
-        internal const string ReleasedQuantity = "released_quantity";
-        internal const string SettlementCurrency = "settlement_currency";
         internal const string SettlementDate = "settlement_date";
-        internal const string State = "state";
-        internal const string StrategyState = "strategy_state";
-        internal const string TimeInForceType = "time_in_force_type";
-        internal const string UnexecutedQuantity = "unexecuted_quantity";
-        internal const string UUID = "uuid";
+        private const string MessageId = "correlation_id";
+        //Read only properties
         internal const string Errors = "errors";
+        private const string Executions = "executions";
+        private const string OrderTsId = "order_ts_id";
+        private const string Owner = "owner";
+        private const string State = "state";
+        private const string UUID = "uuid";
 
         private readonly SortedDictionary<string, object> _jsonMap;
 
         public Order(IDictionary<string, object> jsonMap)
         {
+            ProcessErrors(jsonMap);
+            ProcessExecutions(jsonMap);
+            
             _jsonMap = new SortedDictionary<string, object>(jsonMap);
+        }
+
+        private static void ProcessErrors(IDictionary<string, object> jsonMap)
+        {
+            object errorsObject;
+            jsonMap.TryGetValue(Errors, out errorsObject);
+            List<object> errors = errorsObject as List<object>;
+            if (errors == null)
+            {
+                return;
+            }
+            List<Error> errorsList = errors.ConvertAll(errorMap => new Error(errorMap as Dictionary<string, object>));
+            jsonMap[Errors] = errorsList;
+        }
+
+        private static void ProcessExecutions(IDictionary<string, object> jsonMap)
+        {
+            object executionsObject;
+            jsonMap.TryGetValue(Executions, out executionsObject);
+            List<object> executions = executionsObject as List<object>;
+            if (executions == null)
+            {
+                return;
+            }
+
+            List<Execution> executionsList = executions.ConvertAll(execution => new Execution(execution as Dictionary<string, object> ));
+            jsonMap[Executions] = executionsList;
         }
 
         public IDictionary<string, object> GetJsonMap()
@@ -53,14 +73,19 @@ namespace BidFX.Public.API.Trade.Order
             return _jsonMap;
         }
 
-        public string GetAssetClass()
-        {
-            return GetComponent<string>(AssetClass);
-        }
-
         public string GetAccount()
         {
             return GetComponent<string>(Account);
+        }
+
+        public string GetAllocationTemplate()
+        {
+            return GetComponent<string>(AllocationTemplate);
+        }
+
+        public string GetAssetClass()
+        {
+            return GetComponent<string>(AssetClass);
         }
 
         public string GetSide()
@@ -103,6 +128,16 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(AlternateOwner);
         }
 
+        public List<Error> GetErrors()
+        {
+            return GetComponent<List<Error>>(Errors);
+        }
+
+        public List<Execution> GetExecutions()
+        {
+            return GetComponent<List<Execution>>(Executions);
+        }
+        
         public long? GetMessageId()
         {
             long id;
@@ -114,69 +149,14 @@ namespace BidFX.Public.API.Trade.Order
 
         }
 
-        public string GetCreationDate()
-        {
-            return GetComponent<string>(CreationDate);
-        }
-
-        public string GetDeactivationDate()
-        {
-            return GetComponent<string>(DeactivationDate);
-        }
-
-        public bool? GetDoneForDay()
-        {
-            return GetComponent<bool?>(DoneForDay);
-        }
-
-        public decimal? GetErrantQuantity()
-        {
-            return GetComponent<decimal?>(ErrantQuantity);
-        }
-
-        public decimal? GetExecutedQuantity()
-        {
-            return GetComponent<decimal?>(ExecutedQuantity);
-        }
-
-        public string GetExecutingBroker()
-        {
-            return GetComponent<string>(ExecutingBroker);
-        }
-
-        public bool? GetFullyExecuted()
-        {
-            return GetComponent<bool?>(FullyExecuted);
-        }
-
-        public decimal? GetLeavesQuantity()
-        {
-            return GetComponent<decimal?>(LeavesQuantity);
-        }
-
         public string GetOrderTsId()
         {
             return GetComponent<string>(OrderTsId);
         }
 
-        public decimal? GetOutstandingQuantity()
-        {
-            return GetComponent<decimal?>(OutstandingQuantity);
-        }
-
         public string GetOwner()
         {
             return GetComponent<string>(Owner);
-        }
-
-        public decimal? GetReleasedQuantity()
-        {
-            return GetComponent<decimal?>(ReleasedQuantity);
-        }
-
-        public string GetSettlementCurrency()
-        {
-            return GetComponent<string>(SettlementCurrency);
         }
 
         public string GetSettlementDate()
@@ -189,30 +169,11 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(State);
         }
 
-        public string GetStrategyState()
-        {
-            return GetComponent<string>(StrategyState);
-        }
-
-        public string GetTimeInForceType()
-        {
-            return GetComponent<string>(TimeInForceType);
-        }
-
-        public decimal? GetUnexecutedQuantity()
-        {
-            return GetComponent<decimal?>(UnexecutedQuantity);
-        }
-
         public decimal? GetUUID()
         {
             return GetComponent<decimal?>(UUID);
         }
 
-        public List<Error> GetErrors()
-        {
-            return GetComponent<List<Error>>(Errors);
-        }
 
         protected T GetComponent<T>(string key)
         {
@@ -230,7 +191,7 @@ namespace BidFX.Public.API.Trade.Order
             return DeepStringDictionary(_jsonMap);
         }
 
-        private static string DeepStringDictionary(IDictionary<string, object> dictionary)
+        internal static string DeepStringDictionary(IDictionary<string, object> dictionary)
         {
             return "[" + string.Join(", ", dictionary.Select(kv => kv.Key + "=" + DeepString(kv.Value))) + "]";
         }

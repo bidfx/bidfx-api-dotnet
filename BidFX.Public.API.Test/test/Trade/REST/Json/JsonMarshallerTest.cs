@@ -86,7 +86,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
             "{" +
                 "\"alternate_owner\": \"lasman\"," +
                 "\"asset_class\":\"FUTURE\"," +
-                "\"correlation_id\":\"CID2\"," +
+                "\"correlation_id\":\"123123\"," +
                 "\"creation_date\":\"2018-07-09T16:57:16.374Z\"," +
                 "\"deactivation_date\":\"2018-07-10T02:57:16.374Z\"," +
                 "\"done_for_day\":false," +
@@ -123,7 +123,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
             FutureOrder futureOrder = (FutureOrder) order;
             Assert.AreEqual("lasman", futureOrder.GetAlternateOwner());
             Assert.AreEqual("FUTURE", futureOrder.GetAssetClass());
-            Assert.AreEqual("CID2", futureOrder.GetMessageId());
+            Assert.AreEqual(123123, futureOrder.GetMessageId());
             Assert.AreEqual("2018-07-09T16:57:16.374Z", futureOrder.GetCreationDate());
             Assert.AreEqual("2018-07-10T02:57:16.374Z", futureOrder.GetDeactivationDate());
             Assert.AreEqual(false, futureOrder.GetDoneForDay());
@@ -274,14 +274,106 @@ namespace BidFX.Public.API.Trade.Rest.Json
             List<Error> errors = fxOrder.GetErrors();
             Assert.AreEqual(3, errors.Count);
             Error error = errors[0];
-            Assert.AreEqual("dealt_ccy", error.Field);
-            Assert.AreEqual("Missing required field", error.Message);
+            Assert.AreEqual("dealt_ccy", error.GetField());
+            Assert.AreEqual("Missing required field", error.GetMessage());
             error = errors[1];
-            Assert.AreEqual("far_dealt_ccy", error.Field);
-            Assert.AreEqual("Missing required field", error.Message);
+            Assert.AreEqual("far_dealt_ccy", error.GetField());
+            Assert.AreEqual("Missing required field", error.GetMessage());
             error = errors[2];
-            Assert.AreEqual("far_side", error.Field);
-            Assert.AreEqual("Missing required field", error.Message);
+            Assert.AreEqual("far_side", error.GetField());
+            Assert.AreEqual("Missing required field", error.GetMessage());
+        }
+        
+        [Test]
+        public void TestRestOrderResponseWithExecutionIsParsedCorrectly()
+        {
+            const string json = "[{" +
+                "\"account\": \"FX_ACCT\"," +
+                "\"alternate_owner\": \"lasman\"," +
+                "\"asset_class\": \"FX\"," +
+                "\"ccy_pair\": \"EURGBP\"," +
+                "\"deal_type\": \"NDS\"," +
+                "\"executions\": [" +
+                "{" +
+                "    \"eti\": \"BARCFXHWTRADE\"," +
+                "    \"executed_quantity\": 4000000," +
+                "    \"executed_value\": 1469570.4," +
+                "    \"order_ts_id\": \"20180214-002-API\"," +
+                "    \"price\": 1.224642," +
+                "    \"quantity\": 150000," +
+                "    \"side\": \"SELL\"," +
+                "    \"state\": \"REGISTERED\"," +
+                "    \"ts_id\": \"20180214-003\"" +
+                "}," +
+                "{" +
+                "    \"eti\": \"DBFXFXHWTRADE\"," +
+                "    \"executed_quantity\": 2000000," +
+                "    \"executed_value\": 14690.421," +
+                "    \"order_ts_id\": \"20180214-005-API\"," +
+                "    \"price\": 1.22464131," +
+                "    \"quantity\": 50000," +
+                "    \"side\": \"BUY\"," +
+                "    \"state\": \"EXECUTED\"," +
+                "    \"ts_id\": \"20180214-425\"" +
+                "}" +
+                "]," +
+                "\"far_fixing_date\": \"2019-01-10\"," +
+                "\"far_quantity\": 150000," +
+                "\"far_settlement_date\": \"2019-01-14\"," +
+                "\"far_tenor\": \"6M\"," +
+                "\"fixing_date\": \"2018-07-24\"," +
+                "\"handling_type\": \"AUTOMATIC\"," +
+                "\"order_ts_id\": \"20180710-1627231301-751-720-API\"," +
+                "\"order_type\": \"LIMIT\"," +
+                "\"owner\": \"dtang\"," +
+                "\"price\": 1.44321," +
+                "\"quantity\": 120000," +
+                "\"settlement_date\": \"2018-07-26\"," +
+                "\"tenor\": \"2W\"" +
+            "}]";
+            Order.Order order = JsonMarshaller.FromJson(json);
+            Assert.IsInstanceOf<FxOrder>(order);
+            FxOrder fxOrder = (FxOrder) order;
+            Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
+            Assert.AreEqual("lasman", fxOrder.GetAlternateOwner());
+            Assert.AreEqual("FX", fxOrder.GetAssetClass());
+            Assert.AreEqual("EURGBP", fxOrder.GetCurrencyPair());
+            Assert.AreEqual("NDS", fxOrder.GetDealType());
+            Assert.AreEqual("2019-01-10", fxOrder.GetFarFixingDate());
+            Assert.AreEqual(150000, fxOrder.GetFarQuantity());
+            Assert.AreEqual("2019-01-14", fxOrder.GetFarSettlementDate());
+            Assert.AreEqual("6M", fxOrder.GetFarTenor());
+            Assert.AreEqual("2018-07-24", fxOrder.GetFixingDate());
+            Assert.AreEqual("AUTOMATIC", fxOrder.GetHandlingType());
+            Assert.AreEqual("20180710-1627231301-751-720-API", fxOrder.GetOrderTsId());
+            Assert.AreEqual("LIMIT", fxOrder.GetOrderType());
+            Assert.AreEqual("dtang", fxOrder.GetOwner());
+            Assert.AreEqual(1.44321m, fxOrder.GetPrice());
+            Assert.AreEqual(120000, fxOrder.GetQuantity());
+            Assert.AreEqual("2018-07-26", fxOrder.GetSettlementDate());
+            Assert.AreEqual("2W", fxOrder.GetTenor());
+            List<Execution> executions = fxOrder.GetExecutions();
+            Assert.AreEqual(2, executions.Count);
+            Execution execution = executions[0];
+            Assert.AreEqual("BARCFXHWTRADE", execution.GetEti());
+            Assert.AreEqual(4000000, execution.GetExecutedQuantity());
+            Assert.AreEqual(1469570.4, execution.GetExecutedValue());
+            Assert.AreEqual("20180214-002-API", execution.GetOrderTsId());
+            Assert.AreEqual(1.224642, execution.GetPrice());
+            Assert.AreEqual(150000, execution.GetQuantity());
+            Assert.AreEqual("SELL", execution.GetSide());
+            Assert.AreEqual("REGISTERED", execution.GetState());
+            Assert.AreEqual("20180214-003", execution.GetTsId());
+            execution = executions[1];
+            Assert.AreEqual("DBFXFXHWTRADE", execution.GetEti());
+            Assert.AreEqual(2000000, execution.GetExecutedQuantity());
+            Assert.AreEqual(14690.421, execution.GetExecutedValue());
+            Assert.AreEqual("20180214-005-API", execution.GetOrderTsId());
+            Assert.AreEqual(1.22464131, execution.GetPrice());
+            Assert.AreEqual(50000, execution.GetQuantity());
+            Assert.AreEqual("BUY", execution.GetSide());
+            Assert.AreEqual("EXECUTED", execution.GetState());
+            Assert.AreEqual("20180214-425", execution.GetTsId());
         }
 
         [Test]
@@ -293,8 +385,8 @@ namespace BidFX.Public.API.Trade.Rest.Json
             "}";
             Order.Order order = JsonMarshaller.FromJson(json);
             Assert.AreEqual(1, order.GetErrors().Count);
-            Assert.AreEqual("Failed to deserialize body text expecting List of Order", order.GetErrors()[0].Message);
-            Assert.IsNull(order.GetErrors()[0].Field);
+            Assert.AreEqual("Failed to deserialize body text expecting List of Order", order.GetErrors()[0].GetMessage());
+            Assert.IsNull(order.GetErrors()[0].GetField());
         }
     }
 }

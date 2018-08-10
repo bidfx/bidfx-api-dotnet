@@ -1,4 +1,5 @@
-﻿using BidFX.Public.API.Price.Tools;
+﻿using System;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -35,14 +36,7 @@ namespace BidFX.Public.API.Trade.Order
 
         public FutureOrderBuilder SetInstrumentCode(string instrumentCode)
         {
-            if (Params.IsNullOrEmpty(instrumentCode))
-            {
-                Components.Remove(FutureOrder.InstrumentCode);
-                return this;
-            }
-
-            Components[FutureOrder.InstrumentCode] = instrumentCode.Trim();
-            return this;
+            return SetStringField(instrumentCode, FutureOrder.InstrumentCode);
         }
 
         public FutureOrderBuilder SetInstrumentCodeType(string instrumentCodeType)
@@ -53,148 +47,215 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            Components[FutureOrder.InstrumentCodeType] = instrumentCodeType.Trim();
+            instrumentCodeType = instrumentCodeType.Trim();
+            switch (instrumentCodeType.ToUpper())
+            {
+                    case "RIC":
+                        instrumentCodeType = "RIC";
+                        break;
+                    case "BLOOMBERG":
+                        instrumentCodeType = "BLOOMBERG";
+                        break;
+                    case "ISIN":
+                        instrumentCodeType = "ISIN";
+                        break;
+                    case "SEDOL":
+                        instrumentCodeType = "SEDOL";
+                        break;
+                    case "CUSIP":
+                        instrumentCodeType = "CUSIP";
+                        break;
+                    case "VALOREN":
+                        instrumentCodeType = "VALOREN";
+                        break;
+                    case "TSPRODUCTID":
+                        instrumentCodeType = "TSPRODUCTID";
+                        break;
+                    case "TICKER":
+                        instrumentCodeType = "TICKER";
+                        break;
+                    default:
+                        throw new ArgumentException("Unsupported Instrument Code Type: " + instrumentCodeType);
+            }
+
+            Components[FutureOrder.InstrumentCodeType] = instrumentCodeType;
             return this;
         }
 
         public FutureOrderBuilder SetVenueCode(string venueCode)
         {
-            return this;
+            return SetStringField(venueCode, FutureOrder.VenueCode);
         }
 
         public FutureOrderBuilder SetVenueCodeType(string venueCodeType)
         {
-            return this;
+            return SetStringField(venueCodeType, FutureOrder.VenueCodeType);
         }
 
         public FutureOrderBuilder SetAggregationLevelOne(string aggregationLevel)
         {
-            return this;
+            return SetStringField(aggregationLevel, FutureOrder.AggregationLevelOne);
         }
 
         public FutureOrderBuilder SetAggregationLevelTwo(string aggregationLevel)
         {
-            return this;
+            return SetStringField(aggregationLevel, FutureOrder.AggregationLevelTwo);
         }
 
         public FutureOrderBuilder SetAggregationLevelThree(string aggregationLevel)
         {
-            return this;
+            return SetStringField(aggregationLevel, FutureOrder.AggregationLevelThree);
         }
 
         public FutureOrderBuilder SetAlgoParent(string algoParent)
         {
-            return this;
+            return SetStringField(algoParent, FutureOrder.AlgoParent);
         }
 
         public FutureOrderBuilder SetClearingAccount(string clearingAccount)
         {
-            return this;
+            return SetStringField(clearingAccount, FutureOrder.ClearingAccount);
         }
 
         public FutureOrderBuilder SetClearingBroker(string clearingBroker)
         {
-            return this;
+            return SetStringField(clearingBroker, FutureOrder.ClearingBroker);
         }
 
         public FutureOrderBuilder SetCreationDate(string creationDate)
         {
+            if (Params.IsNullOrEmpty(creationDate))
+            {
+                Components.Remove(FutureOrder.CreationDate);
+                return this;
+            }
+
+            Components[FutureOrder.CreationDate] = FormatDate(FutureOrder.CreationDate, creationDate, true);
             return this;
         }
 
         public FutureOrderBuilder SetDescription(string description)
         {
-            return this;
+            return SetStringField(description, FutureOrder.Description);
         }
 
         public FutureOrderBuilder SetExecutingBroker(string executingBroker)
         {
-            return this;
+            return SetStringField(executingBroker, FutureOrder.ExecutingBroker);
         }
 
         public FutureOrderBuilder SetExpiryDate(string expiryDate)
         {
+            
+            if (Params.IsNullOrEmpty(expiryDate))
+            {
+                Components.Remove(FutureOrder.ExpiryDate);
+                return this;
+            }
+
+            Components[FutureOrder.ExpiryDate] = FormatDate(FutureOrder.ExpiryDate, expiryDate, true);
             return this;
         }
 
         public FutureOrderBuilder SetGroupingOrderId(string groupingOrderId)
         {
-            return this;
+            return SetStringField(groupingOrderId, FutureOrder.GroupingOrderId);
         }
 
         public FutureOrderBuilder SetHandlingComment(string handlingComment)
         {
-            return this;
+            return SetStringField(handlingComment, FutureOrder.HandlingComment);
         }
 
-        public FutureOrderBuilder SetHandlingExecInst(string handlingExecInst)
+        public FutureOrderBuilder SetHandlingExecutingInstruction(string handlingExecutingInstruction)
         {
-            return this;
+            return SetStringField(handlingExecutingInstruction, FutureOrder.HandlingExecutingInstruction);
         }
 
         public FutureOrderBuilder SetHedgeCurrency(string hedgeCurrency)
         {
-            return this;
+            return SetStringField(hedgeCurrency, FutureOrder.HedgeCurrency);
         }
 
         public FutureOrderBuilder SetLocateBroker(string locateBroker)
         {
-            return this;
+            return SetStringField(locateBroker, FutureOrder.LocateBroker);
         }
 
         public FutureOrderBuilder SetLocateId(string locateId)
         {
-            return this;
+            return SetStringField(locateId, FutureOrder.LocateId);
         }
 
         public FutureOrderBuilder SetLocateType(string locateType)
         {
-            return this;
+            return SetStringField(locateType, FutureOrder.LocateType);
         }
 
-        public FutureOrderBuilder SetPositionType(string positionType)
+        public FutureOrderBuilder SetQuantityLimit(decimal? quantityLimit)
         {
-            return this;
-        }
+            if (!quantityLimit.HasValue)
+            {
+                Components.Remove(FutureOrder.QuantityLimit);
+                return this;
+            }
 
-        public FutureOrderBuilder SetQuantityLimit(string quantityLimit)
-        {
+            Components[FutureOrder.QuantityLimit] = quantityLimit.Value;
             return this;
         }
 
         public FutureOrderBuilder SetSettlementComment(string settlementComment)
         {
-            return this;
+            return SetStringField(settlementComment, FutureOrder.SettlementComment);
         }
 
         public FutureOrderBuilder SetSettlementCurrency(string settlementCurrency)
         {
-            return this;
+            return SetStringField(settlementCurrency, FutureOrder.SettlementCurrency);
         }
 
-        public FutureOrderBuilder SetSettlementFxRate(string settlementFxRate)
+        public FutureOrderBuilder SetSettlementFxRate(decimal? settlementFxRate)
         {
+            if (!settlementFxRate.HasValue)
+            {
+                Components.Remove(FutureOrder.SettlementFxRate);
+                return this;
+            }
+
+            Components[FutureOrder.SettlementFxRate] = settlementFxRate.Value;
             return this;
         }
 
-        public FutureOrderBuilder SetSettlementValue(string settlementValue)
+        public FutureOrderBuilder SetSettlementValue(decimal? settlementValue)
         {
+            if (!settlementValue.HasValue)
+            {
+                Components.Remove(FutureOrder.SettlementValue);
+                return this;
+            }
+
+            Components[FutureOrder.SettlementValue] = settlementValue.Value;
             return this;
         }
 
+        public FutureOrderBuilder SetStrategyParentOrderId(string parentOrderId)
+        {
+            return SetStringField(parentOrderId, FutureOrder.StrategyParentOrderId);
+        }
+        
         public FutureOrderBuilder SetStrategyState(string strategyState)
         {
-            return this;
+            return SetStringField(strategyState, FutureOrder.StrategyState);
         }
 
         public FutureOrderBuilder SetSystemOrderId(string systemOrderId)
         {
-            return this;
+            return SetStringField(systemOrderId, FutureOrder.SystemOrderId);
         }
 
         public FutureOrderBuilder SetTimeInForceType(string timeInForceType)
         {
-            return this;
+            return SetStringField(timeInForceType, FutureOrder.TimeInForceType);
         }
     }
 }

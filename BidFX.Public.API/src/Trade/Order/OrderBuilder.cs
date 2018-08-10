@@ -19,14 +19,17 @@ namespace BidFX.Public.API.Trade.Order
 
         public T SetAccount(string account)
         {
-            if (Params.IsNullOrEmpty(account))
-            {
-                Components.Remove(Order.Account);
-                return this as T;
-            }
+            return SetStringField(account, Order.Account);
+        }
 
-            Components[Order.Account] = account.Trim();
-            return this as T;
+        public T SetAllocationTemplate(string templateName)
+        {
+            return SetStringField(templateName, Order.AllocationTemplate);
+        }
+
+        public T SetAlternateOwner(string alternateOwner)
+        {
+            return SetStringField(alternateOwner, Order.AlternateOwner);
         }
 
         public T SetHandlingType(string handlingType)
@@ -59,16 +62,37 @@ namespace BidFX.Public.API.Trade.Order
             return this as T;
         }
 
-        public T SetOrderType(string orderType)
+        public T SetOrderInstruction(string orderInstruction)
         {
-            if (Params.IsNullOrEmpty(orderType))
+            if (Params.IsNullOrEmpty(orderInstruction))
             {
-                Components.Remove(Order.OrderType);
+                Components.Remove(Order.OrderInstruction);
                 return this as T;
             }
 
-            Components[Order.OrderType] = orderType.Trim().ToUpper();
+            orderInstruction = orderInstruction.Trim();
+            switch (orderInstruction.ToUpper())
+            {
+                case "REGISTER":
+                    orderInstruction = "REGISTER";
+                    break;
+                case "SUBMIT":
+                    orderInstruction = "SUBMIT";
+                    break;
+                case "TRADE_ENTRY":
+                    orderInstruction = "TRADE_ENTRY";
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported order instruction: " + orderInstruction);
+            }
+
+            Components[Order.OrderInstruction] = orderInstruction;
             return this as T;
+        }
+        
+        public T SetOrderType(string orderType)
+        {
+            return SetStringField(orderType == null ? null : orderType.ToUpper(), Order.OrderType);
         }
 
         public T SetPrice(decimal? price)
@@ -200,6 +224,18 @@ namespace BidFX.Public.API.Trade.Order
             return year + "-"
                         + (month.Length == 2 ? month : "0" + month)
                         + (!"".Equals(day) ? "-" + (day.Length == 2 ? day : "0" + day) : "");
+        }
+
+        protected T SetStringField(string field, string fieldName)
+        {
+            if (Params.IsNullOrEmpty(field))
+            {
+                Components.Remove(fieldName);
+                return this as T;
+            }
+
+            Components[fieldName] = field.Trim();
+            return this as T;
         }
     }
 }
