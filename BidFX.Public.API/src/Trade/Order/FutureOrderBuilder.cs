@@ -144,16 +144,16 @@ namespace BidFX.Public.API.Trade.Order
             return SetStringField(executingBroker, FutureOrder.ExecutingBroker);
         }
 
-        public FutureOrderBuilder SetExpiryDate(string expiryDate)
+        public FutureOrderBuilder SetGoodTillDate(string goodTillDate)
         {
             
-            if (Params.IsNullOrEmpty(expiryDate))
+            if (Params.IsNullOrEmpty(goodTillDate))
             {
-                Components.Remove(FutureOrder.ExpiryDate);
+                Components.Remove(FutureOrder.GoodTillDate);
                 return this;
             }
 
-            Components[FutureOrder.ExpiryDate] = FormatDate(FutureOrder.ExpiryDate, expiryDate, true);
+            Components[FutureOrder.GoodTillDate] = FormatDate(FutureOrder.GoodTillDate, goodTillDate, true);
             return this;
         }
 

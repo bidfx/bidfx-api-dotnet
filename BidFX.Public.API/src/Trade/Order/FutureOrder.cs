@@ -1,6 +1,4 @@
-﻿using System.CodeDom;
-using System.Collections.Generic;
-using BidFX.Public.API.Price.Tools;
+﻿using System.Collections.Generic;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -25,7 +23,7 @@ namespace BidFX.Public.API.Trade.Order
         internal const string CreationDate = "creation_date";
         internal const string Description = "description";
         internal const string ExecutingBroker = "executing_broker";
-        internal const string ExpiryDate = "expiry_date";
+        internal const string GoodTillDate = "expiry_date";
         internal const string GroupingOrderId = "grouping_order_id";
         internal const string HandlingComment = "handling_comment";
         internal const string HandlingExecutingInstruction = "handling_exec_inst";
@@ -156,9 +154,9 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(ExecutingBroker);
         }
 
-        public string GetExpiryDate()
+        public string GetGoodTillDate()
         {
-            return GetComponent<string>(ExpiryDate);
+            return GetComponent<string>(GoodTillDate);
         }
 
         public string GetGroupingOrderId()
