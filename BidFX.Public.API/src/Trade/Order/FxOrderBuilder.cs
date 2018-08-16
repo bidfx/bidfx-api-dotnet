@@ -84,7 +84,7 @@ namespace BidFX.Public.API.Trade.Order
             FxTenor fxTenor = FxTenor.GetTenor(tenor);
             if (fxTenor != null)
             {
-                tenor = fxTenor.GetBizString();
+                tenor = fxTenor.GetRestString();
             }
             else
             {
