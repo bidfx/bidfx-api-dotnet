@@ -133,7 +133,7 @@ namespace BidFX.Public.API.Trade.Order
             FxTenor fxTenor = FxTenor.GetTenor(farTenor);
             if (fxTenor != null)
             {
-                farTenor = fxTenor.GetBizString();
+                farTenor = fxTenor.GetRestString();
             }
             else
             {
