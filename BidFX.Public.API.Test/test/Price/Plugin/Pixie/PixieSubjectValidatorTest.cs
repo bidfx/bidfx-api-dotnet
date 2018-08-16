@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public void TestValidSubjects()
         {
             Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneForwardQuoteSubject("lasman", "FX_ACCT", "EURUSD", "BARCFX", "EUR", "1000000", "2M", null).CreateSubject(), _eventHandler));
-            Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "BARCFX", "EUR", "1000000", "O/N", null).CreateSubject(), _eventHandler));
+            Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "BARCFX", "EUR", "1000000", "TOM", null).CreateSubject(), _eventHandler));
             Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneNdfQuoteSubject("lasman", "FX_ACCT", "GBPUSD", "BARCFX", "GBP", "5000000", "1W", "").CreateSubject(), _eventHandler));
             Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneNdfQuoteSubject("lasman", "FX_ACCT", "EURCAD", "DBFX", "EUR", "1000", "BD", "20200505").CreateSubject(), _eventHandler));
             Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSwapQuoteSubject("lasman", "FX_ACCT", "EURUSD", "DBFX", "EUR", "100000", "IMMH", "", "1000000", "IMMZ", "").CreateSubject(), _eventHandler));
@@ -28,11 +28,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         [Test]
         public void TestInvalidSubjects()
         {
-            Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelTwoForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "EUR", "1000000", "NOT A TENOR", "").CreateSubject(), _eventHandler));
             Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelTwoForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "EUR", "1000000", "BD", "").CreateSubject(), _eventHandler));
             Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelTwoForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "EUR", "1000000", "", "WORDDS").CreateSubject(), _eventHandler));
             Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelTwoForwardStreamingSubject("lasman", "FX_ACCT", "EURUSD", "EUR", "1000000", "", "99999999").CreateSubject(), _eventHandler));
-            Assert.AreEqual(4, _eventHandler.GetStatusUpdates().Count);
+            Assert.AreEqual(3, _eventHandler.GetStatusUpdates().Count);
         }
 
         private class TestEventHandler : IApiEventHandler

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BidFX.Public.API.Enums
 {
@@ -92,7 +94,12 @@ namespace BidFX.Public.API.Enums
         public static FxTenor GetTenor(string name)
         {
             FxTenor tenor;
-            TenorMap.TryGetValue(name.ToUpper(), out tenor);
+            TenorMap.TryGetValue(name.Trim().ToUpper(), out tenor);
+            if (tenor == null)
+            {
+                throw new ArgumentException("Invalid tenor: " + name +". Valid tenors: "+ 
+                                            string.Join(", ", TenorMap.Values.Select(x => x._prettyName)));
+            }
             return tenor;
         }
     }
