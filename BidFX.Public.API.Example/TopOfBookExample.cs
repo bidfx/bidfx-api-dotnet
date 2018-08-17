@@ -16,7 +16,7 @@ namespace BidFX.Public.API.Example
 
         private const string Username = "";
         private const string Password = "";
-        private const string Account = "FX_ACCT";
+        private const string Account = "";
 
         public static void Main2(string[] args)
         {
