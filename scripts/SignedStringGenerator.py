@@ -1,4 +1,10 @@
 def GenerateString(limit, username, level):
+    if level != 1 && level != 2:
+        return "Error: Level is not 1 or 2"
+    if level == 1 && limit <= 20:
+        print("Warning: the limit is less than the default (20)")
+    elif level == 2 && limit <= 500:
+        print("Warning: the limit is less than the default (500)")
     hash = GetHash(limit, username, level)
     return str(limit) + "-" + username + "-" + str(level) + "-" + SignPart(hash)
 
