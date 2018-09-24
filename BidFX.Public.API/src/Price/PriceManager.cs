@@ -286,15 +286,15 @@ namespace BidFX.Public.API.Price
             switch (properties.ProviderStatus)
             {
                 case ProviderStatus.TemporarilyDown:
-                    return "Puffin connection is down";
+                    return "price connection is down";
                 case ProviderStatus.ScheduledDowntime:
-                    return "Puffin feed has scheduled downtime";
+                    return "price feed has scheduled downtime";
                 case ProviderStatus.Unavailable:
-                    return "Puffin feed is unavailable";
+                    return "price feed is unavailable";
                 case ProviderStatus.Invalid:
-                    return "Puffin provider is invalid";
+                    return "price provider is invalid";
                 case ProviderStatus.Closed:
-                    return "Puffin provider is closed";
+                    return "price provider is closed";
                 default:
                     return properties.StatusReason;
             }
