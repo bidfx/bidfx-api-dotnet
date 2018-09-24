@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.Collections.Generic;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
@@ -13,7 +15,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             lock (_lock)
             {
-                if (!_grids.ContainsKey(subject)) return null;
+                if (!_grids.ContainsKey(subject))
+                {
+                    return null;
+                }
+
                 return _grids[subject];
             }
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +26,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 
         public FieldDef FieldDefByFid(int fid)
         {
-            if (fid < 0) return null;
+            if (fid < 0)
+            {
+                return null;
+            }
+
             return fid < _fieldDefsByFid.Length ? _fieldDefsByFid[fid] : null;
         }
 
@@ -40,18 +46,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
             {
                 throw new ArgumentException("invalid field def added to dictionary: " + fieldDef);
             }
+
             EnsureCapactity(fieldDef.Fid + 1);
-            var previous = _fieldDefsByFid[fieldDef.Fid];
+            FieldDef previous = _fieldDefsByFid[fieldDef.Fid];
             if (previous != null)
             {
                 HandleDuplicateFid(previous);
             }
+
             _fieldDefsByFid[fieldDef.Fid] = fieldDef;
-            var tryGetValue = _fieldDefByName.TryGetValue(fieldDef.Name, out previous);
+            bool tryGetValue = _fieldDefByName.TryGetValue(fieldDef.Name, out previous);
             if (tryGetValue)
             {
                 HandleDuplicateName(previous);
             }
+
             _fieldDefByName[fieldDef.Name] = fieldDef;
         }
 
@@ -69,8 +78,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         {
             if (_fieldDefsByFid.Length < minimumCapacity)
             {
-                var newCapacity = CapacityPowerOfTwo(minimumCapacity);
-                var oldData = _fieldDefsByFid;
+                int newCapacity = CapacityPowerOfTwo(minimumCapacity);
+                FieldDef[] oldData = _fieldDefsByFid;
                 _fieldDefsByFid = new FieldDef[newCapacity];
                 oldData.CopyTo(_fieldDefsByFid, 0);
             }
@@ -88,24 +97,26 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 
         public int NextFreeFid()
         {
-            for (var i = _fieldDefsByFid.Length; i-- > 0;)
+            for (int i = _fieldDefsByFid.Length; i-- > 0;)
             {
-                var fieldDef = _fieldDefsByFid[i];
+                FieldDef fieldDef = _fieldDefsByFid[i];
                 if (fieldDef != null)
                 {
                     return fieldDef.Fid + 1;
                 }
             }
+
             return 0;
         }
 
         private static int CapacityPowerOfTwo(int minimumCapacity)
         {
-            var capacity = 1;
+            int capacity = 1;
             while (capacity < minimumCapacity)
             {
                 capacity <<= 1;
             }
+
             return capacity;
         }
     }

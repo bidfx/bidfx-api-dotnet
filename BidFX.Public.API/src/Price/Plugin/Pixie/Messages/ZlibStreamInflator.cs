@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.IO;
 using Ionic.Zlib;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
@@ -17,7 +19,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         {
             _outputStream.Position = 0;
             _outputStream.SetLength(0);
-            var array = stream.ToArray();
+            byte[] array = stream.ToArray();
             _inflator.Write(array, (int) stream.Position, array.Length - (int) stream.Position);
             _outputStream.Position = 0;
             return _outputStream;

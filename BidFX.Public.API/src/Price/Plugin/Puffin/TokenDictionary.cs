@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,22 +36,31 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public PuffinToken LookupToken(int code)
         {
-            if (code < 0 || code >= _nextCode) throw new PuffinSyntaxException("invalid XML token code (" + code + ")");
-            var tokenCode = _tokenCodes[code];
-            if (tokenCode == null) throw new PuffinSyntaxException("invalid XML token code (" + code + ")");
+            if (code < 0 || code >= _nextCode)
+            {
+                throw new PuffinSyntaxException("invalid XML token code (" + code + ")");
+            }
+
+            XmlTokenCode tokenCode = _tokenCodes[code];
+            if (tokenCode == null)
+            {
+                throw new PuffinSyntaxException("invalid XML token code (" + code + ")");
+            }
+
             ++tokenCode.Count;
             if (tokenCode.Code >= MaxOneByteCode && tokenCode.Count > _winningPost)
             {
                 TryPromotionToOneByteToken(tokenCode);
             }
+
             return tokenCode.Token;
         }
 
         private void TryPromotionToOneByteToken(XmlTokenCode tokenCode)
         {
-            for (var i = 0; i < MaxOneByteCode; ++i)
+            for (int i = 0; i < MaxOneByteCode; ++i)
             {
-                var swap = _tokenCodes[i];
+                XmlTokenCode swap = _tokenCodes[i];
                 if (tokenCode.Count > swap.Count)
                 {
                     _tokenCodes[tokenCode.Code] = swap;
@@ -60,6 +71,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     return;
                 }
             }
+
             _winningPost = tokenCode.Count;
         }
 
@@ -68,9 +80,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             if (_nextCode >= MaxCode)
             {
                 PurgeTable();
-                if (_nextCode >= MaxCode) return null;
+                if (_nextCode >= MaxCode)
+                {
+                    return null;
+                }
             }
-            var tokenCode = new XmlTokenCode(token, _nextCode++);
+
+            XmlTokenCode tokenCode = new XmlTokenCode(token, _nextCode++);
             _tokenCodes[tokenCode.Code] = tokenCode;
             return tokenCode;
         }
@@ -78,45 +94,50 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         private void PurgeTable()
         {
             //if (Log.IsDebugEnabled) Log.Debug("purging token dictionary");
-            var lowerQuartile = EstimateLowerQuartile();
-            var to = 0;
-            for (var from = 0; from < MaxCode; ++from)
+            int lowerQuartile = EstimateLowerQuartile();
+            int to = 0;
+            for (int from = 0; from < MaxCode; ++from)
             {
-                if (_tokenCodes[from].Count > lowerQuartile)
+                if (_tokenCodes[@from].Count > lowerQuartile)
                 {
-                    if (to < from)
+                    if (to < @from)
                     {
-                        _tokenCodes[to] = _tokenCodes[from];
+                        _tokenCodes[to] = _tokenCodes[@from];
                         _tokenCodes[to].Code = to;
                     }
+
                     ++to;
                 }
                 else
                 {
                     if (_table != null)
                     {
-                        _table.Remove(_tokenCodes[from].Token);
+                        _table.Remove(_tokenCodes[@from].Token);
                     }
-                    _tokenCodes[from] = null;
+
+                    _tokenCodes[@from] = null;
                 }
             }
+
             _nextCode = to;
         }
 
         private int EstimateLowerQuartile()
         {
-            var samples = new int[7];
-            var step = MaxCode / (samples.Length + 1);
+            int[] samples = new int[7];
+            int step = MaxCode / (samples.Length + 1);
             if (step == 0)
             {
                 return _tokenCodes[MaxCode / 2].Count;
             }
-            var j = step - 1;
-            for (var i = 0; i < samples.Length; ++i)
+
+            int j = step - 1;
+            for (int i = 0; i < samples.Length; ++i)
             {
                 samples[i] = _tokenCodes[j].Count;
                 j += step;
             }
+
             Array.Sort(samples);
             return samples[samples.Length / 4];
         }
@@ -128,7 +149,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public static int TwoByteCode(byte low, byte high)
         {
-            return low & CodeMask | (high - TokenCodes) << CodeBits;
+            return (low & CodeMask) | ((high - TokenCodes) << CodeBits);
         }
 
         public static bool IsFirstByteOfToken(byte b)
@@ -153,7 +174,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public override string ToString()
         {
-            var buf = new StringBuilder();
+            StringBuilder buf = new StringBuilder();
             buf.Append("XmlDictionary");
             buf.Append("\n  maxCode ");
             buf.Append(MaxCode);
@@ -162,11 +183,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             buf.Append("\n  winningPost ");
             buf.Append(_winningPost);
             buf.Append("\n  tokenCodes:");
-            for (var i = 0; i < _nextCode; ++i)
+            for (int i = 0; i < _nextCode; ++i)
             {
                 buf.Append("\n\t");
                 buf.Append(_tokenCodes[i]);
             }
+
             return buf.ToString();
         }
     }

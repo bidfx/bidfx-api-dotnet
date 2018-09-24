@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +36,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 throw new PuffinSyntaxException("invalid attribute value " + value);
             }
+
             _attributes.Add(new KeyValuePair<string, PuffinToken>(name, value));
             return this;
         }
@@ -95,7 +98,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         internal PuffinToken AttributeValue(string name)
         {
-            foreach (var attribute in _attributes)
+            foreach (KeyValuePair<string, PuffinToken> attribute in _attributes)
             {
                 if (attribute.Key.Equals(name))
                 {
@@ -103,13 +106,14 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     return token;
                 }
             }
+
             return PuffinToken.NullValueToken;
         }
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            var formatter = new MessageFormatter(sb);
+            StringBuilder sb = new StringBuilder();
+            MessageFormatter formatter = new MessageFormatter(sb);
             formatter.FormatElement(this);
             return sb.ToString();
         }
@@ -120,14 +124,20 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return true;
             }
-            var element = o as PuffinElement;
-            if (element == null) return false;
+
+            PuffinElement element = o as PuffinElement;
+            if (element == null)
+            {
+                return false;
+            }
+
             if (!_tag.Equals(element._tag))
             {
                 return false;
             }
-            var eq1 = _attributes.SequenceEqual(element._attributes);
-            var eq2 = ContentEqual(_content, element._content);
+
+            bool eq1 = _attributes.SequenceEqual(element._attributes);
+            bool eq2 = ContentEqual(_content, element._content);
             return eq1 && eq2;
         }
 
@@ -137,12 +147,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return !c1.Where((t, i) => !t.Equals(c2[i])).Any();
             }
+
             return false;
         }
 
         public override int GetHashCode()
         {
-            var result = _tag.GetHashCode();
+            int result = _tag.GetHashCode();
             result = 31 * result + _attributes.GetHashCode();
             result = 31 * result + _content.GetHashCode();
             return result;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -13,9 +15,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     internal class PuffinConnection : ISubscriber
     {
         private const string Subject = "Subject";
-
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("PuffinConnection");
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Thread _publisherThread;
@@ -43,7 +44,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             _publisherThread.Start();
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             QueueMessage(
                 new PuffinElement(PuffinTagName.Subscribe).AddAttribute(Subject, subject.ToString()).ToString());
@@ -72,13 +73,18 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 while (_running.Value)
                 {
-                    var message = _puffinMessageReader.ReadMessage();
+                    PuffinElement message = _puffinMessageReader.ReadMessage();
                     if (message == null)
                     {
                         Log.Info("the Puffin server closed the connection");
                         break;
                     }
-                    if (Log.IsDebugEnabled) Log.Debug("received message: " + message);
+
+                    if (Log.IsDebugEnabled)
+                    {
+                        Log.Debug("received message: " + message);
+                    }
+
                     OnMessage(message);
                 }
             }
@@ -149,7 +155,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private void SendMessageToPuffin(string message)
         {
-            if (Log.IsDebugEnabled) Log.Debug("sending message: " + message);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("sending message: " + message);
+            }
+
             _timeOfLastMessageSent = DateTime.Now;
             _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             _stream.Flush();
@@ -159,7 +169,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if (_running.Value)
             {
-                if (Log.IsDebugEnabled) Log.Debug("queuing message: " + message);
+                if (Log.IsDebugEnabled)
+                {
+                    Log.Debug("queuing message: " + message);
+                }
+
                 _messageQueue.Add(message);
             }
         }
@@ -192,22 +206,22 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private void OnPriceUpdateMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            string subject = element.AttributeValue(Subject).Text;
+            IPriceMap priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
             _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, false);
         }
 
         private void OnPriceSetMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
+            string subject = element.AttributeValue(Subject).Text;
+            IPriceMap priceMap = PriceAdaptor.ToPriceMap(element.Content.FirstOrDefault());
             _provider.InapiEventHandler.OnPriceUpdate(new Subject.Subject(subject), priceMap, true);
         }
 
         private void OnStatusMessage(PuffinElement element)
         {
-            var subject = element.AttributeValue(Subject).Text;
-            var status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
+            string subject = element.AttributeValue(Subject).Text;
+            SubscriptionStatus status = PriceAdaptor.ToStatus((int) element.AttributeValue("Id").Value);
             _provider.InapiEventHandler.OnSubscriptionStatus(new Subject.Subject(subject), status,
                 element.AttributeValue("Text").Text);
         }
@@ -216,7 +230,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if ("true".Equals(element.AttributeValue("SyncClock").Text))
             {
-                var transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
+                long transmitTime = (long) (element.AttributeValue("TransmitTime").Value ?? 0L);
                 QueueMessage(new PuffinElement(PuffinTagName.ClockSync)
                     .AddAttribute("OriginateTime", transmitTime)
                     .AddAttribute("ReceiveTime", JavaTime.ToJavaTime(_timeOfLastMessageReceived))

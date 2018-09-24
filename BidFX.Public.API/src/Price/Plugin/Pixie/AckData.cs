@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Tools;
@@ -14,15 +16,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public AckMessage ToAckMessage()
         {
-            var ackTime = JavaTime.CurrentTimeMillis();
-            var handlingEndNanoTime = JavaTime.NanoTime();
+            long ackTime = JavaTime.CurrentTimeMillis();
+            long handlingEndNanoTime = JavaTime.NanoTime();
             return ToAckMessage(ackTime, handlingEndNanoTime);
         }
 
         internal AckMessage ToAckMessage(long ackTime, long handlingEndNanoTime)
         {
-            var handlingDuration = Math.Max(0, handlingEndNanoTime - HandlingStartNanoTime);
-            var handlingDurationMicros = (handlingDuration + 500L) / 1000L;
+            long handlingDuration = Math.Max(0, handlingEndNanoTime - HandlingStartNanoTime);
+            long handlingDurationMicros = (handlingDuration + 500L) / 1000L;
             return new AckMessage
             {
                 AckTime = ackTime,

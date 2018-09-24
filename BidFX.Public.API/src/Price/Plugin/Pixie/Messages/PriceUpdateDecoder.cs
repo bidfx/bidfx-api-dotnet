@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -11,15 +13,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     internal class PriceUpdateDecoder
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("PriceUpdateDecoder");
 
         public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
-            for (var i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
-                var type = (char) stream.ReadByte();
-                var sid = (int) Varint.ReadU32(stream);
+                char type = (char) stream.ReadByte();
+                int sid = (int) Varint.ReadU32(stream);
                 switch (type)
                 {
                     case 'f':
@@ -45,56 +47,60 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private static void DecodeStatusUpdate(Stream stream, int sid, ISyncable syncable)
         {
-            var status = (char) stream.ReadByte();
-            var reason = DecodeAsString(stream);
+            char status = (char) stream.ReadByte();
+            string reason = DecodeAsString(stream);
             syncable.PriceStatus(sid, PriceStatusCodec.DecodeStatus(status), reason);
         }
 
         private static Dictionary<string, object> DecodePriceUpdate(Stream stream, IDataDictionary dataDictionary)
         {
-            var size = (int) Varint.ReadU32(stream);
-            var priceMap = new Dictionary<string, object>(size);
-            for (var i = 0; i < size; i++)
+            int size = (int) Varint.ReadU32(stream);
+            Dictionary<string, object> priceMap = new Dictionary<string, object>(size);
+            for (int i = 0; i < size; i++)
             {
-                var fid = (int) Varint.ReadU32(stream);
+                int fid = (int) Varint.ReadU32(stream);
                 if (fid == FieldDef.ReferecingFid)
                 {
-                    var referenceFid = Varint.ReadU32(stream);
-                    var fieldDef = GetFieldDef(stream, dataDictionary, priceMap, (int) referenceFid);
+                    uint referenceFid = Varint.ReadU32(stream);
+                    FieldDef fieldDef = GetFieldDef(stream, dataDictionary, priceMap, (int) referenceFid);
                     priceMap[fieldDef.Name] = null;
                 }
                 else
                 {
-                    var fieldDef = GetFieldDef(stream, dataDictionary, priceMap, fid);
+                    FieldDef fieldDef = GetFieldDef(stream, dataDictionary, priceMap, fid);
                     priceMap[fieldDef.Name] = DecodeField(stream, fieldDef);
                 }
             }
+
             return priceMap;
         }
 
         private static void DecodeFullGridImage(int sid, Stream stream, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable synable)
         {
-            var columnCount = (int) Varint.ReadU32(stream);
+            int columnCount = (int) Varint.ReadU32(stream);
             synable.StartGridImage(sid, columnCount);
-            var headers = new FieldDef[columnCount];
-            for (var i = 0; i < columnCount; i++)
+            FieldDef[] headers = new FieldDef[columnCount];
+            for (int i = 0; i < columnCount; i++)
             {
-                var fid = (int) Varint.ReadU32(stream);
+                int fid = (int) Varint.ReadU32(stream);
                 if (fid == FieldDef.ReferecingFid)
                 {
                     throw new IllegalStateException("unexpected field " + fid);
                 }
-                var rowCount = (int) Varint.ReadU32(stream);
-                var column = new object[rowCount];
-                var fieldDef = GetFieldDef(stream, dataDictionary, new Dictionary<string, object>(), fid);
-                for (var j = 0; j < rowCount; j++)
+
+                int rowCount = (int) Varint.ReadU32(stream);
+                object[] column = new object[rowCount];
+                FieldDef fieldDef = GetFieldDef(stream, dataDictionary, new Dictionary<string, object>(), fid);
+                for (int j = 0; j < rowCount; j++)
                 {
                     column[j] = DecodeField(stream, fieldDef);
                 }
+
                 synable.ColumnImage(fieldDef.Name, rowCount, column);
                 headers[i] = fieldDef;
             }
+
             gridHeaderRegistry.SetGridHeader(sid, headers);
             synable.EndGridImage();
         }
@@ -102,38 +108,40 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         private static void DecodeGridUpdate(int sid, Stream stream, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
-            var header = gridHeaderRegistry.GetGridHeader(sid);
+            FieldDef[] header = gridHeaderRegistry.GetGridHeader(sid);
 
-            var columnCount = (int) Varint.ReadU32(stream);
+            int columnCount = (int) Varint.ReadU32(stream);
             syncable.StartGridUpdate(sid, columnCount);
 
-            for (var i = 0; i < columnCount; i++)
+            for (int i = 0; i < columnCount; i++)
             {
-                var updateType = (char) stream.ReadByte();
-                var cid = (int) Varint.ReadU32(stream);
-                var rowCount = (int) Varint.ReadU32(stream);
-                var column = new object[rowCount];
+                char updateType = (char) stream.ReadByte();
+                int cid = (int) Varint.ReadU32(stream);
+                int rowCount = (int) Varint.ReadU32(stream);
+                object[] column = new object[rowCount];
 
-                var fieldDef = header[cid];
-                for (var j = 0; j < rowCount; j++)
+                FieldDef fieldDef = header[cid];
+                for (int j = 0; j < rowCount; j++)
                 {
                     column[j] = DecodeField(stream, fieldDef);
                 }
+
                 if (updateType == 'f')
                 {
                     syncable.FullColumnUpdate(fieldDef.Name, cid, rowCount, column);
                 }
                 else
                 {
-                    var rids = new int[rowCount];
+                    int[] rids = new int[rowCount];
 
-                    for (var j = 0; j < rowCount; j++)
+                    for (int j = 0; j < rowCount; j++)
                     {
                         rids[j] = (int) Varint.ReadU32(stream);
                     }
+
                     if (updateType == 't')
                     {
-                        var deletedFrom = (int) Varint.ReadU32(stream);
+                        int deletedFrom = (int) Varint.ReadU32(stream);
                         syncable.PartialTruncatedColumnUpdate(fieldDef.Name, cid, rowCount, column, rids, deletedFrom);
                     }
                     else
@@ -142,18 +150,20 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                     }
                 }
             }
+
             syncable.EndGridUpdate();
         }
 
         private static FieldDef GetFieldDef(Stream stream, IDataDictionary dataDictionary,
             Dictionary<string, object> priceMap, int fid)
         {
-            var fieldDef = dataDictionary.FieldDefByFid(fid);
+            FieldDef fieldDef = dataDictionary.FieldDefByFid(fid);
             if (fieldDef == null)
             {
                 throw new DecodingException("received a FID that is not in the data dictionary: " + fid, stream,
                     priceMap);
             }
+
             return fieldDef;
         }
 
@@ -188,6 +198,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.ZigZag:
                     return DecodeDecimal(Varint.ZigzagToLong(Varint.ReadU64(stream)), fieldDef.Scale);
             }
+
             fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
@@ -207,10 +218,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.Fixed8:
                     return StreamReaderHelper.ReadLong(stream);
                 case FieldEncoding.Varint:
-                    return (long) Varint.ReadU64(stream) * 1 ^ fieldDef.Scale;
+                    return ((long) Varint.ReadU64(stream) * 1) ^ fieldDef.Scale;
                 case FieldEncoding.ZigZag:
                     return Varint.ZigzagToLong(Varint.ReadU64(stream));
             }
+
             fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
@@ -230,10 +242,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 case FieldEncoding.Fixed8:
                     return (int) StreamReaderHelper.ReadLong(stream);
                 case FieldEncoding.Varint:
-                    return (int) Varint.ReadU32(stream) * 1 ^ fieldDef.Scale;
+                    return ((int) Varint.ReadU32(stream) * 1) ^ fieldDef.Scale;
                 case FieldEncoding.ZigZag:
                     return Varint.ZigzagToInt(Varint.ReadU32(stream));
             }
+
             fieldDef.Encoding.SkipFieldValue(stream);
             return null;
         }
@@ -245,7 +258,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         private static double DecodeDecimal(long value, int scale)
         {
-            var pow = Math.Pow(10, scale);
+            double pow = Math.Pow(10, scale);
             return scale == 0 ? value : value / pow;
         }
     }

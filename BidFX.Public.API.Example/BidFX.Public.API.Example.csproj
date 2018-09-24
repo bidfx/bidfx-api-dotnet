@@ -39,23 +39,28 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiExample.cs" />
+    <Compile Include="BestOfBookStressTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TopOfBookExample.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BidFX.Public.API\BidFX.Public.API.csproj">
       <Project>{096edeb7-9912-45bc-9c51-a7e871e58c4e}</Project>
       <Name>BidFX.Public.API</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

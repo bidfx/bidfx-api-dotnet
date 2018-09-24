@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
@@ -8,14 +9,16 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         static MessageFormatter()
         {
-            for (var i = 0; i < 23; ++i)
+            for (int i = 0; i < 23; ++i)
             {
                 Encodings[i] = "&#" + i + ";";
             }
-            for (var i = 128; i < 256; ++i)
+
+            for (int i = 128; i < 256; ++i)
             {
                 Encodings[i] = "&#" + i + ";";
             }
+
             Encodings['\n'] = null;
             Encodings['\r'] = null;
             Encodings['\t'] = null;
@@ -33,8 +36,8 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public static string FormatToString(PuffinElement element)
         {
-            var sb = new StringBuilder();
-            var formatter = new MessageFormatter(sb);
+            StringBuilder sb = new StringBuilder();
+            MessageFormatter formatter = new MessageFormatter(sb);
             formatter.FormatElement(element);
             return sb.ToString();
         }
@@ -43,17 +46,19 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             _builder.Append('<' + element.Tag);
 
-            foreach (var attribute in element.Attributes)
+            foreach (KeyValuePair<string, PuffinToken> attribute in element.Attributes)
             {
                 FormatAttribute(attribute.Key, attribute.Value);
             }
+
             if (element.HasContent())
             {
                 _builder.Append('>');
-                foreach (var subElement in element.Content)
+                foreach (PuffinElement subElement in element.Content)
                 {
                     FormatElement(subElement);
                 }
+
                 _builder.Append("</" + element.Tag + ">");
             }
             else
@@ -84,14 +89,15 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 default:
                     throw new PuffinSyntaxException("unexpect attribute value type " + value);
             }
+
             _builder.Append('"');
         }
 
         private void EscapeToken(IPriceField token)
         {
-            foreach (var c in token.Text)
+            foreach (char c in token.Text)
             {
-                var encoded = Encodings[c];
+                string encoded = Encodings[c];
                 if (encoded == null)
                 {
                     _builder.Append(c);

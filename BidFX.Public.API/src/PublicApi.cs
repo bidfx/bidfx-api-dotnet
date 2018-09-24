@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
+
+using System.Reflection;
 
 namespace BidFX.Public.API
 {

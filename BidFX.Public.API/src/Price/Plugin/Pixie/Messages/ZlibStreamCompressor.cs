@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.IO;
 using BidFX.Public.API.Price.Tools;
 using Ionic.Zlib;
@@ -18,7 +20,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public void Compress(MemoryStream fragment)
         {
-            var buffer = fragment.ToArray();
+            byte[] buffer = fragment.ToArray();
             _compressor.Write(buffer, 0, buffer.Length);
             fragment.SetLength(0);
         }

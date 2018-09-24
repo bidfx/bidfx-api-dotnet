@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price.Subject
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price.Subject
 {
     internal class SubjectValidator : IComponentHandler
     {
@@ -23,13 +25,21 @@
 
         public static void ValidatePart(string s, SubjectPart subjectPart)
         {
-            if (s == null) throw new IllegalSubjectException("null " + subjectPart);
-            var length = s.Length;
-            if (length == 0) throw new IllegalSubjectException("zero length " + subjectPart);
-            var mask = 1 << (int) subjectPart;
+            if (s == null)
+            {
+                throw new IllegalSubjectException("null " + subjectPart);
+            }
 
-            var charArray = s.ToCharArray();
-            foreach (var c in charArray)
+            int length = s.Length;
+            if (length == 0)
+            {
+                throw new IllegalSubjectException("zero length " + subjectPart);
+            }
+
+            int mask = 1 << (int) subjectPart;
+
+            char[] charArray = s.ToCharArray();
+            foreach (char c in charArray)
             {
                 if (c >= ValidChars.Length || (ValidChars[c] & mask) == 0)
                 {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
+using System.Collections.Generic;
 using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
@@ -7,12 +10,17 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     {
         public static IPriceMap ToPriceMap(PuffinElement element)
         {
-            if (element == null) return null;
-            var priceMap = new PriceMap();
-            foreach (var attribute in element.Attributes)
+            if (element == null)
+            {
+                return null;
+            }
+
+            PriceMap priceMap = new PriceMap();
+            foreach (KeyValuePair<string, PuffinToken> attribute in element.Attributes)
             {
                 priceMap.SetField(attribute.Key, AdaptPriceField(attribute.Key, attribute.Value));
             }
+
             return priceMap;
         }
 
@@ -44,6 +52,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 field = AdaptTickField((string) field.Value);
             }
+
             return field;
         }
 
@@ -81,17 +90,17 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private static IPriceField JavaDateTimeField(long javaTime)
         {
-            var dateTime = JavaTime.ToDateTime(javaTime);
-            var isoDate = JavaTime.IsoDateFormat(dateTime);
+            DateTime dateTime = JavaTime.ToDateTime(javaTime);
+            string isoDate = JavaTime.IsoDateFormat(dateTime);
             return new PriceField(isoDate, dateTime);
         }
 
         private static IPriceField IntDateTimeField(int yyyymmdd)
         {
-            var year = yyyymmdd / 10000;
-            var month = yyyymmdd / 100 % 100;
-            var day = yyyymmdd % 100;
-            var dateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+            int year = yyyymmdd / 10000;
+            int month = yyyymmdd / 100 % 100;
+            int day = yyyymmdd % 100;
+            DateTime dateTime = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
             return new PriceField(dateTime.ToString("yyyy-MM-dd"), dateTime);
         }
 
@@ -107,9 +116,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                         dateTime = dateTime.Subtract(TimeSpan.FromDays(1));
                     }
                 }
-                var isoDate = JavaTime.IsoDateFormat(dateTime);
+
+                string isoDate = JavaTime.IsoDateFormat(dateTime);
                 return new PriceField(isoDate, dateTime);
             }
+
             return field;
         }
 

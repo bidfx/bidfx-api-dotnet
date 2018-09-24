@@ -1,10 +1,14 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
+using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using log4net;
 
@@ -13,7 +17,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
     internal class PixieProviderPlugin : IProviderPlugin
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("PixieProviderPlugin");
 
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
@@ -22,10 +26,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public string Name { get; private set; }
         public string Service { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
+        public LoginService LoginService { get; set; }
         public bool Tunnel { set; get; }
         public bool DisableHostnameSslChecks { get; set; }
         public ProviderStatus ProviderStatus { get; private set; }
@@ -38,8 +39,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public PixieProviderPlugin()
         {
-            var name =
-                NameCache.Default().CreateUniqueName(MethodBase.GetCurrentMethod().DeclaringType);
+            string name =
+                NameCache.Default().CreateUniqueName("PixieProviderPlugin");
             Name = name;
             ProviderStatus = ProviderStatus.TemporarilyDown;
             StatusReason = "not started";
@@ -47,9 +48,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             _outputThread = new Thread(RunningLoop) {Name = name};
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            if (Log.IsDebugEnabled) Log.Debug("subscribing to " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("subscribing to " + subject);
+            }
+
+            if (!PixieSubjectValidator.ValidateSubject(subject, InapiEventHandler))
+            {
+                return;
+            }
+            
             if (_pixieConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
@@ -57,13 +67,17 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             else
             {
-                _pixieConnection.Subscribe(subject, refresh);
+                _pixieConnection.Subscribe(subject, autoRefresh, refresh);
             }
         }
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            if (Log.IsDebugEnabled) Log.Debug("unsubscribing from " + subject);
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("unsubscribing from " + subject);
+            }
+
             if (_pixieConnection != null)
             {
                 _pixieConnection.Unsubscribe(subject);
@@ -72,9 +86,19 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Start()
         {
-            if (InapiEventHandler == null) throw new IllegalStateException("set event handler before starting plugin");
+            if (InapiEventHandler == null)
+            {
+                throw new IllegalStateException("set event handler before starting plugin");
+            }
+
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("must be logged in before starting plugin");
+            }
+
             if (_running.CompareAndSet(false, true))
             {
+                LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
                 _outputThread.Start();
             }
         }
@@ -86,14 +110,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Stop()
         {
-            if (_running.CompareAndSet(true, false))
-            {
-                if (_pixieConnection != null)
-                {
-                    _pixieConnection.Close(Name + " stopped");
-                }
-                NotifyStatusChange(ProviderStatus.Closed, "client closed connection");
-            }
+            ForcedDisconnect("client closed connection");
         }
 
         private void RunningLoop()
@@ -108,6 +125,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                     Thread.Sleep(ReconnectInterval);
                 }
             }
+
             Log.Info("thread stopped");
         }
 
@@ -123,7 +141,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled) Log.Debug("connection terminated by " + e.Message);
+                Log.Warn("connection terminated by " + e.Message);
             }
         }
 
@@ -132,13 +150,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
-                Log.Info("opening socket to " + Host + ':' + Port);
-                var client = new TcpClient(Host, Port);
+                Log.Info("opening socket to " + LoginService.Host + ':' + LoginService.Port);
+                TcpClient client = new TcpClient(LoginService.Host, LoginService.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    ConnectionTools.UpgradeToSsl(ref _stream, Host, DisableHostnameSslChecks);
-                    var tunnelHeader = ConnectionTools.CreateTunnelHeader(Username, Password, Service, _guid);
+                    ConnectionTools.UpgradeToSsl(ref _stream, LoginService.Host, DisableHostnameSslChecks);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(LoginService.Username, LoginService.Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -147,45 +165,58 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                 }
+
                 _protocolOptions.ConfigureStream(_stream);
-                var welcome = ReadWelcomeMessage();
+                WelcomeMessage welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = (int) welcome.Version;
-                var login = new LoginMessage(Username, Password, ServiceProperties.Username(), PublicApi.Name,
+                LoginMessage login = new LoginMessage(LoginService.Username, LoginService.Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version);
                 WriteFrame(login);
-                var grantMessage = ReadGrantMessage();
+                GrantMessage grantMessage = ReadGrantMessage();
                 Log.Info("Received grant: " + grantMessage);
                 if (!grantMessage.Granted)
+                {
                     throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
+                }
+
                 Log.Info("Authenticated with Pixie server, client is logged in.");
             }
             catch (Exception e)
             {
                 Log.Warn("failed to handshake with highway server due to " + e.Message);
-                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
-                                                                   + e.Message);
+                if (e.Message.Contains("401 Unauthorized"))
+                {
+                    NotifyStatusChange(ProviderStatus.Unauthorized, "Invalid Credentials: "
+                                                                    + e.Message);
+                    _running.SetValue(false);
+                }
+                else
+                {
+                    NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
+                                                                       + e.Message);
+                }
                 throw e;
             }
         }
 
         private WelcomeMessage ReadWelcomeMessage()
         {
-            var memoryStream = ReadMessageFrame();
+            MemoryStream memoryStream = ReadMessageFrame();
             CheckType(memoryStream, PixieMessageType.Welcome);
             return new WelcomeMessage(memoryStream);
         }
 
         private GrantMessage ReadGrantMessage()
         {
-            var message = ReadMessageFrame();
+            MemoryStream message = ReadMessageFrame();
             CheckType(message, PixieMessageType.Grant);
             return new GrantMessage(message);
         }
 
         private static void CheckType(Stream stream, byte expectedType)
         {
-            var receivedType = (byte) stream.ReadByte();
+            byte receivedType = (byte) stream.ReadByte();
             if (receivedType != expectedType)
             {
                 throw new ArgumentException("received a message of type " + (char) receivedType +
@@ -195,9 +226,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            var encodedMessage = message.Encode(_protocolOptions.Version);
-            var frameLength = Convert.ToInt32(encodedMessage.Length);
-            var buffer = encodedMessage.GetBuffer();
+            MemoryStream encodedMessage = message.Encode(_protocolOptions.Version);
+            int frameLength = Convert.ToInt32(encodedMessage.Length);
+            byte[] buffer = encodedMessage.GetBuffer();
             Varint.WriteU32(_stream, frameLength);
             _stream.Write(buffer, 0, frameLength);
             _stream.Flush();
@@ -205,8 +236,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private MemoryStream ReadMessageFrame()
         {
-            var frameLength = Varint.ReadU32(_stream);
-            if (frameLength == 0) throw new IOException("unexpected empty Pixie message frame");
+            uint frameLength = Varint.ReadU32(_stream);
+            if (frameLength == 0)
+            {
+                throw new IOException("unexpected empty Pixie message frame");
+            }
+
             byte[] frameBuffer = new byte[frameLength];
             int totalRead = 0;
             while (totalRead < frameLength)
@@ -216,21 +251,27 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     throw new IOException("end of message stream reached (perhaps the server closed the connection)");
                 }
+
                 totalRead += got;
             }
+
             return new MemoryStream(frameBuffer);
         }
 
         // TODO implement subject check
         public bool IsSubjectCompatible(Subject.Subject subject)
         {
-            return subject.LookupValue("Source") == null;
+            return subject.GetComponent("Source") == null;
         }
 
         private void NotifyStatusChange(ProviderStatus status, string reason)
         {
-            var previousStatus = ProviderStatus;
-            if (previousStatus == status && string.Equals(StatusReason, reason)) return;
+            ProviderStatus previousStatus = ProviderStatus;
+            if (previousStatus == status && string.Equals(StatusReason, reason))
+            {
+                return;
+            }
+
             ProviderStatus = status;
             StatusReason = reason;
             InapiEventHandler.OnProviderStatus(this, previousStatus);
@@ -239,6 +280,25 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public PixieProtocolOptions PixieProtocolOptions
         {
             get { return _protocolOptions; }
+        }
+
+        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
+        {
+            ForcedDisconnect(e.Reason);
+        }
+        
+        private void ForcedDisconnect(string reason)
+        {
+            if (_running.CompareAndSet(true, false))
+            {
+                if (_pixieConnection != null)
+                {
+                    _pixieConnection.Close(Name + " stopped");
+                }
+
+                NotifyStatusChange(ProviderStatus.Closed, reason);
+                LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price
 {
     /// <summary>
     /// This enumeration represents the status of a provider plug-in module.
@@ -50,6 +52,9 @@
         /// Session it is not normal for a provider to notify NAPIClient when its status
         /// changes to Closed.
         /// </remarks>
-        Closed
+        Closed,
+        
+        /// <summary>Indicated that the provider recieved an unauthorized response from the server</summary>
+        Unauthorized
     }
 }

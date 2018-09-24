@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +45,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 throw new ArgumentException("control SID (" + sid + ") not in range 0..<" + _size);
             }
+
             _controls[sid] = controlOperation;
             _options = BitSetter.SetBit(_options, ControlsBit);
         }
@@ -83,38 +86,42 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             {
                 throw new IncompatibilityException(version, "SubscriptionSync with unchanged edition");
             }
-            var memoryStream = new MemoryStream();
+
+            MemoryStream memoryStream = new MemoryStream();
             memoryStream.WriteByte(PixieMessageType.SubscriptionSync);
             Varint.WriteU32(memoryStream, version < 2 ? _options & 1 : _options);
             Varint.WriteU32(memoryStream, _edition);
             Varint.WriteU32(memoryStream, _size);
 
-            var appender = IsCompressed()
+            IStreamCompressor appender = IsCompressed()
                 ? (IStreamCompressor) new ZlibStreamCompressor(CompressionLevel)
                 : new UncompressedStreamCompressor();
 
-            var subjectBuffer = new MemoryStream();
+            MemoryStream subjectBuffer = new MemoryStream();
             if (IsChangedEdition())
             {
-                foreach (var subject in Subjects)
+                foreach (Subject.Subject subject in Subjects)
                 {
                     Varint.WriteStringArray(subjectBuffer,
-                        SubjectLobotomy.ExtractComponents(SubjectMutator.ToOldVersion(subject)));
+                        subject.InternalComponents());
                     appender.Compress(subjectBuffer);
                 }
             }
+
             if (HasControls() && version >= 2)
             {
                 Varint.WriteU32(subjectBuffer, _controls.Count);
-                foreach (var control in _controls)
+                foreach (KeyValuePair<int, ControlOperation> control in _controls)
                 {
                     Varint.WriteU32(subjectBuffer, control.Key);
-                    var controlOperation = control.Value;
+                    ControlOperation controlOperation = control.Value;
                     subjectBuffer.WriteByte(ControlOperationExtenstions.GetCode(controlOperation));
                 }
+
                 appender.Compress(subjectBuffer);
             }
-            var compressed = appender.GetCompressed();
+
+            byte[] compressed = appender.GetCompressed();
             memoryStream.Write(compressed, 0, compressed.Length);
             return memoryStream;
         }
@@ -122,10 +129,10 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public string Summarize()
         {
             return "SubscriptionSync(edition=" + _edition
-                   + ", compressed=" + IsCompressed()
-                   + ", controls=" + _controls.Count
-                   + ", changed=" + IsChangedEdition()
-                   + ", subjects=" + _size + ')';
+                                               + ", compressed=" + IsCompressed()
+                                               + ", controls=" + _controls.Count
+                                               + ", changed=" + IsChangedEdition()
+                                               + ", subjects=" + _size + ')';
         }
     }
 }

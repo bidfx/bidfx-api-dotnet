@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price.Plugin.Puffin
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal enum TokenType
     {

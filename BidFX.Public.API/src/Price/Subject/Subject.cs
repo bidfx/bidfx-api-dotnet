@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +15,12 @@ namespace BidFX.Public.API.Price.Subject
 
         private readonly string[] _components;
         private int _hash;
-        public bool AutoRefresh { get; internal set; }
 
         /// <summary>
         /// Creates a new subject.
         /// </summary>
         /// <param name="formattedSubject">a formatted subject string</param>
-        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
-        public Subject(string formattedSubject, bool autoRefresh = false) : this(BuildComponents(formattedSubject),
-            autoRefresh)
+        public Subject(string formattedSubject) : this(BuildComponents(formattedSubject))
         {
         }
 
@@ -29,16 +28,14 @@ namespace BidFX.Public.API.Price.Subject
         /// Creates a subject from an array of components. A dangerous constructor that should only be called by a subject builder to ensure the subject is valid.
         /// </summary>
         /// <param name="components">the components</param>
-        /// <param name="autoRefresh">whether the subscription should refresh if it can expire</param>
-        internal Subject(string[] components, bool autoRefresh = false)
+        internal Subject(string[] components)
         {
             _components = components;
-            AutoRefresh = autoRefresh;
         }
 
         private static string[] BuildComponents(string formattedSubject)
         {
-            var builder = new SubjectBuilder();
+            SubjectBuilder builder = new SubjectBuilder();
             Formatter.ParseSubject(formattedSubject, builder);
             return builder.GetComponents();
         }
@@ -48,9 +45,9 @@ namespace BidFX.Public.API.Price.Subject
         /// </summary>
         /// <param name="key">the name of the variable to look up</param>
         /// <returns>the variable value or null if the variable is undefiened</returns>
-        public string LookupValue(string key)
+        public string GetComponent(string key)
         {
-            var index = SubjectUtils.BinarySearch(_components, _components.Length, key);
+            int index = SubjectUtils.BinarySearch(_components, _components.Length, key);
             return index >= 0 ? _components[index + 1] : null;
         }
 
@@ -99,8 +96,16 @@ namespace BidFX.Public.API.Price.Subject
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
             return obj.GetType() == GetType() && Equals((Subject) obj);
         }
 

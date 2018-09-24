@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price
 {
     /// <summary>
     /// Interface used by components that can subscribe to pricing using subjects.
@@ -9,8 +11,9 @@
         /// Subscribe to price updates for a given subject.
         /// </summary>
         /// <param name="subject">The subject to subscribe to.</param>
+        /// <param name="autoRefresh">A flag that is set to true when the subscription should refresh automatically.</param>
         /// <param name="refresh">A flag that is set to true when the caller is attempting to refresh an existing subscription.</param>
-        void Subscribe(Subject.Subject subject, bool refresh = false);
+        void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false);
 
         /// <summary>
         /// Unsubscribe to price updates for a given subject.

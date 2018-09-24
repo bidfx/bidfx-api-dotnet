@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,7 +19,7 @@ namespace BidFX.Public.API.Price
     internal class PriceManager : ISession, IBulkSubscriber
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger("PriceManager");
 
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
@@ -27,22 +29,20 @@ namespace BidFX.Public.API.Price
         private readonly object _readyLock = new object();
         private const bool Tunnel = true; //Set to false if connecting to a local instance of a provider for testing.
 
-        public static string Username { get; internal set; } //Delete when SubjectMutator is removed
         public TimeSpan SubscriptionRefreshInterval { get; set; }
-//        public string Username { get; set; } //Uncomment when SubjectMutator is removed
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
+
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
+        public int LevelTwoSubscriptionLimit { get; internal set; }
+        public int LevelOneSubscriptionLimit { get; internal set; }
 
         public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
         public event EventHandler<ProviderStatusEvent> ProviderStatusEventHandler;
 
-        public PriceManager(string username) // remove this param when SubjectMutator is removed
+        public PriceManager()
         {
-            Username = username; // remove this when SubjectMutator is removed
+            // TODO - stop when login service disconnects
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new ApiEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
@@ -54,15 +54,20 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
+            if (!LoginService.LoggedIn)
+            {
+                throw new IllegalStateException("Not logged in.");
+            }
             AddPublicPuffinProvider();
             AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
                 Log.Info("started");
-                foreach (var providerPlugin in _providerPlugins)
+                foreach (IProviderPlugin providerPlugin in _providerPlugins)
                 {
                     providerPlugin.Start();
                 }
+
                 _subscriptionRefreshThread.Start();
             }
         }
@@ -71,10 +76,7 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PuffinProviderPlugin
             {
-                Host = Host,
-                Password = Password,
-                Username = Username,
-                Port = Port,
+                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://puffin",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -86,10 +88,7 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PixieProviderPlugin
             {
-                Host = Host,
-                Password = Password,
-                Username = Username,
-                Port = Port,
+                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://highway",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -101,10 +100,11 @@ namespace BidFX.Public.API.Price
         {
             while (_running.Value)
             {
-                foreach (var subject in _subscriptions.StaleSubjects())
+                foreach (Subscription subscription in _subscriptions.StaleSubscriptions())
                 {
-                    RefreshSubscription(subject, true);
+                    RefreshSubscription(subscription, true);
                 }
+
                 Thread.Sleep(SubscriptionRefreshInterval);
             }
         }
@@ -115,7 +115,7 @@ namespace BidFX.Public.API.Price
             {
                 Log.Info("stopping");
                 _subscriptions.Clear();
-                foreach (var providerPlugin in _providerPlugins)
+                foreach (IProviderPlugin providerPlugin in _providerPlugins)
                 {
                     providerPlugin.Stop();
                 }
@@ -132,27 +132,47 @@ namespace BidFX.Public.API.Price
             get { return Running && _providerPlugins.All(pp => ProviderStatus.Ready == pp.ProviderStatus); }
         }
 
+        private bool ProvidersInFinalState
+        {
+            get
+            {
+                return _providerPlugins.All(pp =>
+                    ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.Unauthorized == pp.ProviderStatus);
+            }
+        }
+
+        public LoginService LoginService { get; set; }
+
         public bool WaitUntilReady(TimeSpan timeout)
         {
-            if (Ready) return true;
+            if (Ready)
+            {
+                return true;
+            }
+
             lock (_readyLock)
             {
-                var stopwatch = new Stopwatch();
+                Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
                 do
                 {
-                    var remaining = timeout.Subtract(stopwatch.Elapsed);
-                    if (remaining.CompareTo(TimeSpan.Zero) > 0 && Monitor.Wait(_readyLock, remaining)) continue;
-                    return false;
-                } while (!Ready);
-                return true;
+                    TimeSpan remaining = timeout.Subtract(stopwatch.Elapsed);
+                    if (remaining.CompareTo(TimeSpan.Zero) > 0 && Monitor.Wait(_readyLock, remaining))
+                    {
+                        continue;
+                    }
+
+                    return false; //Timed out
+                } while (!ProvidersInFinalState);
+
+                return Ready;
             }
         }
 
         public ICollection<IProviderProperties> ProviderProperties()
         {
-            var list = new List<IProviderProperties>();
-            foreach (var providerPlugin in _providerPlugins)
+            List<IProviderProperties> list = new List<IProviderProperties>();
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 list.Add(new ProviderProperties
                 {
@@ -161,30 +181,71 @@ namespace BidFX.Public.API.Price
                     StatusReason = providerPlugin.StatusReason
                 });
             }
+
             return list;
         }
 
         private void AddProviderPlugin(IProviderPlugin providerPlugin)
         {
-            if (_running.Value) throw new IllegalStateException("add providers before starting the NAPIClient session");
+            if (_running.Value)
+            {
+                throw new IllegalStateException("add providers before starting the NAPIClient session");
+            }
+
             providerPlugin.InapiEventHandler = _inapiEventHandler;
             _providerPlugins.Add(providerPlugin);
         }
 
-        public void Subscribe(Subject.Subject subject, bool refresh = false)
+        public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
-            _subscriptions.Add(subject);
-            RefreshSubscription(subject, refresh);
+
+            if (SubjectExceedsLimits(subject))
+            {
+                return;
+            }
+            Subscription subscription = _subscriptions.Add(subject, autoRefresh);
+            RefreshSubscription(subscription, refresh);
         }
 
-        private void RefreshSubscription(Subject.Subject subject, bool refresh = true)
+        private bool SubjectExceedsLimits(Subject.Subject subject)
         {
-            foreach (var providerPlugin in _providerPlugins)
+            string level = subject.GetComponent("Level");
+            if (level != null && level.Equals("2") && SubjectExceedsLevelTwoLimit(subject))
             {
-                if (providerPlugin.IsSubjectCompatible(subject))
+                Log.WarnFormat("Could not subscribe to subject - Maximum number of level two subjects reached: {0}", LevelTwoSubscriptionLimit);
+                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level two subjects reached: " + LevelTwoSubscriptionLimit);
+                return true;
+            }
+            if (level != null && level.Equals("1") && SubjectExceedsLevelOneLimit(subject))
+            {
+                Log.WarnFormat("Could not subscribe to subject - Maximum number of level one subjects reached: {0}", LevelOneSubscriptionLimit);
+                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level one subjects reached: " + LevelOneSubscriptionLimit);
+                return true;
+            }
+            
+            return false;
+        }
+
+        private bool SubjectExceedsLevelTwoLimit(Subject.Subject subject)
+        {
+            return _subscriptions.LevelTwoSubjects() >= LevelTwoSubscriptionLimit &&
+                   !_subscriptions.Subjects().Contains(subject);
+        }
+        
+        private bool SubjectExceedsLevelOneLimit(Subject.Subject subject)
+        {
+            return _subscriptions.LevelOneSubjects() >= LevelOneSubscriptionLimit &&
+                   !_subscriptions.Subjects().Contains(subject);
+        }
+
+        private void RefreshSubscription(Subscription subscription, bool refresh = true)
+        {
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
+            {
+                if (providerPlugin.IsSubjectCompatible(subscription.Subject))
                 {
-                    providerPlugin.Subscribe(subject, refresh);
+                    providerPlugin.Subscribe(subscription.Subject, subscription.AutoRefresh, refresh);
                 }
             }
         }
@@ -193,7 +254,7 @@ namespace BidFX.Public.API.Price
         {
             Log.Info("unsubscribe from " + subject);
             _subscriptions.Remove(subject);
-            foreach (var providerPlugin in _providerPlugins)
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subject))
                 {
@@ -204,23 +265,21 @@ namespace BidFX.Public.API.Price
 
         public void UnsubscribeAll()
         {
-            foreach (var providerPlugin in _providerPlugins)
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
+            foreach (Subscription subscription in _subscriptions.Clear())
             {
-                foreach (var subject in _subscriptions.Clear())
+                if (providerPlugin.IsSubjectCompatible(subscription.Subject))
                 {
-                    if (providerPlugin.IsSubjectCompatible(subject))
-                    {
-                        providerPlugin.Unsubscribe(subject);
-                    }
+                    providerPlugin.Unsubscribe(subscription.Subject);
                 }
             }
         }
 
         public void ResubscribeAll()
         {
-            var subjects = _subscriptions.Subjects();
+            List<Subject.Subject> subjects = _subscriptions.Subjects();
             Log.Info("resubscribing to all " + subjects.Count + " instruments");
-            foreach (var providerPlugin in _providerPlugins)
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 if (ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
                 {
@@ -236,9 +295,9 @@ namespace BidFX.Public.API.Price
         private static void ResubscribeToAllOn(IProviderPlugin providerPlugin,
             IEnumerable<Subject.Subject> subscriptions)
         {
-            var subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
+            List<Subject.Subject> subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
             Log.Info("resubscribing to " + subjects.Count + " instruments on " + providerPlugin.Name);
-            foreach (var subject in subjects)
+            foreach (Subject.Subject subject in subjects)
             {
                 providerPlugin.Subscribe(subject);
             }
@@ -250,17 +309,21 @@ namespace BidFX.Public.API.Price
             NotifyProviderStatusChange();
             if (providerStatusEvent.ProviderStatus != providerStatusEvent.PreviousProviderStatus)
             {
-                var providerPlugin = ProviderPluginByName(providerStatusEvent.Name);
-                if (providerPlugin == null) return;
+                IProviderPlugin providerPlugin = ProviderPluginByName(providerStatusEvent.Name);
+                if (providerPlugin == null)
+                {
+                    return;
+                }
+
                 if (ProviderStatus.Ready == providerStatusEvent.ProviderStatus)
                 {
                     ResubscribeToAllOn(providerPlugin, _subscriptions.Subjects());
                 }
                 else
                 {
-                    var reason = ProviderStatusToSubscriptionReason(providerStatusEvent);
-                    var subjects = _subscriptions.Subjects().Where(providerPlugin.IsSubjectCompatible).ToList();
-                    foreach (var subject in subjects)
+                    string reason = ProviderStatusToSubscriptionReason(providerStatusEvent);
+                    List<Subject.Subject> subjects = _subscriptions.Subjects().Where(providerPlugin.IsSubjectCompatible).ToList();
+                    foreach (Subject.Subject subject in subjects)
                     {
                         _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE, reason);
                     }
@@ -270,13 +333,14 @@ namespace BidFX.Public.API.Price
 
         private IProviderPlugin ProviderPluginByName(string name)
         {
-            foreach (var providerPlugin in _providerPlugins)
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 if (name.Equals(providerPlugin.Name))
                 {
                     return providerPlugin;
                 }
             }
+
             Log.Error("cannot find provider plugin with name \"" + name + '"');
             return null;
         }
@@ -319,9 +383,22 @@ namespace BidFX.Public.API.Price
 
             public void OnPriceUpdate(Subject.Subject subject, IPriceMap priceUpdate, bool replaceAllFields)
             {
-                if (!_session._running.Value) return;
-                var subscription = _session._subscriptions.GetSubscription(subject);
-                if (subscription == null) return;
+                if (!_session._running.Value)
+                {
+                    return;
+                }
+
+                Subscription subscription = _session._subscriptions.GetSubscription(subject);
+                if (subscription == null)
+                {
+                    return;
+                }
+
+                if (SubscriptionStatus.OK != subscription.SubscriptionStatus)
+                {
+                    OnSubscriptionStatus(subject, SubscriptionStatus.OK, "Received price update.");
+                }
+                
                 subscription.AllPriceFields.MergedPriceMap(priceUpdate, replaceAllFields);
                 if (_session.PriceUpdateEventHandler != null)
                 {
@@ -336,11 +413,18 @@ namespace BidFX.Public.API.Price
 
             public void OnSubscriptionStatus(Subject.Subject subject, SubscriptionStatus status, string reason)
             {
-                if (!_session._running.Value) return;
-                var subscription = _session._subscriptions.GetSubscription(subject);
-                if (subscription == null) return;
-                subscription.SubscriptionStatus = status;
-                subscription.AllPriceFields.Clear();
+                if (!_session._running.Value)
+                {
+                    return;
+                }
+
+                Subscription subscription = _session._subscriptions.GetSubscription(subject);
+                if (subscription != null)
+                {
+                    subscription.SubscriptionStatus = status;
+                    subscription.AllPriceFields.Clear();
+                }
+
                 if (_session.SubscriptionStatusEventHandler != null)
                 {
                     _session.SubscriptionStatusEventHandler(this, new SubscriptionStatusEvent
@@ -354,7 +438,11 @@ namespace BidFX.Public.API.Price
 
             public void OnProviderStatus(IProviderPlugin providerPlugin, ProviderStatus previousStatus)
             {
-                if (!_session._running.Value) return;
+                if (!_session._running.Value)
+                {
+                    return;
+                }
+
                 if (_session.ProviderStatusEventHandler != null)
                 {
                     _session.ProviderStatusEventHandler(this, new ProviderStatusEvent
@@ -364,84 +452,6 @@ namespace BidFX.Public.API.Price
                         ProviderStatus = providerPlugin.ProviderStatus,
                         StatusReason = providerPlugin.StatusReason
                     });
-                }
-            }
-        }
-
-        private class SubscriptionSet
-        {
-            private readonly Dictionary<Subject.Subject, Subscription> _map =
-                new Dictionary<Subject.Subject, Subscription>();
-
-            public void Add(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    if (!_map.ContainsKey(subject))
-                    {
-                        _map[subject] = new Subscription();
-                    }
-                }
-            }
-
-            public void Remove(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    if (_map.ContainsKey(subject))
-                    {
-                        _map.Remove(subject);
-                    }
-                }
-            }
-
-            public IEnumerable<Subject.Subject> Clear()
-            {
-                lock (_map)
-                {
-                    var copy = new List<Subject.Subject>(_map.Keys);
-                    _map.Clear();
-                    return copy;
-                }
-            }
-
-            public List<Subject.Subject> Subjects()
-            {
-                lock (_map)
-                {
-                    return new List<Subject.Subject>(_map.Keys);
-                }
-            }
-
-            public IEnumerable<Subject.Subject> StaleSubjects()
-            {
-                lock (_map)
-                {
-                    return (from pair in _map
-                        where SubscriptionStatus.OK != pair.Value.SubscriptionStatus
-                        select pair.Key).ToList();
-                }
-            }
-
-            public Subscription GetSubscription(Subject.Subject subject)
-            {
-                lock (_map)
-                {
-                    Subscription subscription;
-                    _map.TryGetValue(subject, out subscription);
-                    return subscription;
-                }
-            }
-
-            internal class Subscription
-            {
-                public SubscriptionStatus SubscriptionStatus { get; set; }
-                public PriceMap AllPriceFields { get; private set; }
-
-                public Subscription()
-                {
-                    SubscriptionStatus = SubscriptionStatus.PENDING;
-                    AllPriceFields = new PriceMap();
                 }
             }
         }

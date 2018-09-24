@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API
+﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
+
+namespace BidFX.Public.API
 {
     /// <summary>
     /// This class provides a holder for the default Client.

@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price
 {
     /// <summary>
     /// Status codes associated with a price subscription.

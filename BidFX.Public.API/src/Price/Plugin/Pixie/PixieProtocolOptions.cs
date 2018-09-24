@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 using System.IO;
 using BidFX.Public.API.Price.Tools;
@@ -34,6 +36,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     throw new ArgumentException("protocol version (" + value + ") > " + Version);
                 }
+
                 _version = value;
             }
         }
@@ -59,6 +62,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     throw new ArgumentException("minimum throttle interval (" + value + ") < 10 milliseconds");
                 }
+
                 _minti = value;
             }
         }
@@ -70,9 +74,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public string GetProtocolSignature()
         {
-            var signature = "pixie://localhost:9902?version=" + Version + "&heartbeat=" + Heartbeat + "&idle=" +
+            string signature = "pixie://localhost:9902?version=" + Version + "&heartbeat=" + Heartbeat + "&idle=" +
                             Idle;
-            if (Minti != 0) signature += "&minti=" + Minti;
+            if (Minti != 0)
+            {
+                signature += "&minti=" + Minti;
+            }
+
             return signature + '\n';
         }
     }

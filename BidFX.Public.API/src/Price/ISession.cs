@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 
 namespace BidFX.Public.API.Price
@@ -37,12 +39,12 @@ namespace BidFX.Public.API.Price
         /// the user does calls Unsubscribe.
         /// </remarks>
         TimeSpan SubscriptionRefreshInterval { get; set; }
-
+        
         /// <summary>
         /// Checks if the session is ready for handling subscriptions.
         /// </summary>
         /// <remarks>
-        /// The session is ready when it is running and all of its provider plugins are ready.
+        /// The session is ready when it is running and at least one of its provider plugins are logged in and ready.
         /// </remarks>
         bool Ready { get; }
 
@@ -58,7 +60,7 @@ namespace BidFX.Public.API.Price
         /// orders based on market data provided by the API.
         /// </remarks>
         /// <param name="timeout"></param>
-        /// <returns>true if the session is ready and false if the wait timed out</returns>
+        /// <returns>true if the session is ready and false if the wait timed out or a provider returned Unauthorized</returns>
         bool WaitUntilReady(TimeSpan timeout);
 
         /// <summary>

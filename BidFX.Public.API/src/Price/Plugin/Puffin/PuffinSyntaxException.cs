@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin

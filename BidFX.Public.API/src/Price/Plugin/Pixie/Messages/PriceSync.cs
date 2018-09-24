@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+using System.IO;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Tools;
 
@@ -34,9 +36,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public void Visit(IDataDictionary dataDictionary, IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {
-            if (Size <= 0) return;
+            if (Size <= 0)
+            {
+                return;
+            }
 
-            var stream = IsCompressed() ? _inflator.Inflate(_priceUpdateStream) : _priceUpdateStream;
+            Stream stream = IsCompressed() ? _inflator.Inflate(_priceUpdateStream) : _priceUpdateStream;
             PriceUpdateDecoder.Visit(stream, (int) Size, dataDictionary, gridHeaderRegistry, syncable);
         }
     }

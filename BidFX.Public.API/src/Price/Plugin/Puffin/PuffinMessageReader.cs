@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +37,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public PuffinElement ReadMessage()
         {
-            var token = NextToken();
+            PuffinToken token = NextToken();
             return NextElement(token);
         }
 
@@ -45,13 +47,15 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return null;
             }
+
             try
             {
                 if (!token.IsStartTag())
                 {
                     throw new PuffinSyntaxException("start tag expected");
                 }
-                var element = new PuffinElement(token.Text);
+
+                PuffinElement element = new PuffinElement(token.Text);
                 while ((token = NextToken()) != null)
                 {
                     switch (token.TokenType)
@@ -63,6 +67,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                             {
                                 return element;
                             }
+
                             element = _elementStack.Pop();
                             break;
                         }
@@ -75,12 +80,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                         }
                         case TokenType.AttributeName:
                         {
-                            var name = token;
+                            PuffinToken name = token;
                             token = NextToken();
                             if (token == null)
                             {
                                 break;
                             }
+
                             element.AddAttribute(name.Text, token);
                             break;
                         }
@@ -98,6 +104,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                         }
                     }
                 }
+
                 throw new PuffinSyntaxException("unexpected document termination");
             }
             catch (PuffinSyntaxException e)
@@ -119,31 +126,38 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     {
                         _end = 0;
                     }
+
                     if (_end > 0)
                     {
                         Array.Copy(_buffer, _mark, _buffer, 0, _end);
                     }
+
                     _mark = 0;
-                    var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
+                    int got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
                     if (got == 0)
                     {
                         return false;
                     }
+
                     _end += got;
                 }
+
                 while (_point >= _end)
                 {
                     if (_point >= _buffer.Length)
                     {
                         throw new PuffinSyntaxException("input buffer too small " + _buffer.Length);
                     }
-                    var got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
+
+                    int got = _inStream.Read(_buffer, _end, _buffer.Length - _end);
                     if (got == 0)
                     {
                         return false;
                     }
+
                     _end += got;
                 }
+
                 return true;
             }
             catch (IOException e)
@@ -154,10 +168,10 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private PuffinToken NextToken()
         {
-            var state = State.FirstByte;
+            State state = State.FirstByte;
             for (_mark = ++_point; _point < _end || FillBuffer(); ++_point)
             {
-                var b = _buffer[_point];
+                byte b = _buffer[_point];
                 //if (Log.IsDebugEnabled) Log.Debug("read byte " + b+" ("+(char)b+") at state "+state);
 
                 switch (state)
@@ -176,19 +190,24 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                                 {
                                     return _tagStack.Pop().ToEndTag();
                                 }
+
                                 if (b == (byte) TokenType.TagEndEmptyContent)
                                 {
                                     _tagStack.Pop();
                                     return PuffinToken.EmptyToken;
                                 }
+
                                 state = State.ScanUnseenToken;
                             }
                             else
                             {
                                 throw new PuffinSyntaxException("token tag expected instead of " + b
-                                                                + " ('" + (char) b + "') at position " + _point);
+                                                                                                 + " ('" + (char) b +
+                                                                                                 "') at position " +
+                                                                                                 _point);
                             }
                         }
+
                         break;
                     }
                     case State.SecondByte:
@@ -203,7 +222,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                             token = _dictionary.OneByteToken(_buffer[_mark]);
                             --_point;
                         }
-                        if (!token.IsStartTag()) return token;
+
+                        if (!token.IsStartTag())
+                        {
+                            return token;
+                        }
+
                         _tagStack.Push(token);
                         return token;
                     }
@@ -211,11 +235,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     {
                         if (!TokenDictionary.IsPlainText(b))
                         {
-                            var type = (TokenType) _buffer[_mark];
+                            TokenType type = (TokenType) _buffer[_mark];
                             if (_mark < --_point)
                             {
                                 PuffinToken token;
-                                var text = MarkedText();
+                                string text = MarkedText();
                                 switch (type)
                                 {
                                     case TokenType.TagStart:
@@ -249,19 +273,24 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                                     default:
                                         throw new PuffinSyntaxException("unrecognised token " + type);
                                 }
+
                                 _dictionary.InsertToken(token);
                                 return token;
                             }
+
                             if (type == TokenType.StringValue)
                             {
                                 return PuffinToken.NullValueToken;
                             }
+
                             if (type == TokenType.NestedContent)
                             {
                                 return PuffinToken.NullContentToken;
                             }
+
                             throw new PuffinSyntaxException("text of previously unseen token expected");
                         }
+
                         break;
                     }
                     default:
@@ -270,10 +299,12 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     }
                 }
             }
+
             if (state != State.FirstByte)
             {
                 throw new PuffinSyntaxException("token completion expected");
             }
+
             return null;
         }
 
@@ -283,6 +314,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             {
                 return new PuffinToken(TokenType.IntegerValue, text, ValueParser.ParseInt(text, 0));
             }
+
             return new PuffinToken(TokenType.IntegerValue, text, ValueParser.ParseLong(text, 0L));
         }
 
@@ -293,7 +325,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private string MarkedText()
         {
-            var text = Encoding.ASCII.GetString(_buffer, _mark + 1, _point - _mark);
+            string text = Encoding.ASCII.GetString(_buffer, _mark + 1, _point - _mark);
             return text;
         }
     }

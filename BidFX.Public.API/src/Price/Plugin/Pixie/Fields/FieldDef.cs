@@ -1,3 +1,5 @@
+/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
 using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
@@ -59,9 +61,21 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((FieldDef) obj);
         }
 
@@ -69,7 +83,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Fields
         {
             unchecked
             {
-                var hashCode = Fid;
+                int hashCode = Fid;
                 hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Encoding.GetHashCode();
                 hashCode = (hashCode * 397) ^ Scale;

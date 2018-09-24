@@ -1,4 +1,6 @@
-﻿namespace BidFX.Public.API.Price
+﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
+
+namespace BidFX.Public.API.Price
 {
     /// <summary>
     /// Interface for market data provider plugin components that can access and normalise sources of price data.
