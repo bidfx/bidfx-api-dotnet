@@ -54,6 +54,11 @@ namespace BidFX.Public.API.Price
 
         public void Start()
         {
+            if (_running.Value)
+            {
+                Log.Info("Already running. Did you mean to call PriceSession.WaitUntilReady()?");
+                return;
+            }
             if (!LoginService.LoggedIn)
             {
                 throw new IllegalStateException("Not logged in.");
