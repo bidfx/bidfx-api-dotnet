@@ -53,7 +53,6 @@ namespace BidFX.Public.API.Example
                 SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-                SendPremiumFxSubscriptions();
                 SendLevelTwoStreamingSubscriptions();
             }
             else
@@ -146,18 +145,6 @@ namespace BidFX.Public.API.Example
                 DefaultClient.Client.PriceSubscriber.Subscribe(
                     CommonSubjects.CreateIndicativePriceSubject(ccyPair).CreateSubject());
             }
-        }
-
-        private void SendPremiumFxSubscriptions()
-        {
-            DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURUSD", false, false).SetComponent("User", Username).CreateSubject());
-            DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURGBP", true, false).SetComponent("User", Username).CreateSubject());
-            DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("GBPJPY", false, true).SetComponent("User", Username).CreateSubject());
-            DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreatePremiumFxSubject("EURCAD", true, true).SetComponent("User", Username).CreateSubject());
         }
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)

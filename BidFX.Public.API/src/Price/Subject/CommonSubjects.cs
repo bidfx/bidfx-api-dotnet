@@ -309,21 +309,6 @@ namespace BidFX.Public.API.Price.Subject
                 .SetComponent(SubjectComponentName.Symbol, ccyPair);
         }
 
-        public static SubjectBuilder CreatePremiumFxSubject(string ccyPair, bool tiered, bool crossCurrencyRates)
-        {
-            SubjectBuilder subjectBuilder = new SubjectBuilder()
-                .SetComponent(SubjectComponentName.AssetClass, CommonComponents.Fx)
-                .SetComponent(SubjectComponentName.Level, tiered ? "Tiered" : "1")
-                .SetComponent(SubjectComponentName.Source, "PremiumFX")
-                .SetComponent(SubjectComponentName.Symbol, ccyPair);
-            if (crossCurrencyRates)
-            {
-                subjectBuilder.SetComponent("SubClass", CommonComponents.Cross);
-            }
-
-            return subjectBuilder;
-        }
-
 
         private static void AddBasicComponents(SubjectBuilder subjectBuilder, string user, string account, string ccyPair,
             string dealType, string liquidityProvider, string currency,
