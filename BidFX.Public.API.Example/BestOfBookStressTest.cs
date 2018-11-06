@@ -139,7 +139,7 @@ namespace BidFX.Public.API.Example
         private void SendSubscriptions()
         {
             SubjectBuilder sb =
-                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Username, Account, "XXXYYY", "XXX", "1000000", "BD",
+                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Account, "XXXYYY", "XXX", "1000000", "BD",
                     "20180101");
             sb.SetComponent(SubjectComponentName.Rows, "1");
             foreach (string ccyPair in _ccyPairs)

@@ -66,6 +66,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         }
 
         private readonly object _lock = new object();
+        private readonly string _user;
 
         private readonly SortedDictionary<int, EditionData> _subjectSetCache =
             new SortedDictionary<int, EditionData>()
@@ -73,10 +74,15 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {0, new EditionData(new List<Subject.Subject>(), new List<GridHeader>())}
             };
 
+        private bool _modified = false;
+
         private readonly Dictionary<Subject.Subject, SubjectState> _subjectState =
             new Dictionary<Subject.Subject, SubjectState>();
 
-        private bool _modified = false;
+        public SubjectSetRegister(string user)
+        {
+            _user = user;
+        }
 
         public void Register(Subject.Subject subject, bool refresh)
         {
@@ -258,7 +264,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private SubscriptionSync CreateSubscriptionSync(int edition, List<Subject.Subject> subjectSet)
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(edition, subjectSet);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(edition, subjectSet, _user);
             AddSubscriptionControls(subscriptionSync);
             return subscriptionSync;
         }

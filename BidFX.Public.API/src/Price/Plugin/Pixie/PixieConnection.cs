@@ -28,7 +28,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         private readonly PriceSyncDecoder _priceSyncDecoder = new PriceSyncDecoder();
         private readonly GridCache _gridCache = new GridCache();
 
-        private volatile SubjectSetRegister _subjectSetRegister = new SubjectSetRegister();
+        private volatile SubjectSetRegister _subjectSetRegister;
         private IDataDictionary _dataDictionary = new ExtendableDataDictionary();
         private readonly List<Subject.Subject> _autoRefreshSubjects = new List<Subject.Subject>();
         private long _lastSubscriptionCheckTime;
@@ -40,7 +40,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             return DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
-        public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions)
+        public PixieConnection(Stream stream, IProviderPlugin provider, PixieProtocolOptions protocolOptions, string user)
         {
             _stream = stream;
             _provider = provider;
@@ -50,6 +50,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 Name = provider.Name + "-write",
                 IsBackground = true
             }.Start();
+            _subjectSetRegister = new SubjectSetRegister(user);
         }
 
         public void ProcessIncommingMessages()

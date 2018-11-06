@@ -19,6 +19,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         private uint _options;
         private readonly int _edition;
         private readonly int _size;
+        private readonly string _user;
         public List<Subject.Subject> Subjects { get; internal set; }
         private readonly Dictionary<int, ControlOperation> _controls = new Dictionary<int, ControlOperation>();
 
@@ -32,11 +33,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             get { return _controls; }
         }
 
-        public SubscriptionSync(int edition, List<Subject.Subject> subjects)
+        public SubscriptionSync(int edition, List<Subject.Subject> subjects, string user)
         {
             _edition = Params.NotNegative(edition);
             Subjects = subjects;
             _size = subjects.Count;
+            _user = user;
         }
 
         public void AddControl(int sid, ControlOperation controlOperation)
@@ -103,7 +105,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
                 foreach (Subject.Subject subject in Subjects)
                 {
                     Varint.WriteStringArray(subjectBuffer,
-                        subject.InternalComponents());
+                        AddUserToSubject(subject).InternalComponents());
                     appender.Compress(subjectBuffer);
                 }
             }
@@ -124,6 +126,19 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             byte[] compressed = appender.GetCompressed();
             memoryStream.Write(compressed, 0, compressed.Length);
             return memoryStream;
+        }
+
+        private Subject.Subject AddUserToSubject(Subject.Subject subject)
+        {
+            if (subject.GetComponent(SubjectComponentName.User) != null)
+            {
+                return subject;
+            }
+
+            SubjectBuilder subjectBuilder = new SubjectBuilder(subject);
+            subjectBuilder.SetComponent(SubjectComponentName.User, _user);
+            return subjectBuilder.CreateSubject();
+
         }
 
         public string Summarize()

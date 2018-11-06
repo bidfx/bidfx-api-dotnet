@@ -45,7 +45,7 @@ namespace BidFX.Public.API.Price.Subject
         /// <param name="subject">The Subject to clone data from</param>
         public SubjectBuilder(Subject subject)
         {
-            _size = subject.Size() * 2;
+            _size = subject.Size() << 1;
             _components = new string[_size];
             Array.Copy(subject.InternalComponents(), 0, _components, 0, _size);
         }

@@ -56,7 +56,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         [SetUp]
         public void Before()
         {
-            _register = new SubjectSetRegister();
+            _register = new SubjectSetRegister("lasman");
         }
 
         [Test]
@@ -435,7 +435,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             List<Subject.Subject> input = new List<Subject.Subject> {s1, s2, s3, s4, s5, s6, s7, s8, s9, s10};
             for (int i = 0; i < 100; i++)
             {
-                SubjectSetRegister register = new SubjectSetRegister();
+                SubjectSetRegister register = new SubjectSetRegister("lasman");
                 Random rnd = new Random();
                 IOrderedEnumerable<Subject.Subject> orderedEnumerable = input.OrderBy(j => rnd.Next());
                 foreach (Subject.Subject subject in
@@ -457,7 +457,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             {
                 Random rnd = new Random();
                 IOrderedEnumerable<Subject.Subject> shuffledSubjects = sortedSubjects.OrderBy(j => rnd.Next());
-                SubjectSetRegister subjectSetRegister = new SubjectSetRegister();
+                SubjectSetRegister subjectSetRegister = new SubjectSetRegister("lasman");
                 foreach (Subject.Subject subject in
                     shuffledSubjects)
                 {

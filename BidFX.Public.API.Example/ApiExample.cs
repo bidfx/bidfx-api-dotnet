@@ -67,8 +67,8 @@ namespace BidFX.Public.API.Example
             }
             
             //Trading
-            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-            SendTrades();
+//            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
+//            SendTrades();
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -76,24 +76,18 @@ namespace BidFX.Public.API.Example
             foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Username,
-                        Account, "EURUSD", source, "EUR", "1000000.11").CreateSubject());
+                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Account, "EURUSD", source, "EUR", "1000000.11").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Username,
-                        Account, "EURGBP", source, "EUR", "1000000.00").CreateSubject());
+                    CommonSubjects.CreateLevelOneSpotStreamingSubject(Account, "EURGBP", source, "EUR", "1000000.00").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneForwardStreamingSubject(Username,
-                        Account, "EURUSD", source, "USD", "1000000.00", "", "20180530").CreateSubject());
+                    CommonSubjects.CreateLevelOneForwardStreamingSubject(Account, "EURUSD", source, "USD", "1000000.00", "", "20180530").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdfStreamingSubject(Username,
-                        Account, "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
+                    CommonSubjects.CreateLevelOneNdfStreamingSubject(Account, "USDKRW", source, "USD", "1000000.00", "1W", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSwapStreamingSubject(Username,
-                            Account, "EURUSD", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
+                    CommonSubjects.CreateLevelOneSwapStreamingSubject(Account, "EURUSD", source, "EUR", "1000000.00", "1M", "", "1000000.00", "2M", "")
                         .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdsStreamingSubject(Username,
-                        Account, "CHFJPY", source, "CHF", "1000000.00", "BD", "20180815", "1000000.00", "BD",
+                    CommonSubjects.CreateLevelOneNdsStreamingSubject(Account, "CHFJPY", source, "CHF", "1000000.00", "BD", "20180815", "1000000.00", "BD",
                         "20180918").CreateSubject());
             }
         }
@@ -103,24 +97,18 @@ namespace BidFX.Public.API.Example
             foreach (string source in sources)
             {
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Username,
-                        Account, "EURUSD", source, "EUR", "1000000.00").CreateSubject(), true);
+                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Account, "EURUSD", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Username,
-                        Account, "EURGBP", source, "EUR", "1000000.00").CreateSubject(), true);
+                    CommonSubjects.CreateLevelOneSpotQuoteSubject(Account, "EURGBP", source, "EUR", "1000000.00").CreateSubject(), true);
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneForwardQuoteSubject(Username,
-                        Account, "EURUSD", source, "USD", "1000000.00", "1Y", "").CreateSubject());
+                    CommonSubjects.CreateLevelOneForwardQuoteSubject(Account, "EURUSD", source, "USD", "1000000.00", "1Y", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdfQuoteSubject(Username,
-                        Account, "USDKRW", source, "USD", "1000000.00", "1Y", "").CreateSubject());
+                    CommonSubjects.CreateLevelOneNdfQuoteSubject(Account, "USDKRW", source, "USD", "1000000.00", "1Y", "").CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneSwapQuoteSubject(Username,
-                            Account, "EURUSD", source, "EUR", "1000000.00", "1Y", "", "1000000.00", "2Y", "")
+                    CommonSubjects.CreateLevelOneSwapQuoteSubject(Account, "EURUSD", source, "EUR", "1000000.00", "1Y", "", "1000000.00", "2Y", "")
                         .CreateSubject());
                 DefaultClient.Client.PriceSubscriber.Subscribe(
-                    CommonSubjects.CreateLevelOneNdsQuoteSubject(Username,
-                            Account, "CHFJPY", source, "CHF", "1000000.00", "6M", "", "1000000.00", "1Y", "")
+                    CommonSubjects.CreateLevelOneNdsQuoteSubject(Account, "CHFJPY", source, "CHF", "1000000.00", "6M", "", "1000000.00", "1Y", "")
                         .CreateSubject());
             }
         }
@@ -128,13 +116,13 @@ namespace BidFX.Public.API.Example
         private void SendLevelTwoStreamingSubscriptions()
         {
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoSpotStreamingSubject(Username, Account, "EURUSD", "EUR", "1000000.00")
+                CommonSubjects.CreateLevelTwoSpotStreamingSubject(Account, "EURUSD", "EUR", "1000000.00")
                     .CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Username, Account, "EURGBP", "EUR", "1000000.00",
+                CommonSubjects.CreateLevelTwoForwardStreamingSubject(Account, "EURGBP", "EUR", "1000000.00",
                     "BD", "20181220").CreateSubject());
             DefaultClient.Client.PriceSubscriber.Subscribe(
-                CommonSubjects.CreateLevelTwoNdfStreamingSubject(Username, Account, "USDJPY", "USD", "1000000.00", "4M", "")
+                CommonSubjects.CreateLevelTwoNdfStreamingSubject(Account, "USDJPY", "USD", "1000000.00", "4M", "")
                     .CreateSubject());
         }
 

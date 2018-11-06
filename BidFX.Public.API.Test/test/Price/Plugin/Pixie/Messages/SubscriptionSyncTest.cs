@@ -17,35 +17,35 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestIsChangedIfTrueByDefault()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             Assert.AreEqual(true, subscriptionSync.IsChangedEdition());
         }
 
         [Test]
         public void TestSizeIsPopulatedFromTheSubjectListSize()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             Assert.AreEqual(_subjectList.Count, subscriptionSync.Size);
         }
 
         [Test]
         public void TestIsCompressedIfFalseByDefault()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             Assert.IsFalse(subscriptionSync.IsCompressed());
         }
 
         [Test]
         public void TestHasNoControlsByDefault()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             Assert.IsFalse(subscriptionSync.HasControls());
         }
 
         [Test]
         public void testSettingValidControls_hasControlsIsTrue()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             subscriptionSync.AddControl(0, ControlOperation.Toggle);
             Assert.IsTrue(subscriptionSync.HasControls());
         }
@@ -53,7 +53,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void testBugFix_hasControlsIsRemainsTrueAfterSettingCompression()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             subscriptionSync.AddControl(0, ControlOperation.Toggle);
             Assert.IsTrue(subscriptionSync.HasControls());
             subscriptionSync.SetCompressed(true);
@@ -64,7 +64,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public void TestEncodingWithCompressionResultsInASmallerMessageSize()
         {
             SubscriptionSync subscriptionSync =
-                new SubscriptionSync(Edition, RealSubscriptionsExample.SortedSubjects.ToList());
+                new SubscriptionSync(Edition, RealSubscriptionsExample.SortedSubjects.ToList(), "lasman");
             subscriptionSync.SetCompressed(false);
             long uncompressedSize = subscriptionSync.Encode(PixieVersion.CurrentVersion).Position;
             subscriptionSync.SetCompressed(true);
@@ -76,7 +76,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         public void testEncodingWithCompressionResultsInTypicalSubjectsUsingLessThan_16_Bytes()
         {
             SubscriptionSync subscriptionSync =
-                new SubscriptionSync(Edition, new List<Subject.Subject>(RealSubscriptionsExample.SortedSubjects));
+                new SubscriptionSync(Edition, new List<Subject.Subject>(RealSubscriptionsExample.SortedSubjects), "lasman");
             subscriptionSync.SetCompressed(true);
             long compressedSize = subscriptionSync.Encode(PixieVersion.CurrentVersion).Position;
             Assert.IsTrue(compressedSize / RealSubscriptionsExample.SortedSubjects.Length <= 16);
@@ -85,7 +85,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         [Test]
         public void TestSummarize()
         {
-            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList);
+            SubscriptionSync subscriptionSync = new SubscriptionSync(Edition, _subjectList, "lasman");
             Assert.AreEqual("SubscriptionSync(edition=123, compressed=False, controls=0, changed=True, subjects=2)",
                 subscriptionSync.Summarize());
 

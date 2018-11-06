@@ -34,7 +34,7 @@ namespace BidFX.Public.API.Example
             if (_client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Subject depthSubject = CommonSubjects
-                    .CreateLevelTwoSpotStreamingSubject(Username, Account, "GBPUSD", "GBP", "1000000.00").CreateSubject();
+                    .CreateLevelTwoSpotStreamingSubject(Account, "GBPUSD", "GBP", "1000000.00").CreateSubject();
                 _client.PriceSubscriber.Subscribe(depthSubject);
             }
             else

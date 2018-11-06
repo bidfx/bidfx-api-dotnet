@@ -134,7 +134,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             try
             {
                 HandshakeWithServer();
-                _pixieConnection = new PixieConnection(_stream, this, _protocolOptions);
+                _pixieConnection = new PixieConnection(_stream, this, _protocolOptions, LoginService.Username);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
                 _pixieConnection.ProcessIncommingMessages();
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Pixie price server");
