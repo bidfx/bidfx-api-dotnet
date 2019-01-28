@@ -80,6 +80,44 @@ namespace BidFX.Public.API.Trade.Rest.Json
         }
 
         [Test]
+        public void TestOrderWithCustomAllocationTemplatesWithRatio()
+        {
+            List<AllocationTemplateEntry> allocations = new List<AllocationTemplateEntry>();
+            AllocationTemplateEntry alloc1 = new AllocationTemplateEntryBuilder()
+                .SetRatio(5)
+                .SetClearingAccount("FX_ACCT")
+                .SetClearingBroker("0001")
+                .Build();
+            allocations.Add(alloc1);
+            AllocationTemplateEntry alloc2 = new AllocationTemplateEntryBuilder()
+                .SetRatio(3)
+                .SetClearingAccount("ACCT2")
+                .SetClearingBroker("BARC")
+                .Build();
+            allocations.Add(alloc2);
+            
+            FxOrder order = new FxOrderBuilder()
+                .SetAllocations(allocations)
+                .Build();
+            
+            const string expected = "[{" +
+                                    "\"allocations\":[" +
+                                        "{" +
+                                        "\"alloc_ratio\":5," +
+                                        "\"clearing_account\":\"FX_ACCT\"," +
+                                        "\"clearing_broker\":\"0001\"" +
+                                        "},{" +
+                                        "\"alloc_ratio\":3," +
+                                        "\"clearing_account\":\"ACCT2\"," +
+                                        "\"clearing_broker\":\"BARC\"" +
+                                    "}]" +
+                                    "\"asset_class\":\"FX\"," +
+                                    "\"correlation_id\":\"123\"," +
+                                    "}]";
+            Assert.AreEqual(expected, JsonMarshaller.ToJson(order, 123));
+        }
+
+        [Test]
         public void TestSuccessfulFutureRestReponseIsParsedCorrectly()
         {
             const string json = "["+
