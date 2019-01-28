@@ -27,6 +27,11 @@ namespace BidFX.Public.API.Trade.Order
             return SetStringField(templateName, Order.AllocationTemplate);
         }
 
+        public T SetAllocations(List<AllocationTemplateEntry> allocations)
+        {
+            return null;
+        }
+
         public T SetAlternateOwner(string alternateOwner)
         {
             return SetStringField(alternateOwner, Order.AlternateOwner);
