@@ -189,7 +189,7 @@
     <Compile Include="src\Trade\Instruction\OrderSubmit.cs" />
     <Compile Include="src\Trade\Instruction\OrderSubmitBuilder.cs" />
     <Compile Include="src\Trade\Order\AllocationTemplateEntry.cs" />
-    <Compile Include="src\Trade\Order\AllocationTemplateBuilder.cs" />
+    <Compile Include="src\Trade\Order\AllocationTemplateEntryBuilder.cs" />
     <Compile Include="src\Trade\Order\Error.cs" />
     <Compile Include="src\Trade\Order\Execution.cs" />
     <Compile Include="src\Trade\Order\FutureOrder.cs" />

@@ -110,9 +110,9 @@ namespace BidFX.Public.API.Trade.Rest.Json
                                         "\"alloc_ratio\":3," +
                                         "\"clearing_account\":\"ACCT2\"," +
                                         "\"clearing_broker\":\"BARC\"" +
-                                    "}]" +
+                                    "}]," +
                                     "\"asset_class\":\"FX\"," +
-                                    "\"correlation_id\":\"123\"," +
+                                    "\"correlation_id\":\"123\"" +
                                     "}]";
             Assert.AreEqual(expected, JsonMarshaller.ToJson(order, 123));
         }
