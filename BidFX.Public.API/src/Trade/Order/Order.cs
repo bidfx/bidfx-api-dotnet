@@ -86,7 +86,14 @@ namespace BidFX.Public.API.Trade.Order
 
         public List<AllocationTemplateEntry> GetAllocations()
         {
-            return GetComponent<List<AllocationTemplateEntry>>(Allocations);
+            List<object> allocationJson = GetComponent<List<object>>(Allocations);
+            List<AllocationTemplateEntry> allocations = new List<AllocationTemplateEntry>();
+            foreach (object allocation in allocationJson)
+            {
+                allocations.Add(new AllocationTemplateEntry((IDictionary<string, object>) allocation));
+            }
+
+            return allocations;
         }
 
         public string GetAssetClass()

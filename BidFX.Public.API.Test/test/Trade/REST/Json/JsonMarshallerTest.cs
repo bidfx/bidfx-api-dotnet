@@ -483,11 +483,11 @@ namespace BidFX.Public.API.Trade.Rest.Json
             AllocationTemplateEntry allocation = allocations[0];
             Assert.AreEqual("FX_ACCT", allocation.GetClearingAccount());
             Assert.AreEqual("0001", allocation.GetClearingBroker());
-            Assert.AreEqual(7000000, allocation.GetQuantity());
+            Assert.AreEqual(700000, allocation.GetQuantity());
             allocation = allocations[1];
             Assert.AreEqual("TS_ACCT", allocation.GetClearingAccount());
             Assert.AreEqual("BARC", allocation.GetClearingBroker());
-            Assert.AreEqual(3000000, allocation.GetQuantity());
+            Assert.AreEqual(300000, allocation.GetQuantity());
         }
     }
 }

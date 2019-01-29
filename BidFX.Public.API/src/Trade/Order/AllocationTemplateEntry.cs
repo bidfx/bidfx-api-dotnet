@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using BidFX.Public.API.Trade.Rest.Json;
 
 namespace BidFX.Public.API.Trade.Order
 {
-    public class AllocationTemplateEntry
+    public class AllocationTemplateEntry : IJsonMarshallable
     {
         internal const string AllocRatio = "alloc_ratio";
         internal const string ClearingAccount = "clearing_account";

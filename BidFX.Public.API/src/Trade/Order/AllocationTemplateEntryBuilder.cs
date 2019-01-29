@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using BidFX.Public.API.Price.Tools;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -14,13 +16,23 @@ namespace BidFX.Public.API.Trade.Order
 
         public AllocationTemplateEntryBuilder SetClearingAccount(string account)
         {
-            _components[AllocationTemplateEntry.ClearingAccount] = account;
+            if (Params.IsNullOrEmpty(account))
+            {
+                throw new ArgumentException("Clearing Account can not be empty");
+            }
+
+            _components[AllocationTemplateEntry.ClearingAccount] = account.Trim();
             return this;
         }
 
         public AllocationTemplateEntryBuilder SetClearingBroker(string broker)
         {
-            _components[AllocationTemplateEntry.ClearingBroker] = broker;
+            if (Params.IsNullOrEmpty(broker))
+            {
+                throw new ArgumentException("Clearing Broker can not be empty");
+            }
+
+            _components[AllocationTemplateEntry.ClearingBroker] = broker.Trim();
             return this;
         }
         
