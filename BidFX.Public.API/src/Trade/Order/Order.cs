@@ -206,7 +206,7 @@ namespace BidFX.Public.API.Trade.Order
 
         internal static string DeepStringDictionary(IDictionary<string, object> dictionary)
         {
-            return "[" + string.Join(", ", dictionary.Select(kv => kv.Key + "=" + DeepString(kv.Value))) + "]";
+            return "{" + string.Join(", ", dictionary.Select(kv => kv.Key + "=" + DeepString(kv.Value))) + "}";
         }
 
         private static string DeepStringEnumerable(IEnumerable<object> collection)
@@ -220,6 +220,8 @@ namespace BidFX.Public.API.Trade.Order
                 stringBuilder.Append(DeepString(o));
                 delim = ", ";
             }
+
+            stringBuilder.Append("]");
 
             return stringBuilder.ToString();
         }

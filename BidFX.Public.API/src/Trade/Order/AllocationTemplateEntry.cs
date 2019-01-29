@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using BidFX.Public.API.Trade.Rest.Json;
 
 namespace BidFX.Public.API.Trade.Order
@@ -52,6 +53,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             object value;
             return (T) (_jsonMap.TryGetValue(key, out value) ? value : null);
+        }
+
+        public override string ToString()
+        {
+            return "{" + string.Join(", ", _jsonMap.Select(kv => kv.Key + "=" + kv.Value)) + "}";
         }
     }
 }
