@@ -80,6 +80,44 @@ namespace BidFX.Public.API.Trade.Rest.Json
         }
 
         [Test]
+        public void TestOrderWithCustomAllocationTemplatesWithRatio()
+        {
+            List<AllocationTemplateEntry> allocations = new List<AllocationTemplateEntry>();
+            AllocationTemplateEntry alloc1 = new AllocationTemplateEntryBuilder()
+                .SetRatio(5)
+                .SetClearingAccount("FX_ACCT")
+                .SetClearingBroker("0001")
+                .Build();
+            allocations.Add(alloc1);
+            AllocationTemplateEntry alloc2 = new AllocationTemplateEntryBuilder()
+                .SetRatio(3)
+                .SetClearingAccount("ACCT2")
+                .SetClearingBroker("BARC")
+                .Build();
+            allocations.Add(alloc2);
+            
+            FxOrder order = new FxOrderBuilder()
+                .SetAllocations(allocations)
+                .Build();
+            
+            const string expected = "[{" +
+                                    "\"allocations\":[" +
+                                        "{" +
+                                        "\"alloc_ratio\":5," +
+                                        "\"clearing_account\":\"FX_ACCT\"," +
+                                        "\"clearing_broker\":\"0001\"" +
+                                        "},{" +
+                                        "\"alloc_ratio\":3," +
+                                        "\"clearing_account\":\"ACCT2\"," +
+                                        "\"clearing_broker\":\"BARC\"" +
+                                    "}]," +
+                                    "\"asset_class\":\"FX\"," +
+                                    "\"correlation_id\":\"123\"" +
+                                    "}]";
+            Assert.AreEqual(expected, JsonMarshaller.ToJson(order, 123));
+        }
+
+        [Test]
         public void TestSuccessfulFutureRestReponseIsParsedCorrectly()
         {
             const string json = "["+
@@ -387,6 +425,69 @@ namespace BidFX.Public.API.Trade.Rest.Json
             Assert.AreEqual(1, order.GetErrors().Count);
             Assert.AreEqual("Failed to deserialize body text expecting List of Order", order.GetErrors()[0].GetMessage());
             Assert.IsNull(order.GetErrors()[0].GetField());
+        }
+
+        [Test]
+        public void TestFXRestResponseWithCustomAllocationTemplateIsParsedCorrectly()
+        {
+            const string json = "[{" +
+                    "\"account\": \"FX_ACCT\"," +
+                    "\"all_in_price\": 0," +
+                    "\"allocation_template\": \"New\"," +
+                    "\"allocations\": [{" +
+                        "\"alloc_priority\": 1," +
+                        "\"clearing_account\": \"FX_ACCT\"," +
+                        "\"clearing_broker\": \"0001\"," +
+                        "\"min_alloc_qty\": 1," +
+                        "\"min_trade_lot\": 1," +
+                        "\"ordinal\": 0," +
+                        "\"quantity\": 700000" +
+                    "},{" +
+                        "\"alloc_priority\": 1," +
+                        "\"clearing_account\": \"TS_ACCT\"," +
+                        "\"clearing_broker\": \"BARC\"," +
+                        "\"min_alloc_qty\": 1," +
+                        "\"min_trade_lot\": 1," +
+                        "\"ordinal\": 0," +
+                        "\"quantity\": 300000" +
+                    "}]," +
+                    "\"alternate_owner\": \"lasman\"," +
+                    "\"asset_class\": \"FX\"," +
+                    "\"ccy_pair\": \"EURGBP\"," +
+                    "\"correlation_id\": \"CID1\"," +
+                    "\"creation_date\": \"2019-01-28T11:36:22.389Z\"," +
+                    "\"deal_type\": \"SPOT\"," +
+                    "\"dealt_ccy\": \"GBP\"," +
+                    "\"description\": \"EUR/GBP\"," +
+                    "\"executing_broker\": \"XXXX\"," +
+                    "\"far_all_in_price\": 0," +
+                    "\"handling_type\": \"AUTOMATIC\"," +
+                    "\"order_ts_id\": \"20190128-063622-2247345022-524-API\"," +
+                    "\"order_type\": \"LIMIT\"," +
+                    "\"owner\": \"lasman\"," +
+                    "\"partition_id\": 1," +
+                    "\"price\": 1.44," +
+                    "\"quantity\": 1000000," +
+                    "\"settlement_date\": \"2019-01-30\"," +
+                    "\"side\": \"SELL\"," +
+                    "\"state\": \"REGISTERED\"," +
+                    "\"tenor\": \"SPOT\"," +
+                    "\"uuid\": 604147930471" +
+                "}]";
+            
+            Order.Order order = JsonMarshaller.FromJson(json);
+            Assert.IsInstanceOf<FxOrder>(order);
+            FxOrder fxOrder = (FxOrder) order;
+            List<AllocationTemplateEntry> allocations = fxOrder.GetAllocations();
+            Assert.AreEqual(2, allocations.Count);
+            AllocationTemplateEntry allocation = allocations[0];
+            Assert.AreEqual("FX_ACCT", allocation.GetClearingAccount());
+            Assert.AreEqual("0001", allocation.GetClearingBroker());
+            Assert.AreEqual(700000, allocation.GetQuantity());
+            allocation = allocations[1];
+            Assert.AreEqual("TS_ACCT", allocation.GetClearingAccount());
+            Assert.AreEqual("BARC", allocation.GetClearingBroker());
+            Assert.AreEqual(300000, allocation.GetQuantity());
         }
     }
 }

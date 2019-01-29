@@ -104,6 +104,7 @@
     <Compile Include="test\Trade\Instruction\OrderAmendBuilderTest.cs" />
     <Compile Include="test\Trade\Instruction\OrderCancelBuilderTest.cs" />
     <Compile Include="test\Trade\Instruction\OrderSubmitBuilderTest.cs" />
+    <Compile Include="test\Trade\Order\AllocationTemplateEntryBuilderTest.cs" />
     <Compile Include="test\Trade\Order\FutureOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\OrderBuilderTest.cs" />

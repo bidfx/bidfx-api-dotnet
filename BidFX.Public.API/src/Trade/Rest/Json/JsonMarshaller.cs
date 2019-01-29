@@ -64,6 +64,17 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 return;
             }
 
+            if (item is IJsonMarshallable)
+            {
+                AppendDictionary(((IJsonMarshallable) item).GetJsonMap(), stringBuilder);
+                return;
+            }
+
+            if (item is IDictionary<string, object>)
+            {
+                AppendDictionary((IDictionary<string, object>) item, stringBuilder);
+            }
+
             AppendString(item.ToString(), stringBuilder);
         }
 

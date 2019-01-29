@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using BidFX.Public.API.Price.Tools;
 
@@ -25,6 +26,18 @@ namespace BidFX.Public.API.Trade.Order
         public T SetAllocationTemplate(string templateName)
         {
             return SetStringField(templateName, Order.AllocationTemplate);
+        }
+
+        public T SetAllocations(List<AllocationTemplateEntry> allocations)
+        {
+            if (allocations == null || !allocations.Any())
+            {
+                Components.Remove(Order.Allocations);
+                return this as T;
+            }
+
+            Components[Order.Allocations] = allocations;
+            return this as T;
         }
 
         public T SetAlternateOwner(string alternateOwner)
