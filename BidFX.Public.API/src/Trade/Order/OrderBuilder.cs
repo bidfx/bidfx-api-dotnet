@@ -28,15 +28,15 @@ namespace BidFX.Public.API.Trade.Order
             return SetStringField(templateName, Order.AllocationTemplate);
         }
 
-        public T SetAllocations(List<AllocationTemplateEntry> allocations)
+        public T SetAllocation(Allocation allocation)
         {
-            if (allocations == null || !allocations.Any())
+            if (allocation == null)
             {
-                Components.Remove(Order.Allocations);
+                Components.Remove(Order.AllocationData);
                 return this as T;
             }
 
-            Components[Order.Allocations] = allocations;
+            Components[Order.AllocationData] = allocation;
             return this as T;
         }
 

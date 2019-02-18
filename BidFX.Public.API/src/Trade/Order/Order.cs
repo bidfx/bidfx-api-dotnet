@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Trade.Order
     {
         internal const string Account = "account";
         internal const string AllocationTemplate = "allocation_template";
-        internal const string Allocations = "allocations";
+        internal const string AllocationData = "allocation_data";
         internal const string AlternateOwner = "alternate_owner";
         internal const string AssetClass = "asset_class";
         internal const string Currency = "dealt_ccy";
@@ -84,16 +84,10 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(AllocationTemplate);
         }
 
-        public List<AllocationTemplateEntry> GetAllocations()
+        public Allocation GetAllocation()
         {
-            List<object> allocationJson = GetComponent<List<object>>(Allocations);
-            List<AllocationTemplateEntry> allocations = new List<AllocationTemplateEntry>();
-            foreach (object allocation in allocationJson)
-            {
-                allocations.Add(new AllocationTemplateEntry((IDictionary<string, object>) allocation));
-            }
-
-            return allocations;
+            IDictionary<string, object> allocationJson = GetComponent<IDictionary<string, object>>(AllocationData);
+            return allocationJson == null ? null : new Allocation(allocationJson);
         }
 
         public string GetAssetClass()

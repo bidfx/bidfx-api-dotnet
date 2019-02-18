@@ -95,22 +95,32 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 .SetClearingBroker("BARC")
                 .Build();
             allocations.Add(alloc2);
+            Allocation allocation = new AllocationBuilder()
+                .SetEntires(allocations)
+                .SetPretrade(true)
+                .SetAutoAllocate(false)
+                .Build();
             
             FxOrder order = new FxOrderBuilder()
-                .SetAllocations(allocations)
+                .SetAllocation(allocation)
                 .Build();
             
             const string expected = "[{" +
-                                    "\"allocations\":[" +
-                                        "{" +
-                                        "\"alloc_ratio\":5," +
-                                        "\"clearing_account\":\"FX_ACCT\"," +
-                                        "\"clearing_broker\":\"0001\"" +
-                                        "},{" +
-                                        "\"alloc_ratio\":3," +
-                                        "\"clearing_account\":\"ACCT2\"," +
-                                        "\"clearing_broker\":\"BARC\"" +
-                                    "}]," +
+                                    "\"allocation_data\":{" +
+                                        "\"allocation_type\":\"PRE_TRADE\"," +
+                                        "\"auto_allocate\":false," +
+                                        "\"entries\":[" +
+                                            "{" +
+                                            "\"alloc_ratio\":5," +
+                                            "\"clearing_account\":\"FX_ACCT\"," +
+                                            "\"clearing_broker\":\"0001\"" +
+                                            "},{" +
+                                            "\"alloc_ratio\":3," +
+                                            "\"clearing_account\":\"ACCT2\"," +
+                                            "\"clearing_broker\":\"BARC\"" +
+                                            "}" +
+                                        "]" +
+                                   "}," +
                                     "\"asset_class\":\"FX\"," +
                                     "\"correlation_id\":\"123\"" +
                                     "}]";
@@ -434,23 +444,29 @@ namespace BidFX.Public.API.Trade.Rest.Json
                     "\"account\": \"FX_ACCT\"," +
                     "\"all_in_price\": 0," +
                     "\"allocation_template\": \"New\"," +
-                    "\"allocations\": [{" +
-                        "\"alloc_priority\": 1," +
-                        "\"clearing_account\": \"FX_ACCT\"," +
-                        "\"clearing_broker\": \"0001\"," +
-                        "\"min_alloc_qty\": 1," +
-                        "\"min_trade_lot\": 1," +
-                        "\"ordinal\": 0," +
-                        "\"quantity\": 700000" +
-                    "},{" +
-                        "\"alloc_priority\": 1," +
-                        "\"clearing_account\": \"TS_ACCT\"," +
-                        "\"clearing_broker\": \"BARC\"," +
-                        "\"min_alloc_qty\": 1," +
-                        "\"min_trade_lot\": 1," +
-                        "\"ordinal\": 0," +
-                        "\"quantity\": 300000" +
-                    "}]," +
+                    "\"allocation_data\": {" +
+                        "\"allocation_type\": \"POST_TRADE\"," +
+                        "\"auto_allocate\": true," +
+                        "\"entries\":[{" +
+                            "\"alloc_priority\": 1," +
+                            "\"clearing_account\": \"FX_ACCT\"," +
+                            "\"clearing_broker\": \"0001\"," +
+                            "\"min_alloc_qty\": 1," +
+                            "\"min_trade_lot\": 1," +
+                            "\"ordinal\": 0," +
+                            "\"quantity\": 700000" +
+                            "},{" +
+                            "\"alloc_priority\": 1," +
+                            "\"clearing_account\": \"TS_ACCT\"," +
+                            "\"clearing_broker\": \"BARC\"," +
+                            "\"min_alloc_qty\": 1," +
+                            "\"min_trade_lot\": 1," +
+                            "\"ordinal\": 0," +
+                            "\"quantity\": 300000" +
+                            "}" +
+                        "]," +
+                        "\"template_name\": \"New\"" +
+                    "},"+
                     "\"alternate_owner\": \"lasman\"," +
                     "\"asset_class\": \"FX\"," +
                     "\"ccy_pair\": \"EURGBP\"," +
@@ -478,16 +494,21 @@ namespace BidFX.Public.API.Trade.Rest.Json
             Order.Order order = JsonMarshaller.FromJson(json);
             Assert.IsInstanceOf<FxOrder>(order);
             FxOrder fxOrder = (FxOrder) order;
-            List<AllocationTemplateEntry> allocations = fxOrder.GetAllocations();
-            Assert.AreEqual(2, allocations.Count);
-            AllocationTemplateEntry allocation = allocations[0];
-            Assert.AreEqual("FX_ACCT", allocation.GetClearingAccount());
-            Assert.AreEqual("0001", allocation.GetClearingBroker());
-            Assert.AreEqual(700000, allocation.GetQuantity());
-            allocation = allocations[1];
-            Assert.AreEqual("TS_ACCT", allocation.GetClearingAccount());
-            Assert.AreEqual("BARC", allocation.GetClearingBroker());
-            Assert.AreEqual(300000, allocation.GetQuantity());
+            Allocation allocation = fxOrder.GetAllocation();
+            List<AllocationTemplateEntry> entries = allocation.GetEntries();
+            Assert.AreEqual(2, entries.Count);
+            AllocationTemplateEntry entry = entries[0];
+            Assert.AreEqual("FX_ACCT", entry.GetClearingAccount());
+            Assert.AreEqual("0001", entry.GetClearingBroker());
+            Assert.AreEqual(700000, entry.GetQuantity());
+            entry = entries[1];
+            Assert.AreEqual("TS_ACCT", entry.GetClearingAccount());
+            Assert.AreEqual("BARC", entry.GetClearingBroker());
+            Assert.AreEqual(300000, entry.GetQuantity());
+            
+            Assert.AreEqual("New", allocation.GetTemplateName());
+            Assert.False(allocation.IsPreTrade());
+            Assert.True(allocation.IsAutoAllocate());
         }
     }
 }
