@@ -96,7 +96,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 .Build();
             allocations.Add(alloc2);
             Allocation allocation = new AllocationBuilder()
-                .SetEntires(allocations)
+                .SetEntries(allocations)
                 .SetPretrade(true)
                 .SetAutoAllocate(false)
                 .Build();

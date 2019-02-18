@@ -27,7 +27,7 @@ namespace BidFX.Public.API.Trade.Order
             return this;
         }
 
-        public AllocationBuilder SetEntires(IEnumerable<AllocationTemplateEntry> entries)
+        public AllocationBuilder SetEntries(IEnumerable<AllocationTemplateEntry> entries)
         {
             _components[Allocation.Entries] = entries;
             return this;
