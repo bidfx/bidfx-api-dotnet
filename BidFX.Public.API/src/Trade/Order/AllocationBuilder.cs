@@ -6,30 +6,44 @@ namespace BidFX.Public.API.Trade.Order
     {
         private readonly IDictionary<string, object> _components = new Dictionary<string, object>();
 
-        public AllocationBuilder()
+        public AllocationBuilder SetPretrade(bool? pretrade)
         {
-            _components[Allocation.AllocationType] = Allocation.PreTrade;
-        }
+            if (pretrade == null)
+            {
+                _components.Remove(Allocation.AllocationType);
+            }
+            else
+            {
+                _components[Allocation.AllocationType] = pretrade.Value ? Allocation.PreTrade : Allocation.PostTrade;
+            }
 
-        /// <summary>
-        /// Set whether the template is pre-trade or post-trade
-        /// </summary>
-        /// <param name="pretrade">set true for a pre-trade allocation template, and false for a post-trade allocation template</param>
-        public AllocationBuilder SetPretrade(bool pretrade)
-        {
-            _components[Allocation.AllocationType] = pretrade ? Allocation.PreTrade : Allocation.PostTrade;
             return this;
         }
 
-        public AllocationBuilder SetAutoAllocate(bool autoAllocate)
+        public AllocationBuilder SetAutoAllocate(bool? autoAllocate)
         {
-            _components[Allocation.AutoAllocate] = autoAllocate;
+            if (autoAllocate == null)
+            {
+                _components.Remove(Allocation.AutoAllocate);
+            }
+            else
+            {
+                _components[Allocation.AutoAllocate] = autoAllocate.Value;
+            }
+
             return this;
         }
 
         public AllocationBuilder SetEntries(IEnumerable<AllocationTemplateEntry> entries)
         {
-            _components[Allocation.Entries] = entries;
+            if (entries == null)
+            {
+                _components.Remove(Allocation.Entries);
+            }
+            else
+            {
+                _components[Allocation.Entries] = entries;
+            }
             return this;
         }
         
