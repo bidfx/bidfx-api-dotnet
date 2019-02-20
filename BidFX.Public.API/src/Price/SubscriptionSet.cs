@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using BidFX.Public.API.Price.Subject;
 
 namespace BidFX.Public.API.Price
 {
@@ -20,7 +21,7 @@ namespace BidFX.Public.API.Price
                 if (!_map.ContainsKey(subject))
                 {
                     _map[subject] = new Subscription(subject, autoRefresh);
-                    string level = subject.GetComponent("Level");
+                    string level = subject.GetComponent(SubjectComponentName.Level);
                     if (level != null && level.Equals("2"))
                     {
                         _levelTwoSubjects++;
@@ -42,7 +43,7 @@ namespace BidFX.Public.API.Price
                 if (_map.ContainsKey(subject))
                 {
                     _map.Remove(subject);
-                    string level = subject.GetComponent("Level");
+                    string level = subject.GetComponent(SubjectComponentName.Level);
                     if (level != null && level.Equals("2"))
                     {
                         _levelTwoSubjects--;
@@ -88,7 +89,8 @@ namespace BidFX.Public.API.Price
             lock (_map)
             {
                 return (from subscription in _map.Values
-                    where SubscriptionStatus.OK != subscription.SubscriptionStatus
+                    where SubscriptionStatus.OK != subscription.SubscriptionStatus &&
+                          !CommonComponents.Quote.Equals(subscription.Subject.GetComponent(SubjectComponentName.RequestFor))
                     select subscription).ToList();
             }
         }
