@@ -11,7 +11,6 @@ namespace BidFX.Public.API.Trade.REST
     internal class RESTClient
     {
         private static readonly ILog Log = LogManager.GetLogger("RESTClient");
-        private const string ApiPath = @"/api/om/v2/order";
         private readonly string _authHeader;
         private readonly Uri _address;
 
@@ -22,10 +21,7 @@ namespace BidFX.Public.API.Trade.REST
                 throw new ArgumentException("Scheme must be http or https");
             }
 
-            _address = new UriBuilder(baseAddress)
-            {
-                Path = ApiPath
-            }.Uri;
+            _address = new UriBuilder(baseAddress).Uri;
             _authHeader = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(username + ":" + password));
         }
 
