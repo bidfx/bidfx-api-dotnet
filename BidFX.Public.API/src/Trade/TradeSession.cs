@@ -228,7 +228,7 @@ namespace BidFX.Public.API.Trade
         private void SendQueryViaREST(long messageId, string orderId)
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
-            using (HttpWebResponse response = _restClient.SendMessage("GET", "?order_ts_id=" + orderId))
+            using (HttpWebResponse response = _restClient.SendMessage("GET", "", "order_ts_id=" + orderId))
             {
                 Order.Order order = JsonMarshaller.FromJson(GetBodyFromResponse(response));
                 order.SetMessageId(messageId);

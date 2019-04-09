@@ -48,12 +48,12 @@ namespace BidFX.Public.API.Example
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-                SendLevelTwoStreamingSubscriptions();
+//                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+//                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+//                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
+//                SendLevelTwoStreamingSubscriptions();
             }
             else
             {
@@ -67,8 +67,9 @@ namespace BidFX.Public.API.Example
             }
             
             //Trading
-//            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
-//            SendTrades();
+            DefaultClient.Client.TradeSession.OrderSubmitEventHandler += OnOrderSubmitResponse;
+            DefaultClient.Client.TradeSession.OrderQueryEventHandler += OnOrderSubmitResponse;
+            SendTrades();
         }
 
         private void SendLevelOneStreamingSubscriptions(params string[] sources)
@@ -156,38 +157,7 @@ namespace BidFX.Public.API.Example
 
         private void SendTrades()
         {
-            FxOrder fxOrder = new FxOrderBuilder()
-                .SetAccount(Account)
-                .SetCurrencyPair("EURGBP")
-                .SetCurrency("GBP")
-                .SetDealType("Swap")
-                .SetHandlingType("stream")
-                .SetOrderType("Limit")
-                .SetPrice(1.180000m)
-                .SetQuantity(2000000)
-                .SetSide("Sell")
-                .SetTenor("2W")
-                .SetFarCurrency("GBP")
-                .SetFarQuantity(2000000)
-                .SetFarSide("Buy")
-                .SetFarTenor("4M")
-                .SetReferenceOne(".NET API Example")
-                .Build();
-            FutureOrder futureOrder = new FutureOrderBuilder()
-                .SetAccount(Account)
-                .SetInstrumentCode("DEM0 Comdty")
-                .SetInstrumentCodeType("BLOOMBERG")
-                .SetOrderType("MARKET")
-                .SetQuantity(20)
-                .SetReferenceOne(".NET API Example")
-                .SetSide("BUY")
-                .Build();
-            
-            long messageId = DefaultClient.Client.TradeSession.SubmitOrder(fxOrder);
-            Log.InfoFormat("FXOrder Submitted. MessageId {0}", messageId);
-            long futuremessageId = DefaultClient.Client.TradeSession.SubmitOrder(futureOrder);
-            Log.InfoFormat("FutureOrder Submitted. MessageId {0}", futuremessageId);
-            
+            DefaultClient.Client.TradeSession.SubmitQuery("20190320-123811771_37291");
         }
 
         private static void OnOrderSubmitResponse(object sender, Order order)

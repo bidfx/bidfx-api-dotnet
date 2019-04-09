@@ -35,11 +35,12 @@ namespace BidFX.Public.API.Trade.REST
         /// <param name="method">HTTP Method, i.e. GET, DELETE</param>
         /// <param name="path">The path of the request location. Is appended to the Base Address.</param>
         /// <returns></returns>
-        public HttpWebResponse SendMessage(string method, string path)
+        public HttpWebResponse SendMessage(string method, string path, string query)
         {
             Uri address = new UriBuilder(_address)
             {
-                Path = _address.AbsolutePath + "/" + path
+                Path = _address.AbsolutePath + "/" + path,
+                Query = query
             }.Uri;
             
             Log.InfoFormat("Sending REST message to {0}", address);
