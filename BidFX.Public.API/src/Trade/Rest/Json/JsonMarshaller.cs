@@ -128,50 +128,10 @@ namespace BidFX.Public.API.Trade.Rest.Json
             stringBuilder.Append("\"" + item.Replace("\"", "\\\"") + "\"");
         }
 
-        public static Order.Order FromJson(string json)
+        public static object FromJson(string json)
         {
             int pointer = 0;
-            object jsonObject = ParseItem(json, ref pointer);
-            if (jsonObject is List<object>)
-            {
-                object firstItem = ((List<object>) jsonObject)[0];
-                if (!(firstItem is Dictionary<string, object>))
-                {
-                    throw new ArgumentException("First item was not a map");
-                }
-
-                object assetClass = ((Dictionary<string, object>) firstItem)[Order.Order.AssetClass];
-                if (!(assetClass is string))
-                {
-                    throw new ArgumentException("Could not read Asset Class of Result");
-                }
-
-                switch ((string) assetClass)
-                {
-                    case "FX":
-                        return new FxOrder((Dictionary<string, object>) firstItem);
-                    case "FUTURE":
-                        return new FutureOrder((Dictionary<string, object>) firstItem);
-                    default:
-                        Log.WarnFormat("Unknown assetclass {0}. Creating default order.");
-                        return new Order.Order((Dictionary<string, object>) firstItem);
-                }
-            }
-            else if (jsonObject is Dictionary<string, object>)
-            {
-                object message;
-                if (!((Dictionary<string, object>) jsonObject).TryGetValue("message", out message))
-                {
-                    throw new ArgumentException("Could not get an error message");
-                }
-                
-                Error error = new Error(null, message.ToString(), null);
-                return new Order.Order(new Dictionary<string, object> {{Order.Order.Errors, new List<Error>{error}}});
-            }
-            else
-            {
-                throw new ArgumentException("Could not read JSON");
-            }
+            return ParseItem(json, ref pointer);
         }
 
         private static object ParseItem(string json, ref int pointer)

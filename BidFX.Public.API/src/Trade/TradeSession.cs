@@ -1,10 +1,9 @@
 ﻿/// Copyright (c) 2018 BidFX Systems LTD. All Rights Reserved.
 
 using System;
-using System.Collections;
 using System.IO;
 using System.Net;
-using System.Reflection;
+using System.Text;
 using System.Threading;
 using BidFX.Public.API.Trade.Instruction;
 using BidFX.Public.API.Trade.Rest.Json;
@@ -21,6 +20,7 @@ namespace BidFX.Public.API.Trade
         public event EventHandler<Order.Order> OrderSubmitEventHandler;
         public event EventHandler<Order.Order> OrderQueryEventHandler;
         public event EventHandler<Order.Order> OrderInstructionEventHandler;
+        public event EventHandler<SettlementDateResponse> SettlementDateQueryEventHandler;
         private RESTClient _restClient;
         private static long _nextMessageId;
         public bool Running { get; private set; }
@@ -73,7 +73,7 @@ namespace BidFX.Public.API.Trade
             }
             long messageId = GetNextMessageId();
             ThreadPool.QueueUserWorkItem(
-                delegate { SendQueryViaREST(messageId, orderId); }
+                delegate { SendOrderQueryViaREST(messageId, orderId); }
             );
             return messageId;
         }
@@ -112,6 +112,26 @@ namespace BidFX.Public.API.Trade
             return messageId;
         }
 
+        public long QuerySettlementDate(string dealType, string ccyPair, string tenor, string settlementDate, string farTenor, string farSettlementDate)
+        {
+            if (!Running)
+            {
+                throw new IllegalStateException("TradeSession is not running");
+            }
+
+            long messageId = GetNextMessageId();
+            dealType = ConvertDealTypeForSettlementDateQuery(dealType);
+            ccyPair = ccyPair.Trim().ToUpper();
+            tenor = tenor.Trim().ToUpper();
+            farTenor = farTenor.Trim().ToUpper();
+
+            ThreadPool.QueueUserWorkItem(
+                delegate { SendSettlementDateQueryViaRest(messageId, dealType, ccyPair, tenor, settlementDate, farTenor, farSettlementDate); }
+            );
+
+            return messageId;
+        }
+
         private void SendOrderViaREST(long messageId, string json)
         {
             if (!Running)
@@ -127,7 +147,7 @@ namespace BidFX.Public.API.Trade
             {
                 Log.InfoFormat("Submitting order, messageId: {0}", messageId);
             }
-            Order.Order order = SendObjectViaRest(messageId, json, "");
+            Order.Order order = SendObjectViaRest(messageId, json, @"/api/om/v2/order");
             if (order != null && OrderSubmitEventHandler != null)
             {
                 OrderSubmitEventHandler.Invoke(this, order);
@@ -160,7 +180,7 @@ namespace BidFX.Public.API.Trade
                 Log.InfoFormat("Submitting instruction, messageId: {0}", messageId);
             }
 
-            Order.Order  order= SendObjectViaRest(messageId, json, "/amend");
+            Order.Order  order= SendObjectViaRest(messageId, json, @"/api/om/v2/order/amend");
             if (order != null && OrderInstructionEventHandler != null)
             {
                 order.SetMessageId(messageId);
@@ -199,7 +219,7 @@ namespace BidFX.Public.API.Trade
                 {
                     Log.DebugFormat("MessageID {0} - Received Message:\n {1}", messageId, jsonResponse);
                 }
-                Order.Order order = JsonMarshaller.FromJson(jsonResponse);
+                Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(jsonResponse));
                 if (OrderSubmitEventHandler != null)
                 {
                     if (Log.IsDebugEnabled)
@@ -225,12 +245,12 @@ namespace BidFX.Public.API.Trade
             }
         }
 
-        private void SendQueryViaREST(long messageId, string orderId)
+        private void SendOrderQueryViaREST(long messageId, string orderId)
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
-            using (HttpWebResponse response = _restClient.SendMessage("GET", "", "order_ts_id=" + orderId))
+            using (HttpWebResponse response = _restClient.SendMessage("GET", "/api/om/v2/order", "order_ts_id=" + orderId))
             {
-                Order.Order order = JsonMarshaller.FromJson(GetBodyFromResponse(response));
+                Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(GetBodyFromResponse(response)));
                 order.SetMessageId(messageId);
                 if (OrderQueryEventHandler != null)
                 {
@@ -242,6 +262,80 @@ namespace BidFX.Public.API.Trade
                         "OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
                         messageId, order.GetOrderTsId());
                 }
+            }
+        }
+
+        private void SendSettlementDateQueryViaRest(long messageId, string dealType, string ccyPair, string tenor, string settlementDate, string farTenor, string farSettlementDate)
+        {
+            StringBuilder query = new StringBuilder(); 
+            query.Append("deal_type=").Append(dealType).Append("&ccy_pair=").Append(ccyPair);
+            
+            if (tenor != null)
+            {
+                query.Append("&tenor=").Append(tenor);
+            }
+            if (settlementDate != null)
+            {
+                query.Append("&settlement_date=").Append(settlementDate);
+            }
+            if (farTenor != null)
+            {
+                query.Append("&far_tenor=").Append(farTenor);
+            }
+
+            if (farSettlementDate != null)
+            {
+                query.Append("&far_settlement_date=").Append(farSettlementDate);
+            }
+            SendSettlementDateQueryViaRest(messageId, query.ToString());
+        }
+
+        private void SendSettlementDateQueryViaRest(long messageId, string query)
+        {
+            try
+            {
+                Log.DebugFormat("Sending settlement date query {0}, messageId {1}", query, messageId);
+                using (HttpWebResponse response = _restClient.SendMessage("GET", "/api/fx-dates/v1", query))
+                {
+                    SettlementDateResponse settlementDateResponse;
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        settlementDateResponse = SettlementDateResponse.FromError(messageId, GetBodyFromResponse(response));
+                    }
+                    else
+                    {
+                        settlementDateResponse = SettlementDateResponse.FromJson(messageId, GetBodyFromResponse(response));
+                    }
+                    if (SettlementDateQueryEventHandler != null)
+                    {
+                        SettlementDateQueryEventHandler(this, settlementDateResponse);
+                    }
+                    else
+                    {
+                        Log.WarnFormat(
+                            "SettlementDateEQueryEventHandler was null, dropping query response, messageId: {0}",
+                            messageId);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Warn("Unexpected error occurred parsing response", e);
+            }
+            
+        }
+
+        private string ConvertDealTypeForSettlementDateQuery(string dealType)
+        {
+            dealType = dealType.Trim().ToUpper();
+            switch (dealType)
+            {
+                case "FWD":
+                case "FORWARD":
+                case "OUTRIGHT":
+                    return "FWD";
+                default:
+                    return dealType;
             }
         }
 

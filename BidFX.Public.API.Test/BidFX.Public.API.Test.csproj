@@ -109,6 +109,7 @@
     <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
     <Compile Include="test\Trade\Order\OrderBuilderTest.cs" />
     <Compile Include="test\Trade\Rest\Json\JsonMarshallerTest.cs" />
+    <Compile Include="test\Trade\SettlementDateResponseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BidFX.Public.API\BidFX.Public.API.csproj">

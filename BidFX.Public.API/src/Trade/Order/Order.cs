@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BidFX.Public.API.Trade.Rest.Json;
+using log4net;
 
 namespace BidFX.Public.API.Trade.Order
 {
     public class Order : EventArgs, IJsonMarshallable
     {
+        private static readonly ILog Log = LogManager.GetLogger("Order");
+        
         internal const string Account = "account";
         internal const string AllocationTemplate = "allocation_template";
         internal const string AllocationData = "allocation_data";
@@ -34,7 +37,7 @@ namespace BidFX.Public.API.Trade.Order
 
         private readonly SortedDictionary<string, object> _jsonMap;
 
-        public Order(IDictionary<string, object> jsonMap)
+        internal Order(IDictionary<string, object> jsonMap)
         {
             ProcessErrors(jsonMap);
             ProcessExecutions(jsonMap);
@@ -233,6 +236,50 @@ namespace BidFX.Public.API.Trade.Order
             else
             {
                 return o == null ? "null" : o.ToString();
+            }
+        }
+        
+        internal static Order FromJson(object jsonObject)
+        {
+            if (jsonObject is List<object>)
+            {
+                object firstItem = ((List<object>) jsonObject)[0];
+                if (!(firstItem is Dictionary<string, object>))
+                {
+                    throw new ArgumentException("First item was not a map");
+                }
+
+                object assetClass = ((Dictionary<string, object>) firstItem)[AssetClass];
+                if (!(assetClass is string))
+                {
+                    throw new ArgumentException("Could not read Asset Class of Result");
+                }
+
+                switch ((string) assetClass)
+                {
+                    case "FX":
+                        return new FxOrder((Dictionary<string, object>) firstItem);
+                    case "FUTURE":
+                        return new FutureOrder((Dictionary<string, object>) firstItem);
+                    default:
+                        Log.WarnFormat("Unknown assetclass {0}. Creating default order.");
+                        return new Order((Dictionary<string, object>) firstItem);
+                }
+            }
+            else if (jsonObject is Dictionary<string, object>)
+            {
+                object message;
+                if (!((Dictionary<string, object>) jsonObject).TryGetValue("message", out message))
+                {
+                    throw new ArgumentException("Could not get an error message");
+                }
+                
+                Error error = new Error(null, message.ToString(), null);
+                return new Order(new Dictionary<string, object> {{Errors, new List<Error>{error}}});
+            }
+            else
+            {
+                throw new ArgumentException("Could not read JSON");
             }
         }
     }

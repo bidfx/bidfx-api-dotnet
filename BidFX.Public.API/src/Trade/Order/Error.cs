@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BidFX.Public.API.Trade.Order
 {
@@ -47,6 +48,16 @@ namespace BidFX.Public.API.Trade.Order
         public override string ToString()
         {
             return Order.DeepStringDictionary(_jsonMap);
+        }
+
+        internal static Error FromJson(object jsonObject)
+        {
+            if (jsonObject is Dictionary<string, object>)
+            {
+                return new Error((Dictionary<string, object>) jsonObject);
+            }
+            
+            throw new ArgumentException("jsonObject not a dictionary");
         }
     }
 }

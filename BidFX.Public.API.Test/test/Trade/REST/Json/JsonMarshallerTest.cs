@@ -166,7 +166,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 "\"uuid\": 595038130165" +
             "}" +
             "]";
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.IsInstanceOf<FutureOrder>(order);
             FutureOrder futureOrder = (FutureOrder) order;
             Assert.AreEqual("lasman", futureOrder.GetAlternateOwner());
@@ -232,7 +232,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 "\"tenor\": \"2W\"," +
                 "\"uuid\": 190741670917 " +
             "}]";
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.IsInstanceOf<FxOrder>(order);
             FxOrder fxOrder = (FxOrder) order;
             Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
@@ -298,7 +298,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 "\"settlement_date\": \"2018-07-26\"," +
                 "\"tenor\": \"2W\"" +
             "}]";
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.IsInstanceOf<FxOrder>(order);
             FxOrder fxOrder = (FxOrder) order;
             Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
@@ -379,7 +379,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                 "\"settlement_date\": \"2018-07-26\"," +
                 "\"tenor\": \"2W\"" +
             "}]";
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.IsInstanceOf<FxOrder>(order);
             FxOrder fxOrder = (FxOrder) order;
             Assert.AreEqual("FX_ACCT", fxOrder.GetAccount());
@@ -431,7 +431,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
             "\"type\": \"Bad Request\"," +
             "\"message\": \"Failed to deserialize body text expecting List of Order\"" +
             "}";
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.AreEqual(1, order.GetErrors().Count);
             Assert.AreEqual("Failed to deserialize body text expecting List of Order", order.GetErrors()[0].GetMessage());
             Assert.IsNull(order.GetErrors()[0].GetField());
@@ -491,7 +491,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
                     "\"uuid\": 604147930471" +
                 "}]";
             
-            Order.Order order = JsonMarshaller.FromJson(json);
+            Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(json));
             Assert.IsInstanceOf<FxOrder>(order);
             FxOrder fxOrder = (FxOrder) order;
             Allocation allocation = fxOrder.GetAllocation();
