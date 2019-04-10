@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            Components[FutureOrder.ContractDate] =  FormatDate("ContractDate", contractDate, false);
+            Components[FutureOrder.ContractDate] = DateFormatter.FormatDateWithHyphens("ContractDate", contractDate, false);
             return this;
         }
         
@@ -130,7 +130,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            Components[FutureOrder.CreationDate] = FormatDate(FutureOrder.CreationDate, creationDate, true);
+            Components[FutureOrder.CreationDate] = DateFormatter.FormatDateWithHyphens(FutureOrder.CreationDate, creationDate, true);
             return this;
         }
 
@@ -153,7 +153,7 @@ namespace BidFX.Public.API.Trade.Order
                 return this;
             }
 
-            Components[FutureOrder.GoodTillDate] = FormatDate(FutureOrder.GoodTillDate, goodTillDate, true);
+            Components[FutureOrder.GoodTillDate] = DateFormatter.FormatDateWithHyphens(FutureOrder.GoodTillDate, goodTillDate, true);
             return this;
         }
 

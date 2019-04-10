@@ -103,7 +103,7 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             settlementDate = settlementDate.Trim();
-            settlementDate = FormatDate("SettlementDate", settlementDate, true);
+            settlementDate = DateFormatter.FormatDateWithHyphens("SettlementDate", settlementDate, true);
             Components[FxOrder.SettlementDate] = settlementDate;
             return this;
         }
@@ -117,7 +117,7 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             fixingDate = fixingDate.Trim();
-            fixingDate = FormatDate("FixingDate", fixingDate, true);
+            fixingDate = DateFormatter.FormatDateWithHyphens("FixingDate", fixingDate, true);
             Components[FxOrder.FixingDate] = fixingDate;
             return this;
         }
@@ -165,7 +165,7 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             farSettlementDate = farSettlementDate.Trim();
-            farSettlementDate = FormatDate("FarSettlementDate", farSettlementDate, true);
+            farSettlementDate = DateFormatter.FormatDateWithHyphens("FarSettlementDate", farSettlementDate, true);
             Components[FxOrder.FarSettlementDate] = farSettlementDate;
             return this;
         }
@@ -179,7 +179,7 @@ namespace BidFX.Public.API.Trade.Order
             }
 
             farFixingDate = farFixingDate.Trim();
-            farFixingDate = FormatDate("FarFixingDate", farFixingDate, true);
+            farFixingDate = DateFormatter.FormatDateWithHyphens("FarFixingDate", farFixingDate, true);
             Components[FxOrder.FarFixingDate] = farFixingDate;
             return this;
         }

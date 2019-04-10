@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Instruction;
 using BidFX.Public.API.Trade.Rest.Json;
 using BidFX.Public.API.Trade.REST;
@@ -124,7 +125,13 @@ namespace BidFX.Public.API.Trade
             dealType = ConvertDealTypeForSettlementDateQuery(dealType);
             ccyPair = ccyPair.Trim().ToUpper();
             tenor = tenor.Trim().ToUpper();
-            farTenor = farTenor != null ? farTenor.Trim().ToUpper() : null;
+            farTenor = farTenor == null ? null : farTenor.Trim().ToUpper();
+            settlementDate = settlementDate == null
+                ? null
+                : DateFormatter.FormatDateWithHyphens("settlementDate", settlementDate, true);
+            farSettlementDate = farSettlementDate == null
+                ? null
+                : DateFormatter.FormatDateWithHyphens("farSettlementDate", farSettlementDate, true);
 
             ThreadPool.QueueUserWorkItem(
                 delegate { SendSettlementDateQueryViaRest(messageId, dealType, ccyPair, tenor, settlementDate, farTenor, farSettlementDate); }

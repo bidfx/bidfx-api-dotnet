@@ -169,6 +169,7 @@
     <Compile Include="src\Tools\BitSetter.cs" />
     <Compile Include="src\Tools\ByteBuffer.cs" />
     <Compile Include="src\Tools\ConnectionTools.cs" />
+    <Compile Include="src\Tools\DateFormatter.cs" />
     <Compile Include="src\Tools\GUID.cs" />
     <Compile Include="src\Tools\JavaTime.cs" />
     <Compile Include="src\Tools\NameCache.cs" />
