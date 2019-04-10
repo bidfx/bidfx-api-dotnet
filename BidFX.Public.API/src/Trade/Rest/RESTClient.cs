@@ -33,9 +33,10 @@ namespace BidFX.Public.API.Trade.REST
         /// <returns></returns>
         public HttpWebResponse SendMessage(string method, string path, string query)
         {
+            string joiner = path.StartsWith("/") || _address.AbsolutePath.EndsWith("/") ? "" : "/";
             Uri address = new UriBuilder(_address)
             {
-                Path = _address.AbsolutePath + "/" + path,
+                Path = _address.AbsolutePath + joiner + path,
                 Query = query
             }.Uri;
             

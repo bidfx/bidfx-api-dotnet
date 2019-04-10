@@ -112,7 +112,8 @@ namespace BidFX.Public.API.Trade
             return messageId;
         }
 
-        public long QuerySettlementDate(string dealType, string ccyPair, string tenor, string settlementDate, string farTenor, string farSettlementDate)
+        public long QuerySettlementDate(string dealType, string ccyPair, string tenor,
+                                        string settlementDate = null, string farTenor = null, string farSettlementDate = null)
         {
             if (!Running)
             {
@@ -123,7 +124,7 @@ namespace BidFX.Public.API.Trade
             dealType = ConvertDealTypeForSettlementDateQuery(dealType);
             ccyPair = ccyPair.Trim().ToUpper();
             tenor = tenor.Trim().ToUpper();
-            farTenor = farTenor.Trim().ToUpper();
+            farTenor = farTenor != null ? farTenor.Trim().ToUpper() : null;
 
             ThreadPool.QueueUserWorkItem(
                 delegate { SendSettlementDateQueryViaRest(messageId, dealType, ccyPair, tenor, settlementDate, farTenor, farSettlementDate); }
@@ -147,7 +148,7 @@ namespace BidFX.Public.API.Trade
             {
                 Log.InfoFormat("Submitting order, messageId: {0}", messageId);
             }
-            Order.Order order = SendObjectViaRest(messageId, json, @"/api/om/v2/order");
+            Order.Order order = SendObjectViaRest(messageId, json, @"api/om/v2/order");
             if (order != null && OrderSubmitEventHandler != null)
             {
                 OrderSubmitEventHandler.Invoke(this, order);
@@ -180,7 +181,7 @@ namespace BidFX.Public.API.Trade
                 Log.InfoFormat("Submitting instruction, messageId: {0}", messageId);
             }
 
-            Order.Order  order= SendObjectViaRest(messageId, json, @"/api/om/v2/order/amend");
+            Order.Order  order= SendObjectViaRest(messageId, json, @"api/om/v2/order/amend");
             if (order != null && OrderInstructionEventHandler != null)
             {
                 order.SetMessageId(messageId);
@@ -248,7 +249,7 @@ namespace BidFX.Public.API.Trade
         private void SendOrderQueryViaREST(long messageId, string orderId)
         {
             Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
-            using (HttpWebResponse response = _restClient.SendMessage("GET", "/api/om/v2/order", "order_ts_id=" + orderId))
+            using (HttpWebResponse response = _restClient.SendMessage("GET", "api/om/v2/order", "order_ts_id=" + orderId))
             {
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(GetBodyFromResponse(response)));
                 order.SetMessageId(messageId);
@@ -295,17 +296,20 @@ namespace BidFX.Public.API.Trade
             try
             {
                 Log.DebugFormat("Sending settlement date query {0}, messageId {1}", query, messageId);
-                using (HttpWebResponse response = _restClient.SendMessage("GET", "/api/fx-dates/v1", query))
+                using (HttpWebResponse response = _restClient.SendMessage("GET", "api/fx-dates/v1", query))
                 {
                     SettlementDateResponse settlementDateResponse;
-                    if (response.StatusCode != HttpStatusCode.OK)
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        settlementDateResponse = SettlementDateResponse.FromError(messageId, GetBodyFromResponse(response));
+                        settlementDateResponse =
+                            SettlementDateResponse.FromJson(messageId, JsonMarshaller.FromJson(GetBodyFromResponse(response)));
                     }
                     else
                     {
-                        settlementDateResponse = SettlementDateResponse.FromJson(messageId, GetBodyFromResponse(response));
+                        settlementDateResponse =
+                            SettlementDateResponse.FromError(messageId, JsonMarshaller.FromJson(GetBodyFromResponse(response)));
                     }
+
                     if (SettlementDateQueryEventHandler != null)
                     {
                         SettlementDateQueryEventHandler(this, settlementDateResponse);
