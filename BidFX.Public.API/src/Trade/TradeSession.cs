@@ -278,20 +278,20 @@ namespace BidFX.Public.API.Trade
             StringBuilder query = new StringBuilder(); 
             query.Append("deal_type=").Append(dealType).Append("&ccy_pair=").Append(ccyPair);
             
-            if (tenor != null)
+            if (!string.IsNullOrWhiteSpace(tenor))
             {
                 query.Append("&tenor=").Append(tenor);
             }
-            if (settlementDate != null)
+            if (!string.IsNullOrWhiteSpace(settlementDate))
             {
                 query.Append("&settlement_date=").Append(settlementDate);
             }
-            if (farTenor != null)
+            if (!string.IsNullOrWhiteSpace(farTenor))
             {
                 query.Append("&far_tenor=").Append(farTenor);
             }
 
-            if (farSettlementDate != null)
+            if (!string.IsNullOrWhiteSpace(farSettlementDate))
             {
                 query.Append("&far_settlement_date=").Append(farSettlementDate);
             }
