@@ -12,6 +12,7 @@ namespace BidFX.Public.API.Trade.Order
         private static readonly ILog Log = LogManager.GetLogger("Order");
         
         internal const string Account = "account";
+        internal const string Algo = "algo";
         internal const string AllocationTemplate = "allocation_template";
         internal const string AllocationData = "allocation_data";
         internal const string AlternateOwner = "alternate_owner";
@@ -82,6 +83,22 @@ namespace BidFX.Public.API.Trade.Order
             return GetComponent<string>(Account);
         }
 
+        public Algo GetAlgo()
+        {
+            try
+            {
+                IDictionary<string, object> algoJson = GetComponent<IDictionary<string, object>>(Algo);
+                if (algoJson == null) return null;
+                string name = (string) algoJson[Trade.Order.Algo.Name];
+                IDictionary<string, object> parameters = (IDictionary<string, object>) algoJson[Trade.Order.Algo.Parameters];
+                return new Algo(name, parameters);
+            }
+            catch (InvalidCastException e)
+            {
+                return GetComponent<Algo>(Algo);
+            }
+        }
+        
         public string GetAllocationTemplate()
         {
             return GetComponent<string>(AllocationTemplate);

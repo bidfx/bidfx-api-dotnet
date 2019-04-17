@@ -23,6 +23,18 @@ namespace BidFX.Public.API.Trade.Order
             return SetStringField(account, Order.Account);
         }
 
+        public T SetAlgo(Algo algo)
+        {
+            if (algo == null)
+            {
+                Components.Remove(Order.Algo);
+                return this as T;
+            }
+
+            Components[Order.Algo] = algo;
+            return this as T;
+        }
+        
         public T SetAllocationTemplate(string templateName)
         {
             return SetStringField(templateName, Order.AllocationTemplate);

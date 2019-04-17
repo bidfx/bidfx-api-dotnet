@@ -73,6 +73,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
             if (item is IDictionary<string, object>)
             {
                 AppendDictionary((IDictionary<string, object>) item, stringBuilder);
+                return;
             }
 
             AppendString(item.ToString(), stringBuilder);

@@ -128,6 +128,35 @@ namespace BidFX.Public.API.Trade.Rest.Json
         }
 
         [Test]
+        public void TestOrderWithAlgo()
+        {
+            Algo algo = new AlgoBuilder()
+                .SetName("FX_Limit")
+                .SetParameter("LimitPrice", 0.8665)
+                .SetParameter("RollOverType", "ValueDate")
+                .SetParameter("TimeInForce", "GTC")
+                .Build();
+            FxOrder order = new FxOrderBuilder()
+                .SetAlgo(algo)
+                .Build();
+
+            const string expected = "[{" +
+                                    "\"algo\":{" +
+                                        "\"name\":\"FX_Limit\"," +
+                                        "\"parameters\":{" +
+                                            "\"LimitPrice\":0.8665," +
+                                            "\"RollOverType\":\"ValueDate\"," +
+                                            "\"TimeInForce\":\"GTC\"" +
+                                        "}" +
+                                    "}," +
+                                    "\"asset_class\":\"FX\"," +
+                                    "\"correlation_id\":\"123\"" +
+                                    "}]";
+            Assert.AreEqual(expected, JsonMarshaller.ToJson(order, 123));
+
+        }
+
+        [Test]
         public void TestSuccessfulFutureRestReponseIsParsedCorrectly()
         {
             const string json = "["+

@@ -331,6 +331,35 @@ namespace BidFX.Public.API.Trade.Order
             Order order = _orderBuilder.Build();
             Assert.AreEqual(1, order.GetJsonMap().Count);
         }
+
+        [Test]
+        public void TestSettingAlgo()
+        {
+            Algo algo = new AlgoBuilder()
+                .SetName("FX_Limit")
+                .SetParameter("LimitPrice", 0.8665)
+                .SetParameter("RollOverType", "ValueDate")
+                .SetParameter("TimeInForce", "GTC")
+                .Build();
+            _orderBuilder.SetAlgo(algo);
+            Order order = _orderBuilder.Build();
+            Assert.AreEqual(algo, order.GetAlgo());
+        }
+
+        [Test]
+        public void TestSettingNullAlgoClearsAlgo()
+        {
+            Algo algo = new AlgoBuilder()
+                .SetName("FX_Limit")
+                .SetParameter("LimitPrice", 0.8665)
+                .SetParameter("RollOverType", "ValueDate")
+                .SetParameter("TimeInForce", "GTC")
+                .Build();
+            _orderBuilder.SetAlgo(algo);
+            _orderBuilder.SetAlgo(null);
+            Order order = _orderBuilder.Build();
+            Assert.AreEqual(1, order.GetJsonMap().Count);
+        }
     }
 
     internal class TestOrderBuilderImpl : OrderBuilder<TestOrderBuilderImpl, TestOrderImpl>
