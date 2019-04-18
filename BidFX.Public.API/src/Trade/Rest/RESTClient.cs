@@ -71,9 +71,10 @@ namespace BidFX.Public.API.Trade.REST
         /// <returns></returns>
         public HttpWebResponse SendJSON(string method, string path, string json)
         {
+            string joiner = path.StartsWith("/") || _address.AbsolutePath.EndsWith("/") ? "" : "/";
             Uri address = new UriBuilder(_address)
             {
-                Path = _address.AbsolutePath + "/" + path
+                Path = _address.AbsolutePath + joiner + path
             }.Uri;
             
             Log.DebugFormat("Sending REST message with JSON to {0}", address);
