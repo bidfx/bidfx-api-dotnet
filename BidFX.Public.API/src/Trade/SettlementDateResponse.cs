@@ -74,33 +74,38 @@ namespace BidFX.Public.API.Trade
             {
                 throw new ArgumentException("object was not a dictionary");
             }
-            object paramsObject;
-            if (!((Dictionary<string, object>) jsonObject).TryGetValue("params", out paramsObject))
-            {
-                throw new ArgumentException("could not get params part of message");
-            }
-            if (!(paramsObject is Dictionary<string, object>))
-            {
-                throw new ArgumentException("params object was not a dictionary");
-            }
 
-            object errorsListObject;
-            if (!((Dictionary<string, object>) paramsObject).TryGetValue("errors", out errorsListObject))
+            if (((Dictionary<string, object>) jsonObject).ContainsKey("params"))
             {
-                throw new ArgumentException("could not get errors part of message");
-            }
-            if (!(errorsListObject is List<object>))
-            {
-                throw new ArgumentException("errors object was not a list");
-            }
+                object paramsObject = ((Dictionary<string, object>) jsonObject)["params"];
+                if (!(paramsObject is Dictionary<string, object>))
+                {
+                    throw new ArgumentException("params object was not a dictionary");
+                }
+
+                object errorsListObject;
+                if (!((Dictionary<string, object>) paramsObject).TryGetValue("errors", out errorsListObject))
+                {
+                    throw new ArgumentException("could not get errors part of message");
+                }
+                if (!(errorsListObject is List<object>))
+                {
+                    throw new ArgumentException("errors object was not a list");
+                }
             
-            List<Error> errors = new List<Error>();
-            foreach (object errorObject in (List<object>) errorsListObject)
-            {
-                errors.Add(Error.FromJson(errorObject));
-            }
+                List<Error> errors = new List<Error>();
+                foreach (object errorObject in (List<object>) errorsListObject)
+                {
+                    errors.Add(Error.FromJson(errorObject));
+                }
             
-            return new SettlementDateResponse(messageId, errors);
+                return new SettlementDateResponse(messageId, errors);
+            }
+            else
+            {
+                Error error = Error.FromJson(jsonObject);
+                return new SettlementDateResponse(messageId, new List<Error> {error});    
+            }
         }
     }
 }

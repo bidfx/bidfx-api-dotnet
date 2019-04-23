@@ -131,6 +131,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 
         public static object FromJson(string json)
         {
+            Log.DebugFormat("Parsing {0}", json);
             int pointer = 0;
             return ParseItem(json, ref pointer);
         }

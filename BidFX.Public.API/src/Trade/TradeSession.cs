@@ -158,7 +158,16 @@ namespace BidFX.Public.API.Trade
             Order.Order order = SendObjectViaRest(messageId, json, @"api/om/v2/order");
             if (order != null && OrderSubmitEventHandler != null)
             {
+                Log.DebugFormat("Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}", messageId, order.GetOrderTsId());
                 OrderSubmitEventHandler.Invoke(this, order);
+            }
+            else if (OrderSubmitEventHandler == null)
+            {
+                Log.InfoFormat("No OrderSubmitEventHandler registered, dropping messageId {0}, orderId {1}", messageId, order.GetOrderTsId());
+            }
+            else
+            {
+                Log.InfoFormat("Order response was null, messageId {0}", messageId);
             }
         }
 
@@ -191,8 +200,16 @@ namespace BidFX.Public.API.Trade
             Order.Order  order= SendObjectViaRest(messageId, json, @"api/om/v2/order/amend");
             if (order != null && OrderInstructionEventHandler != null)
             {
-                order.SetMessageId(messageId);
+                Log.DebugFormat("Notifying OrderInstructionEventHandler of order instruction response, messageId: {0}, orderId: {1}", messageId, order.GetOrderTsId());
                 OrderInstructionEventHandler.Invoke(this, order);
+            }
+            else if (OrderSubmitEventHandler == null)
+            {
+                Log.InfoFormat("No OrderInstructionEventHandler registered, dropping messageId {0}, orderId {1}", messageId, order.GetOrderTsId());
+            }
+            else
+            {
+                Log.InfoFormat("Order Instruction response was null, messageId {0}", messageId);
             }
         }
 
@@ -228,23 +245,8 @@ namespace BidFX.Public.API.Trade
                     Log.DebugFormat("MessageID {0} - Received Message:\n {1}", messageId, jsonResponse);
                 }
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(jsonResponse));
-                if (OrderSubmitEventHandler != null)
-                {
-                    if (Log.IsDebugEnabled)
-                    {
-                        Log.DebugFormat(
-                            "Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}",
-                            messageId, order.GetOrderTsId());
-                    }
-                    return order;
-                }
-                else
-                {
-                    Log.WarnFormat(
-                        "OrderSubmitEventHandler was null dropping order response: {0}",
-                        order.ToString());
-                    return null;
-                }
+                order.SetMessageId(messageId);
+                return order;
             }
             catch (Exception e)
             {
@@ -324,7 +326,7 @@ namespace BidFX.Public.API.Trade
                     else
                     {
                         Log.WarnFormat(
-                            "SettlementDateEQueryEventHandler was null, dropping query response, messageId: {0}",
+                            "SettlementDateQueryEventHandler was null, dropping query response, messageId: {0}",
                             messageId);
                     }
                 }
