@@ -305,7 +305,7 @@ namespace BidFX.Public.API.Trade
             try
             {
                 Log.DebugFormat("Sending settlement date query {0}, messageId {1}", query, messageId);
-                using (HttpWebResponse response = _restClient.SendMessage("GET", "api/fx-dates/v1", query))
+                using (HttpWebResponse response = _restClient.SendMessage("GET", "api/fx-dates/v1/fx-date", query))
                 {
                     SettlementDateResponse settlementDateResponse;
                     if (response.StatusCode == HttpStatusCode.OK)
