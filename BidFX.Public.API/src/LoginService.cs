@@ -42,7 +42,7 @@ namespace BidFX.Public.API
             Product = "BidFXDotnet";
         }
 
-        public void Start()
+        public virtual void Start()
         {
             if (Started)
             {
