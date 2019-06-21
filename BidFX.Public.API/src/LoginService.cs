@@ -2,10 +2,11 @@
 
 using System;
 using System.Net;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
+using BidFX.Public.API.Price;
+using BidFX.Public.API.Trade;
 using log4net;
 
 
@@ -24,6 +25,9 @@ namespace BidFX.Public.API
         public int Port { get; set; }
         public string Username { get; set; }
         public string Product { private get; set; }
+        private bool Started { get; set; }
+        public ISession PriceSession { get; set; } 
+        public TradeSession TradeSession { get; set; }
 
         public event EventHandler<DisconnectEventArgs> OnForcedDisconnectEventHandler;
 
@@ -40,9 +44,8 @@ namespace BidFX.Public.API
 
         public void Start()
         {
-            if (LoggedIn)
+            if (Started)
             {
-                Log.Debug("Already logged in");
                 return;
             }
 
@@ -51,6 +54,7 @@ namespace BidFX.Public.API
             {
                 Log.Debug("Succesfully validated user permissions");
                 LoggedIn = true;
+                Started = true;
                 StartRecurringAuthorizationCheck();
             }
             else
@@ -64,6 +68,9 @@ namespace BidFX.Public.API
         public void Stop()
         {
             LoggedIn = false;
+            Started = false;
+            PriceSession = null;
+            TradeSession = null;
             if (_authorizationChecker != null)
             {
                 _authorizationChecker.Dispose();
@@ -126,17 +133,34 @@ namespace BidFX.Public.API
                     Log.Debug("Rechecking user permissions...");
                 }
                 HttpStatusCode statusCode;
-                if (!UserHasProduct(out statusCode))
+                if (UserHasProduct(out statusCode))
                 {
+                    if (LoggedIn == false)
+                    {
+                        LoggedIn = true;
+                        if (PriceSession != null)
+                        {
+                            PriceSession.Start();
+                        }
+
+                        if (TradeSession != null)
+                        {
+                            TradeSession.Start();
+                        }
+                    }
+                }
+                else
+                {
+                    LoggedIn = false;
                     string failureReason = GetReasonForFailure(statusCode);
                     Log.WarnFormat("Could not revalidate user permissions: {0}", failureReason);
-                    Stop();
                     if (OnForcedDisconnectEventHandler != null)
                     {
                         OnForcedDisconnectEventHandler(this, new DisconnectEventArgs(failureReason));
                     }
                 }
             }, null, RecheckInterval, RecheckInterval);
+            
         }
 
         private string GetReasonForFailure(HttpStatusCode statusCode)

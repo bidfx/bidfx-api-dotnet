@@ -194,6 +194,11 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             try
             {
+                if (!LoginService.LoggedIn)
+                {
+                    Log.Debug("Not logged in, not connecting to Puffin server");
+                    return;
+                }
                 TimeSpan heartbeatInterval = HandshakeWithServer();
                 _puffinConnection = new PuffinConnection(_stream, this, heartbeatInterval);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Puffin price server");
@@ -304,16 +309,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         
         private void ForcedDisconnect(string reason)
         {
-            if (_running.CompareAndSet(true, false))
+            if (_puffinConnection != null)
             {
-                if (_puffinConnection != null)
-                {
-                    _puffinConnection.Close(Name + " stopped");
-                }
-
-                NotifyStatusChange(ProviderStatus.Closed, reason);
-                LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+                _puffinConnection.Close(Name + " stopped");
             }
+
+            NotifyStatusChange(ProviderStatus.Closed, reason);
+            LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
         }
     }
 }

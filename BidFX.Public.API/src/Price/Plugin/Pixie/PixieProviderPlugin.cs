@@ -133,6 +133,11 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
+                if (!LoginService.LoggedIn)
+                {
+                    Log.Debug("Not logged in, not connecting to Pixie server");
+                    return;
+                }
                 HandshakeWithServer();
                 _pixieConnection = new PixieConnection(_stream, this, _protocolOptions, LoginService.Username);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
@@ -289,16 +294,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         
         private void ForcedDisconnect(string reason)
         {
-            if (_running.CompareAndSet(true, false))
+            if (_pixieConnection != null)
             {
-                if (_pixieConnection != null)
-                {
-                    _pixieConnection.Close(Name + " stopped");
-                }
-
-                NotifyStatusChange(ProviderStatus.Closed, reason);
-                LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
+                _pixieConnection.Close(Name + " stopped");
             }
+
+            NotifyStatusChange(ProviderStatus.Closed, reason);
         }
     }
 }

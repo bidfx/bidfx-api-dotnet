@@ -269,6 +269,8 @@ namespace BidFX.Public.API
                 LevelOneSubscriptionLimit = _levelOneSubscriptionLimit
               
             };
+            
+            LoginService.PriceSession = _priceManager;
             _priceManager.Start();
         }
 
@@ -283,6 +285,7 @@ namespace BidFX.Public.API
             {
                 LoginService = LoginService
             };
+            LoginService.TradeSession = _tradeSession;
             _tradeSession.Start();
         }
 

@@ -42,7 +42,6 @@ namespace BidFX.Public.API.Price
 
         public PriceManager()
         {
-            // TODO - stop when login service disconnects
             ProviderStatusEventHandler += OnProviderStatus;
             _inapiEventHandler = new ApiEventDispatcher(this);
             _subscriptionRefreshThread = new Thread(RefreshStaleSubscriptionsLoop)
