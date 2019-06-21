@@ -245,7 +245,10 @@ namespace BidFX.Public.API.Trade
                     Log.DebugFormat("MessageID {0} - Received Message:\n {1}", messageId, jsonResponse);
                 }
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(jsonResponse));
-                order.SetMessageId(messageId);
+                if (order != null)
+                {
+                    order.SetMessageId(messageId);
+                }
                 return order;
             }
             catch (Exception e)
@@ -261,6 +264,12 @@ namespace BidFX.Public.API.Trade
             using (HttpWebResponse response = _restClient.SendMessage("GET", "api/om/v2/order", "order_ts_id=" + orderId))
             {
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(GetBodyFromResponse(response)));
+                if (order == null)
+                {
+                    Log.InfoFormat("No valid order returned, messageId {0}, orderId: {1}", messageId, orderId);
+                    return;
+                }
+                
                 order.SetMessageId(messageId);
                 if (OrderQueryEventHandler != null)
                 {

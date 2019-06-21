@@ -260,6 +260,11 @@ namespace BidFX.Public.API.Trade.Order
         {
             if (jsonObject is List<object>)
             {
+                if (((List<object>) jsonObject).Count == 0)
+                {
+                    Error error = new Error(null, "Empty list returned from server", null);
+                    return new Order(new Dictionary<string, object> {{Errors, new List<Error>{error}}});
+                }
                 object firstItem = ((List<object>) jsonObject)[0];
                 if (!(firstItem is Dictionary<string, object>))
                 {

@@ -175,6 +175,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 
         private static List<object> ParseList(string json, ref int pointer)
         {
+            SkipWhitespace(json, ref pointer);
             VerifyNotAtEnd(json, pointer);
             List<object> list = new List<object>();
             while (json[pointer] != ']')
