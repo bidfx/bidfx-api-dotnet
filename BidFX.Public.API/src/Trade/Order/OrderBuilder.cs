@@ -56,6 +56,18 @@ namespace BidFX.Public.API.Trade.Order
         {
             return SetStringField(alternateOwner, Order.AlternateOwner);
         }
+      
+        public T SetExecutingBroker(string executingBroker)
+        {
+            if (Params.IsNullOrEmpty(executingBroker))
+            {
+                Components.Remove(Order.ExecutingBroker);
+                return this as T;
+            }
+
+            Components[Order.ExecutingBroker] = executingBroker;
+            return this as T;
+        }
 
         public T SetHandlingType(string handlingType)
         {

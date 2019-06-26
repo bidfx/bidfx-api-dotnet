@@ -18,6 +18,7 @@ namespace BidFX.Public.API.Trade.Order
         internal const string AlternateOwner = "alternate_owner";
         internal const string AssetClass = "asset_class";
         internal const string Currency = "dealt_ccy";
+        internal const string ExecutingBroker = "executing_broker";
         internal const string Side = "side";
         internal const string Quantity = "quantity";
         internal const string HandlingType = "handling_type";
