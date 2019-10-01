@@ -58,7 +58,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             try
             {
-                return WindowsIdentity.GetCurrent().Name;
+                return System.Environment.UserName;
             }
             catch (Exception)
             {
