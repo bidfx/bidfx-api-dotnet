@@ -269,8 +269,8 @@ namespace BidFX.Public.API.Price
 
         public void UnsubscribeAll()
         {
-            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             foreach (Subscription subscription in _subscriptions.Clear())
+            foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 if (providerPlugin.IsSubjectCompatible(subscription.Subject))
                 {

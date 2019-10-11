@@ -61,6 +61,8 @@ namespace BidFX.Public.API.Price
             lock (_map)
             {
                 List<Subscription> copy = new List<Subscription>(_map.Values);
+                _levelOneSubjects = 0;
+                _levelTwoSubjects = 0;
                 _map.Clear();
                 return copy;
             }
