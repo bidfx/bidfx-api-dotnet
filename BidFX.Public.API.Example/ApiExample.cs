@@ -48,12 +48,12 @@ namespace BidFX.Public.API.Example
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
                 Log.Info("pricing session is ready");
-//                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-//                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
-//                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
-//                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
-//                SendLevelTwoStreamingSubscriptions();
+                SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
+                    "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
+                SendIndicativeSubscriptions("EURUSD", "GBPUSD");
+                SendLevelTwoStreamingSubscriptions();
             }
             else
             {
