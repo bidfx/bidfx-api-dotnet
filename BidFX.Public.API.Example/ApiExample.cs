@@ -165,11 +165,5 @@ namespace BidFX.Public.API.Example
             Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}, FullOrder => {3}", order.GetMessageId(),
                 order.GetOrderTsId(), order.GetState(), order);
         }
-
-        private static void OnDisconnect(object sender, DisconnectEventArgs eventArgs)
-        {
-            Log.InfoFormat("Forced to disconnect. Closing program. {0}", eventArgs.Reason);
-            Environment.Exit(1);
-        }
     }
 }

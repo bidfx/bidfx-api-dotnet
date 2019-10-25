@@ -33,8 +33,6 @@ namespace BidFX.Public.API.Price
 
         public bool DisableHostnameSslChecks { get; set; }
         public TimeSpan ReconnectInterval { get; set; }
-        public int LevelTwoSubscriptionLimit { get; internal set; }
-        public int LevelOneSubscriptionLimit { get; internal set; }
 
         public event EventHandler<PriceUpdateEvent> PriceUpdateEventHandler;
         public event EventHandler<SubscriptionStatusEvent> SubscriptionStatusEventHandler;
@@ -58,10 +56,6 @@ namespace BidFX.Public.API.Price
                 Log.Info("Already running. Did you mean to call PriceSession.WaitUntilReady()?");
                 return;
             }
-            if (!LoginService.LoggedIn)
-            {
-                throw new IllegalStateException("Not logged in.");
-            }
             AddPublicPuffinProvider();
             AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
@@ -80,7 +74,6 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PuffinProviderPlugin
             {
-                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://puffin",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -92,7 +85,6 @@ namespace BidFX.Public.API.Price
         {
             AddProviderPlugin(new PixieProviderPlugin
             {
-                LoginService = LoginService,
                 Tunnel = Tunnel,
                 Service = "static://highway",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
@@ -144,8 +136,6 @@ namespace BidFX.Public.API.Price
                     ProviderStatus.Ready == pp.ProviderStatus || ProviderStatus.Unauthorized == pp.ProviderStatus);
             }
         }
-
-        public LoginService LoginService { get; set; }
 
         public bool WaitUntilReady(TimeSpan timeout)
         {
@@ -203,44 +193,8 @@ namespace BidFX.Public.API.Price
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
             Log.Info("subscribe to " + subject);
-
-            if (SubjectExceedsLimits(subject))
-            {
-                return;
-            }
             Subscription subscription = _subscriptions.Add(subject, autoRefresh);
             RefreshSubscription(subscription, refresh);
-        }
-
-        private bool SubjectExceedsLimits(Subject.Subject subject)
-        {
-            string level = subject.GetComponent("Level");
-            if (level != null && level.Equals("2") && SubjectExceedsLevelTwoLimit(subject))
-            {
-                Log.WarnFormat("Could not subscribe to subject - Maximum number of level two subjects reached: {0}", LevelTwoSubscriptionLimit);
-                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level two subjects reached: " + LevelTwoSubscriptionLimit);
-                return true;
-            }
-            if (level != null && level.Equals("1") && SubjectExceedsLevelOneLimit(subject))
-            {
-                Log.WarnFormat("Could not subscribe to subject - Maximum number of level one subjects reached: {0}", LevelOneSubscriptionLimit);
-                _inapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.REJECTED, "maximum number of level one subjects reached: " + LevelOneSubscriptionLimit);
-                return true;
-            }
-            
-            return false;
-        }
-
-        private bool SubjectExceedsLevelTwoLimit(Subject.Subject subject)
-        {
-            return _subscriptions.LevelTwoSubjects() >= LevelTwoSubscriptionLimit &&
-                   !_subscriptions.Subjects().Contains(subject);
-        }
-        
-        private bool SubjectExceedsLevelOneLimit(Subject.Subject subject)
-        {
-            return _subscriptions.LevelOneSubjects() >= LevelOneSubscriptionLimit &&
-                   !_subscriptions.Subjects().Contains(subject);
         }
 
         private void RefreshSubscription(Subscription subscription, bool refresh = true)

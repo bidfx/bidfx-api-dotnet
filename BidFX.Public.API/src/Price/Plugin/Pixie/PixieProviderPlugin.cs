@@ -26,7 +26,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public string Name { get; private set; }
         public string Service { get; set; }
-        public LoginService LoginService { get; set; }
+        public UserInfo UserInfo { get; set; }
         public bool Tunnel { set; get; }
         public bool DisableHostnameSslChecks { get; set; }
         public ProviderStatus ProviderStatus { get; private set; }
@@ -91,14 +91,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 throw new IllegalStateException("set event handler before starting plugin");
             }
 
-            if (!LoginService.LoggedIn)
-            {
-                throw new IllegalStateException("must be logged in before starting plugin");
-            }
-
             if (_running.CompareAndSet(false, true))
             {
-                LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
                 _outputThread.Start();
             }
         }
@@ -133,13 +127,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
-                if (!LoginService.LoggedIn)
-                {
-                    Log.Debug("Not logged in, not connecting to Pixie server");
-                    return;
-                }
                 HandshakeWithServer();
-                _pixieConnection = new PixieConnection(_stream, this, _protocolOptions, LoginService.Username);
+                _pixieConnection = new PixieConnection(_stream, this, _protocolOptions, UserInfo.Username);
                 NotifyStatusChange(ProviderStatus.Ready, "connected to Pixie price server");
                 _pixieConnection.ProcessIncommingMessages();
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "lost connection to Pixie price server");
@@ -155,13 +144,13 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
-                Log.Info("opening socket to " + LoginService.Host + ':' + LoginService.Port);
-                TcpClient client = new TcpClient(LoginService.Host, LoginService.Port);
+                Log.Info("opening socket to " + UserInfo.Host + ":" + UserInfo.Port);
+                TcpClient client = new TcpClient();
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
-                    ConnectionTools.UpgradeToSsl(ref _stream, LoginService.Host, DisableHostnameSslChecks);
-                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(LoginService.Username, LoginService.Password, Service, _guid);
+                    ConnectionTools.UpgradeToSsl(ref _stream, UserInfo.Host, DisableHostnameSslChecks);
+                    string tunnelHeader = ConnectionTools.CreateTunnelHeader(UserInfo.Username, UserInfo.Password, Service, _guid);
                     ConnectionTools.SendMessage(_stream, tunnelHeader);
                     ConnectionTools.SendMessage(_stream, _protocolOptions.GetProtocolSignature());
                     ConnectionTools.ReadTunnelResponse(_stream);
@@ -175,7 +164,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 WelcomeMessage welcome = ReadWelcomeMessage();
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = (int) welcome.Version;
-                LoginMessage login = new LoginMessage(LoginService.Username, LoginService.Password, ServiceProperties.Username(), PublicApi.Name,
+                LoginMessage login = new LoginMessage(UserInfo.Username, UserInfo.Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version);
                 WriteFrame(login);
                 GrantMessage grantMessage = ReadGrantMessage();
@@ -285,11 +274,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         public PixieProtocolOptions PixieProtocolOptions
         {
             get { return _protocolOptions; }
-        }
-
-        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
-        {
-            ForcedDisconnect(e.Reason);
         }
         
         private void ForcedDisconnect(string reason)

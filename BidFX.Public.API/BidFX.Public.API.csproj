@@ -74,7 +74,6 @@
     <Compile Include="src\DefaultClient.cs" />
     <Compile Include="src\Enums\FxTenor.cs" />
     <Compile Include="src\IllegalStateException.cs" />
-    <Compile Include="src\LoginService.cs" />
     <Compile Include="src\Price\Plugin\Pixie\AckData.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\DataDictionaryUtils.cs" />
     <Compile Include="src\Price\Plugin\Pixie\Fields\ExtendableDataDictionary.cs" />
@@ -210,6 +209,7 @@
     <Compile Include="src\Trade\Rest\RESTClient.cs" />
     <Compile Include="src\Trade\SettlementDateResponse.cs" />
     <Compile Include="src\Trade\TradeSession.cs" />
+    <Compile Include="src\UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\scripts\release.sh">
