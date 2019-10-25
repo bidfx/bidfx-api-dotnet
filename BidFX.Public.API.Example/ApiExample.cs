@@ -11,6 +11,7 @@ namespace BidFX.Public.API.Example
     {
         private const string Username = "";
         private const string Password = "";
+        private const string ProductSerial = "";
         private const string Account = "";
         
         private static readonly ILog Log =
@@ -35,6 +36,7 @@ namespace BidFX.Public.API.Example
             DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
             DefaultClient.Client.Username = Username;
             DefaultClient.Client.Password = Password;
+            DefaultClient.Client.ProductSerial = ProductSerial;
             var session = DefaultClient.Client.PriceSession;
             session.PriceUpdateEventHandler += OnPriceUpdate;
             session.SubscriptionStatusEventHandler += OnSubscriptionStatus;

@@ -56,6 +56,15 @@ namespace BidFX.Public.API
         }
 
         /// <summary>
+        /// The Product Serial used to authorize API connections.
+        /// </summary>
+        public string ProductSerial
+        {
+            get { return _userInfo.ProductSerial;  }
+            set { _userInfo.ProductSerial = value;  }
+        }
+
+        /// <summary>
         /// A flag indicating wether the hostname should be checked on the SSL certificates.
         /// </summary>
         public bool DisableHostnameSslChecks { get; set; }
@@ -148,7 +157,7 @@ namespace BidFX.Public.API
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
-              
+                UserInfo = _userInfo
             };
             
             _priceManager.Start();

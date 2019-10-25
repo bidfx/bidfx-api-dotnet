@@ -29,6 +29,7 @@ namespace BidFX.Public.API.Price
         private readonly object _readyLock = new object();
         private const bool Tunnel = true; //Set to false if connecting to a local instance of a provider for testing.
 
+        public UserInfo UserInfo { get; set; }
         public TimeSpan SubscriptionRefreshInterval { get; set; }
 
         public bool DisableHostnameSslChecks { get; set; }
@@ -77,7 +78,8 @@ namespace BidFX.Public.API.Price
                 Tunnel = Tunnel,
                 Service = "static://puffin",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
-                ReconnectInterval = ReconnectInterval
+                ReconnectInterval = ReconnectInterval,
+                UserInfo = UserInfo
             });
         }
 
@@ -88,7 +90,8 @@ namespace BidFX.Public.API.Price
                 Tunnel = Tunnel,
                 Service = "static://highway",
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
-                ReconnectInterval = ReconnectInterval
+                ReconnectInterval = ReconnectInterval,
+                UserInfo = UserInfo
             });
         }
 

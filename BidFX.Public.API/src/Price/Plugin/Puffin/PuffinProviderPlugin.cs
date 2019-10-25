@@ -165,7 +165,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if (UserInfo == null)
             {
-                NotifyStatusChange(ProviderStatus.Invalid, "Login Provider has not been set");
+                NotifyStatusChange(ProviderStatus.Invalid, "User info has not been set");
             }
             
             if (UserInfo.Host == null)

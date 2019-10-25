@@ -145,7 +145,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             try
             {
                 Log.Info("opening socket to " + UserInfo.Host + ":" + UserInfo.Port);
-                TcpClient client = new TcpClient();
+                TcpClient client = new TcpClient(UserInfo.Host, UserInfo.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
                 {
@@ -165,7 +165,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 Log.Info("After sending URL signature, received welcome: " + welcome);
                 _protocolOptions.Version = (int) welcome.Version;
                 LoginMessage login = new LoginMessage(UserInfo.Username, UserInfo.Password, ServiceProperties.Username(), PublicApi.Name,
-                    PublicApi.Version);
+                    PublicApi.Version, PublicApi.Name, PublicApi.Version, "BidFXDotnet", UserInfo.ProductSerial);
                 WriteFrame(login);
                 GrantMessage grantMessage = ReadGrantMessage();
                 Log.Info("Received grant: " + grantMessage);
@@ -179,17 +179,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             catch (Exception e)
             {
                 Log.Warn("failed to handshake with highway server due to " + e.Message);
-                if (e.Message.Contains("401 Unauthorized"))
-                {
-                    NotifyStatusChange(ProviderStatus.Unauthorized, "Invalid Credentials: "
-                                                                    + e.Message);
-                    _running.SetValue(false);
-                }
-                else
-                {
-                    NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
-                                                                       + e.Message);
-                }
+                NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
+                                                                   + e.Message);
+                _running.SetValue(false);
                 throw e;
             }
         }
