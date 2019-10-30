@@ -7,9 +7,7 @@
 
     <Module file="$(InPath)\BidFX.Public.API.dll">
         <!--  Allow the Excel API to change the product name -->
-        <SkipType name="BidFX.Public.API.LoginService" />
-        <SkipProperty type="BidFX.Public.API.LoginService" name="Product" />
-        <SkipProperty type="BidFX.Public.API.Client" name="LoginService" />
+        <SkipProperty type="BidFX.Public.API.Client" name="Product" />
     </Module>
     
 </Obfuscator>

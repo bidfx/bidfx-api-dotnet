@@ -13,33 +13,17 @@ namespace BidFX.Public.API
         private static readonly ILog Log =
             LogManager.GetLogger("Client");
 
-
-        private static readonly BigInteger SubscriptionLimitPublicKey = BigInteger.Parse("125134336105432108045835366424157859929");
-        private int _levelOneSubscriptionLimit = 500;
-        private int _levelTwoSubscriptionLimit = 20;
-        internal LoginService LoginService { get; set; }
-
-        /// <summary>
-        /// Raised when the client has been forced to disconnect from the server.
-        /// </summary>
-        public event EventHandler<DisconnectEventArgs> OnForcedDisconnectEventHandler; 
+        private readonly UserInfo _userInfo = new UserInfo();
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
         public string Username
         {
-            get { return LoginService.Username; }
+            get { return _userInfo.Username; }
             set
             {
-                LoginService.Username = value;
-                _levelOneSubscriptionLimit = 500;
-                _levelTwoSubscriptionLimit = 20;
-                if (_priceManager != null)
-                {
-                    _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
-                    _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
-                }
+                _userInfo.Username = value;
             }
         }
 
@@ -48,8 +32,8 @@ namespace BidFX.Public.API
         /// </summary>
         public string Password
         {
-            get { return LoginService.Password; }
-            set { LoginService.Password = value;  }
+            get { return _userInfo.Password; }
+            set { _userInfo.Password = value;  }
         }
 
         /// <summary>
@@ -57,8 +41,8 @@ namespace BidFX.Public.API
         /// </summary>
         public string Host
         {
-            get { return LoginService.Host; }
-            set { LoginService.Host = value; }
+            get { return _userInfo.Host; }
+            set { _userInfo.Host = value; }
         }
 
         /// <summary>
@@ -67,8 +51,23 @@ namespace BidFX.Public.API
         /// </summary>
         public int Port
         {
-            get { return LoginService.Port; }
-            set { LoginService.Port = value; }
+            get { return _userInfo.Port; }
+            set { _userInfo.Port = value; }
+        }
+
+        /// <summary>
+        /// The Product Serial used to authorize API connections.
+        /// </summary>
+        public string ProductSerial
+        {
+            get { return _userInfo.ProductSerial;  }
+            set { _userInfo.ProductSerial = value;  }
+        }
+
+        internal string Product
+        {
+            get { return _userInfo.Product; }
+            set { _userInfo.Product = value; }
         }
 
         /// <summary>
@@ -97,11 +96,9 @@ namespace BidFX.Public.API
         /// </summary>
         public Client()
         {
-            LoginService = new LoginService();
             DisableHostnameSslChecks = false;
             ReconnectInterval = TimeSpan.FromSeconds(10);
             SubscriptionRefreshInterval = TimeSpan.FromMinutes(5);
-            LoginService.OnForcedDisconnectEventHandler += OnLoginServiceForcedDisconnect;
         }
 
         /// <summary>
@@ -112,7 +109,6 @@ namespace BidFX.Public.API
         {
             get
             {
-                LoginService.Start();
                 CreatePriceManager();
                 return _priceManager;
             }
@@ -125,7 +121,6 @@ namespace BidFX.Public.API
         {
             get
             {
-                LoginService.Start();
                 CreatePriceManager();
                 return _priceManager;
             }
@@ -138,20 +133,13 @@ namespace BidFX.Public.API
         {
             get
             {
-                LoginService.Start();
                 CreateTradeManager();
                 return _tradeSession;
             }
         }
 
-        public bool LoggedIn
-        {
-            get { return LoginService.LoggedIn; }
-        }
-
         public void Stop()
         {
-            LoginService.Stop();
             if (_priceManager != null)
             {
                 _priceManager.Stop();
@@ -163,95 +151,6 @@ namespace BidFX.Public.API
             }
         }
 
-        public void SetLevelTwoSubscriptionLimit(string subscriptionLimitString)
-        {
-            string[] parts = subscriptionLimitString.Split('-');
-            int limit = int.Parse(parts[0]);
-            string username = parts[1];
-            int level = int.Parse(parts[2]);
-            BigInteger signedString = BigInteger.Parse(parts[3]);
-            if (level != 2)
-            {
-                throw new ArgumentException("Subscription Limit String is not for level 2 subscriptions");
-            }
-            if (!IsValidLimitSignature(limit, username, level, signedString))
-            {
-                throw new ArgumentException("signature of subscription limit string does not match expected value");
-            }
-
-            _levelTwoSubscriptionLimit = limit;
-            if (_priceManager != null)
-            {
-                _priceManager.LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit;
-            }
-        }
-
-        public void SetLevelOneSubscriptionLimit(string subscriptionLimitString)
-        {
-            string[] parts = subscriptionLimitString.Split('-');
-            int limit = int.Parse(parts[0]);
-            string username = parts[1];
-            int level = int.Parse(parts[2]);
-            BigInteger signedString = BigInteger.Parse(parts[3]);
-            if (level != 1)
-            {
-                throw new ArgumentException("Subscription Limit String is not for level 1 subscriptions");
-            }
-            if (!IsValidLimitSignature(limit, username, level, signedString))
-            {
-                throw new ArgumentException("signature of subscription limit string does not match expected value");
-            }
-
-            _levelOneSubscriptionLimit = limit;
-            if (_priceManager != null)
-            {
-                _priceManager.LevelOneSubscriptionLimit = _levelOneSubscriptionLimit;
-            }
-        }
-
-        private int HashLimitDetails(int limit, string username, int level)
-        {
-            int hashcode = limit;
-            hashcode = hashcode * 31 + level;
-            hashcode = hashcode * 31 + HashString(username);
-            if (hashcode < 0)
-            {
-                if (hashcode == -2147483648)
-                {
-                    return 0;
-                }
-
-                return -hashcode;
-            }
-            return hashcode;
-        }
-
-        private int HashString(string input)
-        {
-            int hashcode = 0;
-            foreach (char c in input)
-            {
-                hashcode = hashcode * 31 + c;
-            }
-            return hashcode;
-        }
-        
-        
-        private bool IsValidLimitSignature(int limit, string username, int level, BigInteger signature)
-        {
-            if (Username == null)
-            {
-                throw new MissingFieldException("Client has no username set");
-            }
-
-            if (!Username.Equals(username))
-            {
-                throw new ArgumentException("given string is for user " + username + ", but client is configured for user " + Username);
-            }
-            int limitDetailsHash = HashLimitDetails(limit, username, level);
-            return BigInteger.ModPow(signature, 65537, SubscriptionLimitPublicKey).Equals(limitDetailsHash);
-        }
-
         private void CreatePriceManager()
         {
             if (_priceManager != null)
@@ -261,16 +160,12 @@ namespace BidFX.Public.API
 
             _priceManager = new PriceManager
             {
-                LoginService = LoginService,
                 SubscriptionRefreshInterval = SubscriptionRefreshInterval,
                 DisableHostnameSslChecks = DisableHostnameSslChecks,
                 ReconnectInterval = ReconnectInterval,
-                LevelTwoSubscriptionLimit = _levelTwoSubscriptionLimit,
-                LevelOneSubscriptionLimit = _levelOneSubscriptionLimit
-              
+                UserInfo = _userInfo
             };
             
-            LoginService.PriceSession = _priceManager;
             _priceManager.Start();
         }
 
@@ -281,20 +176,8 @@ namespace BidFX.Public.API
                 return;
             }
 
-            _tradeSession = new TradeSession
-            {
-                LoginService = LoginService
-            };
-            LoginService.TradeSession = _tradeSession;
+            _tradeSession = new TradeSession(_userInfo);
             _tradeSession.Start();
-        }
-
-        private void OnLoginServiceForcedDisconnect(object sender, DisconnectEventArgs eventArgs)
-        {
-            if (OnForcedDisconnectEventHandler != null)
-            {
-                OnForcedDisconnectEventHandler.Invoke(this, eventArgs);
-            }
         }
     }
 }

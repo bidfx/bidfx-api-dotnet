@@ -25,31 +25,30 @@ namespace BidFX.Public.API.Trade
         private RESTClient _restClient;
         private static long _nextMessageId;
         public bool Running { get; private set; }
-        internal LoginService LoginService { private get; set; }
+        private readonly UserInfo UserInfo;
 
+        public TradeSession(UserInfo userInfo)
+        {
+            UserInfo = userInfo;
+        }
+        
         public void Start()
         {
-            if (!LoginService.LoggedIn)
-            {
-                throw new IllegalStateException("Not logged in.");
-            }
             Uri uri = new UriBuilder
             {
-                Scheme = LoginService.Https ? "https" : "http",
-                Host = LoginService.Host,
-                Port = LoginService.Port
+                Scheme = UserInfo.Https ? "https" : "http",
+                Host = UserInfo.Host,
+                Port = UserInfo.Port
             }.Uri;
-            _restClient = new RESTClient(uri, LoginService.Username, LoginService.Password);
+            _restClient = new RESTClient(uri, UserInfo.Username, UserInfo.Password);
             InitialiseNextMessageId();
             Log.InfoFormat("TradeSession connecting to {0}", uri);
-            LoginService.OnForcedDisconnectEventHandler += OnForcedDisconnect;
             Running = true;
         }
         
         public void Stop()
         {
             Running = false;
-            LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
         }
 
         public long SubmitOrder(Order.Order order)
@@ -390,12 +389,6 @@ namespace BidFX.Public.API.Trade
             }
             StreamReader streamReader = new StreamReader(responseStream);
             return streamReader.ReadToEnd();
-        }
-
-        private void OnForcedDisconnect(object sender, DisconnectEventArgs e)
-        {
-            Running = false;
-            LoginService.OnForcedDisconnectEventHandler -= OnForcedDisconnect;
         }
     }
 }
