@@ -64,6 +64,12 @@ namespace BidFX.Public.API
             set { _userInfo.ProductSerial = value;  }
         }
 
+        internal string Product
+        {
+            get { return _userInfo.Product; }
+            set { _userInfo.Product = value; }
+        }
+
         /// <summary>
         /// A flag indicating wether the hostname should be checked on the SSL certificates.
         /// </summary>
