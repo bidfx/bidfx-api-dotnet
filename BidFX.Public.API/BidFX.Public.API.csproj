@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BidFX.Public.API</RootNamespace>
     <AssemblyName>BidFX.Public.API</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
@@ -237,12 +237,6 @@
       copy "..\Obfuscator_Output\BidFX.Public.API.dll" "..\BidFX.Public.API\BidFX.Public.API.dll" /Y
       copy "DotNetZip.dll" "..\BidFX.Public.API\DotNetZip.dll" /Y
       copy "log4net.dll" "..\BidFX.Public.API\log4net.dll" /Y
-      copy "System.IO.dll" "..\BidFX.Public.API\System.IO.dll" /Y
-      copy "System.Net.Http.dll" "..\BidFX.Public.API\System.Net.Http.dll" /Y
-      copy "System.Net.Http.Primitives.dll" "..\BidFX.Public.API\System.Net.Http.Primitives.dll" /Y
-      copy "System.Net.Http.WebRequest.dll" "..\BidFX.Public.API\System.Net.Http.WebRequest.dll" /Y
-      copy "System.Runtime.dll" "..\BidFX.Public.API\System.Runtime.dll" /Y
-      copy "System.Threading.Tasks.dll" "..\BidFX.Public.API\System.Threading.Tasks.dll" /Y
       )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

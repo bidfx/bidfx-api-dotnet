@@ -9,10 +9,10 @@ namespace BidFX.Public.API.Example
 {
     internal class ApiExample
     {
-        private const string Username = "";
-        private const string Password = "";
+        private const string Username = "lasman";
+        private const string Password = "Wzw5YlA5$I$ywDe8Vee@";
         private const string ProductSerial = "";
-        private const string Account = "";
+        private const string Account = "FX_ACCT";
         
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,7 +33,7 @@ namespace BidFX.Public.API.Example
 
         private ApiExample()
         {
-            DefaultClient.Client.Host = "ny-tunnel.uatprod.tradingscreen.com";
+            DefaultClient.Client.Host = "ny-tunnel.uatdev.tradingscreen.com";
             DefaultClient.Client.Username = Username;
             DefaultClient.Client.Password = Password;
             DefaultClient.Client.ProductSerial = ProductSerial;
