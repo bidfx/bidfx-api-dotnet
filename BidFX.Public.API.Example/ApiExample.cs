@@ -9,10 +9,10 @@ namespace BidFX.Public.API.Example
 {
     internal class ApiExample
     {
-        private const string Username = "lasman";
-        private const string Password = "Wzw5YlA5$I$ywDe8Vee@";
+        private const string Username = "";
+        private const string Password = "";
         private const string ProductSerial = "";
-        private const string Account = "FX_ACCT";
+        private const string Account = "";
         
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
