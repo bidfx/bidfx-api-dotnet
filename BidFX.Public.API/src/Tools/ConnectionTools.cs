@@ -25,7 +25,7 @@ namespace BidFX.Public.API.Price.Tools
                 stream = sslStream;
                 if (Log.IsDebugEnabled)
                 {
-                    Log.Debug("Upgraded stream to SSL");
+                    Log.DebugFormat("Upgraded stream to SSL - {0}", sslStream.SslProtocol);
                 }
             }
             else
