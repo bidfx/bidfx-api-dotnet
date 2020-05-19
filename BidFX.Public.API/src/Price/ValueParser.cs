@@ -3,15 +3,14 @@
 using System;
 using System.Globalization;
 using System.Reflection;
-using log4net;
+using BidFX.Public.API.Price.Tools;
+using Serilog;
 
 namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("ValueParser");
-
+        private static readonly ILogger Log = Logger.ForContext<ValueParser>();
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
 
@@ -23,11 +22,7 @@ namespace BidFX.Public.API.Price
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("cannot convert \"" + s + "\" to decimal", e);
-                }
-
+                Log.Debug(e, "cannot convert {string} to decimal", s);
                 return defaultValue;
             }
         }
@@ -40,10 +35,7 @@ namespace BidFX.Public.API.Price
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("cannot convert \"" + s + "\" to long", e);
-                }
+                Log.Debug(e, "cannot convert {string} to long", s);
 
                 return defaultValue;
             }
@@ -57,10 +49,7 @@ namespace BidFX.Public.API.Price
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("cannot convert \"" + s + "\" to int", e);
-                }
+                Log.Debug(e, "cannot convert {string} to int", s);
                 return defaultValue;
             }
         }
@@ -90,11 +79,7 @@ namespace BidFX.Public.API.Price
             }
             catch (Exception e)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("cannot convert fraction \"" + fraction + "\" to decimal", e);
-                }
-
+                Log.Debug(e, "cannot convert fraction {fraction} to decimal", fraction);
                 return 0m;
             }
         }

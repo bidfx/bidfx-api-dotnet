@@ -9,15 +9,14 @@ using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Instruction;
 using BidFX.Public.API.Trade.Rest.Json;
 using BidFX.Public.API.Trade.REST;
-using log4net;
+using Serilog;
+using Serilog.Events;
 
 namespace BidFX.Public.API.Trade
 {
     public class TradeSession
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("TradeSession");
-
+        private static readonly ILogger Log = Logger.ForContext<TradeSession>();
         public event EventHandler<Order.Order> OrderSubmitEventHandler;
         public event EventHandler<Order.Order> OrderQueryEventHandler;
         public event EventHandler<Order.Order> OrderInstructionEventHandler;
@@ -42,7 +41,7 @@ namespace BidFX.Public.API.Trade
             }.Uri;
             _restClient = new RESTClient(uri, UserInfo.Username, UserInfo.Password);
             InitialiseNextMessageId();
-            Log.InfoFormat("TradeSession connecting to {0}", uri);
+            Log.Information("TradeSession connecting to {uri}", uri);
             Running = true;
         }
         
@@ -106,7 +105,7 @@ namespace BidFX.Public.API.Trade
             }
             else
             {
-                Log.ErrorFormat("MessageId {0} - Don't know what to do with Instruction of type {1}", messageId, instruction.GetType());
+                Log.Error("MessageId {messageId} - Don't know what to do with Instruction of type {type}", messageId, instruction.GetType());
             }
 
             return messageId;
@@ -146,27 +145,27 @@ namespace BidFX.Public.API.Trade
                 throw new IllegalStateException("TradeSession is not running");
             }
             
-            if (Log.IsDebugEnabled)
+            if (Log.IsEnabled(LogEventLevel.Debug))
             {
-                Log.DebugFormat("Submitting order, messageId: {0}, json: {1}", messageId, json);
+                Log.Debug("Submitting order, messageId: {messageId}, json: {json}", messageId, json);
             }
             else
             {
-                Log.InfoFormat("Submitting order, messageId: {0}", messageId);
+                Log.Information("Submitting order, messageId: {messageId}", messageId);
             }
             Order.Order order = SendObjectViaRest(messageId, json, @"api/om/v2/order");
             if (order != null && OrderSubmitEventHandler != null)
             {
-                Log.DebugFormat("Notifying OrderSubmitEventHandler of order submit response, messageId: {0}, orderId: {1}", messageId, order.GetOrderTsId());
+                Log.Debug("Notifying OrderSubmitEventHandler of order submit response, messageId: {messageId}, orderId: {orderId}", messageId, order.GetOrderTsId());
                 OrderSubmitEventHandler.Invoke(this, order);
             }
             else if (OrderSubmitEventHandler == null)
             {
-                Log.InfoFormat("No OrderSubmitEventHandler registered, dropping messageId {0}, orderId {1}", messageId, order.GetOrderTsId());
+                Log.Information("No OrderSubmitEventHandler registered, dropping messageId {messsageId}, orderId {orderId}", messageId, order.GetOrderTsId());
             }
             else
             {
-                Log.InfoFormat("Order response was null, messageId {0}", messageId);
+                Log.Information("Order response was null, messageId {messageId}", messageId);
             }
         }
 
@@ -187,28 +186,28 @@ namespace BidFX.Public.API.Trade
 
         private void SendInstructionViaRest(long messageId, string json, string path)
         {
-            if (Log.IsDebugEnabled)
+            if (Log.IsEnabled(LogEventLevel.Debug))
             {
-                Log.DebugFormat("Submitting instruction, messageId: {0}, json: {1}", messageId, json);
+                Log.Debug("Submitting instruction, messageId: {messageId}, json: {json}", messageId, json);
             }
             else
             {
-                Log.InfoFormat("Submitting instruction, messageId: {0}", messageId);
+                Log.Information("Submitting instruction, messageId: {messageId}", messageId);
             }
 
             Order.Order  order= SendObjectViaRest(messageId, json, @"api/om/v2/order/amend");
             if (order != null && OrderInstructionEventHandler != null)
             {
-                Log.DebugFormat("Notifying OrderInstructionEventHandler of order instruction response, messageId: {0}, orderId: {1}", messageId, order.GetOrderTsId());
+                Log.Debug("Notifying OrderInstructionEventHandler of order instruction response, messageId: {messageId}, orderId: {orderId}", messageId, order.GetOrderTsId());
                 OrderInstructionEventHandler.Invoke(this, order);
             }
             else if (OrderSubmitEventHandler == null)
             {
-                Log.InfoFormat("No OrderInstructionEventHandler registered, dropping messageId {0}, orderId {1}", messageId, order.GetOrderTsId());
+                Log.Information("No OrderInstructionEventHandler registered, dropping messageId {messageId}, orderId {orderId}", messageId, order.GetOrderTsId());
             }
             else
             {
-                Log.InfoFormat("Order Instruction response was null, messageId {0}", messageId);
+                Log.Information("Order Instruction response was null, messageId {messageId}", messageId);
             }
         }
 
@@ -221,7 +220,7 @@ namespace BidFX.Public.API.Trade
             }
             catch (Exception e)
             {
-                Log.Warn("Unexpected error occurred sending message", e);
+                Log.Warning(e, "Unexpected error occurred sending message");
                 if (response != null)
                 {
                     response.Close();
@@ -231,17 +230,17 @@ namespace BidFX.Public.API.Trade
 
             try
             {
-                Log.InfoFormat("MessageId {0} - Response Received from Server. Processing", messageId);
+                Log.Information("MessageId {messageId} - Response Received from Server. Processing", messageId);
                 string jsonResponse = GetBodyFromResponse(response);
                 response.Close();
                 if (jsonResponse == null)
                 {
-                    Log.InfoFormat("MessageId {0} - No body to return.", messageId);
+                    Log.Information("MessageId {messageId} - No body to return.", messageId);
                     return null;
                 }
                 else
                 {
-                    Log.DebugFormat("MessageID {0} - Received Message:\n {1}", messageId, jsonResponse);
+                    Log.Debug("MessageID {messageId} - Received Message:\n {json}", messageId, jsonResponse);
                 }
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(jsonResponse));
                 if (order != null)
@@ -252,20 +251,20 @@ namespace BidFX.Public.API.Trade
             }
             catch (Exception e)
             {
-                Log.Warn("Unexpected error occurred parsing response", e);
+                Log.Warning(e, "Unexpected error occurred parsing response");
                 return null;
             }
         }
 
         private void SendOrderQueryViaREST(long messageId, string orderId)
         {
-            Log.DebugFormat("Querying orderId {0}, messageId {1}", orderId, messageId);
+            Log.Debug("Querying orderId {orderId}, messageId {messageId}", orderId, messageId);
             using (HttpWebResponse response = _restClient.SendMessage("GET", "api/om/v2/order", "order_ts_id=" + orderId))
             {
                 Order.Order order = Order.Order.FromJson(JsonMarshaller.FromJson(GetBodyFromResponse(response)));
                 if (order == null)
                 {
-                    Log.InfoFormat("No valid order returned, messageId {0}, orderId: {1}", messageId, orderId);
+                    Log.Information("No valid order returned, messageId {messageId}, orderId: {orderId}", messageId, orderId);
                     return;
                 }
                 
@@ -276,8 +275,8 @@ namespace BidFX.Public.API.Trade
                 }
                 else
                 {
-                    Log.WarnFormat(
-                        "OrderQueryEventHandler was null dropping order response, messageId: {0}, orderId: {1}",
+                    Log.Warning(
+                        "OrderQueryEventHandler was null dropping order response, messageId: {messageId}, orderId: {orderId}",
                         messageId, order.GetOrderTsId());
                 }
             }
@@ -312,7 +311,7 @@ namespace BidFX.Public.API.Trade
         {
             try
             {
-                Log.DebugFormat("Sending settlement date query {0}, messageId {1}", query, messageId);
+                Log.Debug("Sending settlement date query {query}, messageId {messageId}", query, messageId);
                 using (HttpWebResponse response = _restClient.SendMessage("GET", "api/fx-dates/v1/fx-date", query))
                 {
                     SettlementDateResponse settlementDateResponse;
@@ -333,15 +332,15 @@ namespace BidFX.Public.API.Trade
                     }
                     else
                     {
-                        Log.WarnFormat(
-                            "SettlementDateQueryEventHandler was null, dropping query response, messageId: {0}",
+                        Log.Warning(
+                            "SettlementDateQueryEventHandler was null, dropping query response, messageId: {messageId}",
                             messageId);
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Warn("Unexpected error occurred parsing response", e);
+                Log.Warning(e, "Unexpected error occurred parsing response");
             }
             
         }
@@ -377,14 +376,14 @@ namespace BidFX.Public.API.Trade
         {
             if (response == null)
             {
-                Log.Warn("Response was null");
+                Log.Warning("Response was null");
                 return null;
             }
 
             Stream responseStream = response.GetResponseStream();
             if (responseStream == null)
             {
-                Log.Warn("ResponseStream was null");
+                Log.Warning("ResponseStream was null");
                 return null;
             }
             StreamReader streamReader = new StreamReader(responseStream);

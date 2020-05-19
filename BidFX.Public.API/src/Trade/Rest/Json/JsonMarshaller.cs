@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Order;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Trade.Rest.Json
 {
     internal static class JsonMarshaller
     {
-        private static readonly ILog Log = LogManager.GetLogger("JsonMarshaller");
-        
+        private static readonly ILogger Log = Logger.ForContext(typeof(JsonMarshaller));
         public static string ToJson(IJsonMarshallable item, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);
@@ -131,7 +131,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 
         public static object FromJson(string json)
         {
-            Log.DebugFormat("Parsing {0}", json);
+            Log.Debug("Parsing {json}", json);
             int pointer = 0;
             return ParseItem(json, ref pointer);
         }

@@ -9,7 +9,7 @@ using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie;
 using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price
 {
@@ -18,9 +18,7 @@ namespace BidFX.Public.API.Price
     /// </summary>
     internal class PriceManager : ISession, IBulkSubscriber
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("PriceManager");
-
+        private static readonly ILogger Log = Logger.ForContext<PriceManager>();
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
         private readonly SubscriptionSet _subscriptions = new SubscriptionSet();
@@ -54,14 +52,14 @@ namespace BidFX.Public.API.Price
         {
             if (_running.Value)
             {
-                Log.Info("Already running. Did you mean to call PriceSession.WaitUntilReady()?");
+                Log.Information("Already running. Did you mean to call PriceSession.WaitUntilReady()?");
                 return;
             }
             AddPublicPuffinProvider();
             AddHighwayProvider();
             if (_running.CompareAndSet(false, true))
             {
-                Log.Info("started");
+                Log.Information("started");
                 foreach (IProviderPlugin providerPlugin in _providerPlugins)
                 {
                     providerPlugin.Start();
@@ -112,7 +110,7 @@ namespace BidFX.Public.API.Price
         {
             if (_running.CompareAndSet(true, false))
             {
-                Log.Info("stopping");
+                Log.Information("stopping");
                 _subscriptions.Clear();
                 foreach (IProviderPlugin providerPlugin in _providerPlugins)
                 {
@@ -195,7 +193,7 @@ namespace BidFX.Public.API.Price
 
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            Log.Info("subscribe to " + subject);
+            Log.Information("subscribe to {subject}", subject);
             Subscription subscription = _subscriptions.Add(subject, autoRefresh);
             RefreshSubscription(subscription, refresh);
         }
@@ -213,7 +211,7 @@ namespace BidFX.Public.API.Price
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            Log.Info("unsubscribe from " + subject);
+            Log.Information("unsubscribe from {subject}", subject);
             _subscriptions.Remove(subject);
             foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
@@ -239,7 +237,7 @@ namespace BidFX.Public.API.Price
         public void ResubscribeAll()
         {
             List<Subject.Subject> subjects = _subscriptions.Subjects();
-            Log.Info("resubscribing to all " + subjects.Count + " instruments");
+            Log.Information("resubscribing to all {count} instruments", subjects.Count);
             foreach (IProviderPlugin providerPlugin in _providerPlugins)
             {
                 if (ProviderStatus.Ready.Equals(providerPlugin.ProviderStatus))
@@ -248,7 +246,7 @@ namespace BidFX.Public.API.Price
                 }
                 else
                 {
-                    Log.Info("skip resubscriptions on " + providerPlugin.ProviderStatus + " " + providerPlugin.Name);
+                    Log.Information("skip resubscriptions on {status} {name}", providerPlugin.ProviderStatus, providerPlugin.Name);
                 }
             }
         }
@@ -257,7 +255,7 @@ namespace BidFX.Public.API.Price
             IEnumerable<Subject.Subject> subscriptions)
         {
             List<Subject.Subject> subjects = subscriptions.Where(providerPlugin.IsSubjectCompatible).ToList();
-            Log.Info("resubscribing to " + subjects.Count + " instruments on " + providerPlugin.Name);
+            Log.Information("resubscribing to {count} instruments on {name}", subjects.Count, providerPlugin.Name);
             foreach (Subject.Subject subject in subjects)
             {
                 providerPlugin.Subscribe(subject);
@@ -266,7 +264,7 @@ namespace BidFX.Public.API.Price
 
         private void OnProviderStatus(object sender, ProviderStatusEvent providerStatusEvent)
         {
-            Log.Info("received " + providerStatusEvent);
+            Log.Information("received {statusEvent}", providerStatusEvent);
             NotifyProviderStatusChange();
             if (providerStatusEvent.ProviderStatus != providerStatusEvent.PreviousProviderStatus)
             {

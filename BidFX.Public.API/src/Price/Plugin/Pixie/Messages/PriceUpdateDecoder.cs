@@ -3,18 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Tools;
-using log4net;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     internal class PriceUpdateDecoder
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("PriceUpdateDecoder");
-
         public static void Visit(Stream stream, int size, IDataDictionary dataDictionary,
             IGridHeaderRegistry gridHeaderRegistry, ISyncable syncable)
         {

@@ -4,15 +4,12 @@ using System;
 using System.Numerics;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Trade;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API
 {
     public class Client
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("Client");
-
         private readonly UserInfo _userInfo = new UserInfo();
 
         /// <summary>

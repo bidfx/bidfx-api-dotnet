@@ -3,7 +3,7 @@ using System.Reflection;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Trade.Order;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Example
 {
@@ -13,20 +13,22 @@ namespace BidFX.Public.API.Example
         private const string Password = "";
         private const string ProductSerial = "";
         private const string Account = "";
-        
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void Main(string[] args)
         {
             try
             {
-                Log.Info("testing with " + PublicApi.Name + " version " + PublicApi.Version);
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
+                    .WriteTo.Console(outputTemplate:
+                        "[{Timestamp:HH:mm:ss} {Level:u4}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
+                Log.Information("testing with " + PublicApi.Name + " version " + PublicApi.Version);
                 new ApiExample().RunTest();
             }
             catch (Exception e)
             {
-                Log.Error(e);
+                Log.Error(e, "unexpected error");
                 Environment.Exit(1);
             }
         }
@@ -49,7 +51,7 @@ namespace BidFX.Public.API.Example
             //Pricing
             if (DefaultClient.Client.PriceSession.WaitUntilReady(TimeSpan.FromSeconds(15)))
             {
-                Log.Info("pricing session is ready");
+                Log.Information("pricing session is ready");
                 SendLevelOneStreamingSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
                     "UBSFX", "NOMURAFX", "CITIFX", "COBAFX");
                 SendLevelOneQuoteSubscriptions("RBCFX", "SSFX", "MSFX", "CSFX", "JPMCFX", "HSBCFX", "RBSFX",
@@ -59,10 +61,10 @@ namespace BidFX.Public.API.Example
             }
             else
             {
-                Log.Warn("timed out waiting on session to be ready");
+                Log.Warning("timed out waiting on session to be ready");
                 foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
-                    Log.Info(providerProperties.ToString());
+                    Log.Information(providerProperties.ToString());
                 }
                 DefaultClient.Client.Stop();
                 return;
@@ -140,17 +142,17 @@ namespace BidFX.Public.API.Example
 
         private static void OnPriceUpdate(object source, PriceUpdateEvent priceUpdateEvent)
         {
-            Log.Info("price update: " + priceUpdateEvent.Subject + " -> " + priceUpdateEvent.ChangedPriceFields);
+            Log.Information("price update: " + priceUpdateEvent.Subject + " -> " + priceUpdateEvent.ChangedPriceFields);
         }
 
         private static void OnSubscriptionStatus(object source, SubscriptionStatusEvent subscriptionStatusEvent)
         {
-            Log.Info("price status: " + subscriptionStatusEvent);
+            Log.Information("price status: " + subscriptionStatusEvent);
         }
 
         private static void OnProviderStatus(object sender, ProviderStatusEvent providerStatusEvent)
         {
-            Log.Info("provider status: " +
+            Log.Information("provider status: " +
                      providerStatusEvent.Name + " changed status from " +
                      providerStatusEvent.PreviousProviderStatus
                      + " to " + providerStatusEvent.ProviderStatus
@@ -164,7 +166,7 @@ namespace BidFX.Public.API.Example
 
         private static void OnOrderSubmitResponse(object sender, Order order)
         {
-            Log.InfoFormat("Order Response: MessageId => {0}, OrderID => {1}, State => {2}, FullOrder => {3}", order.GetMessageId(),
+            Log.Information("Order Response: MessageId => {0}, OrderID => {1}, State => {2}, FullOrder => {3}", order.GetMessageId(),
                 order.GetOrderTsId(), order.GetState(), order);
         }
     }
