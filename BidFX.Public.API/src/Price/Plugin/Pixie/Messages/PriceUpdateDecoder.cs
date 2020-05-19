@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using BidFX.Public.API.Price.Plugin.Pixie.Fields;
 using BidFX.Public.API.Price.Tools;
-using Serilog;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
