@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal static class PixieSubjectValidator
     {
-        private static readonly ILogger Log = Logger.ForContext(typeof(PixieSubjectValidator));
+        private static readonly ILogger Log = Serilog.Log.ForContext(typeof(PixieSubjectValidator));
         private static readonly Regex _settlementDateRegex = new Regex(@"^2[0-9][0-9][0-9](0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$");
         private static readonly Regex _tenorRegex = new Regex(@"^((BD|SPOT|[STO]/N)|[1-4]W|([1-9]|[1-2][0-9]|3[0-6])M|([1-9]|1[0-9]|20)Y|IMM[HMUZ]|BMF[UVXZFGHJKMNQ])$");
         

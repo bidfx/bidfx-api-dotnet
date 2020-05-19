@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Tools
 {
     internal class ConnectionTools
     {
-        private static readonly ILogger Log = Logger.ForContext<ConnectionTools>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<ConnectionTools>();
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {
             SslStream sslStream = disableHostnameSslChecks

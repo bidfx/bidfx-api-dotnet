@@ -7,7 +7,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class FieldExtractor
     {
-        private static readonly ILogger Log = Logger.ForContext<FieldExtractor>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<FieldExtractor>();
         
         public static string Extract(string message, string fieldName)
         {

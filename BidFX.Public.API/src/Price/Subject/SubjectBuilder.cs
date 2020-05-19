@@ -16,7 +16,7 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-        private static readonly ILogger Log = Logger.ForContext<SubjectBuilder>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<SubjectBuilder>();
         private string[] _components;
         private int _size;
 

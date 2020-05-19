@@ -18,7 +18,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieConnection : ISubscriber
     {
-        private static readonly ILogger Log = Logger.ForContext<PixieConnection>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<PixieConnection>();
         
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;

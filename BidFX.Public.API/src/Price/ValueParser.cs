@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
-        private static readonly ILogger Log = Logger.ForContext<ValueParser>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<ValueParser>();
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
 

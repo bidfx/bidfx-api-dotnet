@@ -14,7 +14,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class PuffinConnection : ISubscriber
     {
-        private static readonly ILogger Log = Logger.ForContext<PuffinConnection>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<PuffinConnection>();
         private const string Subject = "Subject";
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);

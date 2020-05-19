@@ -10,7 +10,7 @@ namespace BidFX.Public.API.Trade.Order
 {
     public class Order : EventArgs, IJsonMarshallable
     {
-        private static readonly ILogger Log = Logger.ForContext<Order>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<Order>();
         internal const string Account = "account";
         internal const string Algo = "algo";
         internal const string AllocationTemplate = "allocation_template";

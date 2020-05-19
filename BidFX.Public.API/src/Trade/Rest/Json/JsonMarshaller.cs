@@ -13,7 +13,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 {
     internal static class JsonMarshaller
     {
-        private static readonly ILogger Log = Logger.ForContext(typeof(JsonMarshaller));
+        private static readonly ILogger Log = Serilog.Log.ForContext(typeof(JsonMarshaller));
         public static string ToJson(IJsonMarshallable item, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);

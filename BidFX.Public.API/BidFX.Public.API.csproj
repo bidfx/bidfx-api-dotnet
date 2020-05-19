@@ -168,7 +168,6 @@
     <Compile Include="src\Tools\DateFormatter.cs" />
     <Compile Include="src\Tools\GUID.cs" />
     <Compile Include="src\Tools\JavaTime.cs" />
-    <Compile Include="src\Tools\Logger.cs" />
     <Compile Include="src\Tools\NameCache.cs" />
     <Compile Include="src\Tools\NumericCharacterEntity.cs" />
     <Compile Include="src\Tools\Params.cs" />

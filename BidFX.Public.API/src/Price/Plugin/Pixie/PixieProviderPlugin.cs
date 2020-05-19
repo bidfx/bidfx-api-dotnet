@@ -16,7 +16,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieProviderPlugin : IProviderPlugin
     {
-        private static readonly ILogger Log = Logger.ForContext<PixieProviderPlugin>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<PixieProviderPlugin>();
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly GUID _guid = new GUID();
