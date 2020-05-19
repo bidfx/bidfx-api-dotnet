@@ -4,13 +4,12 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Trade.REST
 {
     internal class RESTClient
     {
-        private static readonly ILog Log = LogManager.GetLogger("RESTClient");
         private readonly string _authHeader;
         private readonly Uri _address;
 
@@ -40,7 +39,7 @@ namespace BidFX.Public.API.Trade.REST
                 Query = query
             }.Uri;
             
-            Log.InfoFormat("Sending REST message to {0}", address);
+            Log.Information("Sending REST message to {address}", address);
             HttpWebRequest req = (HttpWebRequest) WebRequest.Create(address.AbsoluteUri.Trim());
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
@@ -57,7 +56,7 @@ namespace BidFX.Public.API.Trade.REST
                 // Occurs on non-success codes
                 response = (HttpWebResponse) e.Response;
             }
-            Log.InfoFormat("Response Received, status {0}", response.StatusCode);
+            Log.Information("Response Received, status {statusCode}", response.StatusCode);
 
             return response;
         }
@@ -77,7 +76,7 @@ namespace BidFX.Public.API.Trade.REST
                 Path = _address.AbsolutePath + joiner + path
             }.Uri;
             
-            Log.DebugFormat("Sending REST message with JSON to {0}", address);
+            Log.Debug("Sending REST message with JSON to {address}", address);
             HttpWebRequest req = (HttpWebRequest) WebRequest.Create(address);
             req.Method = method;
             req.Headers["Authorization"] = _authHeader;
@@ -100,7 +99,7 @@ namespace BidFX.Public.API.Trade.REST
                 // Occurs on non-success codes
                 response = (HttpWebResponse) e.Response;
             }
-            Log.InfoFormat("Response Received, status {0}", response.StatusCode);
+            Log.Information("Response Received, status {statusCode}", response.StatusCode);
 
             return response;
         }

@@ -10,15 +10,12 @@ using System.Threading;
 using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieProviderPlugin : IProviderPlugin
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("PixieProviderPlugin");
-
         private readonly Thread _outputThread;
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly GUID _guid = new GUID();
@@ -50,10 +47,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("subscribing to " + subject);
-            }
+            Log.Debug("subscribing to {subject}", subject);
 
             if (!PixieSubjectValidator.ValidateSubject(subject, InapiEventHandler))
             {
@@ -73,10 +67,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("unsubscribing from " + subject);
-            }
+            Log.Debug("unsubscribing from {subject}", subject);
 
             if (_pixieConnection != null)
             {
@@ -109,18 +100,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void RunningLoop()
         {
-            Log.Info("started thread for GUID " + _guid);
+            Log.Information("started thread for GUID {guid}", _guid);
             while (_running.Value)
             {
                 ManagePixieConnection();
                 if (_running.Value)
                 {
-                    Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                    Log.Information("{name} will try reconnecting in {reconnectInterval}", Name, ReconnectInterval);
                     Thread.Sleep(ReconnectInterval);
                 }
             }
 
-            Log.Info("thread stopped");
+            Log.Information("thread stopped");
         }
 
         private void ManagePixieConnection()
@@ -135,7 +126,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                Log.Warn("connection terminated by " + e.Message);
+                Log.Warning("connection terminated by {error}", e.Message);
             }
         }
 
@@ -144,7 +135,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             try
             {
-                Log.Info("opening socket to " + UserInfo.Host + ":" + UserInfo.Port);
+                Log.Information("opening socket to {host}:{port}", UserInfo.Host, UserInfo.Port);
                 TcpClient client = new TcpClient(UserInfo.Host, UserInfo.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
@@ -162,23 +153,23 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
                 _protocolOptions.ConfigureStream(_stream);
                 WelcomeMessage welcome = ReadWelcomeMessage();
-                Log.Info("After sending URL signature, received welcome: " + welcome);
+                Log.Information("After sending URL signature, received welcome: {welcome}", welcome);
                 _protocolOptions.Version = (int) welcome.Version;
                 LoginMessage login = new LoginMessage(UserInfo.Username, UserInfo.Password, ServiceProperties.Username(), PublicApi.Name,
                     PublicApi.Version, PublicApi.Name, PublicApi.Version, UserInfo.Product, UserInfo.ProductSerial);
                 WriteFrame(login);
                 GrantMessage grantMessage = ReadGrantMessage();
-                Log.Info("Received grant: " + grantMessage);
+                Log.Information("Received grant: {grantMessage}", grantMessage);
                 if (!grantMessage.Granted)
                 {
                     throw new AuthenticationException("Access was not granted: " + grantMessage.Reason);
                 }
 
-                Log.Info("Authenticated with Pixie server, client is logged in.");
+                Log.Information("Authenticated with Pixie server, client is logged in.");
             }
             catch (Exception e)
             {
-                Log.Warn("failed to handshake with highway server due to " + e.Message);
+                Log.Warning("failed to handshake with highway server due to {error}", e.Message);
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
                                                                    + e.Message);
                 _running.SetValue(false);

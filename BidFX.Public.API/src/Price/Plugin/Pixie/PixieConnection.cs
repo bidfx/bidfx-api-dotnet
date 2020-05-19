@@ -11,15 +11,13 @@ using BidFX.Public.API.Price.Plugin.Pixie.Messages;
 using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
+using Serilog.Events;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieConnection : ISubscriber
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("PixieConnection");
-
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;
         private readonly IProviderPlugin _provider;
@@ -81,17 +79,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                             });
                             break;
                         default:
-                            if (Log.IsDebugEnabled)
-                            {
-                                Log.Debug("received message with type: " + (char) msgType);
-                            }
+                            Log.Debug("received message with type: {msgType}", (char) msgType);
                             break;
                     }
                 }
             }
             catch (ThreadInterruptedException)
             {
-                Log.Warn("thread interrupted while consuming");
+                Log.Warning("thread interrupted while consuming");
             }
             catch (Exception e)
             {
@@ -107,12 +102,12 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             if (dataDictionaryMessage.IsUpdate())
             {
-                Log.Info("adding " + dataDictionaryMessage + " to current DataDictionaryMessage");
+                Log.Information("adding {@dataDictionaryMessage} to current DataDictionaryMessage", dataDictionaryMessage);
                 DataDictionaryUtils.AddAllFields(_dataDictionary, dataDictionaryMessage.FieldDefs);
             }
             else
             {
-                Log.Info("replacing DataDictionaryMessage with: " + dataDictionaryMessage);
+                Log.Information("replacing DataDictionaryMessage with: {@dataDictionaryMessage}", dataDictionaryMessage);
                 _dataDictionary = new ExtendableDataDictionary();
                 DataDictionaryUtils.AddAllFields(_dataDictionary, dataDictionaryMessage.FieldDefs);
             }
@@ -138,7 +133,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                Log.Warn("Could not process PriceSync due to " + e);
+                Log.Warning("Could not process PriceSync due to {exception}", e);
                 throw e;
             }
         }
@@ -168,7 +163,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             if (_running.CompareAndSet(true, false))
             {
                 _gridCache.Reset();
-                Log.Info("closing connection to Pixie (" + reason + ")");
+                Log.Information("closing connection to Pixie ({reason})", reason);
                 _stream.Close();
             }
         }
@@ -193,7 +188,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (OperationCanceledException)
             {
-                Log.Info("finished writing to Pixie"); // closed already called
+                Log.Information("finished writing to Pixie"); // closed already called
             }
             catch (Exception e)
             {
@@ -237,7 +232,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 if (subscriptionSync.IsChangedEdition() || _protocolOptions.Version >= PixieVersion.Version2)
                 {
                     subscriptionSync.SetCompressed(_protocolOptions.CompressSubscriptions);
-                    Log.Info("syncronising subscriptions with " + subscriptionSync.Summarize());
+                    Log.Information("synchronising subscriptions with {subscriptionSync}",subscriptionSync.Summarize());
                     WriteFrame(subscriptionSync);
                 }
             }
@@ -245,10 +240,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
         private void WriteFrame(IOutgoingPixieMessage message)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("sending message: " + message);
-            }
+            Log.Debug("sending message: {message}", message);
 
             MemoryStream encodedMessage = message.Encode(_protocolOptions.Version);
             int frameLength = Convert.ToInt32(encodedMessage.Length);
@@ -333,20 +325,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             public void PriceImage(int sid, Dictionary<string, object> price)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("received price image SID: " + sid + ", price: " + price);
-                }
+                Log.Debug("received price image SID: {sid}, price: {price}", sid, price);
 
                 HandlePriceUpdateEvent(sid, price, true);
             }
 
             public void PriceUpdate(int sid, Dictionary<string, object> price)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("received price update SID: " + sid + ", price: " + price);
-                }
+                Log.Debug("received price update SID: {sid}, price: {price}", sid, price);
 
                 HandlePriceUpdateEvent(sid, price, false);
             }
@@ -400,9 +386,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             public void PriceStatus(int sid, SubscriptionStatus status, string explanation)
             {
-                if (Log.IsDebugEnabled)
+                if (Log.IsEnabled(LogEventLevel.Debug))
                 {
-                    Log.Debug("received price status SID: " + sid + ", status: " + status + ", text: " + explanation);
+                    Log.Debug("received price status SID: {sid}, status: {status}, text: {text}", sid, status, explanation);
                 }
 
                 if (sid >= _subjectSet.Count)
@@ -427,9 +413,9 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             public void StartGridImage(int sid, int columnCount)
             {
-                if (Log.IsDebugEnabled)
+                if (Log.IsEnabled(LogEventLevel.Debug))
                 {
-                    Log.Debug("start grid image SID: " + sid + ", columnCount: " + columnCount);
+                    Log.Debug("start grid image SID: {sid}, columnCount: {columnCount}", sid, columnCount);
                 }
 
                 if (sid >= _subjectSet.Count)
@@ -500,7 +486,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
 
             public void StartGridUpdate(int sid, int columnCount)
             {
-                Log.DebugFormat("start grid update SID: {0}, columnCount: {1}", sid, columnCount);
+                Log.Debug("start grid update SID: {sid}, columnCount: {columnCount}", sid, columnCount);
 
                 if (sid >= _subjectSet.Count)
                 {

@@ -5,15 +5,13 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using log4net;
+using Serilog;
+using Serilog.Events;
 
 namespace BidFX.Public.API.Price.Tools
 {
     internal class ConnectionTools
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("ConnectionTools");
-
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {
             SslStream sslStream = disableHostnameSslChecks
@@ -23,9 +21,9 @@ namespace BidFX.Public.API.Price.Tools
             if (sslStream.IsAuthenticated)
             {
                 stream = sslStream;
-                if (Log.IsDebugEnabled)
+                if (Log.IsEnabled(LogEventLevel.Debug))
                 {
-                    Log.DebugFormat("Upgraded stream to SSL - {0}", sslStream.SslProtocol);
+                    Log.Debug("Upgraded stream to SSL - {protocol}", sslStream.SslProtocol);
                 }
             }
             else
@@ -49,7 +47,7 @@ namespace BidFX.Public.API.Price.Tools
 
         public static void SendMessage(Stream stream, string message)
         {
-            if (Log.IsDebugEnabled)
+            if (Log.IsEnabled(LogEventLevel.Debug))
             {
                 #if DEBUG
                     Log.Debug("sending: " + message);
@@ -69,10 +67,7 @@ namespace BidFX.Public.API.Price.Tools
         {
             ByteBuffer buffer = new ByteBuffer();
             string response = buffer.ReadLineFromStream(stream);
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("received: " + response);
-            }
+            Log.Debug("received: {response}", response);
 
             if (!"HTTP/1.1 200 OK".Equals(response) || buffer.ReadLineFromStream(stream).Length != 0)
             {

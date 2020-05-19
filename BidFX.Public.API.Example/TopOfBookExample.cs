@@ -5,15 +5,12 @@ using System.Text;
 using BidFX.Public.API.Price;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Example
 {
     public class TopOfBookExample
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private const string Username = "";
         private const string Password = "";
         private const string Account = "";
@@ -41,15 +38,15 @@ namespace BidFX.Public.API.Example
             {
                 if (_client.PriceSession.ProviderProperties().Any(pp => ProviderStatus.Unauthorized == pp.ProviderStatus))
                 {
-                    Log.Warn("Invalid credentials.");
+                    Log.Warning("Invalid credentials.");
                 }
                 else
                 {
-                    Log.Warn("Timed out waiting for session to be ready.");
+                    Log.Warning("Timed out waiting for session to be ready.");
                 }
                 foreach (IProviderProperties providerProperties in DefaultClient.Client.PriceSession.ProviderProperties())
                 {
-                    Log.Info(providerProperties.ToString());
+                    Log.Information(providerProperties.ToString());
                 }
 
                 DefaultClient.Client.PriceSession.Stop();
@@ -86,7 +83,7 @@ namespace BidFX.Public.API.Example
                     stringBuilder.Append(asktime.PadRight(13));
                 }
 
-                Log.Info(stringBuilder.ToString());
+                Log.Information("{}", stringBuilder);
             }
         }
     }

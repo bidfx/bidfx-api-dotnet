@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Reflection;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class FieldExtractor
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("FieldExtractor");
-
-
         public static string Extract(string message, string fieldName)
         {
             string prefix = ' ' + fieldName + "=\"";
@@ -21,10 +17,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 if (end != -1)
                 {
                     string value = message.Substring(start, end - start);
-                    if (Log.IsDebugEnabled)
-                    {
-                        Log.Debug("Value of " + fieldName + " is: \"" + value + '"');
-                    }
+                    Log.Debug("Value of {fieldName} is: {value}", fieldName, value);
 
                     return value;
                 }

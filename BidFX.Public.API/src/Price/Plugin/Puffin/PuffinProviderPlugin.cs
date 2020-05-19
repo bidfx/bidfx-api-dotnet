@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
@@ -22,9 +22,6 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// <author>Paul MacDonald</author>
     internal class PuffinProviderPlugin : IProviderPlugin
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("PuffinProviderPlugin");
-
         public const int ProtocolVersion = 8;
 
         public string Name { get; private set; }
@@ -72,11 +69,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public void Subscribe(Subject.Subject subject, bool autoRefresh = false, bool refresh = false)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("subscribing to " + subject);
-            }
-            
+            Log.Debug("subscribing to {subject}", subject);
             if (_puffinConnection == null)
             {
                 InapiEventHandler.OnSubscriptionStatus(subject, SubscriptionStatus.STALE,
@@ -90,10 +83,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public void Unsubscribe(Subject.Subject subject)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("unsubscribing from " + subject);
-            }
+            Log.Debug("unsubscribing from {subject}", subject);
 
             if (_puffinConnection != null)
             {
@@ -143,7 +133,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private void RunningLoop()
         {
-            Log.Info("started thread for GUID " + _guid);
+            Log.Information("started thread for GUID {guid}", _guid);
             if (IsConfigured())
             {
                 while (_running.Value)
@@ -152,13 +142,13 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     _buffer.Clear();
                     if (_running.Value)
                     {
-                        Log.Info(Name + " will try reconnecting in " + ReconnectInterval);
+                        Log.Information("{name} will try reconnecting in {reconnectInterval}", Name, ReconnectInterval);
                         Thread.Sleep(ReconnectInterval);
                     }
                 }
             }
 
-            Log.Info("thread stopped");
+            Log.Information("thread stopped");
         }
 
         private bool IsConfigured()
@@ -201,7 +191,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warn("connection terminated by " + e.Message);
+                Log.Warning("connection terminated by {error}", e.Message);
             }
         }
 
@@ -209,7 +199,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             try
             {
-                Log.Info("opening socket to " + UserInfo.Host + ':' + UserInfo.Port);
+                Log.Information("opening socket to {host}:{port}", UserInfo.Host, UserInfo.Port);
                 TcpClient client = new TcpClient(UserInfo.Host, UserInfo.Port);
                 _stream = client.GetStream();
                 if (Tunnel)
@@ -263,7 +253,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warn("failed to handshake with Puffin price server due to " + e.Message);
+                Log.Warning("failed to handshake with Puffin price server due to {error}", e.Message);
                 if (e.Message.Contains("401 Unauthorized"))
                 {
                     NotifyStatusChange(ProviderStatus.Unauthorized, "Invalid Credentials: "
@@ -288,11 +278,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         private string ReadMessage()
         {
             string message = _buffer.ReadXmlFromStream(_stream);
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug(Name + " received: " + message);
-            }
-
+            Log.Debug("{name} received: {message}", Name, message);
             return message;
         }
     }

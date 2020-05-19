@@ -8,15 +8,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class PuffinConnection : ISubscriber
     {
         private const string Subject = "Subject";
-        private static readonly ILog Log =
-            LogManager.GetLogger("PuffinConnection");
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Thread _publisherThread;
@@ -60,7 +58,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if (_running.CompareAndSet(true, false))
             {
-                Log.Info("closing connection to Puffin (" + reason + ")");
+                Log.Information("closing connection to Puffin ({reason})", reason);
                 _cancellationTokenSource.Cancel();
                 _stream.Close();
                 _messageQueue.Dispose();
@@ -76,21 +74,18 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     PuffinElement message = _puffinMessageReader.ReadMessage();
                     if (message == null)
                     {
-                        Log.Info("the Puffin server closed the connection");
+                        Log.Information("the Puffin server closed the connection");
                         break;
                     }
 
-                    if (Log.IsDebugEnabled)
-                    {
-                        Log.Debug("received message: " + message);
-                    }
+                    Log.Debug("received message: {message}", message);
 
                     OnMessage(message);
                 }
             }
             catch (ThreadInterruptedException)
             {
-                Log.Warn("thread interrupted while consuming");
+                Log.Warning("thread interrupted while consuming");
             }
             catch (Exception e)
             {
@@ -121,7 +116,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (OperationCanceledException)
             {
-                Log.Info("finished writing to Puffin"); // closed already called
+                Log.Information("finished writing to Puffin"); // closed already called
             }
             catch (Exception e)
             {
@@ -134,8 +129,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if (IsTimeOlderThan(_timeOfLastMessageReceived, _heartbeatInterval.Add(_heartbeatInterval)))
             {
-                Log.Warn("no message received from Puffin since " + _timeOfLastMessageReceived +
-                         "; assume connection failure");
+                Log.Warning("no message received from Puffin since {timeOfLastMessageReceived}; assume connection failure",  _timeOfLastMessageReceived);
                 Close("inactive connection");
             }
             else
@@ -155,10 +149,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         private void SendMessageToPuffin(string message)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("sending message: " + message);
-            }
+            Log.Debug("sending message: {message}", message);
 
             _timeOfLastMessageSent = DateTime.Now;
             _stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
@@ -169,10 +160,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             if (_running.Value)
             {
-                if (Log.IsDebugEnabled)
-                {
-                    Log.Debug("queuing message: " + message);
-                }
+                Log.Debug("queuing message: {message}", message);
 
                 _messageQueue.Add(message);
             }
@@ -199,7 +187,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                     OnCloseMessage(element);
                     break;
                 default:
-                    Log.Warn("ignoring unexpected message:" + element);
+                    Log.Warning("ignoring unexpected message: {element}", element);
                     break;
             }
         }

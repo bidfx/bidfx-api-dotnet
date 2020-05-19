@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BidFX.Public.API.Trade.Rest.Json;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Trade.Order
 {
     public class Order : EventArgs, IJsonMarshallable
     {
-        private static readonly ILog Log = LogManager.GetLogger("Order");
-        
         internal const string Account = "account";
         internal const string Algo = "algo";
         internal const string AllocationTemplate = "allocation_template";
@@ -285,7 +283,7 @@ namespace BidFX.Public.API.Trade.Order
                     case "FUTURE":
                         return new FutureOrder((Dictionary<string, object>) firstItem);
                     default:
-                        Log.WarnFormat("Unknown assetclass {0}. Creating default order.");
+                        Log.Warning("Unknown asset class {assetClass}. Creating default order.", assetClass);
                         return new Order((Dictionary<string, object>) firstItem);
                 }
             }

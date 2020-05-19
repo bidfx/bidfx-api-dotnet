@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using BidFX.Public.API.Enums;
-using log4net;
+using Serilog;
 
 namespace BidFX.Public.API.Price.Subject
 {
@@ -15,9 +15,6 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger("SubjectBuilder");
-
         private string[] _components;
         private int _size;
 
@@ -70,7 +67,7 @@ namespace BidFX.Public.API.Price.Subject
         {
             if (key != null && key.Contains("FixingDate"))
             {
-                Log.Info("Received key \"" + key + "\", not allowed. Not adding component.");
+                Log.Information("Received key {key}, not allowed. Not adding component.", key);
                 return this;
             }
             ((IComponentHandler) this).SubjectComponent(key, value);
