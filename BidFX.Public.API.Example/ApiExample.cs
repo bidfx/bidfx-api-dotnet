@@ -18,6 +18,11 @@ namespace BidFX.Public.API.Example
         {
             try
             {
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
+                    .WriteTo.Console(outputTemplate:
+                        "[{Timestamp:HH:mm:ss} {Level:u4}][{SourceContext}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
                 Log.Information("testing with " + PublicApi.Name + " version " + PublicApi.Version);
                 new ApiExample().RunTest();
             }

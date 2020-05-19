@@ -3,12 +3,14 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using BidFX.Public.API.Price.Tools;
 using Serilog;
 
 namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
+        private static readonly ILogger Log = Logger.ForContext<ValueParser>();
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
 

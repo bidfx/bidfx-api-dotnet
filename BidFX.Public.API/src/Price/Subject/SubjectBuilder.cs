@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using BidFX.Public.API.Enums;
+using BidFX.Public.API.Price.Tools;
 using Serilog;
 
 namespace BidFX.Public.API.Price.Subject
@@ -15,6 +16,7 @@ namespace BidFX.Public.API.Price.Subject
     /// </summary>
     public class SubjectBuilder : IComponentHandler, IEnumerable<SubjectComponent>
     {
+        private static readonly ILogger Log = Logger.ForContext<SubjectBuilder>();
         private string[] _components;
         private int _size;
 

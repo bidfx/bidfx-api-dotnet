@@ -4,12 +4,14 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using BidFX.Public.API.Price.Tools;
 using Serilog;
 
 namespace BidFX.Public.API.Trade.REST
 {
     internal class RESTClient
     {
+        private static readonly ILogger Log = Logger.ForContext<RESTClient>();
         private readonly string _authHeader;
         private readonly Uri _address;
 

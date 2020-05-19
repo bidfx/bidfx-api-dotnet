@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Order;
 using Serilog;
 
@@ -12,6 +13,7 @@ namespace BidFX.Public.API.Trade.Rest.Json
 {
     internal static class JsonMarshaller
     {
+        private static readonly ILogger Log = Logger.ForContext(typeof(JsonMarshaller));
         public static string ToJson(IJsonMarshallable item, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);

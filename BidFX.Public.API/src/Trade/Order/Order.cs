@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Rest.Json;
 using Serilog;
 
@@ -9,6 +10,7 @@ namespace BidFX.Public.API.Trade.Order
 {
     public class Order : EventArgs, IJsonMarshallable
     {
+        private static readonly ILogger Log = Logger.ForContext<Order>();
         internal const string Account = "account";
         internal const string Algo = "algo";
         internal const string AllocationTemplate = "allocation_template";
