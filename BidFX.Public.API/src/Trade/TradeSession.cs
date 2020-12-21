@@ -10,13 +10,14 @@ using BidFX.Public.API.Trade.Instruction;
 using BidFX.Public.API.Trade.Rest.Json;
 using BidFX.Public.API.Trade.REST;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace BidFX.Public.API.Trade
 {
     public class TradeSession
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<TradeSession>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "TradeSession");
         public event EventHandler<Order.Order> OrderSubmitEventHandler;
         public event EventHandler<Order.Order> OrderQueryEventHandler;
         public event EventHandler<Order.Order> OrderInstructionEventHandler;

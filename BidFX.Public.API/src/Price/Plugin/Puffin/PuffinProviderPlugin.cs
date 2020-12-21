@@ -8,6 +8,7 @@ using System.Security.Authentication;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
@@ -22,7 +23,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
     /// <author>Paul MacDonald</author>
     internal class PuffinProviderPlugin : IProviderPlugin
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<PuffinProviderPlugin>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "PuffinProviderPlugin");
         public const int ProtocolVersion = 8;
 
         public string Name { get; private set; }

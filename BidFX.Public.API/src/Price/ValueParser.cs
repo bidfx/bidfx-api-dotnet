@@ -5,12 +5,13 @@ using System.Globalization;
 using System.Reflection;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Price
 {
     internal class ValueParser
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<ValueParser>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "ValueParser");
         private const NumberStyles DecimalStyle =
             NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
 

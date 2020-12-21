@@ -8,12 +8,13 @@ using System.Text;
 using BidFX.Public.API.Price.Tools;
 using BidFX.Public.API.Trade.Order;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Trade.Rest.Json
 {
     internal static class JsonMarshaller
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext(typeof(JsonMarshaller));
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "JsonMarshaller");
         public static string ToJson(IJsonMarshallable item, long messageId)
         {
             StringBuilder stringBuilder = new StringBuilder(256);

@@ -2,12 +2,13 @@
 using System.Reflection;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class FieldExtractor
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<FieldExtractor>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "FieldExtractor");
         
         public static string Extract(string message, string fieldName)
         {

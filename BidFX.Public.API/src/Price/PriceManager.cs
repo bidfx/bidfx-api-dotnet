@@ -10,6 +10,7 @@ using BidFX.Public.API.Price.Plugin.Pixie;
 using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Price
 {
@@ -18,7 +19,7 @@ namespace BidFX.Public.API.Price
     /// </summary>
     internal class PriceManager : ISession, IBulkSubscriber
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<PriceManager>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "PriceManager");
         private readonly AtomicBoolean _running = new AtomicBoolean(false);
         private readonly List<IProviderPlugin> _providerPlugins = new List<IProviderPlugin>();
         private readonly SubscriptionSet _subscriptions = new SubscriptionSet();

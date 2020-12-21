@@ -6,13 +6,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace BidFX.Public.API.Price.Tools
 {
     internal class ConnectionTools
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<ConnectionTools>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "ConnectionTools");
         public static void UpgradeToSsl(ref Stream stream, string host, bool disableHostnameSslChecks)
         {
             SslStream sslStream = disableHostnameSslChecks

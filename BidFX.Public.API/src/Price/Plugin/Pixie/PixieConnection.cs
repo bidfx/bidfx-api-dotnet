@@ -12,13 +12,14 @@ using BidFX.Public.API.Price.Plugin.Puffin;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie
 {
     internal class PixieConnection : ISubscriber
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<PixieConnection>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "PixieConnection");
         
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
         private readonly Stream _stream;

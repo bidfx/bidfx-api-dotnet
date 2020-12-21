@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading;
 using BidFX.Public.API.Price.Tools;
 using Serilog;
+using Serilog.Core;
 
 namespace BidFX.Public.API.Price.Plugin.Puffin
 {
     internal class PuffinConnection : ISubscriber
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<PuffinConnection>();
+        private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "PuffinConnection");
         private const string Subject = "Subject";
 
         private readonly AtomicBoolean _running = new AtomicBoolean(true);
