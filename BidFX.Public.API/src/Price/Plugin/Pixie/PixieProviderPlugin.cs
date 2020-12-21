@@ -173,7 +173,6 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 Log.Warning("failed to handshake with highway server due to {error}", e.Message);
                 NotifyStatusChange(ProviderStatus.TemporarilyDown, "failed to connect to highway server: "
                                                                    + e.Message);
-                _running.SetValue(false);
                 throw e;
             }
         }
