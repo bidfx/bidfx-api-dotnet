@@ -91,7 +91,14 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Error("unexpected error reading from Puffin: " + e.Message);
+                if (_running.Value)
+                {
+                    Log.Error("unexpected error reading from Puffin: " + e.Message);
+                }
+                else
+                {
+                    Log.Information("Exception reading from Pixie, but stopped running: " + e.Message);
+                }
             }
             finally
             {

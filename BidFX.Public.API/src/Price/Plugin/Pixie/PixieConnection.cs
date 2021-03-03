@@ -93,7 +93,14 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             }
             catch (Exception e)
             {
-                Log.Error("unexpected error reading from Pixie: " + e.Message);
+                if (_running.Value)
+                {
+                    Log.Error("unexpected error reading from Pixie: " + e.Message);
+                }
+                else
+                {
+                    Log.Information("Exception reading from Pixie, but stopped running: " + e.Message);
+                }
             }
             finally
             {
