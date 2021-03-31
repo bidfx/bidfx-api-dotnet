@@ -263,6 +263,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         
         private void ForcedDisconnect(string reason)
         {
+            _running.SetValue(false);
             if (_pixieConnection != null)
             {
                 _pixieConnection.Close(Name + " stopped");

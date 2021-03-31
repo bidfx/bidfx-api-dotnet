@@ -115,6 +115,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
 
         public void Stop()
         {
+            _running.SetValue(false);
             if (_puffinConnection != null)
             {
                 _puffinConnection.Close(Name + " stopped");
