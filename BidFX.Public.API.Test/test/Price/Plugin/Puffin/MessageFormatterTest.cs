@@ -48,6 +48,18 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
                 ));
         }
 
+        [Test]
+        public void element_with_non_ascii_string_attributes()
+        {
+            Assert.AreEqual(
+                "<Price Name=\"AT&amp;T\" Quote=\"列\" Tag=\"<XML>try this</XML>\"/>",
+                MessageFormatter.FormatToString(
+                    new PuffinElement("Price")
+                        .AddAttribute("Name", "AT&T")
+                        .AddAttribute("Quote", "列")
+                        .AddAttribute("Tag", "<XML>try this</XML>")
+                ));
+        }
 
         [Test]
         public void nested_sub_elements()

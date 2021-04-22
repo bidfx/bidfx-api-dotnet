@@ -97,7 +97,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         {
             foreach (char c in token.Text)
             {
-                string encoded = Encodings[c];
+                string encoded = c < Encodings.Length ? Encodings[c] : null;
                 if (encoded == null)
                 {
                     _builder.Append(c);
