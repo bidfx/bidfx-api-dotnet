@@ -256,7 +256,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
             }
             catch (Exception e)
             {
-                Log.Warning("failed to handshake with Puffin price server due to {error}", e.Message);
+                Log.Warning("failed to handshake with Puffin price server due to {error}", e.Message, e);
                 if (e.Message.Contains("401 Unauthorized"))
                 {
                     NotifyStatusChange(ProviderStatus.Unauthorized, "Invalid Credentials: "
