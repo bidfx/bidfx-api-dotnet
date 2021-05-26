@@ -23,6 +23,21 @@ namespace BidFX.Public.API.Trade.Order
             return SetStringField(account, Order.Account);
         }
 
+        public T SetAggregationLevel1(string aggregationLevel1)
+        {
+            return SetStringField(aggregationLevel1, Order.AggregationLevel1);
+        }
+
+        public T SetAggregationLevel2(string aggregationLevel2)
+        {
+            return SetStringField(aggregationLevel2, Order.AggregationLevel2);
+        }
+
+        public T SetAggregationLevel3(string aggregationLevel3)
+        {
+            return SetStringField(aggregationLevel3, Order.AggregationLevel3);
+        }
+        
         public T SetAlgo(Algo algo)
         {
             if (algo == null)

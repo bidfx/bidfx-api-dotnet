@@ -13,6 +13,9 @@ namespace BidFX.Public.API.Trade.Order
     {
         private static readonly ILogger Log = Serilog.Log.ForContext(Constants.SourceContextPropertyName, "Order");
         internal const string Account = "account";
+        internal const string AggregationLevel1 = "aggregation_level_1";
+        internal const string AggregationLevel2 = "aggregation_level_2";
+        internal const string AggregationLevel3 = "aggregation_level_3";
         internal const string Algo = "algo";
         internal const string AllocationTemplate = "allocation_template";
         internal const string AllocationData = "allocation_data";
@@ -83,6 +86,21 @@ namespace BidFX.Public.API.Trade.Order
         public string GetAccount()
         {
             return GetComponent<string>(Account);
+        }
+
+        public string GetAggregationLevel1()
+        {
+            return GetComponent<string>(AggregationLevel1);
+        }
+
+        public string GetAggregationLevel2()
+        {
+            return GetComponent<string>(AggregationLevel2);
+        }
+
+        public string GetAggregationLevel3()
+        {
+            return GetComponent<string>(AggregationLevel3);
         }
 
         public Algo GetAlgo()
