@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Security;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ namespace BidFX.Public.API.Price.Tools
             SslStream sslStream = disableHostnameSslChecks
                 ? new SslStream(stream, false, AllowCertsFromTs)
                 : new SslStream(stream, false);
-            sslStream.AuthenticateAsClient(host);
+            sslStream.AuthenticateAsClient(host, null, SslProtocols.Tls12, false);
             if (sslStream.IsAuthenticated)
             {
                 stream = sslStream;
@@ -51,9 +52,9 @@ namespace BidFX.Public.API.Price.Tools
                 #if DEBUG
                     Log.Debug("sending: " + message);
                 #else
-                    if (!message.Contains("Authorization: "))
+                    if (Log.IsEnabled(LogEventLevel.Debug) && !message.Contains("Authorization: "))
                     {
-                        Log.Debug("sending: " + message);
+                        Log.Debug("sending: {message}", message);
                     }
                 #endif
             }
