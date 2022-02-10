@@ -23,7 +23,7 @@ namespace BidFX.Public.API.Example
         private void Run()
         {
             Client _client = DefaultClient.Client;
-            _client.Host = "ny-tunnel.uatprod.tradingscreen.com";
+            _client.Host = "api.ld.bidfx.biz";
             _client.Username = Username;
             _client.Password = Password;
             _client.PriceSession.PriceUpdateEventHandler += OnPriceUpdate;
