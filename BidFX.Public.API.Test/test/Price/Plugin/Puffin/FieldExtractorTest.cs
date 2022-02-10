@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Puffin
         private const string GrantMsg = "<Grant Text=\"\" Access=\"true\"/>";
 
         private const string WelcomeMsg =
-            "<WelcomeMessage Name=\"PublicPuffin\" Version=\"8\" ZipRequests=\"false\" ZipPrices=\"true\" Encrypt=\"false\" SessionKey=\"162asosvck5wy\" Interval=\"60000\" Host=\"eqld4-publicpuffin-p-11a.uat.internal\" Port=\"9901\" Time=\"1480424571256\" ServerId=\"027f06ada41786c54e9ead0f2142fd4d\" SendWeightedMatchers=\"false\" PublicKey=\"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI1cki5X8ON3arU1UToapmjjXlQOM4k7TCGrSLL4uYcdhpTFpWcsS+UWmX9SaWHytLEwEW8onnzIx+GUvG9wyXMCAwEAAQ==\"/>";
+            "<WelcomeMessage Name=\"PublicPuffin\" Version=\"8\" ZipRequests=\"false\" ZipPrices=\"true\" Encrypt=\"false\" SessionKey=\"162asosvck5wy\" Interval=\"60000\" Host=\"publicpuffin01.uatprod.bidfx\" Port=\"9901\" Time=\"1480424571256\" ServerId=\"027f06ada41786c54e9ead0f2142fd4d\" SendWeightedMatchers=\"false\" PublicKey=\"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI1cki5X8ON3arU1UToapmjjXlQOM4k7TCGrSLL4uYcdhpTFpWcsS+UWmX9SaWHytLEwEW8onnzIx+GUvG9wyXMCAwEAAQ==\"/>";
 
         [Test]
         public void BlankFieldExtraction()
