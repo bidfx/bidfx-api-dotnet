@@ -219,6 +219,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Ionic.Zlib">
+      <Version>1.9.1.5</Version>
+    </PackageReference>
     <PackageReference Include="Obfuscar">
       <Version>2.2.12</Version>
     </PackageReference>

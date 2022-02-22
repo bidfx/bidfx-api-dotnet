@@ -35,7 +35,7 @@ namespace BidFX.Public.API.Price.Tools
         private static bool AllowCertsFromTs(Object sender, X509Certificate cert, X509Chain chain,
             SslPolicyErrors errors)
         {
-            return chain.ChainStatus.Length == 0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.tradingscreen\\.com.*");
+            return chain.ChainStatus.Length == 0 && Regex.IsMatch(cert.Subject, ".*CN=.*\\.bidfx\\.(com|biz).*");
         }
 
         public static string CreateTunnelHeader(string username, string password, string service, GUID guid)
