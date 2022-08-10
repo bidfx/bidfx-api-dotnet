@@ -8,7 +8,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
     {
         private const string Application = "PublicAPI";
         private const string ApplicationVersion = "1.0.2";
-        private const string Username = "pmacdona";
+        private const string Username = "username";
         private const string Password = "thisissupersecret";
         private const string Alias = "paul";
         private const string Serial = "abc123456789";
