@@ -451,48 +451,48 @@ These are defined as string constants in the class called `BidFX.Public.API.Pric
 
 | FieldName       | Stream & Quote | Depth | Indicative | PremiumFX |
 |-----------------|----------------|-------|------------|-----------|
-| `Bid`           | (/)            |       | (/)        | (/)       |
-| `Bid1`          |                | (/)   |            | (/)       |
-| `Bid2`          |                | (/)   |            | (/)       |
-| `Bidn`          |                | (/)   |            | (/)       |
-| `Ask`           | (/)            |       | (/)        | (/)       |
-| `Ask1`          |                | (/)   |            | (/)       |
-| `Ask2`          |                | (/)   |            | (/)       |
-| `Askn`          |                | (/)   |            | (/)       |
-| `BidFirm1`      |                | (/)   |            |           |
-| `BidFirm2`      |                | (/)   |            |           |
-| `BidFirmn`      |                | (/)   |            |           |
-| `AskFirm1`      |                | (/)   |            |           |
-| `AskFirm2`      |                | (/)   |            |           |
-| `AskFirmn`      |                | (/)   |            |           |
-| `BidTime1`      |                | (/)   |            |           |
-| `BidTime2`      |                | (/)   |            |           |
-| `BidTimen`      |                | (/)   |            |           |
-| `AskTime1`      |                | (/)   |            |           |
-| `AskTime2`      |                | (/)   |            |           |
-| `AskTimen`      |                | (/)   |            |           |
-| `BidLevels`     |                | (/)   |            |           |
-| `AskLevels`     |                | (/)   |            |           |
-| `OriginTime`    | (/)            |       |            |           |
-| `PriceID`       | (/)            |       |            |           |
-| `BidSpot`       | (/)            |       |            |           |
-| `AskSpot`       | (/)            |       |            |           |
-| `HopLatency1`   | (/)            |       |            |           |
-| `HopLatency2`   | (/)            |       |            |           |
-| `SystemTime`    | (/)            |       | (/)        | (/)       |
-| `High`          |                |       | (/)        |           |
-| `Low`           |                |       | (/)        |           |
-| `Broker`        |                |       | (/)        |           |
-| `PercentChange` |                |       | (/)        |           |
-| `LastTick`      |                |       | (/)        |           |
-| `Open`          |                |       | (/)        |           |
-| `Close`         |                |       | (/)        |           |
-| `Provider`      |                |       | (/)        |           |
-| `NetChange`     |                |       | (/)        |           |
-| `Status`        |                |       | (/)        | (/)       |
-| `Category1`     |                |       |            | (/)       |
-| `Category2`     |                |       |            | (/)       |
-| `Categoryn`     |                |       |            | (/)       |
+| `Bid`           | X              |       | X          | X         |
+| `Bid1`          |                | X     |            | X         |
+| `Bid2`          |                | X     |            | X         |
+| `Bidn`          |                | X     |            | X         |
+| `Ask`           | X              |       | X          | X         |
+| `Ask1`          |                | X     |            | X         |
+| `Ask2`          |                | X     |            | X         |
+| `Askn`          |                | X     |            | X         |
+| `BidFirm1`      |                | X     |            |           |
+| `BidFirm2`      |                | X     |            |           |
+| `BidFirmn`      |                | X     |            |           |
+| `AskFirm1`      |                | X     |            |           |
+| `AskFirm2`      |                | X     |            |           |
+| `AskFirmn`      |                | X     |            |           |
+| `BidTime1`      |                | X     |            |           |
+| `BidTime2`      |                | X     |            |           |
+| `BidTimen`      |                | X     |            |           |
+| `AskTime1`      |                | X     |            |           |
+| `AskTime2`      |                | X     |            |           |
+| `AskTimen`      |                | X     |            |           |
+| `BidLevels`     |                | X     |            |           |
+| `AskLevels`     |                | X     |            |           |
+| `OriginTime`    | X              |       |            |           |
+| `PriceID`       | X              |       |            |           |
+| `BidSpot`       | X              |       |            |           |
+| `AskSpot`       | X              |       |            |           |
+| `HopLatency1`   | X              |       |            |           |
+| `HopLatency2`   | X              |       |            |           |
+| `SystemTime`    | X              |       | X          | X         |
+| `High`          |                |       | X          |           |
+| `Low`           |                |       | X          |           |
+| `Broker`        |                |       | X          |           |
+| `PercentChange` |                |       | X          |           |
+| `LastTick`      |                |       | X          |           |
+| `Open`          |                |       | X          |           |
+| `Close`         |                |       | X          |           |
+| `Provider`      |                |       | X          |           |
+| `NetChange`     |                |       | X          |           |
+| `Status`        |                |       | X          | X         |
+| `Category1`     |                |       |            | X         |
+| `Category2`     |                |       |            | X         |
+| `Categoryn`     |                |       |            | X         |
 
 #### Time Fields
 
