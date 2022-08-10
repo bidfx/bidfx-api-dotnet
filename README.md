@@ -90,14 +90,6 @@ You can clone the API with the following command.
 git clone https://github.com/bidfx/bidfx-api-dotnet.git
 ```
 
-### OS Specific Set Up
-
-To use the API, you will need to install the `ZLib` data compression library and `OpenSSL` cryptography library.
-
-- **Ubuntu:** Install `zlib1g-dev` by running `sudo apt-get install zlib1g-dev` in a terminal.
-- **Mac OS X:**  Install the Apple *xcode* command line tools by running `xcode-select --install` in a terminal.
-- **Windows (cygwin):** Install the `zlib-devel`, `libssl-devel`, and `openssl` packages.
-
 ### Configuring your IDE
 
 For C# development we recommend an integrated development environment (IDE) designed for programming in C#.
