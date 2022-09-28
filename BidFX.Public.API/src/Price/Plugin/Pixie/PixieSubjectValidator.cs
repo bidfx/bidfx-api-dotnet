@@ -29,15 +29,27 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
                 {
                     return false;
                 }
-            }
 
-            if (dealType.Equals(CommonComponents.Swap) || dealType.Equals(CommonComponents.NDS))
+                if (dealType.Equals(CommonComponents.Swap) || dealType.Equals(CommonComponents.NDS))
+                {
+                    if (!CheckFarFields(subject, inApiEventHandler))
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
             {
-                if (!CheckFarFields(subject, inApiEventHandler))
+                string tenor = subject.GetComponent(SubjectComponentName.Tenor);
+                string settlementDate = subject.GetComponent(SubjectComponentName.SettlementDate);
+
+                if ((settlementDate != null && !_settlementDateRegex.IsMatch(settlementDate.ToUpper())) ||
+                    (tenor != null && !_tenorRegex.IsMatch(tenor.ToUpper())))
                 {
                     return false;
                 }
             }
+            
 
             return true;
         }
