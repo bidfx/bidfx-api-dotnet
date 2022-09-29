@@ -34,6 +34,18 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
             Assert.AreEqual(3, _eventHandler.GetStatusUpdates().Count);
         }
 
+        [Test]
+        public void TestSpotSubjects()
+        {
+            Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
+                .SetComponent(SubjectComponentName.SettlementDate, "20220928").SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject(), _eventHandler)); 
+            Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
+                 .SetComponent(SubjectComponentName.Tenor, "test_tenor").CreateSubject(), _eventHandler)); 
+            Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
+                 .SetComponent(SubjectComponentName.SettlementDate, "2022 09 28").CreateSubject(), _eventHandler));
+            Assert.IsEmpty(_eventHandler.GetStatusUpdates());
+        }
+
         private class TestEventHandler : IApiEventHandler
         {
             private readonly List<dynamic[]> _statusUpdates = new List<dynamic[]>();
