@@ -46,8 +46,7 @@ at [BidFX API Overview](https://www.bidfx.com/apis).
 This document describes the BidFX Public API for .NET.
 The .NET API is written in C#.
 All of the code examples below are also presented in C#.
-To maximise compatability across the potential community of users, we have built the API targetting .NET Framework
-v4.7.1.
+To maximise compatability across the potential community of users, we have built the API targetting .NET Standard 2.0.
 We use the tag _Public_ to indicated that, this API is designed and maintained for public use by BidFX clients.
 Being _public_ implies a degree of support, API stability and future compatibility appropriate to client usage.
 

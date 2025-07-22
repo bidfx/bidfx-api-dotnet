@@ -3,7 +3,7 @@
     <ProjectGuid>{5C8CA288-1771-4ED0-A3AB-8A234523379F}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471;net8.0</TargetFrameworks>
     <LangVersion>4</LangVersion>
     <AssemblyTitle>BidFX.Public.NAPI.Example</AssemblyTitle>
     <Company>BidFX Limited</Company>
@@ -11,7 +11,6 @@
     <Copyright>Copyright ©  2017</Copyright>
     <AssemblyVersion>1.0.2</AssemblyVersion>
     <FileVersion>1.0.2</FileVersion>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
