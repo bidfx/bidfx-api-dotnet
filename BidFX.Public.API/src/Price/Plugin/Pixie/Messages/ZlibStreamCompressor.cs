@@ -2,8 +2,8 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using BidFX.Public.API.Price.Tools;
-using Ionic.Zlib;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
@@ -12,10 +12,16 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
         private readonly MemoryStream _stream = new MemoryStream();
         private readonly DeflateStream _compressor;
 
+        [Obsolete("Use CompressionLevel instead of int")]
         public ZlibStreamCompressor(int compressionLevel)
         {
             Params.InRange(compressionLevel, 1, 9);
-            _compressor = new DeflateStream(_stream, CompressionMode.Compress, ToCompressionLevel(compressionLevel));
+            _compressor = new DeflateStream(_stream, ToCompressionLevel(compressionLevel));
+        }
+        
+        public ZlibStreamCompressor(CompressionLevel compressionLevel)
+        {
+            _compressor = new DeflateStream(_stream, compressionLevel);
         }
 
         public void Compress(MemoryStream fragment)
@@ -32,19 +38,20 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
             return _stream.ToArray();
         }
 
+        // This is a best effort to map from old Ionic.Zip compression levels to System.IO.Compression levels
         private static CompressionLevel ToCompressionLevel(int level)
         {
             switch (level)
             {
-                case 1: return CompressionLevel.Level1;
-                case 2: return CompressionLevel.Level2;
-                case 3: return CompressionLevel.Level3;
-                case 4: return CompressionLevel.Level4;
-                case 5: return CompressionLevel.Level5;
-                case 6: return CompressionLevel.Level6;
-                case 7: return CompressionLevel.Level7;
-                case 8: return CompressionLevel.Level8;
-                case 9: return CompressionLevel.Level9;
+                case 1: return CompressionLevel.Fastest;
+                case 2: return CompressionLevel.Fastest;
+                case 3: return CompressionLevel.Fastest;
+                case 4: return CompressionLevel.Fastest;
+                case 5: return CompressionLevel.Optimal;
+                case 6: return CompressionLevel.Optimal;
+                case 7: return CompressionLevel.Optimal;
+                case 8: return CompressionLevel.Optimal;
+                case 9: return CompressionLevel.Optimal;
                 default: throw new ArgumentException("Level (" + level + ") was not in range 1..9");
             }
         }
