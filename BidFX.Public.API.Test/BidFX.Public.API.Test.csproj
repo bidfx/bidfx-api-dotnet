@@ -1,137 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{FC6653D6-3A62-444C-B074-5CF88C1690B6}</ProjectGuid>
-        <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>BidFX.Public.API.Test</RootNamespace>
-        <AssemblyName>BidFX.Public.API.Test</AssemblyName>
-        <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
-          <HintPath>..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Moq, Version=4.13.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920">
-          <HintPath>..\packages\Moq.4.13.1\lib\net45\Moq.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System.Configuration" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-          <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="System.Xml" />
-        <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
-            <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="test\Enums\FxTenorTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\AckDataTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Fields\DataDictionaryUtilsTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Fields\ExtendableDataDictionaryTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Fields\FieldEncodingTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Fields\FieldTypeTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\AckMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\ControlOperationTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\DataDictionaryMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\GrantMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\GridColumnTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\GridTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\HeartbeatMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\LoginMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\PixieMessageTypeTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\PriceStatusCodecTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\PriceSyncTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\PriceUpdateDecoderTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\SubscriptionSyncTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\Messages\WelcomeMessageTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\PixieSubjectValidatorTest.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\RealSubscriptionExample.cs" />
-        <Compile Include="test\Price\Plugin\Pixie\SubjectSetRegisterTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\FieldExtractorTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\MessageFormatterTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\PriceAdaptorTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\PuffinElementTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\PuffinMessageReaderTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\TokenDictionaryTest.cs" />
-        <Compile Include="test\Price\Plugin\Puffin\ValueParserTest.cs" />
-        <Compile Include="test\Price\PriceMapTest.cs" />
-        <Compile Include="test\Price\Subject\CommonComponentsTest.cs" />
-        <Compile Include="test\Price\Subject\CommonSubjectsTest.cs" />
-        <Compile Include="test\Price\Subject\RequestSubjectComparatorTest.cs" />
-        <Compile Include="test\Price\Subject\SubjectBuilderTest.cs" />
-        <Compile Include="test\Price\Subject\SubjectFormatterTest.cs" />
-        <Compile Include="test\Price\Subject\SubjectIteratorTest.cs" />
-        <Compile Include="test\Price\Subject\SubjectTest.cs" />
-        <Compile Include="test\Price\Subject\SubjectValidatorTest.cs" />
-        <Compile Include="test\Price\Subject\SubscriptionSetTest.cs" />
-        <Compile Include="test\Tools\BitSetterTest.cs" />
-        <Compile Include="test\Tools\NameCacheTest.cs" />
-        <Compile Include="test\Tools\NumericCharacterEntityTest.cs" />
-        <Compile Include="test\Tools\ParamsTest.cs" />
-        <Compile Include="test\Tools\VarintTest.cs" />
-        <Compile Include="test\Tools\WebServer.cs" />
-        <Compile Include="test\Trade\Instruction\OrderAmendBuilderTest.cs" />
-        <Compile Include="test\Trade\Instruction\OrderCancelBuilderTest.cs" />
-        <Compile Include="test\Trade\Instruction\OrderSubmitBuilderTest.cs" />
-        <Compile Include="test\Trade\Order\AllocationTemplateEntryBuilderTest.cs" />
-        <Compile Include="test\Trade\Order\FutureOrderBuilderTest.cs" />
-        <Compile Include="test\Trade\Order\FxOrderBuilderTest.cs" />
-        <Compile Include="test\Trade\Order\OrderBuilderTest.cs" />
-        <Compile Include="test\Trade\Rest\Json\JsonMarshallerTest.cs" />
-        <Compile Include="test\Trade\SettlementDateResponseTest.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\BidFX.Public.API\BidFX.Public.API.csproj">
-        <Project>{096edeb7-9912-45bc-9c51-a7e871e58c4e}</Project>
-        <Name>BidFX.Public.API</Name>
-      </ProjectReference>
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="packages.config" />
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{FC6653D6-3A62-444C-B074-5CF88C1690B6}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFramework>net471</TargetFramework>
+    <AssemblyTitle>BidFX.Public.API.Test</AssemblyTitle>
+    <Product>BidFX.Public.API.Test</Product>
+    <Copyright>Copyright ©  2020</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="NUnit" Version="3.5.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BidFX.Public.API\BidFX.Public.API.csproj" />
+  </ItemGroup>
 </Project>
