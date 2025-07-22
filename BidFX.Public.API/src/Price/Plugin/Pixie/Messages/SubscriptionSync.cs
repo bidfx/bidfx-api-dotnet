@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using BidFX.Public.API.Price.Subject;
 using BidFX.Public.API.Price.Tools;
 
@@ -10,7 +11,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
     internal class SubscriptionSync : IOutgoingPixieMessage
     {
-        private const int CompressionLevel = 6;
+        private const CompressionLevel CompressionLevel = System.IO.Compression.CompressionLevel.Optimal;
 
         private const int CompressionBit = 0;
         private const int ControlsBit = 1;

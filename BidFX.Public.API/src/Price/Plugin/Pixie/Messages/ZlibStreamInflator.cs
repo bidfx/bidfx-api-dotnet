@@ -1,7 +1,7 @@
 ﻿/// Copyright (c) 2018 BidFX Systems Ltd. All Rights Reserved.
 
 using System.IO;
-using Ionic.Zlib;
+using System.IO.Compression;
 
 namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 {
@@ -12,7 +12,7 @@ namespace BidFX.Public.API.Price.Plugin.Pixie.Messages
 
         public ZlibStreamInflator()
         {
-            _inflator = new DeflateStream(_outputStream, CompressionMode.Decompress, CompressionLevel.Level6, true);
+            _inflator = new DeflateStream(_outputStream, CompressionMode.Decompress, true);
         }
 
         public Stream Inflate(MemoryStream stream)

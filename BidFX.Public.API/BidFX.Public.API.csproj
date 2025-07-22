@@ -42,17 +42,9 @@
     <PackageReference Include="Serilog" Version="2.10.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Ionic.Zlib, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <HintPath>bin\Debug\Ionic.Zlib.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\scripts\release.sh">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="Ionic.Zlib.dll" />
     <None Include="obfuscar.xml" />
   </ItemGroup>
 </Project>
