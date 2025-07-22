@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{096EDEB7-9912-45BC-9C51-A7E871E58C4E}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>4</LangVersion>
     <AssemblyTitle>BidFX.Public.API</AssemblyTitle>
     <Company>BidFX Limited</Company>
@@ -35,7 +35,6 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Obfuscar" Version="2.2.12">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
