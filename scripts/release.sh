@@ -7,20 +7,25 @@ if ! git diff-index --quiet HEAD --; then
 fi
 
 # Get new version numbers
-ASSEMBLY_FILE="../BidFX.Public.API/Properties/AssemblyInfo.cs"
-BAK="${ASSEMBLY_FILE}.bak"
-TEMP_FILE="${ASSEMBLY_FILE}.tmp"
+CSPROJ_FILE="../BidFX.Public.API/BidFX.Public.API.csproj"
+BAK="${CSPROJ_FILE}.bak"
 
-cp ${ASSEMBLY_FILE} ${BAK}
+# Check if csproj file exists
+if [[ ! -f ${CSPROJ_FILE} ]]; then
+    printf "Could not find csproj file: ${CSPROJ_FILE}\n"
+    exit 1
+fi
 
-assembly_regex='\[assembly: AssemblyVersion\("([[:digit:]](.[[:digit:]]){2,3})"\)\]'
-contents=`cat ${ASSEMBLY_FILE}`
+cp ${CSPROJ_FILE} ${BAK}
+
+assembly_regex='<AssemblyVersion>([[:digit:]](.[[:digit:]]){2,3})</AssemblyVersion>'
+contents=`cat ${CSPROJ_FILE}`
 if  [[ ${contents} =~ $assembly_regex ]]
 then
     printf "Current version: ${BASH_REMATCH[1]}\n"
     current_version="${BASH_REMATCH[1]}"
 else
-    printf "Could not obtain AssemblyVersion\n"
+    printf "Could not obtain AssemblyVersion from csproj file\n"
     exit 1
 fi
 
@@ -51,27 +56,16 @@ then
 fi
 # printf "New snapshot version will be ${new_snapshot_version}\n"
 
-# Update AssemblyInfo with Release Version
-assembly_file_regex='\[assembly: AssemblyFileVersion\(".*"\)\]'
+# Update csproj with Release Version
 if [[ "${current_version}" != "${release_version}" ]]
 then
-    > ${TEMP_FILE}
-    cat ${ASSEMBLY_FILE} | while read line; do
-        if [[ ${line} =~ $assembly_regex ]]
-        then
-            echo "[assembly: AssemblyVersion(\"${release_version}\")]" >> ${TEMP_FILE}
-        elif [[ ${line} =~ $assembly_file_regex ]]
-        then
-            echo "[assembly: AssemblyFileVersion(\"${release_version}\")]" >> ${TEMP_FILE}
-        else
-            echo ${line} >> ${TEMP_FILE}
-        fi
-    done
-    mv ${TEMP_FILE} ${ASSEMBLY_FILE}
+    # Use sed to replace versions while preserving formatting
+    sed -i.tmp "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>${release_version}</AssemblyVersion>|g" ${CSPROJ_FILE}
+    sed -i.tmp "s|<FileVersion>.*</FileVersion>|<FileVersion>${release_version}</FileVersion>|g" ${CSPROJ_FILE}
+    rm ${CSPROJ_FILE}.tmp
     
     # Commit to Git
-    
-    git commit -m "prepare release ${release_version}" ${ASSEMBLY_FILE}
+    git commit -m "prepare release ${release_version}" ${CSPROJ_FILE}
     if [[ $? -ne 0 ]];
     then
         printf "Error committing, exit code ${?}\n"
@@ -87,22 +81,13 @@ then
 fi
 
 # Update to snapshot version
-> ${TEMP_FILE}
-cat ${ASSEMBLY_FILE} | while read line; do
-    if [[ ${line} =~ $assembly_regex ]]
-    then
-        echo "[assembly: AssemblyVersion(\"${new_snapshot_version}\")]" >> ${TEMP_FILE}
-    elif [[ ${line} =~ $assembly_file_regex ]]
-    then
-        echo "[assembly: AssemblyFileVersion(\"${new_snapshot_version}\")]" >> ${TEMP_FILE}
-    else
-        echo ${line} >> ${TEMP_FILE}
-    fi
-done
-mv ${TEMP_FILE} ${ASSEMBLY_FILE}
+# Use sed to replace versions while preserving formatting
+sed -i.tmp "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>${new_snapshot_version}</AssemblyVersion>|g" ${CSPROJ_FILE}
+sed -i.tmp "s|<FileVersion>.*</FileVersion>|<FileVersion>${new_snapshot_version}</FileVersion>|g" ${CSPROJ_FILE}
+rm ${CSPROJ_FILE}.tmp
 
 # Commit to git and push
-git commit -m "prepare for next development iteration" ${ASSEMBLY_FILE}
+git commit -m "prepare for next development iteration" ${CSPROJ_FILE}
 if [[ $? -ne 0 ]];
 then
     printf "Error committing next iteration, exit code ${?}\n"
