@@ -25,25 +25,12 @@
   <PropertyGroup>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <PostBuildEvent>
-      "$(Obfuscar)" "$(MSBuildThisFileDirectory)obfuscar.xml"
-      mkdir "..\BidFX.Public.API"
-      copy "..\Obfuscator_Output\BidFX.Public.API.dll" "..\BidFX.Public.API\BidFX.Public.API.dll" /Y
-      copy "DotNetZip.dll" "..\BidFX.Public.API\DotNetZip.dll" /Y
-      copy "Serilog.dll" "..\BidFX.Public.API\Serilog.dll" /Y
-    </PostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Obfuscar" Version="2.2.12">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Serilog" Version="2.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\scripts\release.sh">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <None Include="obfuscar.xml" />
   </ItemGroup>
 </Project>
