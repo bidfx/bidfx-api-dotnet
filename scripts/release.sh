@@ -93,7 +93,7 @@ then
     printf "Error committing next iteration, exit code ${?}\n"
     exit 1
 fi
-git push && git push --tags
+# git push && git push --tags
 if [[ $? -ne 0 ]];
 then
     printf "Error pushing, exit code ${?}\n"
