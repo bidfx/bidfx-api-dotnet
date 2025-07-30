@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore API.sln
+    
+    - name: Build solution
+      run: dotnet build API.sln --configuration Release --no-restore
+    
+    - name: Run tests
+      run: dotnet test API.sln --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults --framework net8.0
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-linux
+        path: TestResults/*.trx
+
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore API.sln
+    
+    - name: Build solution
+      run: dotnet build API.sln --configuration Release --no-restore
+    
+    - name: Run tests
+      run: dotnet test API.sln --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-windows
+        path: TestResults/*.trx
