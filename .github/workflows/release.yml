@@ -90,9 +90,14 @@ jobs:
         # Verify the build works
         dotnet build API.sln --configuration Release
         
-        # Commit the release version
+        # Commit the release version only if there are changes
         git add "$CSPROJ_FILE"
-        git commit -m "prepare release $RELEASE_VERSION"
+        if ! git diff --cached --quiet; then
+          git commit -m "prepare release $RELEASE_VERSION"
+          echo "Committed version changes for release $RELEASE_VERSION"
+        else
+          echo "No version changes needed - already at release version $RELEASE_VERSION"
+        fi
     
     - name: Create release tag
       run: |
@@ -108,9 +113,14 @@ jobs:
         sed -i "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>$NEXT_VERSION</AssemblyVersion>|g" "$CSPROJ_FILE"
         sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>$NEXT_VERSION</FileVersion>|g" "$CSPROJ_FILE"
         
-        # Commit the next development version
+        # Commit the next development version only if there are changes
         git add "$CSPROJ_FILE"
-        git commit -m "prepare for next development iteration"
+        if ! git diff --cached --quiet; then
+          git commit -m "prepare for next development iteration"
+          echo "Committed version changes for next development iteration $NEXT_VERSION"
+        else
+          echo "No version changes needed - already at development version $NEXT_VERSION"
+        fi
     
     - name: Push changes and tags
       run: |
