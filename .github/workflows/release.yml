@@ -74,7 +74,7 @@ jobs:
         RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
         BRANCH_NAME="release/v$RELEASE_VERSION"
         git checkout -b "$BRANCH_NAME"
-        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
     
     - name: Update version for release
       run: |
@@ -117,35 +117,41 @@ jobs:
     
     - name: Push changes and tags
       run: |
-        git push origin ${{ steps.branch.outputs.branch_name }}
+        git push --set-upstream origin ${{ steps.branch.outputs.branch_name }}
         git push origin --tags
     
     - name: Create Pull Request
       uses: actions/github-script@v7
       with:
         script: |
+          const releaseVersion = '${{ steps.versions.outputs.release_version }}';
+          const nextVersion = '${{ steps.versions.outputs.next_version }}';
+          const branchName = '${{ steps.branch.outputs.branch_name }}';
+          
+          const prBody = `## Release v${releaseVersion}
+
+          This PR contains the release changes for version ${releaseVersion}.
+
+          ### Changes:
+          - Updated version to ${releaseVersion}
+          - Created tag \`public-api-dotnet-${releaseVersion}\`
+          - Updated version to ${nextVersion} for next development iteration
+
+          ### Next Steps:
+          1. Review and approve this PR
+          2. Merge to create the release
+          3. The tag will be pushed automatically
+          4. Create a GitHub release from the tag if needed
+
+          This PR was created automatically by the Release workflow.`;
+          
           const { data: pullRequest } = await github.rest.pulls.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: `Release v${{ steps.versions.outputs.release_version }}`,
-            head: '${{ steps.branch.outputs.branch_name }}',
+            title: `Release v${releaseVersion}`,
+            head: branchName,
             base: '${{ github.ref_name }}',
-            body: `## Release v${{ steps.versions.outputs.release_version }}
-            
-            This PR contains the release changes for version ${{ steps.versions.outputs.release_version }}.
-            
-            ### Changes:
-            - Updated version to ${{ steps.versions.outputs.release_version }}
-            - Created tag \`public-api-dotnet-${{ steps.versions.outputs.release_version }}\`
-            - Updated version to ${{ steps.versions.outputs.next_version }} for next development iteration
-            
-            ### Next Steps:
-            1. Review and approve this PR
-            2. Merge to create the release
-            3. The tag will be pushed automatically
-            4. Create a GitHub release from the tag if needed
-            
-            This PR was created automatically by the Release workflow.`
+            body: prBody
           });
           
-          console.log(\`Created PR #\${pullRequest.number}: \${pullRequest.html_url}\`);
+          console.log(`Created PR #${pullRequest.number}: ${pullRequest.html_url}`);
