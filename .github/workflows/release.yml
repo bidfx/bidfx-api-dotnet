@@ -1,4 +1,4 @@
-name: Release
+name: Release (PR-based)
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
         type: string
 
 jobs:
-  release:
+  create-release-pr:
     runs-on: ubuntu-latest
     
     steps:
@@ -44,13 +44,6 @@ jobs:
           exit 1
         fi
     
-    - name: Check for uncommitted changes
-      run: |
-        if ! git diff-index --quiet HEAD --; then
-          echo "Error: Git has uncommitted changes."
-          exit 1
-        fi
-    
     - name: Calculate next version
       id: versions
       run: |
@@ -75,13 +68,17 @@ jobs:
         echo "Release version: $RELEASE_VERSION"
         echo "Next version: $NEXT_VERSION"
     
+    - name: Create release branch
+      run: |
+        RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
+        BRANCH_NAME="release/v$RELEASE_VERSION"
+        git checkout -b "$BRANCH_NAME"
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+    
     - name: Update version for release
       run: |
         CSPROJ_FILE="BidFX.Public.API/BidFX.Public.API.csproj"
         RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
-        
-        # Backup original file
-        cp "$CSPROJ_FILE" "$CSPROJ_FILE.bak"
         
         # Update versions in csproj file
         sed -i "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>$RELEASE_VERSION</AssemblyVersion>|g" "$CSPROJ_FILE"
@@ -90,16 +87,11 @@ jobs:
         # Verify the build works
         dotnet build API.sln --configuration Release
         
-        # Commit the release version only if there are changes
+        # Commit the release version
         git add "$CSPROJ_FILE"
-        if ! git diff --cached --quiet; then
-          git commit -m "prepare release $RELEASE_VERSION"
-          echo "Committed version changes for release $RELEASE_VERSION"
-        else
-          echo "No version changes needed - already at release version $RELEASE_VERSION"
-        fi
+        git commit -m "prepare release $RELEASE_VERSION" --alow-empty
     
-    - name: Create release tag
+    - name: Create release tag (locally)
       run: |
         RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
         git tag "public-api-dotnet-$RELEASE_VERSION"
@@ -127,16 +119,32 @@ jobs:
         git push origin ${{ github.ref_name }}
         git push origin --tags
     
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Pull Request
+      uses: actions/github-script@v7
       with:
-        tag_name: "public-api-dotnet-${{ steps.versions.outputs.release_version }}"
-        release_name: "BidFX Public API .NET v${{ steps.versions.outputs.release_version }}"
-        body: |
-          ## Release v${{ steps.versions.outputs.release_version }}
+        script: |
+          const { data: pullRequest } = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Release v${{ steps.versions.outputs.release_version }}`,
+            head: '${{ env.branch_name }}',
+            base: '${{ github.ref_name }}',
+            body: `## Release v${{ steps.versions.outputs.release_version }}
+            
+            This PR contains the release changes for version ${{ steps.versions.outputs.release_version }}.
+            
+            ### Changes:
+            - Updated version to ${{ steps.versions.outputs.release_version }}
+            - Created tag \`public-api-dotnet-${{ steps.versions.outputs.release_version }}\`
+            - Updated version to ${{ steps.versions.outputs.next_version }} for next development iteration
+            
+            ### Next Steps:
+            1. Review and approve this PR
+            2. Merge to create the release
+            3. The tag will be pushed automatically
+            4. Create a GitHub release from the tag if needed
+            
+            This PR was created automatically by the Release workflow.`
+          });
           
-          This release was created automatically by GitHub Actions.
-        draft: false
-        prerelease: false
+          console.log(\`Created PR #\${pullRequest.number}: \${pullRequest.html_url}\`);
