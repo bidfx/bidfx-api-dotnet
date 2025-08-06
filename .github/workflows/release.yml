@@ -89,7 +89,7 @@ jobs:
         
         # Commit the release version
         git add "$CSPROJ_FILE"
-        git commit -m "prepare release $RELEASE_VERSION" --alow-empty
+        git commit -m "prepare release $RELEASE_VERSION" --allow-empty
     
     - name: Create release tag (locally)
       run: |
