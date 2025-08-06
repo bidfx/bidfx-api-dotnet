@@ -69,6 +69,7 @@ jobs:
         echo "Next version: $NEXT_VERSION"
     
     - name: Create release branch
+      id: branch
       run: |
         RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
         BRANCH_NAME="release/v$RELEASE_VERSION"
@@ -116,7 +117,7 @@ jobs:
     
     - name: Push changes and tags
       run: |
-        git push origin ${{ github.ref_name }}
+        git push origin ${{ steps.branch.outputs.branch_name }}
         git push origin --tags
     
     - name: Create Pull Request
@@ -127,7 +128,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: `Release v${{ steps.versions.outputs.release_version }}`,
-            head: '${{ env.branch_name }}',
+            head: '${{ steps.branch.outputs.branch_name }}',
             base: '${{ github.ref_name }}',
             body: `## Release v${{ steps.versions.outputs.release_version }}
             
