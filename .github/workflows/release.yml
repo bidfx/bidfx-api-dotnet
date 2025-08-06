@@ -74,7 +74,7 @@ jobs:
         RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
         BRANCH_NAME="release/v$RELEASE_VERSION"
         git checkout -b "$BRANCH_NAME"
-        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
     
     - name: Update version for release
       run: |
@@ -117,7 +117,7 @@ jobs:
     
     - name: Push changes and tags
       run: |
-        git push origin ${{ steps.branch.outputs.branch_name }}
+        git push --set-upstream origin ${{ steps.branch.outputs.branch_name }}
         git push origin --tags
     
     - name: Create Pull Request
