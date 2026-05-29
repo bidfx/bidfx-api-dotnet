@@ -39,8 +39,8 @@ namespace BidFX.Public.API.Price.Plugin.Pixie
         {
             Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
                 .SetComponent(SubjectComponentName.SettlementDate, "20220928").SetComponent(SubjectComponentName.Tenor, "Spot").CreateSubject(), _eventHandler)); 
-            Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
-                 .SetComponent(SubjectComponentName.Tenor, "test_tenor").CreateSubject(), _eventHandler)); 
+            Assert.IsTrue(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
+                 .SetComponent(SubjectComponentName.Tenor, "FED1").CreateSubject(), _eventHandler)); 
             Assert.IsFalse(PixieSubjectValidator.ValidateSubject(CommonSubjects.CreateLevelOneSpotStreamingSubject("FX_ACCT", "EURUSD", "RBCFX", "EUR", "1000000.11")
                  .SetComponent(SubjectComponentName.SettlementDate, "2022 09 28").CreateSubject(), _eventHandler));
             Assert.IsEmpty(_eventHandler.GetStatusUpdates());
