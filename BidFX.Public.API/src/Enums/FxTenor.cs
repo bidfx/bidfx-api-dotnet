@@ -24,6 +24,8 @@ namespace BidFX.Public.API.Enums
         private static readonly FxTenor M9 = new FxTenor("9M", "9M", "9M");
         private static readonly FxTenor M10 = new FxTenor("10M", "10M", "10M");
         private static readonly FxTenor M11 = new FxTenor("11M", "11M", "11M");
+        private static readonly FxTenor M15 = new FxTenor("15M", "15M", "15M");
+        private static readonly FxTenor M18 = new FxTenor("18M", "18M", "18M");
         private static readonly FxTenor Y1 = new FxTenor("1Y", "1Y", "1Y");
         private static readonly FxTenor Y2 = new FxTenor("2Y", "2Y", "2Y");
         private static readonly FxTenor Y3 = new FxTenor("3Y", "3Y", "3Y");
@@ -76,6 +78,8 @@ namespace BidFX.Public.API.Enums
             AddFxTenorToMap(M9);
             AddFxTenorToMap(M10);
             AddFxTenorToMap(M11);
+            AddFxTenorToMap(M15);
+            AddFxTenorToMap(M18);
             AddFxTenorToMap(Y1);
             AddFxTenorToMap(Y2);
             AddFxTenorToMap(Y3);
@@ -95,12 +99,7 @@ namespace BidFX.Public.API.Enums
         {
             FxTenor tenor;
             TenorMap.TryGetValue(name.Trim().ToUpper(), out tenor);
-            if (tenor == null)
-            {
-                throw new ArgumentException("Invalid tenor: " + name +". Valid tenors: "+ 
-                                            string.Join(", ", TenorMap.Values.Select(x => x._prettyName)));
-            }
-            return tenor;
+            return tenor ?? new FxTenor(name, name, name);
         }
     }
 }

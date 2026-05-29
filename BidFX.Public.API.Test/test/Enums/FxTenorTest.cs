@@ -65,5 +65,13 @@ namespace BidFX.Public.API.Enums
             Assert.AreEqual("IMMZ", FxTenor.GetTenor("IMMZ").GetRestString());
             Assert.AreEqual("BD", FxTenor.GetTenor("BD").GetRestString());
         }
+
+        [Test]
+        public void IfTenorIsNotKnownThenInputIsReturnedInAllFields()
+        {
+            FxTenor tenor = FxTenor.GetTenor("EDEC");
+            Assert.AreEqual("EDEC", tenor.GetRestString());
+            Assert.AreEqual("EDEC", tenor.GetBizString());
+        }
     }
 }
